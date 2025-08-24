@@ -1,0 +1,51 @@
+name: autoservice24
+description: Your Car Service Partner
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  get: ^4.6.6
+
+  # HTTP Client
+  dio: ^5.3.2
+
+  # Local Storage
+  shared_preferences: ^2.2.2
+
+  # Maps
+  google_maps_flutter: ^2.5.0
+  location: ^5.0.3
+  geolocator: ^10.1.0
+
+  # Image Handling
+  image_picker: ^1.0.4
+  cached_network_image: ^3.3.0
+
+  # Date/Time formatting
+  intl: ^0.19.0
+
+  # UI Components
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+
