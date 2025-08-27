@@ -9,15 +9,11 @@ class GuestBanner extends StatelessWidget {
       margin: EdgeInsets.all(16),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.orange.shade400, Colors.orange.shade600],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: Color(0xFFFF8A50), // اللون الجديد لكامل البانر
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.3),
+            color: Color(0xFFFF8A50).withOpacity(0.3),
             blurRadius: 8,
             offset: Offset(0, 4),
           ),
@@ -61,7 +57,7 @@ class GuestBanner extends StatelessWidget {
                   child: Text('Login'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    foregroundColor: Colors.orange,
+                    foregroundColor: Color(0xFFFF8A50),
                     padding: EdgeInsets.symmetric(vertical: 8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
