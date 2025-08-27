@@ -40,6 +40,33 @@ class ApiProvider {
     return await _dio.post('/auth/signup', data: data);
   }
 
+  // إضافة دالة Social Login
+  Future<Response> socialLogin(Map<String, dynamic> data) async {
+    try {
+      print("ApiProvider: socialLogin called with provider: ${data['provider']}");
+
+      final response = await _dio.post(
+        '/auth/social-login', // تأكد من أن هذا المسار صحيح في NestJS backend
+        data: data,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      print("ApiProvider: socialLogin response status: ${response.statusCode}");
+      return response;
+    } on DioException catch (e) {
+      print("ApiProvider: socialLogin DioException: ${e.message}");
+      print("ApiProvider: socialLogin response data: ${e.response?.data}");
+      rethrow;
+    } catch (e) {
+      print("ApiProvider: socialLogin general error: $e");
+      rethrow;
+    }
+  }
+
   Future<Response> forgotPassword(Map<String, dynamic> data) async {
     return await _dio.post('/auth/forgot-password', data: data);
   }

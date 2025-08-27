@@ -257,7 +257,7 @@ class _RegisterViewState extends State<RegisterView> {
                 obscureText: !_isPasswordVisible,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    _isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                     color: Colors.grey[600],
                   ),
                   onPressed: () {
@@ -283,7 +283,7 @@ class _RegisterViewState extends State<RegisterView> {
                 obscureText: !_isConfirmPasswordVisible,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    _isConfirmPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                     color: Colors.grey[600],
                   ),
                   onPressed: () {
@@ -315,6 +315,7 @@ class _RegisterViewState extends State<RegisterView> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     elevation: 0,
+                    shadowColor: Colors.transparent,
                   ),
                   child: authController.isLoading.value
                       ? SizedBox(
@@ -322,7 +323,7 @@ class _RegisterViewState extends State<RegisterView> {
                     height: 24,
                     child: CircularProgressIndicator(
                       color: Colors.white,
-                      strokeWidth: 2,
+                      strokeWidth: 2.5,
                     ),
                   )
                       : Text(
@@ -339,64 +340,36 @@ class _RegisterViewState extends State<RegisterView> {
               // Divider with "or continue with"
               Row(
                 children: [
-                  Expanded(child: Divider(color: Colors.grey[300])),
+                  Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
                       'or continue with',
                       style: TextStyle(
-                        color: Colors.grey[600],
+                        color: Colors.grey[500],
                         fontSize: 14,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                  Expanded(child: Divider(color: Colors.grey[300])),
+                  Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
                 ],
               ),
               SizedBox(height: 24),
 
-              // Social Login Buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildSocialButton(
-                      label: 'Google',
-                      color: Colors.red[50]!,
-                      textColor: Colors.red[700]!,
-                      onTap: () => _socialLogin('google'),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: _buildSocialButton(
-                      label: 'Facebook',
-                      color: Colors.blue[50]!,
-                      textColor: Colors.blue[700]!,
-                      onTap: () => _socialLogin('facebook'),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: _buildSocialButton(
-                      label: 'Apple',
-                      color: Colors.grey[200]!,
-                      textColor: Colors.black87,
-                      onTap: () => _socialLogin('apple'),
-                    ),
-                  ),
-                ],
-              ),
+              // Social Login Buttons - محسنة
+              _buildSocialLoginSection(),
               SizedBox(height: 32),
 
-              // Login Link
+              // Login Link - مصححة
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account? ",
+                    "Already have an account? ",
                     style: TextStyle(
                       color: Colors.grey[600],
-                      fontSize: 14,
+                      fontSize: 15,
                     ),
                   ),
                   GestureDetector(
@@ -405,25 +378,30 @@ class _RegisterViewState extends State<RegisterView> {
                       'Sign In',
                       style: TextStyle(
                         color: Color(0xFFFF8A50),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 24),
 
               // Continue as Guest
               Center(
                 child: TextButton(
                   onPressed: () => Get.offAllNamed(AppRoutes.userHome),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
                   child: Text(
                     'Continue as Guest',
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.grey[600],
                     ),
                   ),
                 ),
@@ -434,6 +412,54 @@ class _RegisterViewState extends State<RegisterView> {
         ),
       ),
     );
+  }
+
+  Widget _buildSocialLoginSection() {
+    return Obx(() => Column(
+      children: [
+        // Google Login
+        _buildSocialButton(
+          label: 'Continue with Google',
+          backgroundColor: Colors.grey[100]!,
+          borderColor: Colors.grey[400]!,
+          textColor: Colors.grey[800]!,
+          icon: Icons.account_circle_outlined,
+          iconColor: Colors.red[600],
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('google'),
+          isGoogle: true, // إضافة معرف Google
+        ),
+        SizedBox(height: 16),
+
+        // Facebook Login
+        _buildSocialButton(
+          label: 'Continue with Facebook',
+          backgroundColor: Color(0xFF1877F2),
+          borderColor: Color(0xFF1877F2),
+          textColor: Colors.white,
+          icon: Icons.facebook_rounded,
+          iconColor: Colors.white,
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('facebook'),
+        ),
+
+        // Apple Login
+        SizedBox(height: 16),
+        _buildSocialButton(
+          label: 'Continue with Apple',
+          backgroundColor: Colors.black,
+          borderColor: Colors.black,
+          textColor: Colors.white,
+          icon: Icons.apple_rounded,
+          iconColor: Colors.white,
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('apple'),
+        ),
+      ],
+    ));
   }
 
   Widget _buildTextField({
@@ -450,28 +476,33 @@ class _RegisterViewState extends State<RegisterView> {
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
-      style: TextStyle(fontSize: 16),
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+        color: Colors.grey[800],
+      ),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(
           color: Colors.grey[600],
           fontSize: 16,
+          fontWeight: FontWeight.w500,
         ),
         prefixIcon: Icon(
           icon,
           color: Colors.grey[600],
-          size: 20,
+          size: 22,
         ),
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -479,41 +510,83 @@ class _RegisterViewState extends State<RegisterView> {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.red, width: 2),
+          borderSide: BorderSide(color: Colors.red[400]!, width: 2),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.red, width: 2),
+          borderSide: BorderSide(color: Colors.red[400]!, width: 2),
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        errorStyle: TextStyle(
+          color: Colors.red[600],
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
 
   Widget _buildSocialButton({
     required String label,
-    required Color color,
+    required Color backgroundColor,
+    required Color borderColor,
     required Color textColor,
-    required VoidCallback onTap,
+    required IconData icon,
+    Color? iconColor,
+    required VoidCallback? onTap,
+    bool isGoogle = false, // إضافة معرف Google
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 48,
+        width: double.infinity,
+        height: 56,
         decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[300]!),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              color: textColor,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+          color: onTap != null ? backgroundColor : Colors.grey[200],
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: onTap != null ? borderColor : Colors.grey[300]!,
+            width: 1.5,
           ),
+          boxShadow: [
+            if (onTap != null)
+              BoxShadow(
+                color: backgroundColor.withOpacity(0.1),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+              ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // أيقونة Google من ملف assets أو الأيقونات العادية
+            if (isGoogle)
+              Image.asset(
+                'assets/icons/google_icon.png',
+                width: 34,
+                height: 34,
+              )
+            else
+              Icon(
+                icon,
+                color: onTap != null ? (iconColor ?? textColor) : Colors.grey[500],
+                size: 24,
+              ),
+            SizedBox(width: 12),
+            Flexible(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: onTap != null ? textColor : Colors.grey[500],
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -532,23 +605,28 @@ class _RegisterViewState extends State<RegisterView> {
       final success = await authController.register(userData);
 
       if (!success) {
-        Get.snackbar(
-          'Error',
-          'Registration failed. Please try again.',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        // الخطأ سيتم عرضه من AuthController
       }
     }
   }
 
-  void _socialLogin(String provider) {
-    // TODO: Implement social login
-    Get.snackbar(
-      'Info',
-      '$provider login will be implemented soon',
-      backgroundColor: Colors.blue,
-      colorText: Colors.white,
-    );
+  void _socialLogin(String provider) async {
+    bool success = false;
+
+    switch (provider) {
+      case 'google':
+        success = await authController.signInWithGoogle(userType: _selectedUserType);
+        break;
+      case 'facebook':
+        success = await authController.signInWithFacebook(userType: _selectedUserType);
+        break;
+      case 'apple':
+        success = await authController.signInWithApple(userType: _selectedUserType);
+        break;
+    }
+
+    if (!success) {
+      // الخطأ سيتم عرضه من AuthController
+    }
   }
 }

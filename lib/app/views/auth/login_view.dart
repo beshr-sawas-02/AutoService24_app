@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:io';
 import '../../controllers/auth_controller.dart';
 import '../../routes/app_routes.dart';
 
@@ -15,7 +16,14 @@ class _LoginViewState extends State<LoginView> {
   final _passwordController = TextEditingController();
 
   bool _isPasswordVisible = false;
-  bool _rememberMe = false;
+  String _selectedUserType = 'user'; // إضافة متغير نوع المستخدم
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +72,35 @@ class _LoginViewState extends State<LoginView> {
                   color: Colors.grey[600],
                 ),
               ),
-              SizedBox(height: 48),
+              SizedBox(height: 32),
+
+              // Social Login Buttons
+              _buildSocialLoginSection(),
+
+              // User Type Selection للـ Social Login
+              SizedBox(height: 16),
+              _buildUserTypeSelection(),
+              SizedBox(height: 32),
+
+              // Divider with "or continue with email"
+              Row(
+                children: [
+                  Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'or continue with email',
+                      style: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
+                ],
+              ),
+              SizedBox(height: 32),
 
               // Email Field
               _buildTextField(
@@ -82,7 +118,7 @@ class _LoginViewState extends State<LoginView> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 20),
 
               // Password Field
               _buildTextField(
@@ -92,8 +128,9 @@ class _LoginViewState extends State<LoginView> {
                 obscureText: !_isPasswordVisible,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    _isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                     color: Colors.grey[600],
+                    size: 22,
                   ),
                   onPressed: () {
                     setState(() => _isPasswordVisible = !_isPasswordVisible);
@@ -108,50 +145,22 @@ class _LoginViewState extends State<LoginView> {
               ),
               SizedBox(height: 16),
 
-              // Remember Me & Forgot Password
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Checkbox(
-                          value: _rememberMe,
-                          onChanged: (value) {
-                            setState(() => _rememberMe = value ?? false);
-                          },
-                          activeColor: Color(0xFFFF8A50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Remember me',
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  GestureDetector(
-                    onTap: () => Get.toNamed(AppRoutes.forgotPassword),
-                    child: Text(
-                      'Forgot Password?',
-                      style: TextStyle(
-                        color: Color(0xFFFF8A50),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+              // Forgot Password
+              Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () => Get.toNamed(AppRoutes.forgotPassword),
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                      color: Color(0xFFFF8A50),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                ],
+                ),
               ),
-              SizedBox(height: 32),
+              SizedBox(height: 40),
 
               // Login Button
               Obx(() => Container(
@@ -166,6 +175,7 @@ class _LoginViewState extends State<LoginView> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     elevation: 0,
+                    shadowColor: Colors.transparent,
                   ),
                   child: authController.isLoading.value
                       ? SizedBox(
@@ -173,7 +183,7 @@ class _LoginViewState extends State<LoginView> {
                     height: 24,
                     child: CircularProgressIndicator(
                       color: Colors.white,
-                      strokeWidth: 2,
+                      strokeWidth: 2.5,
                     ),
                   )
                       : Text(
@@ -185,58 +195,6 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
               )),
-              SizedBox(height: 32),
-
-              // Divider with "or continue with"
-              Row(
-                children: [
-                  Expanded(child: Divider(color: Colors.grey[300])),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      'or continue with',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  Expanded(child: Divider(color: Colors.grey[300])),
-                ],
-              ),
-              SizedBox(height: 24),
-
-              // Social Login Buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildSocialButton(
-                      label: 'Google',
-                      color: Colors.red[50]!,
-                      textColor: Colors.red[700]!,
-                      onTap: () => _socialLogin('google'),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: _buildSocialButton(
-                      label: 'Facebook',
-                      color: Colors.blue[50]!,
-                      textColor: Colors.blue[700]!,
-                      onTap: () => _socialLogin('facebook'),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: _buildSocialButton(
-                      label: 'Apple',
-                      color: Colors.grey[200]!,
-                      textColor: Colors.black87,
-                      onTap: () => _socialLogin('apple'),
-                    ),
-                  ),
-                ],
-              ),
               SizedBox(height: 40),
 
               // Register Link
@@ -247,7 +205,7 @@ class _LoginViewState extends State<LoginView> {
                     "Don't have an account? ",
                     style: TextStyle(
                       color: Colors.grey[600],
-                      fontSize: 14,
+                      fontSize: 15,
                     ),
                   ),
                   GestureDetector(
@@ -256,8 +214,8 @@ class _LoginViewState extends State<LoginView> {
                       'Sign Up',
                       style: TextStyle(
                         color: Color(0xFFFF8A50),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
@@ -269,6 +227,9 @@ class _LoginViewState extends State<LoginView> {
               Center(
                 child: TextButton(
                   onPressed: () => Get.offAllNamed(AppRoutes.userHome),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
                   child: Text(
                     'Continue as Guest',
                     style: TextStyle(
@@ -276,6 +237,7 @@ class _LoginViewState extends State<LoginView> {
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       decoration: TextDecoration.underline,
+                      decorationColor: Colors.grey[600],
                     ),
                   ),
                 ),
@@ -285,6 +247,161 @@ class _LoginViewState extends State<LoginView> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSocialLoginSection() {
+    return Obx(() => Column(
+      children: [
+        // Google Login
+        _buildSocialButton(
+          label: 'Continue with Google',
+          backgroundColor: Colors.grey[100]!,
+          borderColor: Colors.grey[400]!,
+          textColor: Colors.grey[800]!,
+          icon: Icons.account_circle_outlined,
+          iconColor: Colors.red[600],
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('google'),
+        ),
+        SizedBox(height: 16),
+
+        // Facebook Login
+        _buildSocialButton(
+          label: 'Continue with Facebook',
+          backgroundColor: Color(0xFF1877F2),
+          borderColor: Color(0xFF1877F2),
+          textColor: Colors.white,
+          icon: Icons.facebook_rounded,
+          iconColor: Colors.white,
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('facebook'),
+        ),
+
+        // Apple Login (show on all platforms for consistency)
+        SizedBox(height: 16),
+        _buildSocialButton(
+          label: 'Continue with Apple',
+          backgroundColor: Colors.black,
+          borderColor: Colors.black,
+          textColor: Colors.white,
+          icon: Icons.apple_rounded,
+          iconColor: Colors.white,
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('apple'),
+        ),
+      ],
+    ));
+  }
+
+  Widget _buildUserTypeSelection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Login as:',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[700],
+          ),
+        ),
+        SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedUserType = 'user'),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _selectedUserType == 'user'
+                          ? Color(0xFFFF8A50)
+                          : Colors.grey[300]!,
+                      width: 2,
+                    ),
+                    color: _selectedUserType == 'user'
+                        ? Color(0xFFFF8A50).withOpacity(0.1)
+                        : Colors.white,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.person,
+                        color: _selectedUserType == 'user'
+                            ? Color(0xFFFF8A50)
+                            : Colors.grey[600],
+                        size: 20,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Regular User',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: _selectedUserType == 'user'
+                              ? Color(0xFFFF8A50)
+                              : Colors.grey[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedUserType = 'owner'),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _selectedUserType == 'owner'
+                          ? Color(0xFFFF8A50)
+                          : Colors.grey[300]!,
+                      width: 2,
+                    ),
+                    color: _selectedUserType == 'owner'
+                        ? Color(0xFFFF8A50).withOpacity(0.1)
+                        : Colors.white,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.build,
+                        color: _selectedUserType == 'owner'
+                            ? Color(0xFFFF8A50)
+                            : Colors.grey[600],
+                        size: 20,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Workshop Owner',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: _selectedUserType == 'owner'
+                              ? Color(0xFFFF8A50)
+                              : Colors.grey[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -302,28 +419,33 @@ class _LoginViewState extends State<LoginView> {
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
-      style: TextStyle(fontSize: 16),
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+        color: Colors.grey[800],
+      ),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(
           color: Colors.grey[600],
           fontSize: 16,
+          fontWeight: FontWeight.w500,
         ),
         prefixIcon: Icon(
           icon,
           color: Colors.grey[600],
-          size: 20,
+          size: 22,
         ),
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -331,41 +453,82 @@ class _LoginViewState extends State<LoginView> {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.red, width: 2),
+          borderSide: BorderSide(color: Colors.red[400]!, width: 2),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.red, width: 2),
+          borderSide: BorderSide(color: Colors.red[400]!, width: 2),
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        errorStyle: TextStyle(
+          color: Colors.red[600],
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
 
   Widget _buildSocialButton({
     required String label,
-    required Color color,
+    required Color backgroundColor,
+    required Color borderColor,
     required Color textColor,
-    required VoidCallback onTap,
+    required IconData icon,
+    Color? iconColor,
+    required VoidCallback? onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 48,
+        width: double.infinity,
+        height: 56,
         decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[300]!),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              color: textColor,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+          color: onTap != null ? backgroundColor : Colors.grey[200],
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: onTap != null ? borderColor : Colors.grey[300]!,
+            width: 1.5,
           ),
+          boxShadow: [
+            if (onTap != null)
+              BoxShadow(
+                color: backgroundColor.withOpacity(0.1),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+              ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // أيقونة Google من ملف الصورة
+            if (label.contains('Google'))
+              Image.asset(
+                'assets/icons/google_icon.png',
+                width: 34,
+                height: 34,
+              )
+            else
+              Icon(
+                icon,
+                color: onTap != null ? (iconColor ?? textColor) : Colors.grey[500],
+                size: 24,
+              ),
+            SizedBox(width: 12),
+            Flexible(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: onTap != null ? textColor : Colors.grey[500],
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -379,23 +542,28 @@ class _LoginViewState extends State<LoginView> {
       );
 
       if (!success) {
-        Get.snackbar(
-          'Error',
-          'Invalid email or password',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        // الخطأ سيتم عرضه من AuthController
       }
     }
   }
 
-  void _socialLogin(String provider) {
-    // TODO: Implement social login
-    Get.snackbar(
-      'Info',
-      '$provider login will be implemented soon',
-      backgroundColor: Colors.blue,
-      colorText: Colors.white,
-    );
+  void _socialLogin(String provider) async {
+    bool success = false;
+
+    switch (provider) {
+      case 'google':
+        success = await authController.signInWithGoogle(userType: _selectedUserType);
+        break;
+      case 'facebook':
+        success = await authController.signInWithFacebook(userType: _selectedUserType);
+        break;
+      case 'apple':
+        success = await authController.signInWithApple(userType: _selectedUserType);
+        break;
+    }
+
+    if (!success) {
+      // الخطأ سيتم عرضه من AuthController
+    }
   }
 }
