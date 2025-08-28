@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'dart:io';
 import '../data/repositories/chat_repository.dart';
 import '../data/models/chat_model.dart';
 import '../data/models/message_model.dart';
@@ -43,7 +44,7 @@ class ChatController extends GetxController {
 
   Future<ChatModel?> createChat(String user1Id, String user2Id) async {
     try {
-      // First check if chat already exists
+      // التحقق من وجود محادثة موجودة أولاً
       final existingChat = await _chatRepository.findChatBetweenUsers(user1Id, user2Id);
       if (existingChat != null) {
         return existingChat;
@@ -62,6 +63,7 @@ class ChatController extends GetxController {
     }
   }
 
+  // إرسال رسالة عادية (نص فقط)
   Future<bool> sendMessage({
     required String chatId,
     required String senderId,
@@ -82,6 +84,38 @@ class ChatController extends GetxController {
       return true;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
+      return false;
+    }
+  }
+
+  // إرسال رسالة مع صورة - دالة جديدة
+  Future<bool> sendMessageWithImage({
+    required String chatId,
+    required String senderId,
+    required String receiverId,
+    String? content,
+    File? imageFile,
+  }) async {
+    try {
+      print("ChatController: sendMessageWithImage() called");
+
+      final newMessage = await _chatRepository.sendMessageWithImage(
+        {
+          'chatId': chatId,
+          'senderId': int.parse(senderId),
+          'receiverId': int.parse(receiverId),
+          if (content != null) 'content': content,
+        },
+        imageFile,
+      );
+
+      messages.add(newMessage);
+      Helpers.showSuccessSnackbar('Message sent successfully');
+      return true;
+    } catch (e) {
+      print("ChatController: sendMessageWithImage error: $e");
+      String errorMessage = _extractErrorMessage(e.toString());
+      Helpers.showErrorSnackbar(errorMessage);
       return false;
     }
   }
@@ -125,6 +159,18 @@ class ChatController extends GetxController {
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
       return false;
+    }
+  }
+
+  String _extractErrorMessage(String error) {
+    if (error.contains('Exception:')) {
+      return error.split('Exception: ').last;
+    } else if (error.contains('Network error')) {
+      return 'Network error - Check your internet connection';
+    } else if (error.contains('Server error')) {
+      return 'Server error - Please try again later';
+    } else {
+      return 'An error occurred - Please try again';
     }
   }
 }

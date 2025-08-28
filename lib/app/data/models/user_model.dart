@@ -1,85 +1,82 @@
 class UserModel {
   final String id;
   final String email;
+  final String? password;     // اختيارية الآن
   final String username;
   final String userType;
-  final String phone;
+  final String? phone;        // اختيارية
   final String? profileImage;
+  final String provider;
+  final String? providerId;
 
   UserModel({
     required this.id,
     required this.email,
+    this.password,
     required this.username,
     required this.userType,
-    required this.phone,
+    this.phone,
     this.profileImage,
+    this.provider = 'local',
+    this.providerId,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    print("UserModel.fromJson() called with: $json");
-
-    try {
-      // Try both 'id' and '_id' fields (Backend sends 'id', we expect '_id')
-      final id = json['_id']?.toString() ?? json['id']?.toString() ?? '';
-
-      final userModel = UserModel(
-        id: id,
-        email: json['email']?.toString() ?? '',
-        username: json['username']?.toString() ?? '',
-        userType: json['user_type']?.toString() ?? 'user',
-        phone: json['phone']?.toString() ?? '', // Backend might not send phone, so default to empty
-        profileImage: json['profile_image']?.toString(),
-      );
-
-      print("UserModel created successfully:");
-      print("  - ID: ${userModel.id}");
-      print("  - Username: ${userModel.username}");
-      print("  - Email: ${userModel.email}");
-      print("  - UserType: ${userModel.userType}");
-      print("  - Phone: ${userModel.phone}");
-
-      return userModel;
-    } catch (e) {
-      print("UserModel.fromJson() error: $e");
-      print("Available keys in json: ${json.keys.toList()}");
-      rethrow;
-    }
+    return UserModel(
+      id: json['_id'] ?? '',
+      email: json['email'] ?? '',
+      password: json['password'], // قد تكون null للـ social login
+      username: json['username'] ?? '',
+      userType: json['user_type'] ?? 'user',
+      phone: json['phone'],
+      profileImage: json['profile_image'],
+      provider: json['provider'] ?? 'local',
+      providerId: json['providerId'],
+    );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
+    final Map<String, dynamic> data = {
       'email': email,
       'username': username,
       'user_type': userType,
-      'phone': phone,
-      'profile_image': profileImage,
+      'provider': provider,
     };
+
+    if (password != null) data['password'] = password;
+    if (phone != null) data['phone'] = phone;
+    if (profileImage != null) data['profile_image'] = profileImage;
+    if (providerId != null) data['providerId'] = providerId;
+
+    return data;
   }
 
   UserModel copyWith({
     String? id,
     String? email,
+    String? password,
     String? username,
     String? userType,
     String? phone,
     String? profileImage,
+    String? provider,
+    String? providerId,
   }) {
     return UserModel(
       id: id ?? this.id,
       email: email ?? this.email,
+      password: password ?? this.password,
       username: username ?? this.username,
       userType: userType ?? this.userType,
       phone: phone ?? this.phone,
       profileImage: profileImage ?? this.profileImage,
+      provider: provider ?? this.provider,
+      providerId: providerId ?? this.providerId,
     );
   }
 
   bool get isOwner => userType == 'owner';
   bool get isUser => userType == 'user';
-
-  @override
-  String toString() {
-    return 'UserModel(id: $id, username: $username, email: $email, userType: $userType, phone: $phone)';
-  }
+  bool get isLocalUser => provider == 'local';
+  bool get isSocialUser => provider != 'local';
 }

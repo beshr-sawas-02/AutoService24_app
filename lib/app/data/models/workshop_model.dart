@@ -33,16 +33,17 @@ class WorkshopModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
+    final Map<String, dynamic> data = {
       'user_id': userId,
       'name': name,
       'description': description,
       'location_x': locationX,
       'location_y': locationY,
       'working_hours': workingHours,
-      'profile_image': profileImage,
     };
+
+    if (profileImage != null) data['profile_image'] = profileImage;
+    return data;
   }
 
   WorkshopModel copyWith({

@@ -1,4 +1,5 @@
 import '../providers/api_provider.dart';
+import 'dart:io';
 
 class AuthRepository {
   final ApiProvider _apiProvider;
@@ -12,19 +13,15 @@ class AuthRepository {
         'password': password,
       });
 
-      // print("LOGIN RESPONSE DATA: ${response.data}");
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response.data as Map<String, dynamic>;
       } else {
         throw Exception('Login failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      // print("AuthRepository Login Error: $e");
+      print("AuthRepository Login Error: $e");
 
-      // Handle Dio errors specifically
-      if (e.toString().contains('DioException') ||
-          e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
         if (e.toString().contains('400')) {
           throw Exception('Invalid email or password');
         } else if (e.toString().contains('401')) {
@@ -42,19 +39,15 @@ class AuthRepository {
     }
   }
 
-  // إضافة دالة تسجيل الدخول الاجتماعي مع دعم userType
   Future<Map<String, dynamic>> socialLogin(String provider, String token, {String userType = 'user'}) async {
     try {
-      // print("AuthRepository: Attempting social login with $provider, userType: $userType");
+      print("AuthRepository: Attempting social login with $provider, userType: $userType");
 
       final response = await _apiProvider.socialLogin({
         'provider': provider,
-        'token': token,
-        'userType': userType,
+        'Token': token,  // تأكد من الحرف الكبير كما في backend
+        'usertype': userType,
       });
-
-      // print("SOCIAL LOGIN RESPONSE STATUS: ${response.statusCode}");
-      // print("SOCIAL LOGIN RESPONSE DATA: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response.data as Map<String, dynamic>;
@@ -62,11 +55,9 @@ class AuthRepository {
         throw Exception('Social login failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      // print("AuthRepository Social Login Error: $e");
+      print("AuthRepository Social Login Error: $e");
 
-      // Handle Dio errors specifically
-      if (e.toString().contains('DioException') ||
-          e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
         if (e.toString().contains('400')) {
           throw Exception('Invalid social login data');
         } else if (e.toString().contains('401')) {
@@ -88,25 +79,19 @@ class AuthRepository {
 
   Future<Map<String, dynamic>> register(Map<String, dynamic> userData) async {
     try {
-      // print("AuthRepository: Attempting registration for ${userData['email']}");
+      print("AuthRepository: Attempting registration for ${userData['email']}");
 
       final response = await _apiProvider.register(userData);
-
-      // print("REGISTER RESPONSE STATUS: ${response.statusCode}");
-      // print("REGISTER RESPONSE DATA: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response.data as Map<String, dynamic>;
       } else {
-        throw Exception(
-            'Registration failed with status: ${response.statusCode}');
+        throw Exception('Registration failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      // print("AuthRepository Registration Error: $e");
+      print("AuthRepository Registration Error: $e");
 
-      // Handle Dio errors specifically
-      if (e.toString().contains('DioException') ||
-          e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
         if (e.toString().contains('400')) {
           throw Exception('Invalid registration data');
         } else if (e.toString().contains('409')) {
@@ -124,26 +109,53 @@ class AuthRepository {
     }
   }
 
+  // دالة جديدة لتحديث الملف الشخصي مع الصورة
+  Future<Map<String, dynamic>> updateProfileWithImage(String userId, Map<String, dynamic> data, File? imageFile) async {
+    try {
+      print("AuthRepository: updateProfileWithImage for user $userId");
+
+      final response = await _apiProvider.updateProfileWithImage(userId, data, imageFile);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response.data as Map<String, dynamic>;
+      } else {
+        throw Exception('Profile update failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("AuthRepository updateProfileWithImage Error: $e");
+
+      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
+        if (e.toString().contains('400')) {
+          throw Exception('Invalid profile data');
+        } else if (e.toString().contains('401')) {
+          throw Exception('Unauthorized - Please login again');
+        } else if (e.toString().contains('404')) {
+          throw Exception('User not found');
+        } else if (e.toString().contains('500')) {
+          throw Exception('Server error - Please try again later');
+        } else {
+          throw Exception('Network error - Check your connection');
+        }
+      }
+
+      throw Exception('Profile update failed: ${e.toString()}');
+    }
+  }
+
   Future<void> forgotPassword(String email, String newPassword) async {
     try {
-      //  print("AuthRepository: Attempting forgot password for $email");
-
       final response = await _apiProvider.forgotPassword({
         'email': email,
         'newPassword': newPassword,
       });
 
-      //print("FORGOT PASSWORD RESPONSE: ${response.statusCode}");
-
       if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(
-            'Password reset failed with status: ${response.statusCode}');
+        throw Exception('Password reset failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      //print("AuthRepository Forgot Password Error: $e");
+      print("AuthRepository Forgot Password Error: $e");
 
-      if (e.toString().contains('DioException') ||
-          e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
         if (e.toString().contains('404')) {
           throw Exception('Email not found');
         } else if (e.toString().contains('400')) {
@@ -159,21 +171,15 @@ class AuthRepository {
 
   Future<void> deleteAccount(String userId) async {
     try {
-      //  print("AuthRepository: Attempting to delete account $userId");
-
       final response = await _apiProvider.deleteUser(userId);
 
-      // print("DELETE ACCOUNT RESPONSE: ${response.statusCode}");
-
       if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception(
-            'Account deletion failed with status: ${response.statusCode}');
+        throw Exception('Account deletion failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      // print("AuthRepository Delete Account Error: $e");
+      print("AuthRepository Delete Account Error: $e");
 
-      if (e.toString().contains('DioException') ||
-          e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
         if (e.toString().contains('404')) {
           throw Exception('Account not found');
         } else if (e.toString().contains('401')) {

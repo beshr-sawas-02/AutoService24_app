@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'dart:io';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/user_controller.dart';
+import '../../data/providers/api_provider.dart';
 import '../../utils/image_service.dart';
 import '../../utils/validators.dart';
 import '../../utils/helpers.dart';
@@ -37,9 +38,9 @@ class _EditProfileViewState extends State<EditProfileView> {
   void _loadCurrentUserData() {
     final user = authController.currentUser.value;
     if (user != null) {
-      _usernameController.text = user.username;
-      _emailController.text = user.email;
-      _phoneController.text = user.phone;
+      _usernameController.text = user.username ?? '';
+      _emailController.text = user.email ?? '';
+      _phoneController.text = user.phone ?? '';
       _currentImageUrl = user.profileImage;
     }
   }
@@ -177,20 +178,10 @@ class _EditProfileViewState extends State<EditProfileView> {
               // Save Button
               Obx(() => CustomButton(
                 text: 'Save Changes',
-                onPressed: (userController.isLoading.value || _isLoading) ? null : _saveProfile,
-                isLoading: userController.isLoading.value || _isLoading,
+                onPressed: (authController.isLoading.value || _isLoading) ? null : _saveProfile,
+                isLoading: authController.isLoading.value || _isLoading,
                 width: double.infinity,
               )),
-
-              SizedBox(height: 16),
-
-              // Change Password Button
-              CustomButton(
-                text: 'Change Password',
-                onPressed: _showChangePasswordDialog,
-                isOutlined: true,
-                width: double.infinity,
-              ),
 
               SizedBox(height: 20),
             ],
@@ -297,8 +288,12 @@ class _EditProfileViewState extends State<EditProfileView> {
         fit: BoxFit.cover,
       );
     } else if (_currentImageUrl != null && _currentImageUrl!.isNotEmpty) {
+      String imageUrl = _currentImageUrl!.startsWith('http')
+          ? _currentImageUrl!
+          : '${ApiProvider.baseUrl}${_currentImageUrl}';
+
       return Image.network(
-        _currentImageUrl!,
+        imageUrl,
         width: 120,
         height: 120,
         fit: BoxFit.cover,
@@ -332,14 +327,24 @@ class _EditProfileViewState extends State<EditProfileView> {
 
   Future<void> _pickImage() async {
     try {
+      print("_pickImage: Starting image selection...");
+
       final image = await ImageService.showImageSourceDialog();
       if (image != null) {
+        print("_pickImage: Image selected: ${image.path}");
+        print("_pickImage: File size: ${(image.lengthSync() / (1024 * 1024)).toStringAsFixed(2)} MB");
+
         setState(() {
           _selectedImage = image;
         });
+
+        Helpers.showSuccessSnackbar('Image selected successfully');
+      } else {
+        print("_pickImage: No image selected");
       }
     } catch (e) {
-      Helpers.showErrorSnackbar('Failed to select image: ${e.toString()}');
+      print("_pickImage error: $e");
+      Helpers.showErrorSnackbar('Failed to select image');
     }
   }
 
@@ -365,30 +370,18 @@ class _EditProfileViewState extends State<EditProfileView> {
         'phone': _phoneController.text.trim(),
       };
 
-      // Handle image upload
-      if (_selectedImage != null) {
-        // In a real app, you would upload the image to your server
-        // and get back a URL to store in the database
-        final base64Image = await ImageService.fileToBase64(_selectedImage!);
-        if (base64Image != null) {
-          updateData['profile_image'] = base64Image;
-        }
-      }
-
-      final success = await userController.updateProfile(user.id, updateData);
+      final success = await authController.updateProfileWithImage(
+          user.id,
+          updateData,
+          _selectedImage
+      );
 
       if (success) {
-        // Update the current user in auth controller
-        final updatedUser = user.copyWith(
-          username: _usernameController.text.trim(),
-          email: _emailController.text.trim(),
-          phone: _phoneController.text.trim(),
-          profileImage: _selectedImage?.path ?? _currentImageUrl,
-        );
-        authController.currentUser.value = updatedUser;
-
-        // Update storage
-        await StorageService.saveUserData(updatedUser.toJson());
+        // تحديث UI محلياً مباشرة
+        setState(() {
+          _currentImageUrl = authController.currentUser.value?.profileImage;
+          _selectedImage = null; // مسح الصورة المؤقتة
+        });
 
         Helpers.showSuccessSnackbar('Profile updated successfully');
         Get.back();
@@ -400,90 +393,6 @@ class _EditProfileViewState extends State<EditProfileView> {
         _isLoading = false;
       });
     }
-  }
-
-  void _showChangePasswordDialog() {
-    final _currentPasswordController = TextEditingController();
-    final _newPasswordController = TextEditingController();
-    final _confirmPasswordController = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
-
-    Get.dialog(
-      AlertDialog(
-        title: Text('Change Password'),
-        content: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: _currentPasswordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Current Password',
-                  prefixIcon: Icon(Icons.lock_outline),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter current password';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _newPasswordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'New Password',
-                  prefixIcon: Icon(Icons.lock),
-                ),
-                validator: Validators.validatePassword,
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _confirmPasswordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Confirm New Password',
-                  prefixIcon: Icon(Icons.lock_outline),
-                ),
-                validator: (value) => Validators.validateConfirmPassword(
-                  value,
-                  _newPasswordController.text,
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (_formKey.currentState!.validate()) {
-                Get.back();
-                // In a real app, you would verify current password and update
-                final success = await authController.forgotPassword(
-                  authController.userEmail,
-                  _newPasswordController.text,
-                );
-                if (success) {
-                  Helpers.showSuccessSnackbar('Password changed successfully');
-                }
-              }
-            },
-            child: Text('Change Password'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override

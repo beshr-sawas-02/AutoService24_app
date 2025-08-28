@@ -362,6 +362,9 @@ class UserProfileView extends StatelessWidget {
   }
 
   Widget _buildContactInformationCard(user) {
+    final email = user.email ?? 'Not provided';
+    final phone = user.phone ?? 'Not provided';
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(20),
@@ -413,7 +416,7 @@ class UserProfileView extends StatelessWidget {
                   ),
                   SizedBox(height: 2),
                   Text(
-                    user.email,
+                    email,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -450,11 +453,11 @@ class UserProfileView extends StatelessWidget {
                   ),
                   SizedBox(height: 2),
                   Text(
-                    user.phone.isNotEmpty ? user.phone : 'Not provided',
+                    phone,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: user.phone.isNotEmpty ? Colors.black87 : Colors.grey[500],
+                      color: phone != 'Not provided' ? Colors.black87 : Colors.grey[500],
                     ),
                   ),
                 ],
@@ -465,6 +468,7 @@ class UserProfileView extends StatelessWidget {
       ),
     );
   }
+
 
   Widget _buildProfileOptions() {
     final user = authController.currentUser.value!;

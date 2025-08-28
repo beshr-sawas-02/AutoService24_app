@@ -50,10 +50,13 @@ class AppModule {
         AuthController(Get.find<AuthRepository>()),
         permanent: true
     );
+
+    // تصحيح UserController - يحتاج UserRepository و AuthRepository
     Get.put<UserController>(
-        UserController(Get.find<UserRepository>()),
+        UserController(Get.find<UserRepository>(), Get.find<AuthRepository>()),
         permanent: true
     );
+
     Get.put<WorkshopController>(
         WorkshopController(Get.find<WorkshopRepository>()),
         permanent: true
@@ -66,5 +69,29 @@ class AppModule {
         ChatController(Get.find<ChatRepository>()),
         permanent: true
     );
+
+    print("🚀 AppModule: All dependencies initialized successfully");
+  }
+
+  // دالة للتحقق من أن كل التبعيات تم تحميلها بنجاح
+  static void verifyDependencies() {
+    try {
+      Get.find<Dio>();
+      Get.find<ApiProvider>();
+      Get.find<AuthRepository>();
+      Get.find<UserRepository>();
+      Get.find<WorkshopRepository>();
+      Get.find<ServiceRepository>();
+      Get.find<ChatRepository>();
+      Get.find<AuthController>();
+      Get.find<UserController>();
+      Get.find<WorkshopController>();
+      Get.find<ServiceController>();
+      Get.find<ChatController>();
+
+      print("✅ AppModule: All dependencies verified successfully");
+    } catch (e) {
+      print("❌ AppModule: Dependency verification failed: $e");
+    }
   }
 }

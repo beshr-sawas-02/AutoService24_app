@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
+import 'dart:io';
 import '../../utils/storage_service.dart';
 
 class ApiProvider {
-  static const String baseUrl = 'http://192.168.201.167:8000'; // Change to your backend URL
+  static const String baseUrl = 'http://192.168.201.167:8000';
   late Dio _dio;
 
   ApiProvider(Dio dio) {
@@ -14,7 +15,6 @@ class ApiProvider {
     // Add interceptors
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        // Add authorization header if token exists
         final token = await StorageService.getToken();
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
@@ -23,7 +23,6 @@ class ApiProvider {
       },
       onError: (error, handler) {
         if (error.response?.statusCode == 401) {
-          // Handle unauthorized access
           StorageService.clearAll();
         }
         handler.next(error);
@@ -40,13 +39,12 @@ class ApiProvider {
     return await _dio.post('/auth/signup', data: data);
   }
 
-  // إضافة دالة Social Login
   Future<Response> socialLogin(Map<String, dynamic> data) async {
     try {
       print("ApiProvider: socialLogin called with provider: ${data['provider']}");
 
       final response = await _dio.post(
-        '/auth/social-login', // تأكد من أن هذا المسار صحيح في NestJS backend
+        '/auth/social-login',
         data: data,
         options: Options(
           headers: {
@@ -69,6 +67,56 @@ class ApiProvider {
 
   Future<Response> forgotPassword(Map<String, dynamic> data) async {
     return await _dio.post('/auth/forgot-password', data: data);
+  }
+
+  // دالة جديدة لتحديث الملف الشخصي مع رفع الصورة
+  Future<Response> updateProfileWithImage(String userId, Map<String, dynamic> data, File? imageFile) async {
+    try {
+      print("ApiProvider: updateProfileWithImage called for user $userId");
+
+      FormData formData = FormData();
+
+      // إضافة البيانات النصية
+      data.forEach((key, value) {
+        if (value != null) {
+          formData.fields.add(MapEntry(key, value.toString()));
+        }
+      });
+
+      // إضافة الصورة إذا كانت موجودة
+      if (imageFile != null) {
+        String fileName = imageFile.path.split('/').last;
+        print("ApiProvider: Adding image file: $fileName");
+
+        formData.files.add(
+          MapEntry(
+            'images', // هذا يطابق اسم الحقل في backend controller
+            await MultipartFile.fromFile(
+              imageFile.path,
+              filename: fileName,
+            ),
+          ),
+        );
+      }
+
+      print("ApiProvider: Sending PUT request to /auth/edit/$userId");
+
+      final response = await _dio.put(
+        '/auth/edit/$userId',
+        data: formData,
+        options: Options(
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+
+      print("ApiProvider: updateProfileWithImage response status: ${response.statusCode}");
+      return response;
+    } catch (e) {
+      print("ApiProvider updateProfileWithImage Error: $e");
+      rethrow;
+    }
   }
 
   // User endpoints
@@ -112,6 +160,82 @@ class ApiProvider {
   // Service endpoints
   Future<Response> createService(Map<String, dynamic> data) async {
     return await _dio.post('/services/createservice', data: data);
+  }
+
+  // دالة جديدة لإنشاء خدمة مع صور
+  Future<Response> createServiceWithImages(Map<String, dynamic> data, List<File>? imageFiles) async {
+    try {
+      FormData formData = FormData();
+
+      // إضافة البيانات النصية
+      data.forEach((key, value) {
+        if (value != null) {
+          formData.fields.add(MapEntry(key, value.toString()));
+        }
+      });
+
+      // إضافة الصور إذا كانت موجودة
+      if (imageFiles != null && imageFiles.isNotEmpty) {
+        for (File imageFile in imageFiles) {
+          String fileName = imageFile.path.split('/').last;
+          formData.files.add(
+            MapEntry(
+              'images',
+              await MultipartFile.fromFile(
+                imageFile.path,
+                filename: fileName,
+              ),
+            ),
+          );
+        }
+      }
+
+      return await _dio.post(
+        '/services/createservice',
+        data: formData,
+        options: Options(
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+    } catch (e) {
+      print("ApiProvider createServiceWithImages Error: $e");
+      rethrow;
+    }
+  }
+
+  // دالة لرفع صور إضافية لخدمة موجودة
+  Future<Response> uploadServiceImages(String serviceId, List<File> imageFiles) async {
+    try {
+      FormData formData = FormData();
+
+      for (File imageFile in imageFiles) {
+        String fileName = imageFile.path.split('/').last;
+        formData.files.add(
+          MapEntry(
+            'images',
+            await MultipartFile.fromFile(
+              imageFile.path,
+              filename: fileName,
+            ),
+          ),
+        );
+      }
+
+      return await _dio.post(
+        '/services/$serviceId/upload-images',
+        data: formData,
+        options: Options(
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+    } catch (e) {
+      print("ApiProvider uploadServiceImages Error: $e");
+      rethrow;
+    }
   }
 
   Future<Response> getServices({String? serviceType}) async {
@@ -179,6 +303,47 @@ class ApiProvider {
   // Message endpoints
   Future<Response> sendMessage(Map<String, dynamic> data) async {
     return await _dio.post('/messages/sendmessage', data: data);
+  }
+
+  // دالة جديدة لإرسال رسالة مع صورة
+  Future<Response> sendMessageWithImage(Map<String, dynamic> data, File? imageFile) async {
+    try {
+      FormData formData = FormData();
+
+      // إضافة البيانات النصية
+      data.forEach((key, value) {
+        if (value != null) {
+          formData.fields.add(MapEntry(key, value.toString()));
+        }
+      });
+
+      // إضافة الصورة إذا كانت موجودة
+      if (imageFile != null) {
+        String fileName = imageFile.path.split('/').last;
+        formData.files.add(
+          MapEntry(
+            'images',
+            await MultipartFile.fromFile(
+              imageFile.path,
+              filename: fileName,
+            ),
+          ),
+        );
+      }
+
+      return await _dio.post(
+        '/messages/sendmessage',
+        data: formData,
+        options: Options(
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+    } catch (e) {
+      print("ApiProvider sendMessageWithImage Error: $e");
+      rethrow;
+    }
   }
 
   Future<Response> getChatMessages(String chatId) async {

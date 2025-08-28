@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'dart:io';
 import '../data/repositories/service_repository.dart';
 import '../data/models/service_model.dart';
 import '../data/models/saved_service_model.dart';
@@ -132,6 +133,7 @@ class ServiceController extends GetxController {
     }
   }
 
+  // إنشاء خدمة عادية بدون صور
   Future<bool> createService(Map<String, dynamic> serviceData) async {
     try {
       isLoading.value = true;
@@ -143,6 +145,53 @@ class ServiceController extends GetxController {
       return true;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // إنشاء خدمة مع صور - دالة جديدة
+  Future<bool> createServiceWithImages(Map<String, dynamic> serviceData, List<File>? imageFiles) async {
+    try {
+      isLoading.value = true;
+      print("ServiceController: createServiceWithImages() called");
+
+      final newService = await _serviceRepository.createServiceWithImages(serviceData, imageFiles);
+      ownerServices.add(newService);
+
+      Helpers.showSuccessSnackbar('Service created successfully');
+      return true;
+    } catch (e) {
+      print("ServiceController: createServiceWithImages error: $e");
+      String errorMessage = _extractErrorMessage(e.toString());
+      Helpers.showErrorSnackbar(errorMessage);
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // رفع صور إضافية لخدمة موجودة - دالة جديدة
+  Future<bool> uploadServiceImages(String serviceId, List<File> imageFiles) async {
+    try {
+      isLoading.value = true;
+      print("ServiceController: uploadServiceImages() for service $serviceId");
+
+      final response = await _serviceRepository.uploadServiceImages(serviceId, imageFiles);
+
+      // تحديث الخدمة في القائمة المحلية
+      final index = ownerServices.indexWhere((s) => s.id == serviceId);
+      if (index != -1 && response.containsKey('service')) {
+        ownerServices[index] = ServiceModel.fromJson(response['service']);
+      }
+
+      Helpers.showSuccessSnackbar('Images uploaded successfully');
+      return true;
+    } catch (e) {
+      print("ServiceController: uploadServiceImages error: $e");
+      String errorMessage = _extractErrorMessage(e.toString());
+      Helpers.showErrorSnackbar(errorMessage);
       return false;
     } finally {
       isLoading.value = false;
@@ -171,6 +220,8 @@ class ServiceController extends GetxController {
 
   Future<bool> deleteService(String id) async {
     try {
+      isLoading.value = true;
+
       await _serviceRepository.deleteService(id);
 
       ownerServices.removeWhere((service) => service.id == id);
@@ -179,6 +230,20 @@ class ServiceController extends GetxController {
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
       return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  String _extractErrorMessage(String error) {
+    if (error.contains('Exception:')) {
+      return error.split('Exception: ').last;
+    } else if (error.contains('Network error')) {
+      return 'Network error - Check your internet connection';
+    } else if (error.contains('Server error')) {
+      return 'Server error - Please try again later';
+    } else {
+      return 'An error occurred - Please try again';
     }
   }
 }

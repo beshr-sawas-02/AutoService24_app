@@ -53,11 +53,9 @@ class _AddServiceViewState extends State<AddServiceView> {
               ),
               SizedBox(height: 24),
 
-              // Workshop Selection
               _buildWorkshopDropdown(),
               SizedBox(height: 16),
 
-              // Service Title
               CustomTextField(
                 controller: _titleController,
                 labelText: 'Service Title',
@@ -66,11 +64,9 @@ class _AddServiceViewState extends State<AddServiceView> {
               ),
               SizedBox(height: 16),
 
-              // Service Type
               _buildServiceTypeDropdown(),
               SizedBox(height: 16),
 
-              // Description
               CustomTextField(
                 controller: _descriptionController,
                 labelText: 'Description',
@@ -80,7 +76,6 @@ class _AddServiceViewState extends State<AddServiceView> {
               ),
               SizedBox(height: 16),
 
-              // Price
               CustomTextField(
                 controller: _priceController,
                 labelText: 'Price (\$)',
@@ -90,12 +85,9 @@ class _AddServiceViewState extends State<AddServiceView> {
               ),
               SizedBox(height: 24),
 
-              // Images Section
               _buildImagesSection(),
-
               SizedBox(height: 32),
 
-              // Create Button
               Obx(() => CustomButton(
                 text: 'Create Service',
                 onPressed: serviceController.isLoading.value ? null : _createService,
@@ -207,8 +199,6 @@ class _AddServiceViewState extends State<AddServiceView> {
           ),
         ),
         SizedBox(height: 12),
-
-        // Add Image Button
         Container(
           width: double.infinity,
           height: 120,
@@ -239,8 +229,6 @@ class _AddServiceViewState extends State<AddServiceView> {
             ),
           ),
         ),
-
-        // Selected Images
         if (_selectedImages.isNotEmpty) ...[
           SizedBox(height: 16),
           Container(
@@ -314,35 +302,66 @@ class _AddServiceViewState extends State<AddServiceView> {
   }
 
   Future<void> _createService() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     if (_selectedWorkshopId == null) {
-      Get.snackbar('Error', 'Please select a workshop');
+      Get.snackbar(
+        'Error',
+        'Please select a workshop',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        margin: EdgeInsets.all(16),
+        duration: Duration(seconds: 3),
+      );
       return;
     }
 
-    // Convert images to base64 or upload them
-    List<String> imageUrls = [];
-    for (File image in _selectedImages) {
-      // In a real app, you would upload these to your server
-      imageUrls.add(image.path);
-    }
+    List<String> imageUrls = _selectedImages.map((e) => e.path).toList();
 
     final serviceData = {
       'workshop_id': _selectedWorkshopId,
       'title': _titleController.text.trim(),
       'description': _descriptionController.text.trim(),
       'price': double.parse(_priceController.text),
-      'service_type': _selectedServiceType.name,
+      'service_type': _selectedServiceType.displayName,
       'images': imageUrls,
     };
 
     final success = await serviceController.createService(serviceData);
 
     if (success) {
-      Get.back();
+      Get.snackbar(
+        'Success',
+        'Service created successfully!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        margin: EdgeInsets.all(16),
+        duration: Duration(seconds: 3),
+      );
+
+      // إعادة تعيين الحقول
+      _formKey.currentState!.reset();
+      _titleController.clear();
+      _descriptionController.clear();
+      _priceController.clear();
+      setState(() {
+        _selectedServiceType = ServiceType.CHANGE_OIL;
+        _selectedWorkshopId = null;
+        _selectedImages.clear();
+      });
+
+    } else {
+      Get.snackbar(
+        'Error',
+        'Failed to create service',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        margin: EdgeInsets.all(16),
+        duration: Duration(seconds: 3),
+      );
     }
   }
 

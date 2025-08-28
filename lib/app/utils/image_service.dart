@@ -1,8 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
+// utils/image_service.dart
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
+import 'dart:io';
 import 'helpers.dart';
 
 class ImageService {
@@ -83,44 +84,64 @@ class ImageService {
     }
   }
 
-  // Show image source selection dialog
+  // Show image source selection dialog - النسخة المحسّنة والمبسطة
   static Future<File?> showImageSourceDialog() async {
-    File? selectedImage;
-
-    await Get.dialog(
-      AlertDialog(
-        title: Text('Select Image Source'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: Icon(Icons.photo_library, color: Colors.blue),
-              title: Text('Gallery'),
-              onTap: () async {
-                Get.back();
-                selectedImage = await pickImageFromGallery();
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.camera_alt, color: Colors.green),
-              title: Text('Camera'),
-              onTap: () async {
-                Get.back();
-                selectedImage = await pickImageFromCamera();
-              },
+    try {
+      final result = await Get.dialog<ImageSource>(
+        AlertDialog(
+          title: Text('Select Image Source'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.photo_library, color: Colors.orange),
+                title: Text('Gallery'),
+                subtitle: Text('Choose from existing photos'),
+                onTap: () => Get.back(result: ImageSource.gallery),
+              ),
+              Divider(),
+              ListTile(
+                leading: Icon(Icons.camera_alt, color: Colors.orange),
+                title: Text('Camera'),
+                subtitle: Text('Take a new photo'),
+                onTap: () => Get.back(result: ImageSource.camera),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('Cancel'),
-          ),
-        ],
-      ),
-    );
+      );
 
-    return selectedImage;
+      if (result != null) {
+        print("ImageService: User selected ${result.name}");
+
+        final XFile? pickedFile = await _picker.pickImage(
+          source: result,
+          maxWidth: 800,
+          maxHeight: 800,
+          imageQuality: 80,
+        );
+
+        if (pickedFile != null) {
+          print("ImageService: Image picked successfully: ${pickedFile.path}");
+          return File(pickedFile.path);
+        } else {
+          print("ImageService: No image was picked");
+        }
+      } else {
+        print("ImageService: User cancelled dialog");
+      }
+    } catch (e) {
+      print("ImageService showImageSourceDialog error: $e");
+      Helpers.showErrorSnackbar('Failed to pick image: ${e.toString()}');
+    }
+
+    return null;
   }
 
   // Validate image file
@@ -210,5 +231,37 @@ class ImageService {
       return null;
     }
   }
-}
 
+  // دوال إضافية مفيدة:
+
+  // التحقق من صحة الصورة
+  static bool isValidImageFile(File file) {
+    final validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+    final extension = file.path.split('.').last.toLowerCase();
+    return validExtensions.contains(extension);
+  }
+
+  // حجم الملف بالـ MB
+  static double getFileSizeInMB(File file) {
+    final bytes = file.lengthSync();
+    return bytes / (1024 * 1024);
+  }
+
+  // التحقق من حجم الملف
+  static bool isValidFileSize(File file, {double maxSizeMB = 5.0}) {
+    return getFileSizeInMB(file) <= maxSizeMB;
+  }
+
+  // التحقق الشامل
+  static String? validateImage(File file) {
+    if (!isValidImageFile(file)) {
+      return 'Only JPG, JPEG, PNG, and GIF files are allowed';
+    }
+
+    if (!isValidFileSize(file)) {
+      return 'Image size must be less than 5MB';
+    }
+
+    return null; // الصورة صحيحة
+  }
+}

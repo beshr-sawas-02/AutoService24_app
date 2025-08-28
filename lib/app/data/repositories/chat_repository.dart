@@ -1,6 +1,7 @@
 import '../providers/api_provider.dart';
 import '../models/chat_model.dart';
 import '../models/message_model.dart';
+import 'dart:io';
 
 class ChatRepository {
   final ApiProvider _apiProvider;
@@ -51,6 +52,24 @@ class ChatRepository {
       return MessageModel.fromJson(response.data);
     } catch (e) {
       throw Exception('Failed to send message: ${e.toString()}');
+    }
+  }
+
+  // دالة جديدة لإرسال رسالة مع صورة
+  Future<MessageModel> sendMessageWithImage(Map<String, dynamic> messageData, File? imageFile) async {
+    try {
+      print("ChatRepository: sendMessageWithImage called");
+
+      final response = await _apiProvider.sendMessageWithImage(messageData, imageFile);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return MessageModel.fromJson(response.data);
+      } else {
+        throw Exception('Message sending failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("ChatRepository sendMessageWithImage Error: $e");
+      rethrow;
     }
   }
 

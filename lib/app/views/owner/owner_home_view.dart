@@ -21,8 +21,13 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      workshopController.loadOwnerWorkshops();
-      serviceController.loadOwnerServices();
+      final userId = authController.currentUser.value?.id;
+      if (userId != null) {
+        workshopController.loadOwnerWorkshops(userId);  // تمرير userId
+        serviceController.loadOwnerServices();
+      } else {
+        print("OwnerHomeView: User ID is null, cannot load owner workshops");
+      }
     });
   }
 

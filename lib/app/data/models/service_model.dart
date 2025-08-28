@@ -62,17 +62,16 @@ class ServiceModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
+    final Map<String, dynamic> data = {
       'workshop_id': workshopId,
       'title': title,
       'description': description,
       'price': price,
-      'images': images,
       'service_type': serviceType.name,
-      'createdAt': createdAt?.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
     };
+
+    if (images.isNotEmpty) data['images'] = images;
+    return data;
   }
 
   ServiceModel copyWith({

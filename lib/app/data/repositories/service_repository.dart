@@ -1,6 +1,7 @@
 import '../providers/api_provider.dart';
 import '../models/service_model.dart';
 import '../models/saved_service_model.dart';
+import 'dart:io';
 
 class ServiceRepository {
   final ApiProvider _apiProvider;
@@ -51,6 +52,42 @@ class ServiceRepository {
       return ServiceModel.fromJson(response.data);
     } catch (e) {
       throw Exception('Failed to create service: ${e.toString()}');
+    }
+  }
+
+  // دالة جديدة لإنشاء خدمة مع صور
+  Future<ServiceModel> createServiceWithImages(Map<String, dynamic> serviceData, List<File>? imageFiles) async {
+    try {
+      print("ServiceRepository: createServiceWithImages called");
+
+      final response = await _apiProvider.createServiceWithImages(serviceData, imageFiles);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return ServiceModel.fromJson(response.data);
+      } else {
+        throw Exception('Service creation failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("ServiceRepository createServiceWithImages Error: $e");
+      rethrow;
+    }
+  }
+
+  // دالة جديدة لرفع صور إضافية لخدمة موجودة
+  Future<Map<String, dynamic>> uploadServiceImages(String serviceId, List<File> imageFiles) async {
+    try {
+      print("ServiceRepository: uploadServiceImages called for service $serviceId");
+
+      final response = await _apiProvider.uploadServiceImages(serviceId, imageFiles);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response.data as Map<String, dynamic>;
+      } else {
+        throw Exception('Image upload failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("ServiceRepository uploadServiceImages Error: $e");
+      rethrow;
     }
   }
 
