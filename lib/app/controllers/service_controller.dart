@@ -5,6 +5,7 @@ import '../data/models/service_model.dart';
 import '../data/models/saved_service_model.dart';
 import '../utils/error_handler.dart';
 import '../utils/helpers.dart';
+import '../utils/storage_service.dart';
 
 class ServiceController extends GetxController {
   final ServiceRepository _serviceRepository;
@@ -22,17 +23,22 @@ class ServiceController extends GetxController {
   void onInit() {
     super.onInit();
     loadServices();
+    loadSavedServices();
   }
 
   Future<void> loadServices({String? serviceType}) async {
     try {
       isLoading.value = true;
-
-      final serviceList = await _serviceRepository.getAllServices(serviceType: serviceType);
+      final serviceList =
+          await _serviceRepository.getAllServices(serviceType: serviceType);
       services.value = serviceList;
       _applyFilters();
     } catch (e) {
-      ErrorHandler.handleAndShowError(e);
+      // عرض رسالة خطأ مبسطة للمستخدم
+      Helpers.showErrorSnackbar('Unable to load services. Please try again.');
+      // مسح الخدمات الحالية عند حدوث خطأ
+      services.clear();
+      filteredServices.clear();
     } finally {
       isLoading.value = false;
     }
@@ -63,14 +69,22 @@ class ServiceController extends GetxController {
 
   Future<void> loadSavedServices() async {
     try {
-      isLoading.value = true;
+      print("ServiceController: Loading saved services...");
 
+      // التحقق من وجود مستخدم مسجل - لكن لا نمحو البيانات فوراً
+      final currentUserId = await StorageService.getUserId();
+      if (currentUserId == null || currentUserId.isEmpty) {
+        return;
+      }
       final savedList = await _serviceRepository.getSavedServices();
       savedServices.value = savedList;
+      // طباعة تفاصيل الخدمات المحفوظة للتأكد
+      for (int i = 0; i < savedList.length; i++) {
+        final saved = savedList[i];
+      }
     } catch (e) {
-      ErrorHandler.handleAndShowError(e);
-    } finally {
-      isLoading.value = false;
+      // لا نمحو savedServices في حالة الخطأ أيضاً
+      // savedServices.clear();
     }
   }
 
@@ -105,16 +119,46 @@ class ServiceController extends GetxController {
     filteredServices.value = services.toList();
   }
 
+  // تحقق من كون الخدمة محفوظة أم لا
+  bool isServiceSaved(String serviceId) {
+    return savedServices.any((saved) => saved.serviceId == serviceId);
+  }
+
+  // الحصول على معرف الخدمة المحفوظة
+  String? getSavedServiceId(String serviceId) {
+    final saved =
+        savedServices.firstWhereOrNull((s) => s.serviceId == serviceId);
+    return saved?.id;
+  }
+
   Future<bool> saveService(String serviceId, String userId) async {
     try {
-      await _serviceRepository.saveService({
+      // التحقق من أن الخدمة ليست محفوظة بالفعل محلياً
+      if (isServiceSaved(serviceId)) {
+        Helpers.showInfoSnackbar('Service is already saved');
+        return true;
+      }
+
+      final savedService = await _serviceRepository.saveService({
         'user_id': userId,
         'service_id': serviceId,
       });
 
+      // إضافة الخدمة المحفوظة للقائمة المحلية
+      savedServices.add(savedService);
       Helpers.showSuccessSnackbar('Service saved successfully');
       return true;
     } catch (e) {
+      // فحص إذا كانت المشكلة أن الخدمة محفوظة بالفعل
+      if (e.toString().contains('already saved') ||
+          e.toString().contains('already exists') ||
+          e.toString().contains('duplicate')) {
+        Helpers.showInfoSnackbar('Service is already in your saved list');
+        // إعادة تحميل البيانات للتأكد من التزامن
+        loadSavedServices();
+        return true;
+      }
+
       ErrorHandler.handleAndShowError(e);
       return false;
     }
@@ -124,6 +168,7 @@ class ServiceController extends GetxController {
     try {
       await _serviceRepository.unsaveService(savedServiceId);
 
+      // إزالة الخدمة من القائمة المحلية
       savedServices.removeWhere((service) => service.id == savedServiceId);
       Helpers.showSuccessSnackbar('Service removed from saved');
       return true;
@@ -131,6 +176,30 @@ class ServiceController extends GetxController {
       ErrorHandler.handleAndShowError(e);
       return false;
     }
+  }
+
+  // دالة للتبديل بين حفظ وإلغاء الحفظ
+  Future<bool> toggleSaveService(String serviceId, String userId) async {
+    if (isServiceSaved(serviceId)) {
+      // الخدمة محفوظة، قم بإلغاء الحفظ
+      final savedServiceId = getSavedServiceId(serviceId);
+      if (savedServiceId != null) {
+        return await unsaveService(savedServiceId);
+      }
+      return false;
+    } else {
+      // الخدمة غير محفوظة، قم بحفظها
+      return await saveService(serviceId, userId);
+    }
+  }
+
+  // دالة لتنظيف جميع البيانات (للاستخدام من AuthController)
+  void clearAllData() {
+    services.clear();
+    ownerServices.clear();
+    savedServices.clear();
+    filteredServices.clear();
+    selectedType.value = null;
   }
 
   // إنشاء خدمة عادية بدون صور
@@ -152,18 +221,18 @@ class ServiceController extends GetxController {
   }
 
   // إنشاء خدمة مع صور - دالة جديدة
-  Future<bool> createServiceWithImages(Map<String, dynamic> serviceData, List<File>? imageFiles) async {
+  Future<bool> createServiceWithImages(
+      Map<String, dynamic> serviceData, List<File>? imageFiles) async {
     try {
       isLoading.value = true;
-      print("ServiceController: createServiceWithImages() called");
 
-      final newService = await _serviceRepository.createServiceWithImages(serviceData, imageFiles);
+      final newService = await _serviceRepository.createServiceWithImages(
+          serviceData, imageFiles);
       ownerServices.add(newService);
 
       Helpers.showSuccessSnackbar('Service created successfully');
       return true;
     } catch (e) {
-      print("ServiceController: createServiceWithImages error: $e");
       String errorMessage = _extractErrorMessage(e.toString());
       Helpers.showErrorSnackbar(errorMessage);
       return false;
@@ -173,12 +242,13 @@ class ServiceController extends GetxController {
   }
 
   // رفع صور إضافية لخدمة موجودة - دالة جديدة
-  Future<bool> uploadServiceImages(String serviceId, List<File> imageFiles) async {
+  Future<bool> uploadServiceImages(
+      String serviceId, List<File> imageFiles) async {
     try {
       isLoading.value = true;
-      print("ServiceController: uploadServiceImages() for service $serviceId");
 
-      final response = await _serviceRepository.uploadServiceImages(serviceId, imageFiles);
+      final response =
+          await _serviceRepository.uploadServiceImages(serviceId, imageFiles);
 
       // تحديث الخدمة في القائمة المحلية
       final index = ownerServices.indexWhere((s) => s.id == serviceId);
@@ -189,7 +259,6 @@ class ServiceController extends GetxController {
       Helpers.showSuccessSnackbar('Images uploaded successfully');
       return true;
     } catch (e) {
-      print("ServiceController: uploadServiceImages error: $e");
       String errorMessage = _extractErrorMessage(e.toString());
       Helpers.showErrorSnackbar(errorMessage);
       return false;
@@ -198,11 +267,13 @@ class ServiceController extends GetxController {
     }
   }
 
-  Future<bool> updateService(String id, Map<String, dynamic> serviceData) async {
+  Future<bool> updateService(
+      String id, Map<String, dynamic> serviceData) async {
     try {
       isLoading.value = true;
 
-      final updatedService = await _serviceRepository.updateService(id, serviceData);
+      final updatedService =
+          await _serviceRepository.updateService(id, serviceData);
       final index = ownerServices.indexWhere((s) => s.id == id);
       if (index != -1) {
         ownerServices[index] = updatedService;
@@ -232,6 +303,62 @@ class ServiceController extends GetxController {
       return false;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  // دالة debug محسنة
+  Future<void> debugSavedServices() async {
+    try {
+      print("=== DEBUG SAVED SERVICES ===");
+
+      // طباعة معلومات المستخدم الحالي
+      await StorageService.debugPrintStoredData();
+
+      // الحصول على البيانات الخام من API
+      final debugData = await _serviceRepository.debugGetSavedServicesRaw();
+
+      print("Debug Data: $debugData");
+      print("Current User ID: ${debugData['currentUserId']}");
+      print("Raw API Response: ${debugData['rawResponse']}");
+      print("Response Type: ${debugData['responseType']}");
+
+      if (debugData['rawResponse'] is List) {
+        final List<dynamic> rawList = debugData['rawResponse'];
+        print("Total items from API: ${rawList.length}");
+
+        for (int i = 0; i < rawList.length; i++) {
+          final item = rawList[i];
+          print("Raw item $i: $item");
+
+          // فحص جميع الحقول المحتملة للمستخدم
+          final possibleUserFields = [
+            'user_id',
+            'userId',
+            'user',
+            'owner_id',
+            'ownerId',
+          ];
+
+          print("User fields in item $i:");
+          for (String field in possibleUserFields) {
+            if (item.containsKey(field)) {
+              print("  $field: ${item[field]} (${item[field].runtimeType})");
+            }
+          }
+          print("---");
+        }
+      }
+
+      // طباعة البيانات الحالية في Controller
+      print("Current savedServices in controller: ${savedServices.length}");
+      for (int i = 0; i < savedServices.length; i++) {
+        final saved = savedServices[i];
+        print("Controller service $i: ID=${saved.id}, UserID=${saved.userId}");
+      }
+
+      print("=== END DEBUG ===");
+    } catch (e) {
+      print("Debug error: $e");
     }
   }
 

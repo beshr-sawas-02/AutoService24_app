@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
-import '../../controllers/service_controller.dart';
 import '../../data/models/service_model.dart';
 import '../../routes/app_routes.dart';
-import '../../widgets/service_card.dart';
 import '../../widgets/guest_banner.dart';
 
 class UserHomeView extends StatefulWidget {
@@ -15,15 +13,78 @@ class UserHomeView extends StatefulWidget {
 class _UserHomeViewState extends State<UserHomeView> {
   int _currentIndex = 0;
   final AuthController authController = Get.find<AuthController>();
-  final ServiceController serviceController = Get.find<ServiceController>();
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      serviceController.loadServices();
-    });
-  }
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
+
+  final List<Map<String, dynamic>> categories = [
+    {
+      'title': 'Vehicle\nInspection',
+      'type': ServiceType.VEHICLE_INSPECTION,
+      'color': Colors.orange,
+      'image': 'assets/images/',
+    },
+    {
+      'title': 'Change Oil',
+      'type': ServiceType.CHANGE_OIL,
+      'color': Colors.blue,
+      'image': 'assets/images/oil_change.jpg',
+    },
+    {
+      'title': 'Change Tires',
+      'type': ServiceType.CHANGE_TIRES,
+      'color': Colors.grey,
+      'image': 'assets/images/change_tires.jpg',
+    },
+    {
+      'title': 'Remove & Install\nTires',
+      'type': ServiceType.REMOVE_INSTALL_TIRES,
+      'color': Colors.purple,
+      'image': 'assets/images/remove.jpg',
+    },
+    {
+      'title': 'Cleaning',
+      'type': ServiceType.CLEANING,
+      'color': Colors.green,
+      'image': 'assets/images/',
+    },
+    {
+      'title': 'Diagnostic Test',
+      'type': ServiceType.DIAGNOSTIC_TEST,
+      'color': Colors.red,
+      'image': 'assets/images/',
+    },
+    {
+      'title': 'Pre-TÜV Check',
+      'type': ServiceType.PRE_TUV_CHECK,
+      'color': Colors.teal,
+      'image': 'assets/images/',
+    },
+    {
+      'title': 'Balance Tires',
+      'type': ServiceType.BALANCE_TIRES,
+      'color': Colors.indigo,
+      'image': 'assets/images/',
+    },
+    {
+      'title': 'Wheel\nAlignment',
+      'type': ServiceType.WHEEL_ALIGNMENT,
+      'color': Colors.deepPurple,
+      'image': 'assets/images/',
+    },
+    {
+      'title': 'Polish',
+      'type': ServiceType.POLISH,
+      'color': Colors.amber,
+      'image': 'assets/images/',
+    },
+    {
+      'title': 'Change Brake\nFluid',
+      'type': ServiceType.CHANGE_BRAKE_FLUID,
+      'color': Colors.brown,
+      'image': 'assets/images/',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +94,7 @@ class _UserHomeViewState extends State<UserHomeView> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
-          'CarServiceHub',
+          'Auto Services',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 24,
@@ -45,11 +106,8 @@ class _UserHomeViewState extends State<UserHomeView> {
           IconButton(
             icon: Icon(Icons.message, color: Colors.black54),
             onPressed: () {
-              if (authController.isGuest) {
-                _showGuestDialog();
-              } else {
-                Get.toNamed(AppRoutes.chatList);
-              }
+              // السماح للمستضيف بالوصول لصفحة Chat
+              Get.toNamed(AppRoutes.chatList);
             },
           ),
           Obx(() {
@@ -71,11 +129,7 @@ class _UserHomeViewState extends State<UserHomeView> {
         backgroundColor: Colors.white,
         elevation: 8,
         onTap: (index) {
-          if (authController.isGuest && index != 0) {
-            _showGuestDialog();
-            return;
-          }
-
+          // إزالة التحقق من كون المستخدم مستضيف - السماح بالوصول لجميع الصفحات
           if (index == 2) {
             Get.toNamed(AppRoutes.userProfile);
             return;
@@ -113,6 +167,12 @@ class _UserHomeViewState extends State<UserHomeView> {
   }
 
   Widget _buildHomeContent() {
+    // فلترة حسب البحث
+    final filteredCategories = categories.where((cat) {
+      final title = (cat['title'] as String).toLowerCase();
+      return title.contains(_searchQuery.toLowerCase());
+    }).toList();
+
     return Column(
       children: [
         Obx(() => authController.isGuest ? GuestBanner() : SizedBox.shrink()),
@@ -122,7 +182,7 @@ class _UserHomeViewState extends State<UserHomeView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //_buildSearchBar(),
+                _buildSearchBar(),
                 const SizedBox(height: 24),
                 const Text(
                   'Categories',
@@ -133,30 +193,7 @@ class _UserHomeViewState extends State<UserHomeView> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                _buildServiceCategories(),
-                const SizedBox(height: 24),
-                Obx(() {
-                  if (serviceController.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: serviceController.services.length,
-                    itemBuilder: (context, index) {
-                      final service = serviceController.services[index];
-                      return ServiceCard(
-                        service: service,
-                        onTap: () {
-                          Get.toNamed(
-                            AppRoutes.serviceDetails,
-                            arguments: service,
-                          );
-                        },
-                      );
-                    },
-                  );
-                }),
+                _buildServiceCategories(filteredCategories),
               ],
             ),
           ),
@@ -165,109 +202,43 @@ class _UserHomeViewState extends State<UserHomeView> {
     );
   }
 
-  // Widget _buildSearchBar() {
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       color: Colors.white,
-  //       borderRadius: BorderRadius.circular(12),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.black.withOpacity(0.05),
-  //           blurRadius: 10,
-  //           offset: Offset(0, 2),
-  //         ),
-  //       ],
-  //     ),
-  //     child: TextField(
-  //       decoration: InputDecoration(
-  //         hintText: 'Search services...',
-  //         hintStyle: TextStyle(color: Colors.grey[500]),
-  //         prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
-  //         border: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(12),
-  //           borderSide: BorderSide.none,
-  //         ),
-  //         filled: true,
-  //         fillColor: Colors.white,
-  //         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-  //       ),
-  //       onChanged: (query) {
-  //         serviceController.searchServices(query);
-  //       },
-  //     ),
-  //   );
-  // }
+  Widget _buildSearchBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: 'Search categories...',
+          hintStyle: TextStyle(color: Colors.grey[500]),
+          prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        ),
+        onChanged: (query) {
+          setState(() {
+            _searchQuery = query;
+          });
+        },
+      ),
+    );
+  }
 
-  Widget _buildServiceCategories() {
-    final categories = [
-      {
-        'title': 'Vehicle\nInspection',
-        'type': ServiceType.VEHICLE_INSPECTION,
-        'color': Colors.orange,
-        'image': 'assets/images/vehicle_inspection.jpg',
-      },
-      {
-        'title': 'Change Oil',
-        'type': ServiceType.CHANGE_OIL,
-        'color': Colors.blue,
-        'image': 'assets/images/oil_change.jpg',
-      },
-      {
-        'title': 'Change Tires',
-        'type': ServiceType.CHANGE_TIRES,
-        'color': Colors.grey,
-        'image': 'assets/images/change_tires.jpg',
-      },
-      {
-        'title': 'Remove & Install\nTires',
-        'type': ServiceType.REMOVE_INSTALL_TIRES,
-        'color': Colors.purple,
-        'image': 'assets/images/remove.jpg',
-      },
-      {
-        'title': 'Cleaning',
-        'type': ServiceType.CLEANING,
-        'color': Colors.green,
-        'image': 'assets/images/car_cleaning.jpg',
-      },
-      {
-        'title': 'Diagnostic Test',
-        'type': ServiceType.DIAGNOSTIC_TEST,
-        'color': Colors.red,
-        'image': 'assets/images/diagnostic.jpg',
-      },
-      {
-        'title': 'Pre-TÜV Check',
-        'type': ServiceType.PRE_TUV_CHECK,
-        'color': Colors.teal,
-        'image': 'assets/images/pre_tuv.jpg',
-      },
-      {
-        'title': 'Balance Tires',
-        'type': ServiceType.BALANCE_TIRES,
-        'color': Colors.indigo,
-        'image': 'assets/images/tire_balance.jpg',
-      },
-      {
-        'title': 'Wheel\nAlignment',
-        'type': ServiceType.WHEEL_ALIGNMENT,
-        'color': Colors.deepPurple,
-        'image': 'assets/images/wheel_alignment.jpg',
-      },
-      {
-        'title': 'Polish',
-        'type': ServiceType.POLISH,
-        'color': Colors.amber,
-        'image': 'assets/images/car_polish.jpg',
-      },
-      {
-        'title': 'Change Brake\nFluid',
-        'type': ServiceType.CHANGE_BRAKE_FLUID,
-        'color': Colors.brown,
-        'image': 'assets/images/brake_fluid.jpg',
-      },
-    ];
-
+  Widget _buildServiceCategories(List<Map<String, dynamic>> categoriesToShow) {
     return GridView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -277,13 +248,19 @@ class _UserHomeViewState extends State<UserHomeView> {
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
       ),
-      itemCount: categories.length,
+      itemCount: categoriesToShow.length,
       itemBuilder: (context, index) {
-        final category = categories[index];
+        final category = categoriesToShow[index];
         return GestureDetector(
           onTap: () {
-            // فلترة الخدمات حسب النوع
-            serviceController.filterByType((category['type'] as ServiceType).name);
+            Get.toNamed(
+              AppRoutes.filteredServices,
+              arguments: {
+                'serviceType': category['type'] as ServiceType,
+                'title': category['title'] as String,
+                'isOwner': false, // للمستخدم العادي
+              },
+            );
           },
           child: Container(
             decoration: BoxDecoration(
@@ -301,12 +278,10 @@ class _UserHomeViewState extends State<UserHomeView> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // صورة الخلفية
                   Image.asset(
                     category['image'] as String,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
-                      // في حالة عدم وجود الصورة، استخدم لون متدرج
                       return Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -321,7 +296,6 @@ class _UserHomeViewState extends State<UserHomeView> {
                       );
                     },
                   ),
-                  // طبقة شفافة مظلمة خفيفة للنص
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -334,7 +308,6 @@ class _UserHomeViewState extends State<UserHomeView> {
                       ),
                     ),
                   ),
-                  // النص في المنتصف
                   Center(
                     child: Text(
                       category['title'] as String,

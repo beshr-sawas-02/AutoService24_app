@@ -176,8 +176,6 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
     );
   }
 
-
-
   Widget _buildFilterChip(String label, ServiceType? type) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
@@ -285,7 +283,15 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         final category = categories[index];
         return GestureDetector(
           onTap: () {
-            serviceController.filterByType((category['type'] as ServiceType).name);
+            // Navigate to FilteredServicesView with isOwner = true
+            Get.toNamed(
+              AppRoutes.filteredServices,
+              arguments: {
+                'serviceType': category['type'] as ServiceType,
+                'title': category['title'] as String,
+                'isOwner': true, // هذا المهم للتمييز أن المستخدم owner
+              },
+            );
           },
           child: Container(
             decoration: BoxDecoration(

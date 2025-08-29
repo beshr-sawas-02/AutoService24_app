@@ -6,6 +6,7 @@ import '../views/auth/forgot_password_view.dart';
 import '../views/user/user_home_view.dart';
 import '../views/user/user_profile_view.dart';
 import '../views/user/saved_services_view.dart';
+import '../views/user/filtered_services_view.dart'; // إضافة الاستيراد الجديد
 import '../views/owner/owner_home_view.dart';
 import '../views/owner/owner_profile_view.dart';
 import '../views/owner/add_workshop_view.dart';
@@ -28,6 +29,7 @@ class AppRoutes {
   static const String userHome = '/user-home';
   static const String userProfile = '/user-profile';
   static const String savedServices = '/saved-services';
+  static const String filteredServices = '/filtered-services'; // الروت الجديد
   static const String ownerHome = '/owner-home';
   static const String ownerProfile = '/owner-profile';
   static const String addWorkshop = '/add-workshop';
@@ -78,6 +80,12 @@ class AppRoutes {
       name: savedServices,
       page: () => SavedServicesView(),
       binding: UserBinding(),
+    ),
+    // الصفحة الجديدة للخدمات المفلترة
+    GetPage(
+      name: filteredServices,
+      page: () => FilteredServicesView(),
+      binding: UserBinding(), // استخدام نفس binding لأن ServiceController موجود فيه
     ),
 
     // Owner Routes

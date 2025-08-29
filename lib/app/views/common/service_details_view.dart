@@ -144,29 +144,29 @@ class ServiceDetailsView extends StatelessWidget {
                     ],
                   ),
 
-                  SizedBox(height: 16),
-
-                  // Rating and Reviews
-                  _buildInfoCard(
-                    'Reviews',
-                    [
-                      Row(
-                        children: [
-                          Row(
-                            children: List.generate(5, (index) {
-                              return Icon(
-                                Icons.star,
-                                color: index < 4 ? Colors.amber : Colors.grey[300],
-                                size: 20,
-                              );
-                            }),
-                          ),
-                          SizedBox(width: 8),
-                          Text('4.5 (32 reviews)', style: TextStyle(fontSize: 16)),
-                        ],
-                      ),
-                    ],
-                  ),
+                  // SizedBox(height: 16),
+                  //
+                  // // Rating and Reviews
+                  // _buildInfoCard(
+                  //   'Reviews',
+                  //   [
+                  //     Row(
+                  //       children: [
+                  //         Row(
+                  //           children: List.generate(5, (index) {
+                  //             return Icon(
+                  //               Icons.star,
+                  //               color: index < 4 ? Colors.amber : Colors.grey[300],
+                  //               size: 20,
+                  //             );
+                  //           }),
+                  //         ),
+                  //         SizedBox(width: 8),
+                  //         Text('4.5 (32 reviews)', style: TextStyle(fontSize: 16)),
+                  //       ],
+                  //     ),
+                  //   ],
+                  // ),
 
                   SizedBox(height: 32),
 
@@ -194,25 +194,25 @@ class ServiceDetailsView extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
-                            Get.toNamed(
-                              AppRoutes.workshopDetails,
-                              arguments: service.workshopId,
-                            );
-                          },
-                          child: Text('View Workshop'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.orange,
-                            side: BorderSide(color: Colors.orange),
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Expanded(
+                      //   child: OutlinedButton(
+                      //     onPressed: () {
+                      //       Get.toNamed(
+                      //         AppRoutes.workshopDetails,
+                      //         arguments: service.workshopId,
+                      //       );
+                      //     },
+                      //     child: Text('View Workshop'),
+                      //     style: OutlinedButton.styleFrom(
+                      //       foregroundColor: Colors.orange,
+                      //       side: BorderSide(color: Colors.orange),
+                      //       padding: EdgeInsets.symmetric(vertical: 16),
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(10),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
 

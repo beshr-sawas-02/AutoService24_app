@@ -27,8 +27,6 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -73,10 +71,18 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
               SizedBox(height: 32),
-              _buildSocialLoginSection(screenWidth),
+
+              // Social Login Section
+              _buildSocialLoginSection(),
+
               SizedBox(height: 16),
-              _buildUserTypeSelection(screenWidth),
+
+              // User Type Selection
+              _buildUserTypeSelection(),
+
               SizedBox(height: 32),
+
+              // Divider
               Row(
                 children: [
                   Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
@@ -94,7 +100,10 @@ class _LoginViewState extends State<LoginView> {
                   Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
                 ],
               ),
+
               SizedBox(height: 32),
+
+              // Email Field
               _buildTextField(
                 controller: _emailController,
                 icon: Icons.email_outlined,
@@ -106,7 +115,10 @@ class _LoginViewState extends State<LoginView> {
                   return null;
                 },
               ),
+
               SizedBox(height: 20),
+
+              // Password Field
               _buildTextField(
                 controller: _passwordController,
                 icon: Icons.lock_outlined,
@@ -125,7 +137,10 @@ class _LoginViewState extends State<LoginView> {
                   return null;
                 },
               ),
+
               SizedBox(height: 16),
+
+              // Forgot Password Link
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
@@ -140,7 +155,10 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
               ),
+
               SizedBox(height: 40),
+
+              // Login Button
               Obx(() => Container(
                 width: double.infinity,
                 height: 56,
@@ -150,6 +168,8 @@ class _LoginViewState extends State<LoginView> {
                     backgroundColor: Color(0xFFFF8A50),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    elevation: 0,
+                    shadowColor: Colors.transparent,
                   ),
                   child: authController.isLoading.value
                       ? SizedBox(
@@ -166,7 +186,10 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
               )),
+
               SizedBox(height: 40),
+
+              // Register Link
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -187,10 +210,16 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ],
               ),
+
               SizedBox(height: 24),
+
+              // Continue as Guest
               Center(
                 child: TextButton(
                   onPressed: () => Get.offAllNamed(AppRoutes.userHome),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
                   child: Text(
                     'Continue as Guest',
                     style: TextStyle(
@@ -198,10 +227,12 @@ class _LoginViewState extends State<LoginView> {
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       decoration: TextDecoration.underline,
+                      decorationColor: Colors.grey[600],
                     ),
                   ),
                 ),
               ),
+
               SizedBox(height: 20),
             ],
           ),
@@ -210,9 +241,10 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget _buildSocialLoginSection(double screenWidth) {
+  Widget _buildSocialLoginSection() {
     return Obx(() => Column(
       children: [
+        // Google Login
         _buildSocialButton(
           label: 'Continue with Google',
           backgroundColor: Colors.grey[100]!,
@@ -220,10 +252,14 @@ class _LoginViewState extends State<LoginView> {
           textColor: Colors.grey[800]!,
           icon: Icons.account_circle_outlined,
           iconColor: Colors.red[600],
-          onTap: authController.isLoading.value ? null : () => _socialLogin('google'),
-          screenWidth: screenWidth,
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('google'),
+          isGoogle: true,
         ),
         SizedBox(height: 16),
+
+        // Facebook Login
         _buildSocialButton(
           label: 'Continue with Facebook',
           backgroundColor: Color(0xFF1877F2),
@@ -231,9 +267,12 @@ class _LoginViewState extends State<LoginView> {
           textColor: Colors.white,
           icon: Icons.facebook_rounded,
           iconColor: Colors.white,
-          onTap: authController.isLoading.value ? null : () => _socialLogin('facebook'),
-          screenWidth: screenWidth,
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('facebook'),
         ),
+
+        // Apple Login
         SizedBox(height: 16),
         _buildSocialButton(
           label: 'Continue with Apple',
@@ -242,18 +281,26 @@ class _LoginViewState extends State<LoginView> {
           textColor: Colors.white,
           icon: Icons.apple_rounded,
           iconColor: Colors.white,
-          onTap: authController.isLoading.value ? null : () => _socialLogin('apple'),
-          screenWidth: screenWidth,
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('apple'),
         ),
       ],
     ));
   }
 
-  Widget _buildUserTypeSelection(double screenWidth) {
+  Widget _buildUserTypeSelection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Login as:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        Text(
+          'Login as:',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
         SizedBox(height: 12),
         Row(
           children: [
@@ -278,13 +325,20 @@ class _LoginViewState extends State<LoginView> {
         padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: selected ? Color(0xFFFF8A50) : Colors.grey[300]!, width: 2),
+          border: Border.all(
+            color: selected ? Color(0xFFFF8A50) : Colors.grey[300]!,
+            width: 2,
+          ),
           color: selected ? Color(0xFFFF8A50).withOpacity(0.1) : Colors.white,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: selected ? Color(0xFFFF8A50) : Colors.grey[600], size: 20),
+            Icon(
+              icon,
+              color: selected ? Color(0xFFFF8A50) : Colors.grey[600],
+              size: 20,
+            ),
             SizedBox(width: 8),
             Flexible(
               child: Text(
@@ -317,17 +371,52 @@ class _LoginViewState extends State<LoginView> {
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
-      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey[800]),
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+        color: Colors.grey[800],
+      ),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Colors.grey[600], fontSize: 16, fontWeight: FontWeight.w500),
-        prefixIcon: Icon(icon, color: Colors.grey[600], size: 22),
+        labelStyle: TextStyle(
+          color: Colors.grey[600],
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+        prefixIcon: Icon(
+          icon,
+          color: Colors.grey[600],
+          size: 22,
+        ),
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.grey[300]!)),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Color(0xFFFF8A50), width: 2)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Color(0xFFFF8A50), width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.red[400]!, width: 2),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.red[400]!, width: 2),
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        errorStyle: TextStyle(
+          color: Colors.red[600],
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
@@ -340,28 +429,56 @@ class _LoginViewState extends State<LoginView> {
     required IconData icon,
     Color? iconColor,
     required VoidCallback? onTap,
-    double? screenWidth,
+    bool isGoogle = false,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: screenWidth != null ? screenWidth * 0.9 : double.infinity,
+        width: double.infinity,
         height: 56,
         decoration: BoxDecoration(
           color: onTap != null ? backgroundColor : Colors.grey[200],
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: onTap != null ? borderColor : Colors.grey[300]!, width: 1.5),
+          border: Border.all(
+            color: onTap != null ? borderColor : Colors.grey[300]!,
+            width: 1.5,
+          ),
+          boxShadow: [
+            if (onTap != null)
+              BoxShadow(
+                color: backgroundColor.withOpacity(0.1),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+              ),
+          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: onTap != null ? (iconColor ?? textColor) : Colors.grey[500], size: 24),
+            // أيقونة Google من ملف assets أو الأيقونات العادية
+            if (isGoogle)
+              Image.asset(
+                'assets/icons/google_icon.png',
+                width: 34,
+                height: 34,
+              )
+            else
+              Icon(
+                icon,
+                color: onTap != null ? (iconColor ?? textColor) : Colors.grey[500],
+                size: 24,
+              ),
             SizedBox(width: 12),
             Flexible(
               child: Text(
                 label,
-                style: TextStyle(color: onTap != null ? textColor : Colors.grey[500], fontSize: 15, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  color: onTap != null ? textColor : Colors.grey[500],
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
                 overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ],

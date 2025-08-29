@@ -37,11 +37,6 @@ class OwnerProfileView extends StatelessWidget {
                     // Profile Options
                     _buildProfileOptions(),
 
-                    SizedBox(height: 20),
-
-                    // Settings Options
-                    _buildSettingsOptions(),
-
                     SizedBox(height: 24),
 
                     // Logout Button
@@ -135,32 +130,33 @@ class OwnerProfileView extends StatelessWidget {
                   backgroundColor: Colors.white.withOpacity(0.2),
                   child: user?.profileImage != null
                       ? ClipRRect(
-                    borderRadius: BorderRadius.circular(58),
-                    child: Image.network(
-                      user!.profileImage!,
-                      width: 116,
-                      height: 116,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Text(
+                          borderRadius: BorderRadius.circular(58),
+                          child: Image.network(
+                            user!.profileImage!,
+                            width: 116,
+                            height: 116,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Text(
+                                user?.username?.substring(0, 1).toUpperCase() ??
+                                    'N',
+                                style: TextStyle(
+                                  fontSize: 48,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : Text(
                           user?.username?.substring(0, 1).toUpperCase() ?? 'N',
                           style: TextStyle(
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
-                        );
-                      },
-                    ),
-                  )
-                      : Text(
-                    user?.username?.substring(0, 1).toUpperCase() ?? 'N',
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+                        ),
                 ),
               ),
 
@@ -262,7 +258,8 @@ class OwnerProfileView extends StatelessWidget {
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.email_outlined, color: Colors.grey[600], size: 20),
+                child: Icon(Icons.email_outlined,
+                    color: Colors.grey[600], size: 20),
               ),
               SizedBox(width: 16),
               Column(
@@ -277,7 +274,7 @@ class OwnerProfileView extends StatelessWidget {
                   ),
                   SizedBox(height: 2),
                   Text(
-                    user?.email ?? 'nerminjafar78@gmail.com',
+                    user?.email ?? 'info@gmail.com',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -299,7 +296,8 @@ class OwnerProfileView extends StatelessWidget {
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.phone_outlined, color: Colors.grey[600], size: 20),
+                child: Icon(Icons.phone_outlined,
+                    color: Colors.grey[600], size: 20),
               ),
               SizedBox(width: 16),
               Column(
@@ -318,7 +316,9 @@ class OwnerProfileView extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: user?.phone != null ? Colors.black87 : Colors.grey[500],
+                      color: user?.phone != null
+                          ? Colors.black87
+                          : Colors.grey[500],
                     ),
                   ),
                 ],
@@ -330,8 +330,8 @@ class OwnerProfileView extends StatelessWidget {
     );
   }
 
-
-  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
+  Widget _buildStatItem(
+      String label, String value, IconData icon, Color color) {
     return Column(
       children: [
         Container(
@@ -378,36 +378,8 @@ class OwnerProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingsOptions() {
-    return _buildSectionCard(
-      title: 'Settings',
-      children: [
-        _buildProfileOption(
-          icon: Icons.settings_outlined,
-          title: 'Settings',
-          subtitle: 'App preferences and notifications',
-          onTap: () => Get.toNamed(AppRoutes.settings),
-          iconColor: Colors.blue,
-        ),
-        _buildProfileOption(
-          icon: Icons.help_outline,
-          title: 'Help & Support',
-          subtitle: 'Get help and contact support',
-          onTap: () => _showHelpDialog(),
-          iconColor: Colors.green,
-        ),
-        _buildProfileOption(
-          icon: Icons.info_outline,
-          title: 'About',
-          subtitle: 'App version and information',
-          onTap: () => _showAboutDialog(),
-          iconColor: Colors.purple,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSectionCard({required String title, required List<Widget> children}) {
+  Widget _buildSectionCard(
+      {required String title, required List<Widget> children}) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(20),
@@ -623,17 +595,23 @@ class OwnerProfileView extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 12),
-            ...['Your account', 'All workshops', 'All services', 'All conversations', 'All business data']
+            ...[
+              'Your account',
+              'All workshops',
+              'All services',
+              'All conversations',
+              'All business data'
+            ]
                 .map((item) => Padding(
-              padding: EdgeInsets.only(bottom: 4),
-              child: Row(
-                children: [
-                  Icon(Icons.close, color: Colors.red, size: 16),
-                  SizedBox(width: 8),
-                  Text(item),
-                ],
-              ),
-            ))
+                      padding: EdgeInsets.only(bottom: 4),
+                      child: Row(
+                        children: [
+                          Icon(Icons.close, color: Colors.red, size: 16),
+                          SizedBox(width: 8),
+                          Text(item),
+                        ],
+                      ),
+                    ))
                 .toList(),
             SizedBox(height: 16),
             Container(
@@ -726,37 +704,39 @@ class OwnerProfileView extends StatelessWidget {
             ),
           ),
           Obx(() => ElevatedButton(
-            onPressed: authController.isLoading.value
-                ? null
-                : () async {
-              if (confirmController.text.trim().toUpperCase() == 'DELETE') {
-                Get.back();
-                final success = await authController.deleteAccount();
-                if (success) {
-                  Get.offAllNamed(AppRoutes.userHome);
-                }
-              } else {
-                Helpers.showErrorSnackbar('Please type "DELETE" to confirm');
-              }
-            },
-            child: authController.isLoading.value
-                ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2,
-              ),
-            )
-                : Text('Confirm Delete'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          )),
+                onPressed: authController.isLoading.value
+                    ? null
+                    : () async {
+                        if (confirmController.text.trim().toUpperCase() ==
+                            'DELETE') {
+                          Get.back();
+                          final success = await authController.deleteAccount();
+                          if (success) {
+                            Get.offAllNamed(AppRoutes.userHome);
+                          }
+                        } else {
+                          Helpers.showErrorSnackbar(
+                              'Please type "DELETE" to confirm');
+                        }
+                      },
+                child: authController.isLoading.value
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Text('Confirm Delete'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              )),
         ],
       ),
     );
@@ -788,11 +768,13 @@ class OwnerProfileView extends StatelessWidget {
           children: [
             Text('Need help? Contact us:'),
             SizedBox(height: 16),
-            _buildContactRow(Icons.email, 'support@autoservice24.com', Colors.orange),
+            _buildContactRow(
+                Icons.email, 'support@autoservice24.com', Colors.orange),
             SizedBox(height: 12),
             _buildContactRow(Icons.phone, '+1 (555) 123-4567', Colors.orange),
             SizedBox(height: 12),
-            _buildContactRow(Icons.schedule, 'Mon-Fri: 9 AM - 6 PM', Colors.orange),
+            _buildContactRow(
+                Icons.schedule, 'Mon-Fri: 9 AM - 6 PM', Colors.orange),
           ],
         ),
         actions: [

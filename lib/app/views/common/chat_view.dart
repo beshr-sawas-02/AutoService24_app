@@ -15,17 +15,57 @@ class _ChatViewState extends State<ChatView> {
   final _scrollController = ScrollController();
 
   late String chatId;
-  late String otherUserId;
+  late String receiverId;
+  late String receiverName;
   late String currentUserId;
+  String? serviceId;
+  String? serviceTitle;
 
   @override
   void initState() {
     super.initState();
-    final args = Get.arguments as Map<String, dynamic>;
-    chatId = args['chatId'];
-    otherUserId = args['otherUserId'];
+
+    // التحقق من وجود arguments
+    final arguments = Get.arguments;
+    if (arguments == null || arguments is! Map<String, dynamic>) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.back();
+        Get.snackbar(
+          'Error',
+          'Chat information is missing',
+          backgroundColor: Colors.red.withOpacity(0.1),
+          colorText: Colors.red[800],
+        );
+      });
+      return;
+    }
+
+    // تحويل آمن للقيم
+    receiverId = arguments['receiverId']?.toString() ?? '';
+    receiverName = arguments['receiverName']?.toString() ?? 'Unknown User';
+    serviceId = arguments['serviceId']?.toString();
+    serviceTitle = arguments['serviceTitle']?.toString();
     currentUserId = authController.currentUser.value?.id ?? '';
 
+    // التحقق من صحة البيانات
+    if (receiverId.isEmpty || currentUserId.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.back();
+        Get.snackbar(
+          'Error',
+          'Invalid chat information',
+          backgroundColor: Colors.red.withOpacity(0.1),
+          colorText: Colors.red[800],
+        );
+      });
+      return;
+    }
+
+    // إنشاء chatId من المستخدمين (ترتيب أبجدي عشان يكون ثابت)
+    List<String> userIds = [currentUserId, receiverId]..sort();
+    chatId = '${userIds[0]}_${userIds[1]}';
+
+    // تحميل الرسائل
     chatController.loadMessages(chatId);
   }
 
@@ -37,46 +77,129 @@ class _ChatViewState extends State<ChatView> {
           children: [
             CircleAvatar(
               backgroundColor: Colors.white.withOpacity(0.2),
-              child: Icon(Icons.person, color: Colors.white),
+              radius: 20,
+              child: Text(
+                receiverName.isNotEmpty ? receiverName[0].toUpperCase() : 'U',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'User $otherUserId',
-                  style: TextStyle(fontSize: 16),
-                ),
-                Text(
-                  'Online',
-                  style: TextStyle(fontSize: 12, color: Colors.white70),
-                ),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    receiverName,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (serviceTitle != null)
+                    Text(
+                      'About: $serviceTitle',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white70,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  else
+                    Text(
+                      'Online',
+                      style: TextStyle(fontSize: 12, color: Colors.white70),
+                    ),
+                ],
+              ),
             ),
           ],
         ),
         backgroundColor: Colors.orange,
+        elevation: 1,
         actions: [
           IconButton(
             icon: Icon(Icons.phone),
             onPressed: () {
               // Call functionality
+              Get.snackbar(
+                'Feature Coming Soon',
+                'Voice call feature will be available soon',
+                backgroundColor: Colors.orange.withOpacity(0.1),
+                colorText: Colors.orange[800],
+              );
             },
           ),
-          IconButton(
+          PopupMenuButton<String>(
             icon: Icon(Icons.more_vert),
-            onPressed: () {
-              // More options
+            onSelected: (String result) {
+              switch (result) {
+                case 'view_service':
+                  if (serviceId != null) {
+                    // Navigate to service details if needed
+                    Get.snackbar('Info', 'Service: $serviceTitle');
+                  }
+                  break;
+                case 'block_user':
+                  _showBlockUserDialog();
+                  break;
+                case 'report':
+                  _showReportDialog();
+                  break;
+              }
             },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              if (serviceTitle != null)
+                PopupMenuItem<String>(
+                  value: 'view_service',
+                  child: Row(
+                    children: [
+                      Icon(Icons.build, size: 20),
+                      SizedBox(width: 8),
+                      Text('View Service'),
+                    ],
+                  ),
+                ),
+              PopupMenuItem<String>(
+                value: 'block_user',
+                child: Row(
+                  children: [
+                    Icon(Icons.block, size: 20),
+                    SizedBox(width: 8),
+                    Text('Block User'),
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'report',
+                child: Row(
+                  children: [
+                    Icon(Icons.report, size: 20),
+                    SizedBox(width: 8),
+                    Text('Report'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
       body: Column(
         children: [
+          // Service info banner (if available)
+          if (serviceTitle != null) _buildServiceBanner(),
+
           Expanded(
             child: Obx(() {
               if (chatController.isLoadingMessages.value) {
-                return Center(child: CircularProgressIndicator());
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.orange,
+                  ),
+                );
               }
 
               if (chatController.messages.isEmpty) {
@@ -86,9 +209,10 @@ class _ChatViewState extends State<ChatView> {
               return ListView.builder(
                 controller: _scrollController,
                 padding: EdgeInsets.all(16),
+                reverse: true, // عرض الرسائل من الأسفل للأعلى
                 itemCount: chatController.messages.length,
                 itemBuilder: (context, index) {
-                  final message = chatController.messages[index];
+                  final message = chatController.messages[chatController.messages.length - 1 - index];
                   final isMe = message.senderId.toString() == currentUserId;
 
                   return _buildMessageBubble(message, isMe);
@@ -97,6 +221,44 @@ class _ChatViewState extends State<ChatView> {
             }),
           ),
           _buildMessageInput(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildServiceBanner() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.orange.withOpacity(0.1),
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.orange.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.build_circle,
+            color: Colors.orange,
+            size: 20,
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Discussing: $serviceTitle',
+              style: TextStyle(
+                color: Colors.orange[800],
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );
@@ -116,16 +278,20 @@ class _ChatViewState extends State<ChatView> {
           Text(
             'Start the conversation',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
               color: Colors.grey[600],
             ),
           ),
           SizedBox(height: 8),
           Text(
-            'Send a message to begin chatting',
+            serviceTitle != null
+                ? 'Ask about "$serviceTitle"'
+                : 'Send a message to begin chatting',
             style: TextStyle(
               color: Colors.grey[500],
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -144,7 +310,12 @@ class _ChatViewState extends State<ChatView> {
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isMe ? Colors.orange : Colors.grey[200],
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(18),
+            topRight: Radius.circular(18),
+            bottomLeft: isMe ? Radius.circular(18) : Radius.circular(4),
+            bottomRight: isMe ? Radius.circular(4) : Radius.circular(18),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,7 +342,15 @@ class _ChatViewState extends State<ChatView> {
                       width: 200,
                       height: 150,
                       color: Colors.grey[300],
-                      child: Icon(Icons.error),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.error, color: Colors.grey[600]),
+                            Text('Failed to load image', style: TextStyle(fontSize: 12)),
+                          ],
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -209,7 +388,12 @@ class _ChatViewState extends State<ChatView> {
           IconButton(
             icon: Icon(Icons.attach_file, color: Colors.grey),
             onPressed: () {
-              // Handle file attachment
+              Get.snackbar(
+                'Feature Coming Soon',
+                'File attachment will be available soon',
+                backgroundColor: Colors.orange.withOpacity(0.1),
+                colorText: Colors.orange[800],
+              );
             },
           ),
           Expanded(
@@ -230,6 +414,7 @@ class _ChatViewState extends State<ChatView> {
               ),
               maxLines: null,
               textCapitalization: TextCapitalization.sentences,
+              onSubmitted: (_) => _sendMessage(),
             ),
           ),
           SizedBox(width: 8),
@@ -257,7 +442,7 @@ class _ChatViewState extends State<ChatView> {
     final success = await chatController.sendMessage(
       chatId: chatId,
       senderId: currentUserId,
-      receiverId: otherUserId,
+      receiverId: receiverId,
       content: content,
     );
 
@@ -266,13 +451,59 @@ class _ChatViewState extends State<ChatView> {
       Future.delayed(Duration(milliseconds: 100), () {
         if (_scrollController.hasClients) {
           _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
+            0, // للأسفل لأن reverse: true
             duration: Duration(milliseconds: 300),
             curve: Curves.easeOut,
           );
         }
       });
     }
+  }
+
+  void _showBlockUserDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Block User'),
+        content: Text('Are you sure you want to block $receiverName?'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+              Get.snackbar('Info', 'User blocking feature coming soon');
+            },
+            child: Text('Block'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showReportDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Report User'),
+        content: Text('Report $receiverName for inappropriate behavior?'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+              Get.snackbar('Info', 'User reporting feature coming soon');
+            },
+            child: Text('Report'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          ),
+        ],
+      ),
+    );
   }
 
   String _formatTime(DateTime? dateTime) {

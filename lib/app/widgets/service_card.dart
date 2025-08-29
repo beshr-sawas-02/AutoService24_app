@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../data/models/service_model.dart';
+import '../controllers/service_controller.dart';
+import '../controllers/auth_controller.dart';
+import '../routes/app_routes.dart';
 
 class ServiceCard extends StatelessWidget {
   final ServiceModel service;
   final VoidCallback onTap;
   final bool isOwner;
+  final bool showSaveButton;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
@@ -13,6 +18,7 @@ class ServiceCard extends StatelessWidget {
     required this.service,
     required this.onTap,
     this.isOwner = false,
+    this.showSaveButton = true,
     this.onEdit,
     this.onDelete,
   }) : super(key: key);
@@ -65,6 +71,11 @@ class ServiceCard extends StatelessWidget {
                       ],
                     ),
                   ),
+
+                  // إضافة زر الحفظ للمستخدمين العاديين
+                  if (showSaveButton && !isOwner) _buildSaveButton(),
+
+                  // قائمة خيارات المالك
                   if (isOwner)
                     PopupMenuButton<String>(
                       onSelected: (value) {
@@ -179,6 +190,114 @@ class ServiceCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return GetBuilder<ServiceController>(
+      builder: (serviceController) {
+        final authController = Get.find<AuthController>();
+
+        // إذا كان مستضيف، اعرض زر غير نشط
+        if (authController.isGuest) {
+          return IconButton(
+            onPressed: () {
+              _showGuestDialog();
+            },
+            icon: Icon(
+              Icons.bookmark_border,
+              color: Colors.grey[400],
+              size: 20,
+            ),
+            tooltip: 'Login to save',
+          );
+        }
+
+        // للمستخدمين المسجلين، اعرض الحالة الفعلية
+        return Obx(() {
+          final isBookmarked = serviceController.isServiceSaved(service.id);
+
+          return IconButton(
+            onPressed: () async {
+              final userId = authController.currentUser.value?.id;
+              if (userId != null) {
+                await serviceController.toggleSaveService(service.id, userId);
+              }
+            },
+            icon: Icon(
+              isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+              color: isBookmarked ? Colors.orange : Colors.grey[600],
+              size: 20,
+            ),
+            tooltip: isBookmarked ? 'Remove from saved' : 'Save service',
+          );
+        });
+      },
+    );
+  }
+
+  void _showGuestDialog() {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.orange.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(Icons.bookmark, color: Colors.orange),
+            ),
+            SizedBox(width: 12),
+            Text('Save Service'),
+          ],
+        ),
+        content: Text(
+          'Create an account to save your favorite services and access them anytime.',
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.grey[600],
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              OutlinedButton(
+                onPressed: () {
+                  Get.back();
+                  Get.toNamed(AppRoutes.login);
+                },
+                child: Text('Sign In'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.orange,
+                  side: BorderSide(color: Colors.orange),
+                ),
+              ),
+              SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                  Get.toNamed(AppRoutes.register);
+                },
+                child: Text('Register'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

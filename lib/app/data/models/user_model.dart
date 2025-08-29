@@ -1,10 +1,10 @@
 class UserModel {
   final String id;
   final String email;
-  final String? password;     // اختيارية الآن
+  final String? password;
   final String username;
   final String userType;
-  final String? phone;        // اختيارية
+  final String? phone;
   final String? profileImage;
   final String provider;
   final String? providerId;
@@ -22,16 +22,21 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    String? phoneValue;
+    if (json['phone'] != null && json['phone'].toString().isNotEmpty) {
+      phoneValue = json['phone'].toString();
+    }
+
     return UserModel(
-      id: json['_id'] ?? '',
-      email: json['email'] ?? '',
-      password: json['password'], // قد تكون null للـ social login
-      username: json['username'] ?? '',
-      userType: json['user_type'] ?? 'user',
-      phone: json['phone'],
-      profileImage: json['profile_image'],
-      provider: json['provider'] ?? 'local',
-      providerId: json['providerId'],
+      id: json['_id']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      password: json['password']?.toString(),
+      username: json['username']?.toString() ?? '',
+      userType: json['user_type']?.toString() ?? 'user',
+      phone: phoneValue,
+      profileImage: json['profile_image']?.toString(),
+      provider: json['provider']?.toString() ?? 'local',
+      providerId: json['providerId']?.toString(),
     );
   }
 

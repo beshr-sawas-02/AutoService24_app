@@ -9,6 +9,7 @@ import '../utils/storage_service.dart';
 import '../utils/error_handler.dart';
 import '../utils/helpers.dart';
 import '../routes/app_routes.dart';
+import 'service_controller.dart';
 
 class AuthController extends GetxController {
   final AuthRepository _authRepository;
@@ -20,7 +21,6 @@ class AuthController extends GetxController {
   var currentUser = Rxn<UserModel>();
   var isUserDataLoaded = false.obs;
 
-  // إعداد مقدمي الخدمة الاجتماعية
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
   );
@@ -28,23 +28,11 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    print("AuthController: onInit() called");
     _checkLoginStatus();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-    print("AuthController: onReady() called");
-    print("AuthController onReady - currentUser: ${currentUser.value}");
-    print("AuthController onReady - isLoggedIn: ${isLoggedIn.value}");
-    print("AuthController onReady - isUserDataLoaded: ${isUserDataLoaded.value}");
   }
 
   Future<void> _checkLoginStatus() async {
     try {
-      print("AuthController: _checkLoginStatus() started");
-
       await Future.delayed(Duration(milliseconds: 100));
 
       final token = await StorageService.getToken();
@@ -86,6 +74,20 @@ class AuthController extends GetxController {
     }
   }
 
+  Future<void> _clearServiceData() async {
+    try {
+      if (Get.isRegistered<ServiceController>()) {
+        final serviceController = Get.find<ServiceController>();
+        serviceController.savedServices.clear();
+        serviceController.services.clear();
+        serviceController.ownerServices.clear();
+        serviceController.filteredServices.clear();
+      }
+    } catch (e) {
+      print("AuthController: Error clearing service data: $e");
+    }
+  }
+
   Future<bool> login(String email, String password) async {
     try {
       isLoading.value = true;
@@ -97,8 +99,11 @@ class AuthController extends GetxController {
         await StorageService.saveUserData(response['user']);
 
         currentUser.value = UserModel.fromJson(response['user']);
+
         isLoggedIn.value = true;
         isUserDataLoaded.value = true;
+
+        await _clearServiceData();
 
         Helpers.showSuccessSnackbar('Login successful');
 
@@ -107,6 +112,8 @@ class AuthController extends GetxController {
         } else {
           Get.offAllNamed(AppRoutes.userHome);
         }
+
+        await _reloadUserSpecificData();
 
         return true;
       } else {
@@ -122,26 +129,20 @@ class AuthController extends GetxController {
     }
   }
 
-  // تحديث الملف الشخصي مع الصورة - دالة جديدة
   Future<bool> updateProfileWithImage(String userId, Map<String, dynamic> data, File? imageFile) async {
     try {
       isLoading.value = true;
-      print("AuthController: updateProfileWithImage() for user $userId");
 
       final response = await _authRepository.updateProfileWithImage(userId, data, imageFile);
 
       if (response.containsKey('user')) {
-        // تحديث البيانات المحلية مع البيانات المحدثة من الخادم
         final updatedUserData = response['user'];
         currentUser.value = UserModel.fromJson(updatedUserData);
 
-        // حفظ البيانات المحدثة في التخزين المحلي
         await StorageService.saveUserData(updatedUserData);
 
-        print("AuthController: Profile updated successfully");
         return true;
       } else if (response.containsKey('status') && response['status'] == true) {
-        // في حالة عدم إرجاع user object، نحديث البيانات يدوياً
         final updatedUser = currentUser.value!.copyWith(
           username: data['username'],
           email: data['email'],
@@ -156,7 +157,6 @@ class AuthController extends GetxController {
         throw Exception('Invalid response from server');
       }
     } catch (e) {
-      print("AuthController: updateProfileWithImage error: $e");
       String errorMessage = _extractErrorMessage(e.toString());
       Helpers.showErrorSnackbar(errorMessage);
       return false;
@@ -165,9 +165,20 @@ class AuthController extends GetxController {
     }
   }
 
-  // =============================================================
-  // دوال تسجيل الدخول بالوسائل الاجتماعية
-  // =============================================================
+  Future<void> _reloadUserSpecificData() async {
+    try {
+      await Future.delayed(Duration(milliseconds: 500));
+
+      if (Get.isRegistered<ServiceController>()) {
+        final serviceController = Get.find<ServiceController>();
+
+        await serviceController.loadServices();
+        await serviceController.loadSavedServices();
+      }
+    } catch (e) {
+      print("AuthController: Error reloading user data: $e");
+    }
+  }
 
   Future<bool> signInWithGoogle({String userType = 'user'}) async {
     try {
@@ -257,8 +268,11 @@ class AuthController extends GetxController {
         await StorageService.saveUserData(response['user']);
 
         currentUser.value = UserModel.fromJson(response['user']);
+
         isLoggedIn.value = true;
         isUserDataLoaded.value = true;
+
+        await _clearServiceData();
 
         Helpers.showSuccessSnackbar('${_capitalizeProvider(provider)} login successful');
 
@@ -267,6 +281,8 @@ class AuthController extends GetxController {
         } else {
           Get.offAllNamed(AppRoutes.userHome);
         }
+
+        await _reloadUserSpecificData();
 
         return true;
       } else {
@@ -304,8 +320,11 @@ class AuthController extends GetxController {
         await StorageService.saveUserData(response['user']);
 
         currentUser.value = UserModel.fromJson(response['user']);
+
         isLoggedIn.value = true;
         isUserDataLoaded.value = true;
+
+        await _clearServiceData();
 
         Helpers.showSuccessSnackbar('Account created successfully');
 
@@ -314,6 +333,8 @@ class AuthController extends GetxController {
         } else {
           Get.offAllNamed(AppRoutes.userHome);
         }
+
+        await _reloadUserSpecificData();
 
         return true;
       } else if (response.containsKey('status') && response.containsKey('user')) {
@@ -342,6 +363,9 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     try {
       await _signOutFromSocialProviders();
+
+      await _clearServiceData();
+
       await StorageService.clearAll();
       isLoggedIn.value = false;
       currentUser.value = null;
@@ -350,7 +374,6 @@ class AuthController extends GetxController {
       Helpers.showSuccessSnackbar('Logged out successfully');
       Get.offAllNamed(AppRoutes.userHome);
     } catch (e) {
-      print("AuthController: Logout error: $e");
       ErrorHandler.logError(e, null);
     }
   }
@@ -373,10 +396,6 @@ class AuthController extends GetxController {
   Future<void> refreshUserData() async {
     isUserDataLoaded.value = false;
     await _checkLoginStatus();
-  }
-
-  void debugPrintState() {
-    // Debug code here if needed
   }
 
   bool get hasCompleteProfile {

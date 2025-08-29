@@ -12,7 +12,6 @@ class UserProfileView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: Obx(() {
-        // إذا المستخدم غير مسجل دخول أو ضيف
         if (!authController.isLoggedIn.value || authController.currentUser.value == null) {
           return _buildGuestProfile();
         }
@@ -174,11 +173,6 @@ class UserProfileView extends StatelessWidget {
 
                 // Profile Options
                 _buildProfileOptions(),
-
-                SizedBox(height: 20),
-
-                // Settings Options
-                _buildSettingsOptions(),
 
                 SizedBox(height: 24),
 
@@ -469,7 +463,6 @@ class UserProfileView extends StatelessWidget {
     );
   }
 
-
   Widget _buildProfileOptions() {
     final user = authController.currentUser.value!;
 
@@ -503,35 +496,6 @@ class UserProfileView extends StatelessWidget {
             iconColor: Colors.green,
           ),
         ],
-      ],
-    );
-  }
-
-  Widget _buildSettingsOptions() {
-    return _buildSectionCard(
-      title: 'Settings',
-      children: [
-        _buildProfileOption(
-          icon: Icons.settings_outlined,
-          title: 'Settings',
-          subtitle: 'App preferences and notifications',
-          onTap: () => Get.toNamed(AppRoutes.settings),
-          iconColor: Colors.blue,
-        ),
-        _buildProfileOption(
-          icon: Icons.help_outline,
-          title: 'Help & Support',
-          subtitle: 'Get help and contact support',
-          onTap: () => _showHelpDialog(),
-          iconColor: Colors.green,
-        ),
-        _buildProfileOption(
-          icon: Icons.info_outline,
-          title: 'About',
-          subtitle: 'App version and information',
-          onTap: () => _showAboutDialog(),
-          iconColor: Colors.purple,
-        ),
       ],
     );
   }
@@ -784,145 +748,6 @@ class UserProfileView extends StatelessWidget {
             child: Text('Delete'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showHelpDialog() {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(Icons.help_outline, color: Colors.orange),
-            ),
-            SizedBox(width: 12),
-            Text('Help & Support'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Need help? Contact us:'),
-            SizedBox(height: 16),
-            _buildContactRow(Icons.email, 'support@carservicehub.com', Colors.orange),
-            SizedBox(height: 12),
-            _buildContactRow(Icons.phone, '+1 (555) 123-4567', Colors.orange),
-            SizedBox(height: 12),
-            _buildContactRow(Icons.schedule, 'Mon-Fri: 9 AM - 6 PM', Colors.orange),
-          ],
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Get.back(),
-            child: Text('OK'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContactRow(IconData icon, String text, Color color) {
-    return Row(
-      children: [
-        Container(
-          padding: EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Icon(icon, color: color, size: 16),
-        ),
-        SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(fontSize: 14),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _showAboutDialog() {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(Icons.info_outline, color: Colors.blue),
-            ),
-            SizedBox(width: 12),
-            Text('About CarServiceHub'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Version: 1.0.0',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Your Car Service Partner',
-              style: TextStyle(
-                color: Colors.orange,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 12),
-            Text(
-              'Find and book automotive services near you.',
-            ),
-            SizedBox(height: 16),
-            Text(
-              '© 2024 CarServiceHub. All rights reserved.',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Get.back(),
-            child: Text('OK'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),

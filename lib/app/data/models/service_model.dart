@@ -35,6 +35,9 @@ class ServiceModel {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
+  // Optional: Store workshop data if needed
+  final Map<String, dynamic>? workshopData;
+
   ServiceModel({
     required this.id,
     required this.workshopId,
@@ -45,20 +48,72 @@ class ServiceModel {
     required this.serviceType,
     this.createdAt,
     this.updatedAt,
+    this.workshopData,
   });
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
+    // Handle workshop_id whether it's a string or an object
+    String workshopId;
+    Map<String, dynamic>? workshopData;
+
+    final workshopIdField = json['workshop_id'];
+    if (workshopIdField is String) {
+      workshopId = workshopIdField;
+    } else if (workshopIdField is Map<String, dynamic>) {
+      workshopId = workshopIdField['_id'] ?? '';
+      workshopData = workshopIdField;
+    } else {
+      workshopId = '';
+    }
+
+    // Handle service_type with better error handling
+    ServiceType? parsedServiceType = ServiceType.fromString(json['service_type'] ?? '');
+
     return ServiceModel(
       id: json['_id'] ?? '',
-      workshopId: json['workshop_id'] ?? '',
+      workshopId: workshopId,
       title: json['title'] ?? '',
       description: json['description'] ?? '',
-      price: (json['price'] ?? 0).toDouble(),
-      images: List<String>.from(json['images'] ?? []),
-      serviceType: ServiceType.fromString(json['service_type']) ?? ServiceType.CHANGE_OIL,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      price: _parsePrice(json['price']),
+      images: _parseImages(json['images']),
+      serviceType: parsedServiceType ?? ServiceType.CHANGE_OIL,
+      createdAt: _parseDateTime(json['createdAt']),
+      updatedAt: _parseDateTime(json['updatedAt']),
+      workshopData: workshopData,
     );
+  }
+
+  // Helper method to parse price safely
+  static double _parsePrice(dynamic price) {
+    if (price == null) return 0.0;
+    if (price is double) return price;
+    if (price is int) return price.toDouble();
+    if (price is String) {
+      return double.tryParse(price) ?? 0.0;
+    }
+    return 0.0;
+  }
+
+  // Helper method to parse images safely
+  static List<String> _parseImages(dynamic images) {
+    if (images == null) return [];
+    if (images is List) {
+      return images.map((img) => img.toString()).toList();
+    }
+    return [];
+  }
+
+  // Helper method to parse DateTime safely
+  static DateTime? _parseDateTime(dynamic dateTime) {
+    if (dateTime == null) return null;
+    if (dateTime is String) {
+      try {
+        return DateTime.parse(dateTime);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   }
 
   Map<String, dynamic> toJson() {
@@ -84,6 +139,7 @@ class ServiceModel {
     ServiceType? serviceType,
     DateTime? createdAt,
     DateTime? updatedAt,
+    Map<String, dynamic>? workshopData,
   }) {
     return ServiceModel(
       id: id ?? this.id,
@@ -95,9 +151,40 @@ class ServiceModel {
       serviceType: serviceType ?? this.serviceType,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      workshopData: workshopData ?? this.workshopData,
     );
   }
 
   String get formattedPrice => '\$${price.toStringAsFixed(2)}';
   String get serviceTypeName => serviceType.displayName;
+
+  // Helper methods to get workshop info if available
+  String get workshopName {
+    return workshopData?['name'] ?? 'Unknown Workshop';
+  }
+
+  String get workshopDescription {
+    return workshopData?['description'] ?? '';
+  }
+
+  String get workshopWorkingHours {
+    return workshopData?['working_hours'] ?? '';
+  }
+
+  // Get workshop location coordinates
+  double? get workshopLocationX {
+    final locationX = workshopData?['location_x'];
+    if (locationX is String) {
+      return double.tryParse(locationX);
+    }
+    return locationX?.toDouble();
+  }
+
+  double? get workshopLocationY {
+    final locationY = workshopData?['location_y'];
+    if (locationY is String) {
+      return double.tryParse(locationY);
+    }
+    return locationY?.toDouble();
+  }
 }
