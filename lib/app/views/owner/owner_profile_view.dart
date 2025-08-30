@@ -15,43 +15,49 @@ class OwnerProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: SingleChildScrollView(
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await authController.refreshUserData();
+        },
         child: Obx(() {
           final user = authController.currentUser.value;
 
-          return Column(
-            children: [
-              // Profile Header
-              _buildProfileHeader(user),
+          return SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                // Profile Header
+                _buildProfileHeader(user),
 
-              // Content with padding
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    // Contact Information Card
-                    _buildContactInformationCard(user),
+                // Content with padding
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      // Contact Information Card
+                      _buildContactInformationCard(user),
 
-                    SizedBox(height: 20),
+                      SizedBox(height: 20),
 
-                    // Profile Options
-                    _buildProfileOptions(),
+                      // Profile Options
+                      _buildProfileOptions(),
 
-                    SizedBox(height: 24),
+                      SizedBox(height: 24),
 
-                    // Logout Button
-                    _buildLogoutButton(),
+                      // Logout Button
+                      _buildLogoutButton(),
 
-                    SizedBox(height: 12),
+                      SizedBox(height: 12),
 
-                    // Delete Account Button
-                    _buildDeleteAccountButton(),
+                      // Delete Account Button
+                      _buildDeleteAccountButton(),
 
-                    SizedBox(height: 20),
-                  ],
+                      SizedBox(height: 20),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         }),
       ),

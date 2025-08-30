@@ -303,11 +303,11 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           // Price
           Row(
             children: [
-              Icon(
-                Icons.attach_money,
-                color: Colors.green,
-                size: 20,
-              ),
+              // Icon(
+              //   Icons.attach_money,
+              //   color: Colors.green,
+              //   size: 20,
+              // ),
               Text(
                 service.formattedPrice,
                 style: TextStyle(
@@ -354,11 +354,11 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       padding: EdgeInsets.all(16),
       child: Column(
         children: [
-          // الصف الأول - أزرار Save و Chat
-          Row(
-            children: [
-              // Save button - Only show for users (not owners)
-              if (!isOwner) ...[
+          // صف أول - Save + Chat فقط للمستخدم العادي
+          if (!isOwner)
+            Row(
+              children: [
+                // Save button
                 Expanded(
                   child: Obx(() {
                     final isSaved = serviceController.savedServices
@@ -407,59 +407,47 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                   }),
                 ),
                 SizedBox(width: 12),
-              ],
 
-              // Chat button - Show for all users (both regular users and owners)
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    if (authController.isGuest) {
-                      _showGuestDialog();
-                      return;
-                    }
-
-                    // التحقق من أن المستخدم لا يحاول محادثة نفسه
-                    if (isOwner && service.workshopData?['owner_id'] == authController.currentUser.value?.id) {
-                      Get.snackbar(
-                        'Info',
-                        'You cannot chat with yourself',
-                        backgroundColor: Colors.orange.withOpacity(0.1),
-                        colorText: Colors.orange[800],
-                      );
-                      return;
-                    }
-
-                    _startChatWithWorkshop(service);
-                  },
-                  icon: Icon(
-                    Icons.chat_bubble_outline,
-                    size: 18,
-                    color: Colors.blue[600],
-                  ),
-                  label: Text(
-                    'Chat',
-                    style: TextStyle(
+                // Chat button
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      if (authController.isGuest) {
+                        _showGuestDialog();
+                        return;
+                      }
+                      _startChatWithWorkshop(service);
+                    },
+                    icon: Icon(
+                      Icons.chat_bubble_outline,
+                      size: 18,
                       color: Colors.blue[600],
-                      fontSize: 14,
                     ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: Colors.blue[300]!,
+                    label: Text(
+                      'Chat',
+                      style: TextStyle(
+                        color: Colors.blue[600],
+                        fontSize: 14,
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: Colors.blue[300]!,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
 
-          SizedBox(height: 12),
+          // مسافة بين الصفوف
+          if (!isOwner) SizedBox(height: 12),
 
-          // الصف الثاني - زر View Details
+          // الصف الثاني - View Details للجميع
           Container(
             width: double.infinity,
             child: ElevatedButton(
@@ -490,6 +478,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       ),
     );
   }
+
 
   void _startChatWithWorkshop(ServiceModel service) {
     // الحصول على معلومات صاحب الورشة

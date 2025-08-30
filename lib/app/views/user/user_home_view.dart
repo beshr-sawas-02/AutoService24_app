@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/service_controller.dart';
 import '../../data/models/service_model.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/guest_banner.dart';
@@ -86,6 +87,21 @@ class _UserHomeViewState extends State<UserHomeView> {
     },
   ];
 
+  Future<void> _handleRefresh() async {
+    try {
+      final serviceController = Get.find<ServiceController>();
+      await serviceController.loadServices(); // جلب البيانات من API
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Failed to refresh services",
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,7 +122,6 @@ class _UserHomeViewState extends State<UserHomeView> {
           IconButton(
             icon: Icon(Icons.message, color: Colors.black54),
             onPressed: () {
-              // السماح للمستضيف بالوصول لصفحة Chat
               Get.toNamed(AppRoutes.chatList);
             },
           ),
@@ -129,7 +144,6 @@ class _UserHomeViewState extends State<UserHomeView> {
         backgroundColor: Colors.white,
         elevation: 8,
         onTap: (index) {
-          // إزالة التحقق من كون المستخدم مستضيف - السماح بالوصول لجميع الصفحات
           if (index == 2) {
             Get.toNamed(AppRoutes.userProfile);
             return;
@@ -167,7 +181,6 @@ class _UserHomeViewState extends State<UserHomeView> {
   }
 
   Widget _buildHomeContent() {
-    // فلترة حسب البحث
     final filteredCategories = categories.where((cat) {
       final title = (cat['title'] as String).toLowerCase();
       return title.contains(_searchQuery.toLowerCase());
@@ -177,24 +190,29 @@ class _UserHomeViewState extends State<UserHomeView> {
       children: [
         Obx(() => authController.isGuest ? GuestBanner() : SizedBox.shrink()),
         Expanded(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSearchBar(),
-                const SizedBox(height: 24),
-                const Text(
-                  'Categories',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+          child: RefreshIndicator(
+            onRefresh: _handleRefresh,
+            color: Colors.orange,
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSearchBar(),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Categories',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                _buildServiceCategories(filteredCategories),
-              ],
+                  const SizedBox(height: 20),
+                  _buildServiceCategories(filteredCategories),
+                ],
+              ),
             ),
           ),
         ),
@@ -258,7 +276,7 @@ class _UserHomeViewState extends State<UserHomeView> {
               arguments: {
                 'serviceType': category['type'] as ServiceType,
                 'title': category['title'] as String,
-                'isOwner': false, // للمستخدم العادي
+                'isOwner': false,
               },
             );
           },

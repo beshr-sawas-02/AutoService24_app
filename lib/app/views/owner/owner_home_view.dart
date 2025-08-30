@@ -20,15 +20,17 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final userId = authController.currentUser.value?.id;
-      if (userId != null) {
-        workshopController.loadOwnerWorkshops(userId);  // تمرير userId
-        serviceController.loadOwnerServices();
-      } else {
-        print("OwnerHomeView: User ID is null, cannot load owner workshops");
-      }
-    });
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final userId = authController.currentUser.value?.id;
+    if (userId != null) {
+      await workshopController.loadOwnerWorkshops(userId);
+      await serviceController.loadOwnerServices();
+    } else {
+      print("OwnerHomeView: User ID is null, cannot load owner workshops");
+    }
   }
 
   @override
@@ -58,7 +60,10 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
           ),
         ],
       ),
-      body: _getBody(),
+      body: RefreshIndicator(
+        onRefresh: _loadData, // 🟠 مهم: هاد بيعيد تحميل بيانات الورشات والخدمات
+        child: _getBody(),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         selectedItemColor: Colors.orange,
@@ -111,6 +116,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       children: [
         Expanded(
           child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(), // 🔥 ضروري حتى يشتغل السحب
             padding: EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,28 +179,6 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildFilterChip(String label, ServiceType? type) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: Obx(() => FilterChip(
-        label: Text(
-          label,
-          style: TextStyle(
-            color: serviceController.selectedType.value == type?.name
-                ? Colors.white
-                : Colors.grey[700],
-          ),
-        ),
-        onSelected: (selected) {
-          serviceController.filterByType(type?.name);
-        },
-        selected: serviceController.selectedType.value == type?.name,
-        selectedColor: Colors.orange,
-        backgroundColor: Colors.white,
-      )),
     );
   }
 
@@ -289,7 +273,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
               arguments: {
                 'serviceType': category['type'] as ServiceType,
                 'title': category['title'] as String,
-                'isOwner': true, // هذا المهم للتمييز أن المستخدم owner
+                'isOwner': true,
               },
             );
           },

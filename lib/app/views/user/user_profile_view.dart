@@ -11,143 +11,143 @@ class UserProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: Obx(() {
-        if (!authController.isLoggedIn.value || authController.currentUser.value == null) {
-          return _buildGuestProfile();
-        }
-
-        return _buildUserProfile();
-      }),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await authController.refreshUserData();
+        },
+        child: Obx(() {
+          if (!authController.isLoggedIn.value ||
+              authController.currentUser.value == null) {
+            return _buildGuestProfile();
+          }
+          return _buildUserProfile();
+        }),
+      ),
     );
   }
 
   Widget _buildGuestProfile() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.fromLTRB(20, 80, 20, 40),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFFFF8A50), Color(0xFFFF6B35)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-      child: Column(
-        children: [
-          // Back button
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => Get.back(),
-                child: Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-              ),
-            ],
+    return SingleChildScrollView(
+      physics: AlwaysScrollableScrollPhysics(),
+      child: Container(
+        height: Get.height, // حتى يشتغل السحب لتحديث
+        width: double.infinity,
+        padding: EdgeInsets.fromLTRB(20, 80, 20, 40),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFFF8A50), Color(0xFFFF6B35)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+        ),
+        child: Column(
+          children: [
+            // Back button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 4,
+                GestureDetector(
+                  onTap: () => Get.back(),
+                  child: Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
                     ),
-                  ),
-                  child: CircleAvatar(
-                    radius: 58,
-                    backgroundColor: Colors.white.withOpacity(0.2),
                     child: Icon(
-                      Icons.person,
-                      size: 50,
+                      Icons.arrow_back,
                       color: Colors.white,
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 24),
-
-                Text(
-                  'Guest User',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w300,
-                    color: Colors.white,
-                    letterSpacing: 1,
-                  ),
-                ),
-
-                SizedBox(height: 8),
-
-                Text(
-                  'You\'re browsing as a guest',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white.withOpacity(0.9),
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-
-                SizedBox(height: 40),
-
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: ElevatedButton.icon(
-                    onPressed: () => Get.toNamed(AppRoutes.login),
-                    icon: Icon(Icons.login),
-                    label: Text('Login to Your Account'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.orange,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 12),
-
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: OutlinedButton.icon(
-                    onPressed: () => Get.toNamed(AppRoutes.register),
-                    icon: Icon(Icons.person_add),
-                    label: Text('Create New Account'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      side: BorderSide(color: Colors.white),
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      size: 20,
                     ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 4,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 58,
+                      backgroundColor: Colors.white.withOpacity(0.2),
+                      child: Icon(
+                        Icons.person,
+                        size: 50,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                  Text(
+                    'Guest User',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w300,
+                      color: Colors.white,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'You\'re browsing as a guest',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white.withOpacity(0.9),
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: 40),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: ElevatedButton.icon(
+                      onPressed: () => Get.toNamed(AppRoutes.login),
+                      icon: Icon(Icons.login),
+                      label: Text('Login to Your Account'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.orange,
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: OutlinedButton.icon(
+                      onPressed: () => Get.toNamed(AppRoutes.register),
+                      icon: Icon(Icons.person_add),
+                      label: Text('Create New Account'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: BorderSide(color: Colors.white),
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -156,34 +156,21 @@ class UserProfileView extends StatelessWidget {
     final user = authController.currentUser.value!;
 
     return SingleChildScrollView(
+      physics: AlwaysScrollableScrollPhysics(), // ضروري عشان يشتغل السحب
       child: Column(
         children: [
-          // Profile Header
           _buildProfileHeader(user),
-
-          // Content with padding
           Padding(
             padding: EdgeInsets.all(20),
             child: Column(
               children: [
-                // Contact Information Card
                 _buildContactInformationCard(user),
-
                 SizedBox(height: 20),
-
-                // Profile Options
                 _buildProfileOptions(),
-
                 SizedBox(height: 24),
-
-                // Logout Button
                 _buildLogoutButton(),
-
                 SizedBox(height: 12),
-
-                // Delete Account Button
                 _buildDeleteAccountButton(),
-
                 SizedBox(height: 20),
               ],
             ),
