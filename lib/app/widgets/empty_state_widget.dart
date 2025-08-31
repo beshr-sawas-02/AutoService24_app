@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/app_colors.dart';
 import '../utils/constants.dart';
 
 class EmptyStateWidget extends StatelessWidget {
@@ -67,7 +68,7 @@ class EmptyStateWidget extends StatelessWidget {
                 onPressed: onButtonPressed,
                 child: Text(buttonText!),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryOrange,
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(
                     horizontal: AppSizes.spaceLarge,

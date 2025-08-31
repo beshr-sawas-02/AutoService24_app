@@ -116,7 +116,7 @@ class _RegisterViewState extends State<RegisterView> {
                             ),
                             SizedBox(height: 12),
                             Text(
-                              'Car Owner',
+                              'Regular User',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,

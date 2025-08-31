@@ -5,6 +5,7 @@ import '../../controllers/workshop_controller.dart';
 import '../../controllers/service_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../data/models/service_model.dart';
+import '../../config/app_colors.dart';
 
 class OwnerHomeView extends StatefulWidget {
   @override
@@ -36,14 +37,14 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         title: Text(
           'CarServiceHub - Owner',
           style: TextStyle(
-            color: Colors.black87,
+            color: AppColors.textPrimary,
             fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
@@ -51,24 +52,25 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.message, color: Colors.black54),
+            icon: Icon(Icons.message, color: AppColors.textSecondary),
             onPressed: () => Get.toNamed(AppRoutes.chatList),
           ),
           IconButton(
-            icon: Icon(Icons.logout, color: Colors.black54),
+            icon: Icon(Icons.logout, color: AppColors.textSecondary),
             onPressed: () => _showLogoutDialog(),
           ),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: _loadData, // 🟠 مهم: هاد بيعيد تحميل بيانات الورشات والخدمات
+        onRefresh: _loadData,
+        color: AppColors.primary,
         child: _getBody(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        selectedItemColor: Colors.orange,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.white,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.textSecondary,
+        backgroundColor: AppColors.white,
         elevation: 8,
         onTap: (index) {
           if (index == 1) {
@@ -101,7 +103,8 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.toNamed(AppRoutes.addService),
         child: Icon(Icons.add),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
         tooltip: 'Add Service',
       ),
     );
@@ -116,25 +119,24 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       children: [
         Expanded(
           child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(), // 🔥 ضروري حتى يشتغل السحب
+            physics: AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildWelcomeCard(),
                 const SizedBox(height: 24),
-                const Text(
+                Text(
                   'Service Categories',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 20),
                 _buildServiceCategories(),
-
-                const SizedBox(height: 100), // Space for FAB
+                const SizedBox(height: 100),
               ],
             ),
           ),
@@ -143,21 +145,16 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
     );
   }
 
-  // ---------------------- WELCOME CARD ----------------------
   Widget _buildWelcomeCard() {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.orange.shade400, Colors.orange.shade600],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: AppColors.primaryGradient,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.3),
+            color: AppColors.primaryWithOpacity(0.3),
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
@@ -165,13 +162,13 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       ),
       child: Row(
         children: [
-          Icon(Icons.business_center, color: Colors.white, size: 36),
+          Icon(Icons.business_center, color: AppColors.white, size: 36),
           SizedBox(width: 12),
           Expanded(
             child: Obx(() => Text(
               'Hello ${authController.displayName}',
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -182,25 +179,24 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
     );
   }
 
-  // ---------------------- SERVICE CATEGORIES ----------------------
   Widget _buildServiceCategories() {
     final categories = [
       {
         'title': 'Vehicle\nInspection',
         'type': ServiceType.VEHICLE_INSPECTION,
-        'color': Colors.orange,
+        'color': AppColors.primary,
         'image': 'assets/images/vehicle_inspection.jpg',
       },
       {
         'title': 'Change Oil',
         'type': ServiceType.CHANGE_OIL,
-        'color': Colors.blue,
+        'color': AppColors.info,
         'image': 'assets/images/oil_change.jpg',
       },
       {
         'title': 'Change Tires',
         'type': ServiceType.CHANGE_TIRES,
-        'color': Colors.grey,
+        'color': AppColors.grey500,
         'image': 'assets/images/change_tires.jpg',
       },
       {
@@ -212,13 +208,13 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       {
         'title': 'Cleaning',
         'type': ServiceType.CLEANING,
-        'color': Colors.green,
+        'color': AppColors.success,
         'image': 'assets/images/car_cleaning.jpg',
       },
       {
         'title': 'Diagnostic Test',
         'type': ServiceType.DIAGNOSTIC_TEST,
-        'color': Colors.red,
+        'color': AppColors.error,
         'image': 'assets/images/diagnostic.jpg',
       },
       {
@@ -242,7 +238,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       {
         'title': 'Polish',
         'type': ServiceType.POLISH,
-        'color': Colors.amber,
+        'color': AppColors.warning,
         'image': 'assets/images/car_polish.jpg',
       },
       {
@@ -267,7 +263,6 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         final category = categories[index];
         return GestureDetector(
           onTap: () {
-            // Navigate to FilteredServicesView with isOwner = true
             Get.toNamed(
               AppRoutes.filteredServices,
               arguments: {
@@ -282,7 +277,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
+                  color: AppColors.shadowMedium,
                   blurRadius: 8,
                   offset: Offset(0, 4),
                 ),
@@ -317,8 +312,8 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Colors.black.withOpacity(0.1),
-                          Colors.black.withOpacity(0.5),
+                          AppColors.blackWithOpacity(0.1),
+                          AppColors.blackWithOpacity(0.5),
                         ],
                       ),
                     ),
@@ -328,12 +323,12 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
                       category['title'] as String,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         shadows: [
                           Shadow(
-                            color: Colors.black.withOpacity(0.7),
+                            color: AppColors.blackWithOpacity(0.7),
                             offset: Offset(0, 2),
                             blurRadius: 4,
                           ),
@@ -350,20 +345,25 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
     );
   }
 
-  // ---------------------- DIALOGS ----------------------
   void _showLogoutDialog() {
     Get.dialog(AlertDialog(
       title: Text('Logout'),
       content: Text('Are you sure you want to logout?'),
       actions: [
-        TextButton(onPressed: () => Get.back(), child: Text('Cancel')),
+        TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary))
+        ),
         ElevatedButton(
           onPressed: () {
             Get.back();
             authController.logout();
           },
           child: Text('Logout'),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.error,
+            foregroundColor: AppColors.white,
+          ),
         ),
       ],
     ));

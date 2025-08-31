@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/chat_controller.dart';
 import '../../controllers/auth_controller.dart';
+import '../../data/models/chat_model.dart';
+import '../../data/models/user_model.dart';
 import '../../routes/app_routes.dart';
+import '../../config/app_colors.dart';
 
 class ChatListView extends StatefulWidget {
   @override
@@ -25,20 +28,20 @@ class _ChatListViewState extends State<ChatListView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         title: Text(
           'Messages',
           style: TextStyle(
-            color: Colors.black87,
+            color: AppColors.textPrimary,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black54),
+          icon: Icon(Icons.arrow_back, color: AppColors.textSecondary),
           onPressed: () => Get.back(),
         ),
       ),
@@ -62,11 +65,11 @@ class _ChatListViewState extends State<ChatListView> {
             Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: AppColors.shadowLight,
                     blurRadius: 10,
                     offset: Offset(0, 4),
                   ),
@@ -78,13 +81,13 @@ class _ChatListViewState extends State<ChatListView> {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.1),
+                      color: AppColors.primaryWithOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.chat_bubble_outline,
                       size: 40,
-                      color: Colors.orange,
+                      color: AppColors.primary,
                     ),
                   ),
                   SizedBox(height: 20),
@@ -93,7 +96,7 @@ class _ChatListViewState extends State<ChatListView> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -102,7 +105,7 @@ class _ChatListViewState extends State<ChatListView> {
                     'Sign in to chat directly with workshops and service providers.',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: AppColors.textSecondary,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -111,7 +114,7 @@ class _ChatListViewState extends State<ChatListView> {
                   Container(
                     padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.05),
+                      color: AppColors.info.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
@@ -122,7 +125,7 @@ class _ChatListViewState extends State<ChatListView> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         SizedBox(height: 12),
@@ -144,8 +147,8 @@ class _ChatListViewState extends State<ChatListView> {
                           onPressed: () => Get.toNamed(AppRoutes.login),
                           child: Text('Sign In'),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.orange,
-                            side: BorderSide(color: Colors.orange),
+                            foregroundColor: AppColors.primary,
+                            side: BorderSide(color: AppColors.primary),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -159,8 +162,8 @@ class _ChatListViewState extends State<ChatListView> {
                           onPressed: () => Get.toNamed(AppRoutes.register),
                           child: Text('Register'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange,
-                            foregroundColor: Colors.white,
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -175,10 +178,10 @@ class _ChatListViewState extends State<ChatListView> {
 
                   TextButton.icon(
                     onPressed: () => Get.back(),
-                    icon: Icon(Icons.explore, color: Colors.grey[600]),
+                    icon: Icon(Icons.explore, color: AppColors.textSecondary),
                     label: Text(
                       'Explore Services Instead',
-                      style: TextStyle(color: Colors.grey[600]),
+                      style: TextStyle(color: AppColors.textSecondary),
                     ),
                   ),
                 ],
@@ -198,10 +201,10 @@ class _ChatListViewState extends State<ChatListView> {
           Container(
             padding: EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.2),
+              color: AppColors.info.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 16, color: Colors.blue),
+            child: Icon(icon, size: 16, color: AppColors.info),
           ),
           SizedBox(width: 12),
           Expanded(
@@ -209,7 +212,7 @@ class _ChatListViewState extends State<ChatListView> {
               text,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey[700],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -222,7 +225,7 @@ class _ChatListViewState extends State<ChatListView> {
     if (chatController.isLoading.value) {
       return Center(
         child: CircularProgressIndicator(
-          color: Colors.orange,
+          color: AppColors.primary,
         ),
       );
     }
@@ -250,13 +253,13 @@ class _ChatListViewState extends State<ChatListView> {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.1),
+              color: AppColors.primaryWithOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.chat_bubble_outline,
               size: 60,
-              color: Colors.orange,
+              color: AppColors.primary,
             ),
           ),
           SizedBox(height: 24),
@@ -265,7 +268,7 @@ class _ChatListViewState extends State<ChatListView> {
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
             ),
           ),
           SizedBox(height: 12),
@@ -273,7 +276,7 @@ class _ChatListViewState extends State<ChatListView> {
             'Start chatting with workshop owners and service providers',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -283,8 +286,8 @@ class _ChatListViewState extends State<ChatListView> {
             icon: Icon(Icons.search),
             label: Text('Browse Services'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -296,7 +299,7 @@ class _ChatListViewState extends State<ChatListView> {
     );
   }
 
-  Widget _buildChatItem(chat) {
+  Widget _buildChatItem(ChatModel chat) {
     final currentUserId = authController.currentUser.value?.id ?? '';
     final isCurrentUserUser1 = chat.user1Id.toString() == currentUserId;
     final otherUserId = isCurrentUserUser1 ? chat.user2Id : chat.user1Id;
@@ -307,50 +310,20 @@ class _ChatListViewState extends State<ChatListView> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
+      color: AppColors.cardBackground,
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.orange, Colors.orange.shade300],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.person,
-            color: Colors.white,
-            size: 24,
-          ),
-        ),
-        title: Text(
-          'User $otherUserId', // In real app, fetch username
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-        subtitle: Padding(
-          padding: EdgeInsets.only(top: 4),
-          child: Text(
-            'Tap to view conversation',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14,
-            ),
-          ),
-        ),
+        leading: _buildUserAvatar(otherUserId.toString()),
+        title: _buildUserName(otherUserId.toString()),
+        subtitle: _buildUserSubtitle(otherUserId.toString()),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              '12:30 PM', // Placeholder time
+              _formatTime(chat.updatedAt ?? chat.createdAt),
               style: TextStyle(
-                color: Colors.grey[500],
+                color: AppColors.textHint,
                 fontSize: 12,
               ),
             ),
@@ -359,22 +332,147 @@ class _ChatListViewState extends State<ChatListView> {
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: Colors.orange,
+                color: AppColors.primary,
                 shape: BoxShape.circle,
               ),
             ),
           ],
         ),
-        onTap: () {
-          Get.toNamed(
-            AppRoutes.chat,
-            arguments: {
-              'chatId': chat.id,
-              'otherUserId': otherUserId.toString(),
-            },
-          );
-        },
+        onTap: () => _navigateToChat(chat, currentUserId),
       ),
     );
+  }
+
+  Widget _buildUserAvatar(String userId) {
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        gradient: AppColors.primaryGradient,
+        shape: BoxShape.circle,
+      ),
+      child: Obx(() {
+        final user = chatController.usersCache[userId];
+
+        if (user?.profileImage != null && user!.profileImage!.isNotEmpty) {
+          return ClipOval(
+            child: Image.network(
+              user.profileImage!,
+              fit: BoxFit.cover,
+              width: 50,
+              height: 50,
+              errorBuilder: (context, error, stackTrace) {
+                return _buildDefaultAvatar(user);
+              },
+            ),
+          );
+        }
+
+        return _buildDefaultAvatar(user);
+      }),
+    );
+  }
+
+  Widget _buildDefaultAvatar(UserModel? user) {
+    return Icon(
+      user?.isOwner == true ? Icons.build : Icons.person,
+      color: AppColors.white,
+      size: 24,
+    );
+  }
+
+  Widget _buildUserName(String userId) {
+    return Obx(() {
+      final user = chatController.usersCache[userId];
+      String displayName = user?.username ?? 'Loading...';
+
+      // إذا لم يتم تحميل المستخدم بعد، حاول تحميله
+      if (user == null && !chatController.isLoadingUsers.value) {
+        chatController.getUserById(userId); // يمكن أن يكون Future<void>
+      }
+
+      return Text(
+        displayName,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: AppColors.textPrimary,
+        ),
+      );
+    });
+  }
+
+  Widget _buildUserSubtitle(String userId) {
+    return Padding(
+      padding: EdgeInsets.only(top: 4),
+      child: Obx(() {
+        final user = chatController.usersCache[userId];
+        String subtitle = 'Tap to view conversation';
+
+        if (user != null) {
+          if (user.isOwner) {
+            subtitle = 'Workshop Owner • Tap to chat';
+          } else {
+            subtitle = 'User • Tap to chat';
+          }
+        }
+
+        return Text(
+          subtitle,
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 14,
+          ),
+        );
+      }),
+    );
+  }
+
+  void _navigateToChat(ChatModel chat, String currentUserId) async {
+    final isCurrentUserUser1 = chat.user1Id.toString() == currentUserId;
+    final otherUserId = isCurrentUserUser1 ? chat.user2Id : chat.user1Id;
+
+    // جلب المستخدم إذا لم يكن موجودًا في الكاش
+    final otherUser = await chatController.getUserById(otherUserId.toString());
+    final otherUserName = otherUser?.username ?? 'User';
+
+    Get.toNamed(
+      AppRoutes.chat,
+      arguments: {
+        'chatId': chat.id,
+        'receiverId': otherUserId.toString(),
+        'receiverName': otherUserName,
+        'currentUserId': currentUserId,
+      },
+    );
+  }
+
+  void _showErrorSnackbar(String message) {
+    Get.snackbar(
+      'خطأ',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+      duration: Duration(seconds: 3),
+    );
+  }
+
+  // دالة مساعدة لتنسيق الوقت
+  String _formatTime(DateTime? dateTime) {
+    if (dateTime == null) return '';
+
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays}d';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m';
+    } else {
+      return 'now';
+    }
   }
 }

@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../controllers/workshop_controller.dart';
 import '../../data/models/workshop_model.dart';
 import '../../routes/app_routes.dart';
+import '../../config/app_colors.dart';
 
 class MapView extends StatefulWidget {
   @override
@@ -29,7 +30,8 @@ class _MapViewState extends State<MapView> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Workshop Locations'),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
         actions: [
           IconButton(
             icon: Icon(Icons.my_location),
@@ -59,7 +61,8 @@ class _MapViewState extends State<MapView> {
             heroTag: "refresh",
             onPressed: _loadWorkshopMarkers,
             child: Icon(Icons.refresh),
-            backgroundColor: Colors.orange,
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.white,
             mini: true,
           ),
           SizedBox(height: 10),
@@ -67,7 +70,8 @@ class _MapViewState extends State<MapView> {
             heroTag: "location",
             onPressed: _goToCurrentLocation,
             child: Icon(Icons.my_location),
-            backgroundColor: Colors.orange,
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.white,
           ),
         ],
       ),
@@ -161,6 +165,7 @@ class _MapViewState extends State<MapView> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: AppColors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -179,7 +184,7 @@ class _MapViewState extends State<MapView> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: AppColors.grey300,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -194,7 +199,7 @@ class _MapViewState extends State<MapView> {
                     height: 60,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Colors.grey[200],
+                      color: AppColors.grey200,
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
@@ -203,10 +208,10 @@ class _MapViewState extends State<MapView> {
                         workshop.profileImage!,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
-                          return Icon(Icons.business, color: Colors.grey[400]);
+                          return Icon(Icons.business, color: AppColors.grey400);
                         },
                       )
-                          : Icon(Icons.business, color: Colors.grey[400]),
+                          : Icon(Icons.business, color: AppColors.grey400),
                     ),
                   ),
                   SizedBox(width: 16),
@@ -219,16 +224,17 @@ class _MapViewState extends State<MapView> {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(Icons.access_time, size: 16, color: Colors.grey),
+                            Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
                             SizedBox(width: 4),
                             Text(
                               workshop.workingHours,
-                              style: TextStyle(color: Colors.grey[600]),
+                              style: TextStyle(color: AppColors.textSecondary),
                             ),
                           ],
                         ),
@@ -244,7 +250,7 @@ class _MapViewState extends State<MapView> {
                 workshop.description,
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey[700],
+                  color: AppColors.textSecondary,
                 ),
               ),
 
@@ -264,8 +270,8 @@ class _MapViewState extends State<MapView> {
                       },
                       child: Text('View Details'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,
-                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.white,
                         padding: EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
@@ -278,8 +284,8 @@ class _MapViewState extends State<MapView> {
                       },
                       child: Text('Directions'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.orange,
-                        side: BorderSide(color: Colors.orange),
+                        foregroundColor: AppColors.primary,
+                        side: BorderSide(color: AppColors.primary),
                         padding: EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
@@ -291,11 +297,11 @@ class _MapViewState extends State<MapView> {
                 SizedBox(height: 16),
                 Row(
                   children: [
-                    Icon(Icons.directions_car, size: 16, color: Colors.grey),
+                    Icon(Icons.directions_car, size: 16, color: AppColors.textSecondary),
                     SizedBox(width: 8),
                     Text(
                       'Distance: ${_calculateDistance(workshop).toStringAsFixed(1)} km',
-                      style: TextStyle(color: Colors.grey[600]),
+                      style: TextStyle(color: AppColors.textSecondary),
                     ),
                   ],
                 ),

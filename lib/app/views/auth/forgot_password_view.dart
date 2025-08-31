@@ -5,6 +5,7 @@ import '../../routes/app_routes.dart';
 import '../../utils/validators.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/custom_button.dart';
+import '../../config/app_colors.dart';
 
 class ForgotPasswordView extends StatefulWidget {
   @override
@@ -25,7 +26,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Reset Password'),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
@@ -70,7 +72,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                     child: Text(
                       'Login',
                       style: TextStyle(
-                        color: Colors.orange,
+                        color: AppColors.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -91,7 +93,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
           child: Container(
             height: 4,
             decoration: BoxDecoration(
-              color: _currentStep >= 0 ? Colors.orange : Colors.grey[300],
+              color: _currentStep >= 0 ? AppColors.primary : AppColors.grey300,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -101,7 +103,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
           child: Container(
             height: 4,
             decoration: BoxDecoration(
-              color: _currentStep >= 1 ? Colors.orange : Colors.grey[300],
+              color: _currentStep >= 1 ? AppColors.primary : AppColors.grey300,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -138,13 +140,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.orange.withOpacity(0.1),
+            color: AppColors.primaryWithOpacity(0.1),
             borderRadius: BorderRadius.circular(40),
           ),
           child: Icon(
             icon,
             size: 40,
-            color: Colors.orange,
+            color: AppColors.primary,
           ),
         ),
         SizedBox(height: 20),
@@ -153,6 +155,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
           ),
           textAlign: TextAlign.center,
         ),
@@ -160,7 +163,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         Text(
           subtitle,
           style: TextStyle(
-            color: Colors.grey[600],
+            color: AppColors.textSecondary,
             fontSize: 16,
           ),
           textAlign: TextAlign.center,
@@ -195,19 +198,19 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         Container(
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1),
+            color: AppColors.info.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.blue.withOpacity(0.3)),
+            border: Border.all(color: AppColors.info.withOpacity(0.3)),
           ),
           child: Row(
             children: [
-              Icon(Icons.info_outline, color: Colors.blue),
+              Icon(Icons.info_outline, color: AppColors.info),
               SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'We\'ll verify your email and allow you to set a new password.',
                   style: TextStyle(
-                    color: Colors.blue.shade700,
+                    color: AppColors.info,
                     fontSize: 14,
                   ),
                 ),
@@ -246,21 +249,21 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         Container(
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.green.withOpacity(0.1),
+            color: AppColors.success.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.green.withOpacity(0.3)),
+            border: Border.all(color: AppColors.success.withOpacity(0.3)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Icon(Icons.security, color: Colors.green),
+                  Icon(Icons.security, color: AppColors.success),
                   SizedBox(width: 8),
                   Text(
                     'Password Requirements:',
                     style: TextStyle(
-                      color: Colors.green.shade700,
+                      color: AppColors.success,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -285,13 +288,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
           Icon(
             Icons.check_circle_outline,
             size: 16,
-            color: Colors.green.shade600,
+            color: AppColors.success,
           ),
           SizedBox(width: 8),
           Text(
             requirement,
             style: TextStyle(
-              color: Colors.green.shade700,
+              color: AppColors.success,
               fontSize: 12,
             ),
           ),
@@ -306,14 +309,14 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         Container(
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.green.withOpacity(0.1),
+            color: AppColors.success.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
             children: [
               Icon(
                 Icons.check_circle,
-                color: Colors.green,
+                color: AppColors.success,
                 size: 60,
               ),
               SizedBox(height: 16),
@@ -322,7 +325,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.green.shade700,
+                  color: AppColors.success,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -330,7 +333,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               Text(
                 'Your password has been successfully updated. You can now login with your new password.',
                 style: TextStyle(
-                  color: Colors.green.shade600,
+                  color: AppColors.success,
                   fontSize: 14,
                 ),
                 textAlign: TextAlign.center,

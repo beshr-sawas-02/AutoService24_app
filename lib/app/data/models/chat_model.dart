@@ -1,7 +1,7 @@
 class ChatModel {
   final String id;
-  final int user1Id;
-  final int user2Id;
+  final String user1Id;  // تغيير من int إلى String
+  final String user2Id;  // تغيير من int إلى String
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -15,9 +15,9 @@ class ChatModel {
 
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     return ChatModel(
-      id: json['_id'] ?? '',
-      user1Id: json['user1Id'] ?? 0,
-      user2Id: json['user2Id'] ?? 0,
+      id: json['_id']?.toString() ?? '',
+      user1Id: json['user1Id']?.toString() ?? '',  // إبقاء كـ String
+      user2Id: json['user2Id']?.toString() ?? '',  // إبقاء كـ String
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
     );
@@ -35,8 +35,8 @@ class ChatModel {
 
   ChatModel copyWith({
     String? id,
-    int? user1Id,
-    int? user2Id,
+    String? user1Id,
+    String? user2Id,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {

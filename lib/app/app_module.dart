@@ -11,6 +11,7 @@ import 'data/repositories/user_repository.dart';
 import 'data/repositories/workshop_repository.dart';
 import 'data/repositories/service_repository.dart';
 import 'data/repositories/chat_repository.dart';
+import 'utils/websocket_service.dart'; // إضافة جديدة
 
 class AppModule {
   static void init() {
@@ -45,6 +46,9 @@ class AppModule {
         permanent: true
     );
 
+    // WebSocket Service - إضافة جديدة (يجب أن تكون قبل ChatController)
+    Get.put<WebSocketService>(WebSocketService(), permanent: true);
+
     // Controllers
     Get.put<AuthController>(
         AuthController(Get.find<AuthRepository>()),
@@ -65,6 +69,8 @@ class AppModule {
         ServiceController(Get.find<ServiceRepository>()),
         permanent: true
     );
+
+    // ChatController يجب أن يكون بعد WebSocketService
     Get.put<ChatController>(
         ChatController(Get.find<ChatRepository>()),
         permanent: true
@@ -83,6 +89,7 @@ class AppModule {
       Get.find<WorkshopRepository>();
       Get.find<ServiceRepository>();
       Get.find<ChatRepository>();
+      Get.find<WebSocketService>(); // إضافة جديدة
       Get.find<AuthController>();
       Get.find<UserController>();
       Get.find<WorkshopController>();
@@ -92,6 +99,37 @@ class AppModule {
       print("✅ AppModule: All dependencies verified successfully");
     } catch (e) {
       print("❌ AppModule: Dependency verification failed: $e");
+    }
+  }
+
+  // دالة لتنظيف جميع التبعيات (مفيدة للاختبارات أو إعادة التشغيل)
+  static void cleanup() {
+    try {
+      // قطع اتصال WebSocket قبل التنظيف
+      if (Get.isRegistered<WebSocketService>()) {
+        Get.find<WebSocketService>().disconnect();
+      }
+
+      // حذف جميع التبعيات
+      Get.deleteAll(force: true);
+      print("🧹 AppModule: All dependencies cleaned up");
+    } catch (e) {
+      print("❌ AppModule: Cleanup failed: $e");
+    }
+  }
+
+  // دالة لإعادة تهيئة WebSocket (مفيدة عند تغيير المستخدم)
+  static Future<void> reinitializeWebSocket() async {
+    try {
+      if (Get.isRegistered<WebSocketService>()) {
+        final webSocketService = Get.find<WebSocketService>();
+        webSocketService.disconnect();
+        await Future.delayed(Duration(seconds: 1));
+        await webSocketService.connect();
+        print("🔄 AppModule: WebSocket reinitialized");
+      }
+    } catch (e) {
+      print("❌ AppModule: WebSocket reinitialization failed: $e");
     }
   }
 }

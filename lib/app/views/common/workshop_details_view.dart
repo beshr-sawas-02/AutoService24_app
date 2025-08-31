@@ -7,6 +7,7 @@ import '../../controllers/auth_controller.dart';
 import '../../data/models/workshop_model.dart';
 import '../../widgets/service_card.dart';
 import '../../routes/app_routes.dart';
+import '../../config/app_colors.dart';
 
 class WorkshopDetailsView extends StatefulWidget {
   @override
@@ -25,7 +26,6 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
   void initState() {
     super.initState();
     workshop = Get.arguments as WorkshopModel;
-    // Load services for this workshop
     _loadWorkshopServices();
   }
 
@@ -37,13 +37,14 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
           SliverAppBar(
             expandedHeight: 200,
             pinned: true,
-            backgroundColor: Colors.orange,
+            backgroundColor: AppColors.primary,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 workshop.name,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: AppColors.white,
                 ),
               ),
               background: workshop.profileImage != null
@@ -52,21 +53,21 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
-                    color: Colors.grey[300],
+                    color: AppColors.grey300,
                     child: Icon(
                       Icons.business,
                       size: 80,
-                      color: Colors.grey[600],
+                      color: AppColors.textSecondary,
                     ),
                   );
                 },
               )
                   : Container(
-                color: Colors.grey[300],
+                color: AppColors.grey300,
                 child: Icon(
                   Icons.business,
                   size: 80,
-                  color: Colors.grey[600],
+                  color: AppColors.textSecondary,
                 ),
               ),
             ),
@@ -117,13 +118,15 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
         },
         label: Text('Contact Workshop'),
         icon: Icon(Icons.message),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
       ),
     );
   }
 
   Widget _buildWorkshopInfo() {
     return Card(
+      color: AppColors.cardBackground,
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -134,6 +137,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
               ),
             ),
             SizedBox(height: 16),
@@ -148,13 +152,14 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             // Rating and Reviews (placeholder)
             Row(
               children: [
-                Icon(Icons.star, color: Colors.amber),
+                Icon(Icons.star, color: AppColors.warning),
                 SizedBox(width: 8),
                 Text(
                   '4.5 (24 reviews)',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 Spacer(),
@@ -178,7 +183,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: Colors.grey[600]),
+          Icon(icon, size: 20, color: AppColors.textSecondary),
           SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -188,13 +193,13 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
                   label,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
-                    color: Colors.grey[700],
+                    color: AppColors.textSecondary,
                   ),
                 ),
                 SizedBox(height: 2),
                 Text(
                   value,
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
                 ),
               ],
             ),
@@ -209,7 +214,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
       height: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: AppColors.border),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
@@ -256,6 +261,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
               ),
             ),
             TextButton(
@@ -270,7 +276,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
 
         Obx(() {
           if (serviceController.isLoading.value) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator(color: AppColors.primary));
           }
 
           // Filter services for this workshop
@@ -305,6 +311,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
 
   Widget _buildEmptyServices() {
     return Card(
+      color: AppColors.cardBackground,
       child: Padding(
         padding: EdgeInsets.all(32),
         child: Column(
@@ -312,7 +319,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             Icon(
               Icons.build_outlined,
               size: 48,
-              color: Colors.grey,
+              color: AppColors.textSecondary,
             ),
             SizedBox(height: 16),
             Text(
@@ -320,14 +327,14 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
             SizedBox(height: 8),
             Text(
               'This workshop hasn\'t added any services yet',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -357,8 +364,9 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
   void _showGuestDialog() {
     Get.dialog(
       AlertDialog(
-        title: Text('Login Required'),
-        content: Text('Please login or register to contact workshops.'),
+        backgroundColor: AppColors.white,
+        title: Text('Login Required', style: TextStyle(color: AppColors.textPrimary)),
+        content: Text('Please login or register to contact workshops.', style: TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -371,8 +379,8 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             },
             child: Text('Login'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
             ),
           ),
         ],

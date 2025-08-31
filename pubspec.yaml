@@ -20,6 +20,9 @@ dependencies:
   # Image handling
   image_picker: ^1.0.4
 
+  web_socket_channel: ^2.4.0
+
+
 
   # Storage
   shared_preferences: ^2.2.2

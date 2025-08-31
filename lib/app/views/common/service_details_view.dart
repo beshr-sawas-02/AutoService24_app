@@ -1,3 +1,4 @@
+import 'package:autoservice24/app/config/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
@@ -19,7 +20,7 @@ class ServiceDetailsView extends StatelessWidget {
           SliverAppBar(
             expandedHeight: 250,
             pinned: true,
-            backgroundColor: Colors.orange,
+            backgroundColor: AppColors.primary,
             flexibleSpace: FlexibleSpaceBar(
               background: service.images.isNotEmpty
                   ? PageView.builder(
@@ -106,7 +107,7 @@ class ServiceDetailsView extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors.orange,
+                          color: AppColors.primary,
                         ),
                       ),
                     ],
@@ -184,8 +185,8 @@ class ServiceDetailsView extends StatelessWidget {
                           },
                           child: Text('Contact Workshop'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange,
-                            foregroundColor: Colors.white,
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.white,
                             padding: EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -302,7 +303,7 @@ class ServiceDetailsView extends StatelessWidget {
             },
             child: Text('Login'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
           ),

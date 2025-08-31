@@ -71,28 +71,28 @@ class AppConstants {
   static const String saveSuccess = 'Saved successfully';
 }
 
-class AppColors {
-  // Primary Colors
-  static const primaryOrange = Color(0xFFFF9800);
-  static const primaryWhite = Color(0xFFFFFFFF);
-  static const splashBackground = Color(0xFF2D2D2D);
-
-  // Secondary Colors
-  static const lightGrey = Color(0xFFF5F5F5);
-  static const mediumGrey = Color(0xFF9E9E9E);
-  static const darkGrey = Color(0xFF424242);
-
-  // Status Colors
-  static const success = Color(0xFF4CAF50);
-  static const error = Color(0xFFF44336);
-  static const warning = Color(0xFFFF9800);
-  static const info = Color(0xFF2196F3);
-
-  // Text Colors
-  static const textPrimary = Color(0xFF212121);
-  static const textSecondary = Color(0xFF757575);
-  static const textHint = Color(0xFFBDBDBD);
-}
+// class AppColors {
+//   // Primary Colors
+//   static const primaryOrange = Color(0xFFFF9800);
+//   static const primaryWhite = Color(0xFFFFFFFF);
+//   static const splashBackground = Color(0xFF2D2D2D);
+//
+//   // Secondary Colors
+//   static const lightGrey = Color(0xFFF5F5F5);
+//   static const mediumGrey = Color(0xFF9E9E9E);
+//   static const darkGrey = Color(0xFF424242);
+//
+//   // Status Colors
+//   static const success = Color(0xFF4CAF50);
+//   static const error = Color(0xFFF44336);
+//   static const warning = Color(0xFFFF9800);
+//   static const info = Color(0xFF2196F3);
+//
+//   // Text Colors
+//   static const textPrimary = Color(0xFF212121);
+//   static const textSecondary = Color(0xFF757575);
+//   static const textHint = Color(0xFFBDBDBD);
+// }
 
 class AppSizes {
   // Icon Sizes

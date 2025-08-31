@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../routes/app_routes.dart';
+import '../config/app_colors.dart';
 
 class GuestBanner extends StatelessWidget {
   @override
@@ -9,11 +10,11 @@ class GuestBanner extends StatelessWidget {
       margin: EdgeInsets.all(16),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Color(0xFFFF8A50), // اللون الجديد لكامل البانر
+        color: AppColors.primary,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Color(0xFFFF8A50).withOpacity(0.3),
+            color: AppColors.primaryWithOpacity(0.3),
             blurRadius: 8,
             offset: Offset(0, 4),
           ),
@@ -26,14 +27,14 @@ class GuestBanner extends StatelessWidget {
             children: [
               Icon(
                 Icons.info_outline,
-                color: Colors.white,
+                color: AppColors.white,
                 size: 24,
               ),
               SizedBox(width: 8),
               Text(
                 'You\'re browsing as a guest',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -44,7 +45,7 @@ class GuestBanner extends StatelessWidget {
           Text(
             'Login or register to save services, chat with workshops, and access more features.',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: AppColors.whiteWithOpacity(0.9),
               fontSize: 14,
             ),
           ),
@@ -56,8 +57,8 @@ class GuestBanner extends StatelessWidget {
                   onPressed: () => Get.toNamed(AppRoutes.login),
                   child: Text('Login'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Color(0xFFFF8A50),
+                    backgroundColor: AppColors.white,
+                    foregroundColor: AppColors.primary,
                     padding: EdgeInsets.symmetric(vertical: 8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -71,8 +72,8 @@ class GuestBanner extends StatelessWidget {
                   onPressed: () => Get.toNamed(AppRoutes.register),
                   child: Text('Register'),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: BorderSide(color: Colors.white),
+                    foregroundColor: AppColors.white,
+                    side: BorderSide(color: AppColors.white),
                     padding: EdgeInsets.symmetric(vertical: 8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),

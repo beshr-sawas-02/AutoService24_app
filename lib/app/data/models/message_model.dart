@@ -1,7 +1,7 @@
 class MessageModel {
   final String id;
-  final int senderId;
-  final int receiverId;
+  final String senderId;    // تغيير من int إلى String
+  final String receiverId;  // تغيير من int إلى String
   final String chatId;
   final String? content;
   final String? image;
@@ -21,12 +21,12 @@ class MessageModel {
 
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
-      id: json['_id'] ?? '',
-      senderId: json['senderId'] ?? 0,
-      receiverId: json['receiverId'] ?? 0,
-      chatId: json['chatId'] ?? '',
-      content: json['content'],
-      image: json['image'],
+      id: json['_id']?.toString() ?? '',
+      senderId: json['senderId']?.toString() ?? '',      // إبقاء كـ String
+      receiverId: json['receiverId']?.toString() ?? '',  // إبقاء كـ String
+      chatId: json['chatId']?.toString() ?? '',
+      content: json['content']?.toString(),
+      image: json['image']?.toString(),
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
     );
@@ -47,8 +47,8 @@ class MessageModel {
 
   MessageModel copyWith({
     String? id,
-    int? senderId,
-    int? receiverId,
+    String? senderId,
+    String? receiverId,
     String? chatId,
     String? content,
     String? image,

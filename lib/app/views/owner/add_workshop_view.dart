@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../controllers/workshop_controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../routes/app_routes.dart';
+import '../../config/app_colors.dart';
 
 class AddWorkshopView extends StatefulWidget {
   @override
@@ -25,9 +26,11 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text('Add Workshop'),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -41,6 +44,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -51,13 +55,24 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 controller: _nameController,
                 decoration: InputDecoration(
                   labelText: 'Workshop Name',
-                  prefixIcon: Icon(Icons.business),
+                  labelStyle: TextStyle(color: AppColors.textSecondary),
+                  prefixIcon: Icon(Icons.business, color: AppColors.textSecondary),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: AppColors.borderFocus),
                   ),
                   filled: true,
-                  fillColor: Colors.grey[50],
+                  fillColor: AppColors.white,
                 ),
+                style: TextStyle(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter workshop name';
@@ -73,13 +88,24 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 maxLines: 3,
                 decoration: InputDecoration(
                   labelText: 'Description',
-                  prefixIcon: Icon(Icons.description),
+                  labelStyle: TextStyle(color: AppColors.textSecondary),
+                  prefixIcon: Icon(Icons.description, color: AppColors.textSecondary),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: AppColors.borderFocus),
                   ),
                   filled: true,
-                  fillColor: Colors.grey[50],
+                  fillColor: AppColors.white,
                 ),
+                style: TextStyle(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter description';
@@ -94,13 +120,24 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 controller: _workingHoursController,
                 decoration: InputDecoration(
                   labelText: 'Working Hours (e.g., 8:00 AM - 6:00 PM)',
-                  prefixIcon: Icon(Icons.access_time),
+                  labelStyle: TextStyle(color: AppColors.textSecondary),
+                  prefixIcon: Icon(Icons.access_time, color: AppColors.textSecondary),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: AppColors.borderFocus),
                   ),
                   filled: true,
-                  fillColor: Colors.grey[50],
+                  fillColor: AppColors.white,
                 ),
+                style: TextStyle(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter working hours';
@@ -116,13 +153,14 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
                 ),
               ),
               SizedBox(height: 8),
               Text(
                 'Tap on the map to select your workshop location',
                 style: TextStyle(
-                  color: Colors.grey[600],
+                  color: AppColors.textSecondary,
                   fontSize: 14,
                 ),
               ),
@@ -133,7 +171,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 height: 300,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey[300]!),
+                  border: Border.all(color: AppColors.border),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
@@ -170,18 +208,18 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
+                    color: AppColors.success.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green.withOpacity(0.3)),
+                    border: Border.all(color: AppColors.success.withOpacity(0.3)),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.check_circle, color: Colors.green),
+                      Icon(Icons.check_circle, color: AppColors.success),
                       SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Location selected: ${_selectedLocation!.latitude.toStringAsFixed(4)}, ${_selectedLocation!.longitude.toStringAsFixed(4)}',
-                          style: TextStyle(color: Colors.green[700]),
+                          style: TextStyle(color: AppColors.success),
                         ),
                       ),
                     ],
@@ -195,11 +233,11 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
               Obx(() => ElevatedButton(
                 onPressed: workshopController.isLoading.value ? null : _createWorkshop,
                 child: workshopController.isLoading.value
-                    ? CircularProgressIndicator(color: Colors.white)
+                    ? CircularProgressIndicator(color: AppColors.white)
                     : Text('Create Workshop'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
                   padding: EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -223,8 +261,8 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
       Get.snackbar(
         'Error',
         'Please select a location on the map',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
       );
       return;
     }
@@ -250,8 +288,8 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
       Get.snackbar(
         'Success',
         'Workshop created successfully!',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+        backgroundColor: AppColors.success,
+        colorText: AppColors.white,
       );
     }
   }

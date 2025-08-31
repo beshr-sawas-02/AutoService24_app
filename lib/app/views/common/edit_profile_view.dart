@@ -10,6 +10,7 @@ import '../../utils/helpers.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/custom_button.dart';
 import '../../utils/storage_service.dart';
+import '../../config/app_colors.dart';
 
 class EditProfileView extends StatefulWidget {
   @override
@@ -50,14 +51,15 @@ class _EditProfileViewState extends State<EditProfileView> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Profile'),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
         actions: [
           TextButton(
             onPressed: _isLoading ? null : _saveProfile,
             child: Text(
               'Save',
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -83,6 +85,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
+                color: AppColors.cardBackground,
                 child: Padding(
                   padding: EdgeInsets.all(20),
                   child: Column(
@@ -93,7 +96,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.orange,
+                          color: AppColors.primary,
                         ),
                       ),
                       SizedBox(height: 20),
@@ -135,7 +138,7 @@ class _EditProfileViewState extends State<EditProfileView> {
               // Account Type Info
               Card(
                 elevation: 2,
-                color: Colors.orange.withOpacity(0.1),
+                color: AppColors.primaryWithOpacity(0.1),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -145,7 +148,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                     children: [
                       Icon(
                         authController.isOwner ? Icons.business : Icons.person,
-                        color: Colors.orange,
+                        color: AppColors.primary,
                       ),
                       SizedBox(width: 12),
                       Column(
@@ -155,7 +158,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                             'Account Type',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[600],
+                              color: AppColors.textSecondary,
                             ),
                           ),
                           Text(
@@ -163,7 +166,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.orange,
+                              color: AppColors.primary,
                             ),
                           ),
                         ],
@@ -202,11 +205,11 @@ class _EditProfileViewState extends State<EditProfileView> {
               height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.grey[200],
-                border: Border.all(color: Colors.orange, width: 3),
+                color: AppColors.grey200,
+                border: Border.all(color: AppColors.primary, width: 3),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
+                    color: AppColors.shadowLight,
                     spreadRadius: 2,
                     blurRadius: 8,
                     offset: Offset(0, 4),
@@ -227,12 +230,12 @@ class _EditProfileViewState extends State<EditProfileView> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Colors.orange,
+                    color: AppColors.primary,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
+                    border: Border.all(color: AppColors.white, width: 2),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
+                        color: AppColors.shadowLight,
                         spreadRadius: 1,
                         blurRadius: 4,
                         offset: Offset(0, 2),
@@ -241,7 +244,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                   ),
                   child: Icon(
                     Icons.camera_alt,
-                    color: Colors.white,
+                    color: AppColors.white,
                     size: 20,
                   ),
                 ),
@@ -253,7 +256,7 @@ class _EditProfileViewState extends State<EditProfileView> {
         Text(
           'Tap camera icon to change photo',
           style: TextStyle(
-            color: Colors.grey[600],
+            color: AppColors.textSecondary,
             fontSize: 14,
           ),
         ),
@@ -262,13 +265,13 @@ class _EditProfileViewState extends State<EditProfileView> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.1),
+              color: AppColors.success.withOpacity(0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               'New photo selected',
               style: TextStyle(
-                color: Colors.green,
+                color: AppColors.success,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
@@ -301,14 +304,14 @@ class _EditProfileViewState extends State<EditProfileView> {
           return Icon(
             Icons.person,
             size: 60,
-            color: Colors.grey[400],
+            color: AppColors.grey400,
           );
         },
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
           return Center(
             child: CircularProgressIndicator(
-              color: Colors.orange,
+              color: AppColors.primary,
               value: loadingProgress.expectedTotalBytes != null
                   ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
                   : null,
@@ -320,7 +323,7 @@ class _EditProfileViewState extends State<EditProfileView> {
       return Icon(
         Icons.person,
         size: 60,
-        color: Colors.grey[400],
+        color: AppColors.grey400,
       );
     }
   }

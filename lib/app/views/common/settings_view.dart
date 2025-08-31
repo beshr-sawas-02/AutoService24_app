@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../utils/storage_service.dart';
 import '../../utils/helpers.dart';
+import '../../config/app_colors.dart';
 
 class SettingsView extends StatefulWidget {
   @override
@@ -37,9 +38,11 @@ class _SettingsViewState extends State<SettingsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text('Settings'),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
       ),
       body: ListView(
         padding: EdgeInsets.all(16),
@@ -162,8 +165,8 @@ class _SettingsViewState extends State<SettingsView> {
               onPressed: () => _showSignOutDialog(),
               child: Text('Sign Out'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.error,
+                foregroundColor: AppColors.white,
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -184,7 +187,7 @@ class _SettingsViewState extends State<SettingsView> {
         style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: Colors.orange,
+          color: AppColors.primary,
         ),
       ),
     );
@@ -198,11 +201,12 @@ class _SettingsViewState extends State<SettingsView> {
   }) {
     return Card(
       margin: EdgeInsets.only(bottom: 8),
+      color: AppColors.cardBackground,
       child: ListTile(
-        leading: Icon(icon, color: Colors.grey[600]),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: Icon(Icons.arrow_forward_ios, size: 16),
+        leading: Icon(icon, color: AppColors.textSecondary),
+        title: Text(title, style: TextStyle(color: AppColors.textPrimary)),
+        subtitle: Text(subtitle, style: TextStyle(color: AppColors.textSecondary)),
+        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.grey400),
         onTap: onTap,
       ),
     );
@@ -217,13 +221,14 @@ class _SettingsViewState extends State<SettingsView> {
   }) {
     return Card(
       margin: EdgeInsets.only(bottom: 8),
+      color: AppColors.cardBackground,
       child: SwitchListTile(
-        secondary: Icon(icon, color: Colors.grey[600]),
-        title: Text(title),
-        subtitle: Text(subtitle),
+        secondary: Icon(icon, color: AppColors.textSecondary),
+        title: Text(title, style: TextStyle(color: AppColors.textPrimary)),
+        subtitle: Text(subtitle, style: TextStyle(color: AppColors.textSecondary)),
         value: value,
         onChanged: onChanged,
-        activeColor: Colors.orange,
+        activeColor: AppColors.primary,
       ),
     );
   }
@@ -244,8 +249,9 @@ class _SettingsViewState extends State<SettingsView> {
   void _showChangePasswordDialog() {
     Get.dialog(
       AlertDialog(
-        title: Text('Change Password'),
-        content: Text('Password change functionality would be implemented here.'),
+        backgroundColor: AppColors.white,
+        title: Text('Change Password', style: TextStyle(color: AppColors.textPrimary)),
+        content: Text('Password change functionality would be implemented here.', style: TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -258,8 +264,8 @@ class _SettingsViewState extends State<SettingsView> {
             },
             child: Text('Change'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
             ),
           ),
         ],
@@ -272,12 +278,13 @@ class _SettingsViewState extends State<SettingsView> {
 
     Get.dialog(
       AlertDialog(
-        title: Text('Select Language'),
+        backgroundColor: AppColors.white,
+        title: Text('Select Language', style: TextStyle(color: AppColors.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: languages.map((language) {
             return RadioListTile<String>(
-              title: Text(language),
+              title: Text(language, style: TextStyle(color: AppColors.textPrimary)),
               value: language,
               groupValue: _selectedLanguage,
               onChanged: (value) {
@@ -287,7 +294,7 @@ class _SettingsViewState extends State<SettingsView> {
                 _saveSettings();
                 Get.back();
               },
-              activeColor: Colors.orange,
+              activeColor: AppColors.primary,
             );
           }).toList(),
         ),
@@ -304,18 +311,19 @@ class _SettingsViewState extends State<SettingsView> {
   void _showAboutDialog() {
     Get.dialog(
       AlertDialog(
-        title: Text('About AutoService24'),
+        backgroundColor: AppColors.white,
+        title: Text('About AutoService24', style: TextStyle(color: AppColors.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Version: 1.0.0'),
+            Text('Version: 1.0.0', style: TextStyle(color: AppColors.textPrimary)),
             SizedBox(height: 8),
-            Text('Your Car Service Partner'),
+            Text('Your Car Service Partner', style: TextStyle(color: AppColors.textPrimary)),
             SizedBox(height: 8),
-            Text('Find and book automotive services near you.'),
+            Text('Find and book automotive services near you.', style: TextStyle(color: AppColors.textSecondary)),
             SizedBox(height: 16),
-            Text('© 2024 AutoService24. All rights reserved.'),
+            Text('© 2024 AutoService24. All rights reserved.', style: TextStyle(color: AppColors.textSecondary)),
           ],
         ),
         actions: [
@@ -323,8 +331,8 @@ class _SettingsViewState extends State<SettingsView> {
             onPressed: () => Get.back(),
             child: Text('OK'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
             ),
           ),
         ],
@@ -335,26 +343,27 @@ class _SettingsViewState extends State<SettingsView> {
   void _showHelpDialog() {
     Get.dialog(
       AlertDialog(
-        title: Text('Help & Support'),
+        backgroundColor: AppColors.white,
+        title: Text('Help & Support', style: TextStyle(color: AppColors.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Need help? Contact us:'),
+            Text('Need help? Contact us:', style: TextStyle(color: AppColors.textPrimary)),
             SizedBox(height: 16),
             Row(
               children: [
-                Icon(Icons.email, color: Colors.orange),
+                Icon(Icons.email, color: AppColors.primary),
                 SizedBox(width: 8),
-                Text('support@autoservice24.com'),
+                Text('support@autoservice24.com', style: TextStyle(color: AppColors.textPrimary)),
               ],
             ),
             SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.phone, color: Colors.orange),
+                Icon(Icons.phone, color: AppColors.primary),
                 SizedBox(width: 8),
-                Text('+1 (555) 123-4567'),
+                Text('+1 (555) 123-4567', style: TextStyle(color: AppColors.textPrimary)),
               ],
             ),
           ],
@@ -364,8 +373,8 @@ class _SettingsViewState extends State<SettingsView> {
             onPressed: () => Get.back(),
             child: Text('OK'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
             ),
           ),
         ],
@@ -388,8 +397,9 @@ class _SettingsViewState extends State<SettingsView> {
   void _clearCache() {
     Get.dialog(
       AlertDialog(
-        title: Text('Clear Cache'),
-        content: Text('Are you sure you want to clear the app cache? This will remove temporary files and may slow down the app initially.'),
+        backgroundColor: AppColors.white,
+        title: Text('Clear Cache', style: TextStyle(color: AppColors.textPrimary)),
+        content: Text('Are you sure you want to clear the app cache? This will remove temporary files and may slow down the app initially.', style: TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -403,8 +413,8 @@ class _SettingsViewState extends State<SettingsView> {
             },
             child: Text('Clear'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
             ),
           ),
         ],
@@ -415,8 +425,9 @@ class _SettingsViewState extends State<SettingsView> {
   void _showSignOutDialog() {
     Get.dialog(
       AlertDialog(
-        title: Text('Sign Out'),
-        content: Text('Are you sure you want to sign out?'),
+        backgroundColor: AppColors.white,
+        title: Text('Sign Out', style: TextStyle(color: AppColors.textPrimary)),
+        content: Text('Are you sure you want to sign out?', style: TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -429,8 +440,8 @@ class _SettingsViewState extends State<SettingsView> {
             },
             child: Text('Sign Out'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.white,
             ),
           ),
         ],

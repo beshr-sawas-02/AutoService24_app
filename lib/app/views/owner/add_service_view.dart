@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:io';
+import '../../config/app_colors.dart';
 import '../../controllers/service_controller.dart';
 import '../../controllers/workshop_controller.dart';
 import '../../controllers/auth_controller.dart';
@@ -34,7 +35,7 @@ class _AddServiceViewState extends State<AddServiceView> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Service'),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.primary,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -114,12 +115,12 @@ class _AddServiceViewState extends State<AddServiceView> {
           ),
           child: Row(
             children: [
-              Icon(Icons.info, color: Colors.orange),
+              Icon(Icons.info, color: AppColors.primary),
               SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'You need to create a workshop first before adding services.',
-                  style: TextStyle(color: Colors.orange.shade700),
+                  style: TextStyle(color: AppColors.primary),
                 ),
               ),
             ],

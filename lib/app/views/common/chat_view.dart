@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/chat_controller.dart';
 import '../../controllers/auth_controller.dart';
+import '../../config/app_colors.dart';
+import '../../utils/websocket_service.dart';
 
 class ChatView extends StatefulWidget {
   @override
@@ -14,12 +17,22 @@ class _ChatViewState extends State<ChatView> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
 
-  late String chatId;
+  String? chatId;
   late String receiverId;
   late String receiverName;
   late String currentUserId;
   String? serviceId;
   String? serviceTitle;
+  bool isNewChat = false;
+  bool isCreatingChat = false;
+
+  // متغيرات WebSocket جديدة
+  Timer? _typingTimer;
+  bool _isCurrentlyTyping = false;
+
+  bool _isSending = false;
+  String? _lastMessageContent;
+  DateTime? _lastSendTime;
 
   @override
   void initState() {
@@ -33,55 +46,142 @@ class _ChatViewState extends State<ChatView> {
         Get.snackbar(
           'Error',
           'Chat information is missing',
-          backgroundColor: Colors.red.withOpacity(0.1),
-          colorText: Colors.red[800],
+          backgroundColor: AppColors.error.withOpacity(0.1),
+          colorText: AppColors.error,
         );
       });
       return;
     }
 
-    // تحويل آمن للقيم
+    // استخراج البيانات من arguments
+    chatId = arguments['chatId']?.toString();
     receiverId = arguments['receiverId']?.toString() ?? '';
     receiverName = arguments['receiverName']?.toString() ?? 'Unknown User';
+    currentUserId = arguments['currentUserId']?.toString() ??
+        authController.currentUser.value?.id ?? '';
+
+    // البيانات الاختيارية للخدمة
     serviceId = arguments['serviceId']?.toString();
     serviceTitle = arguments['serviceTitle']?.toString();
-    currentUserId = authController.currentUser.value?.id ?? '';
 
-    // التحقق من صحة البيانات
+    print('ChatView initialized with:');
+    print('ChatID: $chatId');
+    print('ReceiverID: $receiverId');
+    print('ReceiverName: $receiverName');
+    print('CurrentUserID: $currentUserId');
+    print('ServiceID: $serviceId');
+    print('ServiceTitle: $serviceTitle');
+
+    // التحقق من صحة البيانات الأساسية
     if (receiverId.isEmpty || currentUserId.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.back();
         Get.snackbar(
           'Error',
-          'Invalid chat information',
-          backgroundColor: Colors.red.withOpacity(0.1),
-          colorText: Colors.red[800],
+          'Invalid chat information. Missing required data.',
+          backgroundColor: AppColors.error.withOpacity(0.1),
+          colorText: AppColors.error,
         );
       });
       return;
     }
 
-    // إنشاء chatId من المستخدمين (ترتيب أبجدي عشان يكون ثابت)
-    List<String> userIds = [currentUserId, receiverId]..sort();
-    chatId = '${userIds[0]}_${userIds[1]}';
+    // تحديد ما إذا كانت محادثة جديدة أم موجودة
+    if (chatId == null || chatId!.isEmpty) {
+      isNewChat = true;
+      _handleNewChat();
+    } else {
+      isNewChat = false;
+      // تحميل الرسائل للمحادثة الموجودة
+      chatController.loadMessages(chatId!);
+    }
+  }
 
-    // تحميل الرسائل
-    chatController.loadMessages(chatId);
+  Future<void> _handleNewChat() async {
+    try {
+      setState(() {
+        isCreatingChat = true;
+      });
+
+      print('Creating new chat between $currentUserId and $receiverId');
+
+      // البحث عن محادثة موجودة أولاً
+      final existingChat = await chatController.createChat(currentUserId, receiverId);
+
+      if (existingChat != null) {
+        chatId = existingChat.id;
+        isNewChat = false;
+        print('Found existing chat: $chatId');
+
+        // تحميل الرسائل
+        await chatController.loadMessages(chatId!);
+      } else {
+        print('Failed to create/find chat');
+        Get.back();
+        Get.snackbar(
+          'Error',
+          'Failed to create chat',
+          backgroundColor: AppColors.error.withOpacity(0.1),
+          colorText: AppColors.error,
+        );
+      }
+    } catch (e) {
+      print('Error handling new chat: $e');
+      Get.back();
+      Get.snackbar(
+        'Error',
+        'Failed to create chat: $e',
+        backgroundColor: AppColors.error.withOpacity(0.1),
+        colorText: AppColors.error,
+      );
+    } finally {
+      setState(() {
+        isCreatingChat = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // إظهار loading إذا كانت المحادثة قيد الإنشاء
+    if (isCreatingChat) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.white,
+          title: Text('Starting Chat...'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(color: AppColors.primary),
+              SizedBox(height: 16),
+              Text(
+                'Creating chat with $receiverName...',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
             CircleAvatar(
-              backgroundColor: Colors.white.withOpacity(0.2),
+              backgroundColor: AppColors.whiteWithOpacity(0.2),
               radius: 20,
               child: Text(
                 receiverName.isNotEmpty ? receiverName[0].toUpperCase() : 'U',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -103,33 +203,40 @@ class _ChatViewState extends State<ChatView> {
                       'About: $serviceTitle',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white70,
+                        color: AppColors.whiteWithOpacity(0.7),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     )
                   else
-                    Text(
-                      'Online',
-                      style: TextStyle(fontSize: 12, color: Colors.white70),
-                    ),
+                  // إظهار حالة الاتصال
+                    Obx(() {
+                      final webSocketService = Get.find<WebSocketService>();
+                      return Text(
+                        webSocketService.isConnected.value ? 'Online' : 'Offline',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.whiteWithOpacity(0.7)
+                        ),
+                      );
+                    }),
                 ],
               ),
             ),
           ],
         ),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
         elevation: 1,
         actions: [
           IconButton(
             icon: Icon(Icons.phone),
             onPressed: () {
-              // Call functionality
               Get.snackbar(
                 'Feature Coming Soon',
                 'Voice call feature will be available soon',
-                backgroundColor: Colors.orange.withOpacity(0.1),
-                colorText: Colors.orange[800],
+                backgroundColor: AppColors.primaryWithOpacity(0.1),
+                colorText: AppColors.primary,
               );
             },
           ),
@@ -139,7 +246,6 @@ class _ChatViewState extends State<ChatView> {
               switch (result) {
                 case 'view_service':
                   if (serviceId != null) {
-                    // Navigate to service details if needed
                     Get.snackbar('Info', 'Service: $serviceTitle');
                   }
                   break;
@@ -197,7 +303,7 @@ class _ChatViewState extends State<ChatView> {
               if (chatController.isLoadingMessages.value) {
                 return Center(
                   child: CircularProgressIndicator(
-                    color: Colors.orange,
+                    color: AppColors.primary,
                   ),
                 );
               }
@@ -209,7 +315,7 @@ class _ChatViewState extends State<ChatView> {
               return ListView.builder(
                 controller: _scrollController,
                 padding: EdgeInsets.all(16),
-                reverse: true, // عرض الرسائل من الأسفل للأعلى
+                reverse: true,
                 itemCount: chatController.messages.length,
                 itemBuilder: (context, index) {
                   final message = chatController.messages[chatController.messages.length - 1 - index];
@@ -231,10 +337,10 @@ class _ChatViewState extends State<ChatView> {
       width: double.infinity,
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.1),
+        color: AppColors.primaryWithOpacity(0.1),
         border: Border(
           bottom: BorderSide(
-            color: Colors.orange.withOpacity(0.3),
+            color: AppColors.primaryWithOpacity(0.3),
             width: 1,
           ),
         ),
@@ -243,7 +349,7 @@ class _ChatViewState extends State<ChatView> {
         children: [
           Icon(
             Icons.build_circle,
-            color: Colors.orange,
+            color: AppColors.primary,
             size: 20,
           ),
           SizedBox(width: 8),
@@ -251,7 +357,7 @@ class _ChatViewState extends State<ChatView> {
             child: Text(
               'Discussing: $serviceTitle',
               style: TextStyle(
-                color: Colors.orange[800],
+                color: AppColors.primary,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
@@ -272,7 +378,7 @@ class _ChatViewState extends State<ChatView> {
           Icon(
             Icons.chat_bubble_outline,
             size: 60,
-            color: Colors.grey,
+            color: AppColors.textSecondary,
           ),
           SizedBox(height: 16),
           Text(
@@ -280,7 +386,7 @@ class _ChatViewState extends State<ChatView> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
             ),
           ),
           SizedBox(height: 8),
@@ -289,7 +395,7 @@ class _ChatViewState extends State<ChatView> {
                 ? 'Ask about "$serviceTitle"'
                 : 'Send a message to begin chatting',
             style: TextStyle(
-              color: Colors.grey[500],
+              color: AppColors.textHint,
             ),
             textAlign: TextAlign.center,
           ),
@@ -309,7 +415,7 @@ class _ChatViewState extends State<ChatView> {
         ),
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isMe ? Colors.orange : Colors.grey[200],
+          color: isMe ? AppColors.primary : AppColors.grey200,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(18),
             topRight: Radius.circular(18),
@@ -324,7 +430,7 @@ class _ChatViewState extends State<ChatView> {
               Text(
                 message.content!,
                 style: TextStyle(
-                  color: isMe ? Colors.white : Colors.black87,
+                  color: isMe ? AppColors.white : AppColors.textPrimary,
                   fontSize: 16,
                 ),
               ),
@@ -341,12 +447,12 @@ class _ChatViewState extends State<ChatView> {
                     return Container(
                       width: 200,
                       height: 150,
-                      color: Colors.grey[300],
+                      color: AppColors.grey300,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.error, color: Colors.grey[600]),
+                            Icon(Icons.error, color: AppColors.textSecondary),
                             Text('Failed to load image', style: TextStyle(fontSize: 12)),
                           ],
                         ),
@@ -360,7 +466,7 @@ class _ChatViewState extends State<ChatView> {
             Text(
               _formatTime(message.createdAt),
               style: TextStyle(
-                color: isMe ? Colors.white70 : Colors.grey[600],
+                color: isMe ? AppColors.whiteWithOpacity(0.7) : AppColors.textSecondary,
                 fontSize: 12,
               ),
             ),
@@ -374,95 +480,308 @@ class _ChatViewState extends State<ChatView> {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: AppColors.shadowLight,
             blurRadius: 5,
             offset: Offset(0, -2),
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          IconButton(
-            icon: Icon(Icons.attach_file, color: Colors.grey),
-            onPressed: () {
-              Get.snackbar(
-                'Feature Coming Soon',
-                'File attachment will be available soon',
-                backgroundColor: Colors.orange.withOpacity(0.1),
-                colorText: Colors.orange[800],
-              );
-            },
-          ),
-          Expanded(
-            child: TextField(
-              controller: _messageController,
-              decoration: InputDecoration(
-                hintText: 'Type a message...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                  borderSide: BorderSide.none,
+          // مؤشر "يكتب الآن" - إضافة جديدة
+          Obx(() {
+            if (chatController.otherUserTyping.value) {
+              return Container(
+                padding: EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.grey200,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '$receiverName is typing',
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 12,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                          SizedBox(width: 6),
+                          SizedBox(
+                            width: 10,
+                            height: 10,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 1.5,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                filled: true,
-                fillColor: Colors.grey[100],
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
+              );
+            }
+            return SizedBox.shrink();
+          }),
+
+          // Connection status indicator - إضافة جديدة
+          Obx(() {
+            final webSocketService = Get.find<WebSocketService>();
+            if (!webSocketService.isConnected.value) {
+              return Container(
+                padding: EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.error.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.wifi_off,
+                            size: 12,
+                            color: AppColors.error,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            webSocketService.connectionStatus.value,
+                            style: TextStyle(
+                              color: AppColors.error,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return SizedBox.shrink();
+          }),
+
+          // حقل إدخال الرسالة
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.attach_file, color: AppColors.textSecondary),
+                onPressed: () {
+                  Get.snackbar(
+                    'Feature Coming Soon',
+                    'File attachment will be available soon',
+                    backgroundColor: AppColors.primaryWithOpacity(0.1),
+                    colorText: AppColors.primary,
+                  );
+                },
+              ),
+              Expanded(
+                child: TextField(
+                  controller: _messageController,
+                  decoration: InputDecoration(
+                    hintText: 'Type a message...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: AppColors.grey100,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                  ),
+                  maxLines: null,
+                  textCapitalization: TextCapitalization.sentences,
+                  onSubmitted: (_) => _sendMessage(),
+                  onChanged: _onTextChanged, // إضافة جديدة
                 ),
               ),
-              maxLines: null,
-              textCapitalization: TextCapitalization.sentences,
-              onSubmitted: (_) => _sendMessage(),
-            ),
-          ),
-          SizedBox(width: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.orange,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: Icon(Icons.send, color: Colors.white),
-              onPressed: _sendMessage,
-            ),
+              SizedBox(width: 8),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.send, color: AppColors.white),
+                  onPressed: _sendMessage,
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
+  }
+
+  // دالة جديدة لمعالجة تغيير النص
+  void _onTextChanged(String text) {
+    if (chatId == null) return;
+
+    // إذا بدأ المستخدم بالكتابة
+    if (text.isNotEmpty && !_isCurrentlyTyping) {
+      _isCurrentlyTyping = true;
+      chatController.startTyping(chatId!);
+    }
+
+    // إعادة ضبط المؤقت
+    _typingTimer?.cancel();
+    _typingTimer = Timer(Duration(seconds: 2), () {
+      if (_isCurrentlyTyping) {
+        _isCurrentlyTyping = false;
+        chatController.stopTyping(chatId!);
+      }
+    });
+
+    // إذا مسح المستخدم النص تماماً
+    if (text.isEmpty && _isCurrentlyTyping) {
+      _isCurrentlyTyping = false;
+      chatController.stopTyping(chatId!);
+      _typingTimer?.cancel();
+    }
   }
 
   void _sendMessage() async {
     final content = _messageController.text.trim();
     if (content.isEmpty) return;
 
-    _messageController.clear();
+    // حماية من الإرسال المكرر
+    if (_isSending) {
+      print('ChatView: Message sending in progress, ignoring tap');
+      return;
+    }
 
-    final success = await chatController.sendMessage(
-      chatId: chatId,
-      senderId: currentUserId,
-      receiverId: receiverId,
-      content: content,
-    );
+    // حماية إضافية من الإرسال السريع للمحتوى نفسه
+    final now = DateTime.now();
+    if (_lastMessageContent == content &&
+        _lastSendTime != null &&
+        now.difference(_lastSendTime!).inMilliseconds < 1000) {
+      print('ChatView: Same message sent within 1 second, ignoring');
+      return;
+    }
 
-    if (success) {
-      // Scroll to bottom
-      Future.delayed(Duration(milliseconds: 100), () {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            0, // للأسفل لأن reverse: true
-            duration: Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
-        }
+    _isSending = true;
+    _lastMessageContent = content;
+    _lastSendTime = now;
+
+    try {
+      // مسح النص فوراً لمنع المستخدم من الضغط مرة أخرى
+      _messageController.clear();
+
+      // إذا كانت محادثة جديدة، إنشاء المحادثة أولاً
+      if (isNewChat && (chatId == null || chatId!.isEmpty)) {
+        await _createChatAndSendMessage(content);
+        return;
+      }
+
+      // إذا كانت المحادثة موجودة، إرسال الرسالة مباشرة
+      final success = await chatController.sendMessage(
+        chatId: chatId!,
+        senderId: currentUserId,
+        receiverId: receiverId,
+        content: content,
+      );
+
+      if (success) {
+        _scrollToBottom();
+      } else {
+        // في حالة فشل الإرسال، أعد النص إلى الحقل
+        _messageController.text = content;
+      }
+
+    } catch (e) {
+      print('ChatView: Error in _sendMessage: $e');
+      // في حالة حدوث خطأ، أعد النص إلى الحقل
+      _messageController.text = content;
+    } finally {
+      // تحرير القفل بعد تأخير قصير
+      Future.delayed(Duration(milliseconds: 800), () {
+        _isSending = false;
       });
     }
+  }
+
+  Future<void> _createChatAndSendMessage(String content) async {
+    try {
+      print('Creating new chat and sending first message...');
+
+      // إنشاء المحادثة
+      final newChat = await chatController.createChat(currentUserId, receiverId);
+
+      if (newChat != null) {
+        chatId = newChat.id;
+        isNewChat = false;
+
+        print('Chat created successfully: $chatId');
+
+        // إرسال الرسالة
+        final success = await chatController.sendMessage(
+          chatId: chatId!,
+          senderId: currentUserId,
+          receiverId: receiverId,
+          content: content,
+        );
+
+        if (success) {
+          print('First message sent successfully');
+          _scrollToBottom();
+        } else {
+          // في حالة فشل الإرسال، أعد النص إلى الحقل
+          _messageController.text = content;
+        }
+      } else {
+        // في حالة فشل إنشاء المحادثة، أعد النص إلى الحقل
+        _messageController.text = content;
+        Get.snackbar(
+          'Error',
+          'Failed to create chat',
+          backgroundColor: AppColors.error.withOpacity(0.1),
+          colorText: AppColors.error,
+        );
+      }
+    } catch (e) {
+      print('Error creating chat and sending message: $e');
+      // في حالة حدوث خطأ، أعد النص إلى الحقل
+      _messageController.text = content;
+      Get.snackbar(
+        'Error',
+        'Failed to send message: $e',
+        backgroundColor: AppColors.error.withOpacity(0.1),
+        colorText: AppColors.error,
+      );
+    }
+  }
+
+  void _scrollToBottom() {
+    Future.delayed(Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          0,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   void _showBlockUserDialog() {
     Get.dialog(
       AlertDialog(
+        backgroundColor: AppColors.white,
         title: Text('Block User'),
         content: Text('Are you sure you want to block $receiverName?'),
         actions: [
@@ -476,7 +795,7 @@ class _ChatViewState extends State<ChatView> {
               Get.snackbar('Info', 'User blocking feature coming soon');
             },
             child: Text('Block'),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
           ),
         ],
       ),
@@ -486,6 +805,7 @@ class _ChatViewState extends State<ChatView> {
   void _showReportDialog() {
     Get.dialog(
       AlertDialog(
+        backgroundColor: AppColors.white,
         title: Text('Report User'),
         content: Text('Report $receiverName for inappropriate behavior?'),
         actions: [
@@ -499,7 +819,7 @@ class _ChatViewState extends State<ChatView> {
               Get.snackbar('Info', 'User reporting feature coming soon');
             },
             child: Text('Report'),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
           ),
         ],
       ),
@@ -525,6 +845,13 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   void dispose() {
+    _typingTimer?.cancel();
+
+    // إيقاف مؤشر الكتابة عند الخروج من الشاشة
+    if (_isCurrentlyTyping && chatId != null) {
+      chatController.stopTyping(chatId!);
+    }
+
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();

@@ -5,6 +5,7 @@ import '../../controllers/service_controller.dart';
 import '../../data/models/service_model.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/guest_banner.dart';
+import '../../config/app_colors.dart';
 
 class UserHomeView extends StatefulWidget {
   @override
@@ -22,19 +23,19 @@ class _UserHomeViewState extends State<UserHomeView> {
     {
       'title': 'Vehicle\nInspection',
       'type': ServiceType.VEHICLE_INSPECTION,
-      'color': Colors.orange,
+      'color': AppColors.primary,
       'image': 'assets/images/',
     },
     {
       'title': 'Change Oil',
       'type': ServiceType.CHANGE_OIL,
-      'color': Colors.blue,
+      'color': AppColors.info,
       'image': 'assets/images/oil_change.jpg',
     },
     {
       'title': 'Change Tires',
       'type': ServiceType.CHANGE_TIRES,
-      'color': Colors.grey,
+      'color': AppColors.grey500,
       'image': 'assets/images/change_tires.jpg',
     },
     {
@@ -46,13 +47,13 @@ class _UserHomeViewState extends State<UserHomeView> {
     {
       'title': 'Cleaning',
       'type': ServiceType.CLEANING,
-      'color': Colors.green,
+      'color': AppColors.success,
       'image': 'assets/images/',
     },
     {
       'title': 'Diagnostic Test',
       'type': ServiceType.DIAGNOSTIC_TEST,
-      'color': Colors.red,
+      'color': AppColors.error,
       'image': 'assets/images/',
     },
     {
@@ -76,7 +77,7 @@ class _UserHomeViewState extends State<UserHomeView> {
     {
       'title': 'Polish',
       'type': ServiceType.POLISH,
-      'color': Colors.amber,
+      'color': AppColors.warning,
       'image': 'assets/images/',
     },
     {
@@ -90,29 +91,28 @@ class _UserHomeViewState extends State<UserHomeView> {
   Future<void> _handleRefresh() async {
     try {
       final serviceController = Get.find<ServiceController>();
-      await serviceController.loadServices(); // جلب البيانات من API
+      await serviceController.loadServices();
     } catch (e) {
       Get.snackbar(
         "Error",
         "Failed to refresh services",
-        backgroundColor: Colors.red.withOpacity(0.8),
-        colorText: Colors.white,
+        backgroundColor: AppColors.error.withOpacity(0.8),
+        colorText: AppColors.white,
       );
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         title: Text(
           'Auto Services',
           style: TextStyle(
-            color: Colors.black87,
+            color: AppColors.textPrimary,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -120,7 +120,7 @@ class _UserHomeViewState extends State<UserHomeView> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.message, color: Colors.black54),
+            icon: Icon(Icons.message, color: AppColors.textSecondary),
             onPressed: () {
               Get.toNamed(AppRoutes.chatList);
             },
@@ -128,7 +128,7 @@ class _UserHomeViewState extends State<UserHomeView> {
           Obx(() {
             if (authController.isGuest) return SizedBox.shrink();
             return IconButton(
-              icon: Icon(Icons.logout, color: Colors.black54),
+              icon: Icon(Icons.logout, color: AppColors.textSecondary),
               onPressed: () async {
                 await authController.logout();
               },
@@ -139,9 +139,9 @@ class _UserHomeViewState extends State<UserHomeView> {
       body: _getBody(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        selectedItemColor: Colors.orange,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.white,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.textSecondary,
+        backgroundColor: AppColors.white,
         elevation: 8,
         onTap: (index) {
           if (index == 2) {
@@ -192,7 +192,7 @@ class _UserHomeViewState extends State<UserHomeView> {
         Expanded(
           child: RefreshIndicator(
             onRefresh: _handleRefresh,
-            color: Colors.orange,
+            color: AppColors.primary,
             child: SingleChildScrollView(
               physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.all(20),
@@ -201,12 +201,12 @@ class _UserHomeViewState extends State<UserHomeView> {
                 children: [
                   _buildSearchBar(),
                   const SizedBox(height: 24),
-                  const Text(
+                  Text(
                     'Categories',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -223,11 +223,11 @@ class _UserHomeViewState extends State<UserHomeView> {
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: AppColors.shadowLight,
             blurRadius: 10,
             offset: Offset(0, 2),
           ),
@@ -237,14 +237,14 @@ class _UserHomeViewState extends State<UserHomeView> {
         controller: _searchController,
         decoration: InputDecoration(
           hintText: 'Search categories...',
-          hintStyle: TextStyle(color: Colors.grey[500]),
-          prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+          hintStyle: TextStyle(color: AppColors.textHint),
+          prefixIcon: Icon(Icons.search, color: AppColors.grey400),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: AppColors.white,
           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
         onChanged: (query) {
@@ -285,7 +285,7 @@ class _UserHomeViewState extends State<UserHomeView> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
+                  color: AppColors.shadowMedium,
                   blurRadius: 8,
                   offset: Offset(0, 4),
                 ),
@@ -320,8 +320,8 @@ class _UserHomeViewState extends State<UserHomeView> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Colors.black.withOpacity(0.1),
-                          Colors.black.withOpacity(0.5),
+                          AppColors.blackWithOpacity(0.1),
+                          AppColors.blackWithOpacity(0.5),
                         ],
                       ),
                     ),
@@ -331,12 +331,12 @@ class _UserHomeViewState extends State<UserHomeView> {
                       category['title'] as String,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         shadows: [
                           Shadow(
-                            color: Colors.black.withOpacity(0.7),
+                            color: AppColors.blackWithOpacity(0.7),
                             offset: Offset(0, 2),
                             blurRadius: 4,
                           ),
@@ -370,9 +370,9 @@ class _UserHomeViewState extends State<UserHomeView> {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -382,8 +382,8 @@ class _UserHomeViewState extends State<UserHomeView> {
             },
             child: const Text('Login'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),

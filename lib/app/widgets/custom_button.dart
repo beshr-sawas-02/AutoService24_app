@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config//app_colors.dart';
 import '../utils/constants.dart';
 
 class CustomButton extends StatelessWidget {
@@ -32,7 +33,7 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final primaryColor = backgroundColor ?? AppColors.primaryOrange;
+    final primaryColor = backgroundColor ?? AppColors.primary;
     final onPrimaryColor = textColor ?? Colors.white;
 
     if (isOutlined) {

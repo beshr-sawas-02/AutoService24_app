@@ -10,6 +10,7 @@ import '../utils/error_handler.dart';
 import '../utils/helpers.dart';
 import '../routes/app_routes.dart';
 import 'service_controller.dart';
+import 'chat_controller.dart';
 
 class AuthController extends GetxController {
   final AuthRepository _authRepository;
@@ -42,6 +43,9 @@ class AuthController extends GetxController {
 
         if (currentUser.value != null) {
           isLoggedIn.value = true;
+
+          // تحديث WebSocket مع المستخدم المحمل - إضافة جديدة
+          _updateWebSocketUserSilently(currentUser.value?.id);
         } else {
           isLoggedIn.value = false;
         }
@@ -88,6 +92,32 @@ class AuthController extends GetxController {
     }
   }
 
+  // دالة مساعدة لتحديث WebSocket بصمت (بدون أخطاء)
+  void _updateWebSocketUserSilently(String? userId) {
+    try {
+      if (Get.isRegistered<ChatController>()) {
+        final chatController = Get.find<ChatController>();
+        chatController.updateWebSocketUser(userId);
+      }
+    } catch (e) {
+      print('AuthController: Failed to update WebSocket user silently: $e');
+      // لا نعرض خطأ للمستخدم، فقط نسجل في الـ console
+    }
+  }
+
+  // دالة لتحديث WebSocket مع معالجة الأخطاء
+  Future<void> _updateWebSocketUser(String? userId) async {
+    try {
+      if (Get.isRegistered<ChatController>()) {
+        final chatController = Get.find<ChatController>();
+        await chatController.updateWebSocketUser(userId);
+      }
+    } catch (e) {
+      print('AuthController: Failed to update WebSocket user: $e');
+      // نسجل الخطأ لكن لا نمنع باقي العملية
+    }
+  }
+
   Future<bool> login(String email, String password) async {
     try {
       isLoading.value = true;
@@ -104,6 +134,9 @@ class AuthController extends GetxController {
         isUserDataLoaded.value = true;
 
         await _clearServiceData();
+
+        // تحديث WebSocket مع المستخدم الجديد - إضافة جديدة
+        await _updateWebSocketUser(currentUser.value?.id);
 
         Helpers.showSuccessSnackbar('Login successful');
 
@@ -274,6 +307,9 @@ class AuthController extends GetxController {
 
         await _clearServiceData();
 
+        // تحديث WebSocket مع المستخدم الجديد - إضافة جديدة
+        await _updateWebSocketUser(currentUser.value?.id);
+
         Helpers.showSuccessSnackbar('${_capitalizeProvider(provider)} login successful');
 
         if (currentUser.value?.userType == 'owner') {
@@ -326,6 +362,9 @@ class AuthController extends GetxController {
 
         await _clearServiceData();
 
+        // تحديث WebSocket مع المستخدم الجديد - إضافة جديدة
+        await _updateWebSocketUser(currentUser.value?.id);
+
         Helpers.showSuccessSnackbar('Account created successfully');
 
         if (currentUser.value?.userType == 'owner') {
@@ -362,6 +401,9 @@ class AuthController extends GetxController {
 
   Future<void> logout() async {
     try {
+      // قطع اتصال WebSocket أولاً - إضافة جديدة
+      await _updateWebSocketUser(null);
+
       await _signOutFromSocialProviders();
 
       await _clearServiceData();
@@ -413,6 +455,10 @@ class AuthController extends GetxController {
 
       if (currentUser.value?.id != null) {
         await _authRepository.deleteAccount(currentUser.value!.id);
+
+        // قطع اتصال WebSocket قبل حذف الحساب
+        await _updateWebSocketUser(null);
+
         await logout();
         Helpers.showSuccessSnackbar('Account deleted successfully');
         return true;

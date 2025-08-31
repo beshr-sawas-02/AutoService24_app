@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/service_controller.dart';
+import '../../controllers/workshop_controller.dart'; // إضافة جديدة
 import '../../data/models/service_model.dart';
 import '../../routes/app_routes.dart';
+import '../../config/app_colors.dart';
 
 class FilteredServicesView extends StatefulWidget {
   @override
@@ -13,6 +15,8 @@ class FilteredServicesView extends StatefulWidget {
 class _FilteredServicesViewState extends State<FilteredServicesView> {
   final ServiceController serviceController = Get.find<ServiceController>();
   final AuthController authController = Get.find<AuthController>();
+  final WorkshopController workshopController = Get.find<WorkshopController>(); // إضافة جديدة
+
   late ServiceType selectedServiceType;
   late String categoryTitle;
   late bool isOwner;
@@ -23,47 +27,116 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     final arguments = Get.arguments as Map<String, dynamic>;
     selectedServiceType = arguments['serviceType'] as ServiceType;
     categoryTitle = arguments['title'] as String;
-    isOwner = arguments['isOwner'] ?? false; // افتراضياً false إذا لم يتم تمريرها
+    isOwner = arguments['isOwner'] ?? false;
 
-    // تحميل جميع الخدمات أولاً ثم الفلترة محلياً
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadAndFilterServices();
     });
   }
 
   Future<void> _loadAndFilterServices() async {
-    // تحميل الخدمات المناسبة حسب نوع المستخدم
     if (isOwner) {
-      // للـ Owner، نحمل خدماته الخاصة
       await serviceController.loadOwnerServices();
     } else {
-      // للـ User العادي، نحمل جميع الخدمات
       await serviceController.loadServices();
+    }
+  }
+
+  // الدالة المُعدّلة لبدء المحادثة - هنا الحل الأساسي
+  Future<void> _startChatWithWorkshop(ServiceModel service) async {
+    try {
+      final currentUserId = authController.currentUser.value?.id ?? '';
+
+      if (currentUserId.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'User not logged in',
+          backgroundColor: AppColors.error.withOpacity(0.1),
+          colorText: AppColors.error,
+        );
+        return;
+      }
+
+      print('FilteredServicesView: Starting chat with workshop');
+      print('Service ID: ${service.id}');
+      print('Workshop ID from service: ${service.workshopId}');
+      print('Current User ID: $currentUserId');
+
+      // 1. جلب الورشة بواسطة workshop_id للحصول على user_id الحقيقي
+      final workshop = await workshopController.getWorkshopById(service.workshopId);
+
+      if (workshop == null) {
+        Get.snackbar(
+          'Error',
+          'Workshop not found',
+          backgroundColor: AppColors.error.withOpacity(0.1),
+          colorText: AppColors.error,
+        );
+        return;
+      }
+
+      final workshopOwnerId = workshop.userId; // معرف صاحب الورشة الحقيقي
+      final workshopName = workshop.name;
+
+      print('Workshop found: ${workshop.name}');
+      print('Workshop Owner ID (Real): $workshopOwnerId');
+
+      // التحقق من أن المستخدم لا يحاول محادثة نفسه
+      if (workshopOwnerId == currentUserId) {
+        Get.snackbar(
+          'Info',
+          'You cannot chat with yourself',
+          backgroundColor: AppColors.info.withOpacity(0.1),
+          colorText: AppColors.info,
+        );
+        return;
+      }
+
+      // التنقل إلى صفحة المحادثة مع البيانات الصحيحة
+      Get.toNamed(
+        AppRoutes.chat,
+        arguments: {
+          'receiverId': workshopOwnerId, // استخدام معرف صاحب الورشة الحقيقي
+          'receiverName': workshopName,
+          'currentUserId': currentUserId,
+          'serviceId': service.id,
+          'serviceTitle': service.title,
+        },
+      );
+
+    } catch (e) {
+      print('Error starting chat: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to start chat. Please try again.',
+        backgroundColor: AppColors.error.withOpacity(0.1),
+        colorText: AppColors.error,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         title: Text(
           categoryTitle,
           style: TextStyle(
-            color: Colors.black87,
+            color: AppColors.textPrimary,
             fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black87),
+          icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Get.back(),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.tune, color: Colors.black54),
+            icon: Icon(Icons.tune, color: AppColors.textSecondary),
             onPressed: () {
               _showFilterBottomSheet();
             },
@@ -74,12 +147,11 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         if (serviceController.isLoading.value) {
           return Center(
             child: CircularProgressIndicator(
-              color: Colors.orange,
+              color: AppColors.primary,
             ),
           );
         }
 
-        // فلترة الخدمات محلياً حسب النوع المختار من المصدر المناسب
         final sourceServices = isOwner
             ? serviceController.ownerServices
             : serviceController.services;
@@ -100,6 +172,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           onRefresh: () async {
             await _loadAndFilterServices();
           },
+          color: AppColors.primary,
           child: ListView.builder(
             padding: EdgeInsets.all(16),
             itemCount: filteredServices.length,
@@ -117,11 +190,11 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     return Container(
       margin: EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: AppColors.shadowLight,
             blurRadius: 15,
             offset: Offset(0, 5),
           ),
@@ -130,16 +203,9 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with workshop info
           _buildPostHeader(service),
-
-          // Service image
           _buildServiceImage(service),
-
-          // Service content
           _buildServiceContent(service),
-
-          // Action buttons
           _buildActionButtons(service),
         ],
       ),
@@ -151,16 +217,15 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       padding: EdgeInsets.all(16),
       child: Row(
         children: [
-          // Workshop avatar
           CircleAvatar(
             radius: 24,
-            backgroundColor: Colors.orange.withOpacity(0.2),
+            backgroundColor: AppColors.primaryWithOpacity(0.2),
             child: Text(
               service.workshopName.isNotEmpty
                   ? service.workshopName[0].toUpperCase()
                   : 'W',
               style: TextStyle(
-                color: Colors.orange,
+                color: AppColors.primary,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
@@ -168,7 +233,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           ),
           SizedBox(width: 12),
 
-          // Workshop info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,7 +242,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 if (service.workshopData?['working_hours'] != null)
@@ -186,25 +250,24 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                     service.workshopData!['working_hours'],
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: AppColors.textSecondary,
                     ),
                   ),
               ],
             ),
           ),
 
-          // Service type badge
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.1),
+              color: AppColors.primaryWithOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               service.serviceTypeName,
               style: TextStyle(
                 fontSize: 10,
-                color: Colors.orange[700],
+                color: AppColors.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -230,7 +293,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
             if (loadingProgress == null) return child;
             return Center(
               child: CircularProgressIndicator(
-                color: Colors.orange,
+                color: AppColors.primary,
                 value: loadingProgress.expectedTotalBytes != null
                     ? loadingProgress.cumulativeBytesLoaded /
                     loadingProgress.expectedTotalBytes!
@@ -246,7 +309,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
 
   Widget _buildPlaceholderImage() {
     return Container(
-      color: Colors.grey[200],
+      color: AppColors.grey200,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -254,13 +317,13 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
             Icon(
               Icons.build_circle,
               size: 64,
-              color: Colors.grey[400],
+              color: AppColors.grey400,
             ),
             SizedBox(height: 8),
             Text(
               'Service Image',
               style: TextStyle(
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
                 fontSize: 16,
               ),
             ),
@@ -276,23 +339,21 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Service title
           Text(
             service.title,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
             ),
           ),
           SizedBox(height: 8),
 
-          // Service description
           Text(
             service.description,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[700],
+              color: AppColors.textSecondary,
               height: 1.4,
             ),
             maxLines: 3,
@@ -300,35 +361,26 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           ),
           SizedBox(height: 12),
 
-          // Price
           Row(
             children: [
-              // Icon(
-              //   Icons.attach_money,
-              //   color: Colors.green,
-              //   size: 20,
-              // ),
               Text(
                 service.formattedPrice,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.green,
+                  color: AppColors.success,
                 ),
               ),
               Spacer(),
 
-              // Location if available
               if (service.workshopData?['location_x'] != null && service.workshopData?['location_y'] != null)
                 GestureDetector(
-                  onTap: () {
-                    // يمكنك إضافة فتح الخريطة هنا
-                  },
+                  onTap: () {},
                   child: Row(
                     children: [
                       Icon(
                         Icons.location_on,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                         size: 16,
                       ),
                       SizedBox(width: 4),
@@ -336,7 +388,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                         'View Location',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -354,11 +406,9 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       padding: EdgeInsets.all(16),
       child: Column(
         children: [
-          // صف أول - Save + Chat فقط للمستخدم العادي
           if (!isOwner)
             Row(
               children: [
-                // Save button
                 Expanded(
                   child: Obx(() {
                     final isSaved = serviceController.savedServices
@@ -385,18 +435,18 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                       icon: Icon(
                         isSaved ? Icons.bookmark : Icons.bookmark_border,
                         size: 18,
-                        color: isSaved ? Colors.orange : Colors.grey[600],
+                        color: isSaved ? AppColors.primary : AppColors.textSecondary,
                       ),
                       label: Text(
                         isSaved ? 'Saved' : 'Save',
                         style: TextStyle(
-                          color: isSaved ? Colors.orange : Colors.grey[600],
+                          color: isSaved ? AppColors.primary : AppColors.textSecondary,
                           fontSize: 14,
                         ),
                       ),
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(
-                          color: isSaved ? Colors.orange : Colors.grey[300]!,
+                          color: isSaved ? AppColors.primary : AppColors.border,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -408,7 +458,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                 ),
                 SizedBox(width: 12),
 
-                // Chat button
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
@@ -421,18 +470,18 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                     icon: Icon(
                       Icons.chat_bubble_outline,
                       size: 18,
-                      color: Colors.blue[600],
+                      color: AppColors.info,
                     ),
                     label: Text(
                       'Chat',
                       style: TextStyle(
-                        color: Colors.blue[600],
+                        color: AppColors.info,
                         fontSize: 14,
                       ),
                     ),
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(
-                        color: Colors.blue[300]!,
+                        color: AppColors.info,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -444,10 +493,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               ],
             ),
 
-          // مسافة بين الصفوف
           if (!isOwner) SizedBox(height: 12),
 
-          // الصف الثاني - View Details للجميع
           Container(
             width: double.infinity,
             child: ElevatedButton(
@@ -464,8 +511,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               },
               child: Text('View Details'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
                 padding: EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -479,34 +526,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     );
   }
 
-
-  void _startChatWithWorkshop(ServiceModel service) {
-    // الحصول على معلومات صاحب الورشة
-    final workshopOwnerId = service.workshopData?['owner_id'] ?? service.workshopId;
-    final workshopName = service.workshopData?['name'] ?? 'Unknown Workshop';
-
-    if (workshopOwnerId == null || workshopOwnerId.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Cannot start chat - Workshop information not available',
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.red[800],
-      );
-      return;
-    }
-
-    // الانتقال إلى صفحة المحادثة مع تمرير معلومات صاحب الورشة
-    Get.toNamed(
-      AppRoutes.chat,
-      arguments: {
-        'receiverId': workshopOwnerId,
-        'receiverName': workshopName,
-        'serviceId': service.id,
-        'serviceTitle': service.title,
-      },
-    );
-  }
-
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -515,7 +534,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           Icon(
             Icons.search_off,
             size: 80,
-            color: Colors.grey[400],
+            color: AppColors.grey400,
           ),
           SizedBox(height: 16),
           Text(
@@ -523,7 +542,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
             ),
           ),
           SizedBox(height: 8),
@@ -533,7 +552,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                 : 'No services available for $categoryTitle',
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[500],
+              color: AppColors.textHint,
             ),
             textAlign: TextAlign.center,
           ),
@@ -544,8 +563,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
             },
             child: Text('Refresh'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
             ),
           ),
           if (isOwner) ...[
@@ -555,8 +574,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               icon: Icon(Icons.add),
               label: Text('Add Service'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.success,
+                foregroundColor: AppColors.white,
               ),
             ),
           ],
@@ -572,6 +591,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
   void _showGuestDialog() {
     Get.dialog(
       AlertDialog(
+        backgroundColor: AppColors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -579,16 +599,16 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           'Login Required',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        content: const Text(
+        content: Text(
           'Please login or register to access this feature.',
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -598,8 +618,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
             },
             child: const Text('Login'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),

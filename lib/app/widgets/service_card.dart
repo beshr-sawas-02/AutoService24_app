@@ -4,6 +4,7 @@ import '../data/models/service_model.dart';
 import '../controllers/service_controller.dart';
 import '../controllers/auth_controller.dart';
 import '../routes/app_routes.dart';
+import '../config/app_colors.dart';
 
 class ServiceCard extends StatelessWidget {
   final ServiceModel service;
@@ -31,6 +32,7 @@ class ServiceCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
+      color: AppColors.cardBackground,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -50,19 +52,20 @@ class ServiceCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         SizedBox(height: 4),
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withOpacity(0.1),
+                            color: AppColors.primaryWithOpacity(0.1),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
                             service.serviceTypeName,
                             style: TextStyle(
-                              color: Colors.orange.shade700,
+                              color: AppColors.primary,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
@@ -90,7 +93,7 @@ class ServiceCard extends StatelessWidget {
                           value: 'edit',
                           child: Row(
                             children: [
-                              Icon(Icons.edit, size: 16),
+                              Icon(Icons.edit, size: 16, color: AppColors.info),
                               SizedBox(width: 8),
                               Text('Edit'),
                             ],
@@ -100,9 +103,9 @@ class ServiceCard extends StatelessWidget {
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(Icons.delete, size: 16, color: Colors.red),
+                              Icon(Icons.delete, size: 16, color: AppColors.error),
                               SizedBox(width: 8),
-                              Text('Delete', style: TextStyle(color: Colors.red)),
+                              Text('Delete', style: TextStyle(color: AppColors.error)),
                             ],
                           ),
                         ),
@@ -114,7 +117,7 @@ class ServiceCard extends StatelessWidget {
               Text(
                 service.description,
                 style: TextStyle(
-                  color: Colors.grey[600],
+                  color: AppColors.textSecondary,
                   fontSize: 14,
                 ),
                 maxLines: 2,
@@ -133,7 +136,7 @@ class ServiceCard extends StatelessWidget {
                         margin: EdgeInsets.only(right: 8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          color: Colors.grey[200],
+                          color: AppColors.grey200,
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
@@ -142,10 +145,10 @@ class ServiceCard extends StatelessWidget {
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
-                                color: Colors.grey[200],
+                                color: AppColors.grey200,
                                 child: Icon(
                                   Icons.image_not_supported,
-                                  color: Colors.grey[400],
+                                  color: AppColors.grey400,
                                 ),
                               );
                             },
@@ -165,21 +168,21 @@ class ServiceCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                      color: AppColors.primary,
                     ),
                   ),
                   Row(
                     children: [
                       Icon(
                         Icons.star,
-                        color: Colors.amber,
+                        color: AppColors.warning,
                         size: 16,
                       ),
                       SizedBox(width: 4),
                       Text(
                         '4.5', // Placeholder rating
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                           fontSize: 14,
                         ),
                       ),
@@ -207,7 +210,7 @@ class ServiceCard extends StatelessWidget {
             },
             icon: Icon(
               Icons.bookmark_border,
-              color: Colors.grey[400],
+              color: AppColors.grey400,
               size: 20,
             ),
             tooltip: 'Login to save',
@@ -227,7 +230,7 @@ class ServiceCard extends StatelessWidget {
             },
             icon: Icon(
               isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-              color: isBookmarked ? Colors.orange : Colors.grey[600],
+              color: isBookmarked ? AppColors.primary : AppColors.textSecondary,
               size: 20,
             ),
             tooltip: isBookmarked ? 'Remove from saved' : 'Save service',
@@ -240,6 +243,7 @@ class ServiceCard extends StatelessWidget {
   void _showGuestDialog() {
     Get.dialog(
       AlertDialog(
+        backgroundColor: AppColors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -248,25 +252,25 @@ class ServiceCard extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: AppColors.primaryWithOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(Icons.bookmark, color: Colors.orange),
+              child: Icon(Icons.bookmark, color: AppColors.primary),
             ),
             SizedBox(width: 12),
-            Text('Save Service'),
+            Text('Save Service', style: TextStyle(color: AppColors.textPrimary)),
           ],
         ),
         content: Text(
           'Create an account to save your favorite services and access them anytime.',
-          style: TextStyle(fontSize: 16),
+          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
             child: Text('Cancel'),
             style: TextButton.styleFrom(
-              foregroundColor: Colors.grey[600],
+              foregroundColor: AppColors.textSecondary,
             ),
           ),
           Row(
@@ -279,8 +283,8 @@ class ServiceCard extends StatelessWidget {
                 },
                 child: Text('Sign In'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.orange,
-                  side: BorderSide(color: Colors.orange),
+                  foregroundColor: AppColors.primary,
+                  side: BorderSide(color: AppColors.primary),
                 ),
               ),
               SizedBox(width: 8),
@@ -291,8 +295,8 @@ class ServiceCard extends StatelessWidget {
                 },
                 child: Text('Register'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
                 ),
               ),
             ],

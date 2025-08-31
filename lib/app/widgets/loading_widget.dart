@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/app_colors.dart';
 import '../utils/constants.dart';
 
 class LoadingWidget extends StatelessWidget {
@@ -20,7 +21,7 @@ class LoadingWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
-            color: color ?? AppColors.primaryOrange,
+            color: color ?? AppColors.primary,
             strokeWidth: 3,
           ),
           if (message != null) ...[

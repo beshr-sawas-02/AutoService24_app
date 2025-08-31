@@ -124,8 +124,22 @@ class ApiProvider {
     return await _dio.get('/user');
   }
 
+  // تحديث دالة getUser لتوافق getUserById
   Future<Response> getUser(String id) async {
-    return await _dio.get('/user/$id');
+    return await getUserById(id);
+  }
+
+  // User by ID endpoint - دالة جديدة
+  Future<Response> getUserById(String userId) async {
+    try {
+      print('ApiProvider: Getting user by ID: $userId');
+      final response = await _dio.get('/user/$userId');
+      print('ApiProvider: getUserById response status: ${response.statusCode}');
+      return response;
+    } catch (e) {
+      print('ApiProvider: getUserById error: $e');
+      rethrow;
+    }
   }
 
   Future<Response> updateUser(String id, Map<String, dynamic> data) async {
@@ -302,9 +316,30 @@ class ApiProvider {
 
   // Message endpoints
   Future<Response> sendMessage(Map<String, dynamic> data) async {
-    return await _dio.post('/messages/sendmessage', data: data);
-  }
+    try {
+      print('ApiProvider: Sending message to /messages/sendmessage');
+      print('ApiProvider: Message data: $data');
 
+      final response = await _dio.post('/messages/sendmessage', data: data);
+
+      print('ApiProvider: Send message response received');
+      print('ApiProvider: Status: ${response.statusCode}');
+
+      return response;
+    } on DioException catch (e) {
+      print('ApiProvider: DioException in sendMessage:');
+      print('  - Type: ${e.type}');
+      print('  - Message: ${e.message}');
+      print('  - Response status: ${e.response?.statusCode}');
+      print('  - Response data: ${e.response?.data}');
+      print('  - Request data: ${e.requestOptions.data}');
+
+      rethrow;
+    } catch (e) {
+      print('ApiProvider: General error in sendMessage: $e');
+      rethrow;
+    }
+  }
   // دالة جديدة لإرسال رسالة مع صورة
   Future<Response> sendMessageWithImage(Map<String, dynamic> data, File? imageFile) async {
     try {
