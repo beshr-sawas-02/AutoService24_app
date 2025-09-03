@@ -23,8 +23,13 @@ class AuthController extends GetxController {
   var isUserDataLoaded = false.obs;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-  );
+      scopes: [
+        'email',
+        'profile'
+      ],
+      //serverClientId: '1073993043012-5h7p6pe3q4s6fbpkvflpppfmndg0lu3p.apps.googleusercontent.com'
+      clientId:
+          '1073993043012-but35ubclk4kel50nri6ih64i3965i1i.apps.googleusercontent.com');
 
   @override
   void onInit() {
@@ -68,7 +73,9 @@ class AuthController extends GetxController {
       if (userData != null && userData.isNotEmpty) {
         final hasId = userData.containsKey('_id') || userData.containsKey('id');
 
-        if (hasId && userData.containsKey('username') && userData.containsKey('email')) {
+        if (hasId &&
+            userData.containsKey('username') &&
+            userData.containsKey('email')) {
           currentUser.value = UserModel.fromJson(userData);
           currentUser.refresh();
         }
@@ -162,40 +169,132 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<bool> updateProfileWithImage(String userId, Map<String, dynamic> data, File? imageFile) async {
+  // دالة محدثة لتحديث البروفايل مع الصورة
+  Future<bool> updateProfileWithImage(
+      String userId, Map<String, dynamic> data, File? imageFile) async {
     try {
       isLoading.value = true;
 
-      final response = await _authRepository.updateProfileWithImage(userId, data, imageFile);
+      print("🔄 Starting profile update with image...");
+      print("👤 User ID: $userId");
+      print("📊 Data: $data");
+      print("🖼️ Has image: ${imageFile != null}");
+
+      final response =
+          await _authRepository.updateProfileWithImage(userId, data, imageFile);
+      print("📡 Server response: $response");
 
       if (response.containsKey('user')) {
         final updatedUserData = response['user'];
+        print("✅ Received updated user data from server");
+        print("🖼️ New profile image URL: ${updatedUserData['profile_image']}");
+
+        // تحديث currentUser بالبيانات الجديدة
         currentUser.value = UserModel.fromJson(updatedUserData);
 
+        // حفظ البيانات محلياً
         await StorageService.saveUserData(updatedUserData);
 
+        // فرض تحديث الـ UI
+        currentUser.refresh();
+        print("🔄 UI refresh triggered");
+
+        Helpers.showSuccessSnackbar('Profile updated successfully');
         return true;
       } else if (response.containsKey('status') && response['status'] == true) {
+        // في حالة عدم إرجاع user object كامل
+        print("⚠️ Server didn't return full user object");
+
         final updatedUser = currentUser.value!.copyWith(
           username: data['username'],
           email: data['email'],
           phone: data['phone'],
+          // إضافة profileImage إذا كان متوفراً في الـ response
+          profileImage:
+              response['profileImage'] ?? currentUser.value!.profileImage,
         );
 
         currentUser.value = updatedUser;
         await StorageService.saveUserData(updatedUser.toJson());
+        currentUser.refresh();
 
+        Helpers.showSuccessSnackbar('Profile updated successfully');
         return true;
       } else {
+        print("❌ Invalid response structure: $response");
         throw Exception('Invalid response from server');
       }
     } catch (e) {
+      print("❌ Error updating profile: $e");
       String errorMessage = _extractErrorMessage(e.toString());
       Helpers.showErrorSnackbar(errorMessage);
       return false;
     } finally {
       isLoading.value = false;
     }
+  }
+
+  // دالة جديدة لتحديث الصورة الشخصية فقط
+  Future<bool> updateProfileImage(File imageFile) async {
+    try {
+      if (currentUser.value == null) return false;
+
+      isLoading.value = true;
+      print("🖼️ Updating profile image only...");
+
+      final response = await _authRepository.updateProfileWithImage(
+        currentUser.value!.id,
+        {}, // بيانات فارغة - تحديث الصورة فقط
+        imageFile,
+      );
+
+      if (response.containsKey('user') ||
+          response.containsKey('profileImage')) {
+        String newImageUrl = '';
+
+        if (response.containsKey('user')) {
+          newImageUrl = response['user']['profileImage'] ?? '';
+        } else {
+          newImageUrl = response['profileImage'] ?? '';
+        }
+
+        print("🖼️ New image URL: $newImageUrl");
+
+        // تحديث الصورة في currentUser
+        final updatedUser = currentUser.value!.copyWith(
+          profileImage: newImageUrl,
+        );
+
+        currentUser.value = updatedUser;
+        await StorageService.saveUserData(updatedUser.toJson());
+
+        // فرض تحديث الـ UI
+        currentUser.refresh();
+
+        print("✅ Profile image updated successfully");
+        Helpers.showSuccessSnackbar('Profile image updated successfully');
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      print("❌ Error updating profile image: $e");
+      String errorMessage = _extractErrorMessage(e.toString());
+      Helpers.showErrorSnackbar(errorMessage);
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // دالة للتحقق من حالة الصورة الشخصية
+  void debugProfileImage() {
+    print("=== Profile Image Debug ===");
+    print("👤 Current user: ${currentUser.value?.username}");
+    print("🖼️ Profile image URL: ${currentUser.value?.fullProfileImage}");
+    print("📱 Is logged in: ${isLoggedIn.value}");
+    print("💾 User data loaded: ${isUserDataLoaded.value}");
+    print("========================");
   }
 
   Future<void> _reloadUserSpecificData() async {
@@ -217,22 +316,47 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
 
+      print("🔵 Starting Google Sign-In...");
+      print("🔍 GoogleSignIn config - ClientID: ${_googleSignIn.clientId}");
+
       final account = await _googleSignIn.signIn();
+
       if (account == null) {
+        print("❌ User cancelled Google Sign-In");
         Helpers.showErrorSnackbar('Google sign in cancelled');
         return false;
       }
 
+      print("✅ Account received: ${account.email}");
+      print("👤 Display name: ${account.displayName}");
+      print("🔄 Getting authentication...");
+
       final authentication = await account.authentication;
+
+      print("✅ Authentication object created");
+      print(
+          "🔑 Access token length: ${authentication.accessToken?.length ?? 0}");
+      print("🆔 ID token length: ${authentication.idToken?.length ?? 0}");
+      print("🔑 Access token exists: ${authentication.accessToken != null}");
+      print("🆔 ID token exists: ${authentication.idToken != null}");
+
       final idToken = authentication.idToken;
 
       if (idToken == null) {
+        print("❌ ID Token is NULL - This is the main issue");
+        print(
+            "🔍 Access token: ${authentication.accessToken != null ? 'EXISTS' : 'NULL'}");
         throw Exception('Failed to get Google ID token');
       }
 
-      return await _handleSocialLoginResponse('google', idToken, userType: userType);
+      print("✅ ID Token received successfully");
+      print("🔄 Calling backend with token...");
 
+      return await _handleSocialLoginResponse('google', idToken,
+          userType: userType);
     } catch (e) {
+      print("❌ Full error details: $e");
+      print("❌ Error type: ${e.runtimeType}");
       String errorMessage = _extractErrorMessage(e.toString());
       Helpers.showErrorSnackbar('Google sign in failed: $errorMessage');
       return false;
@@ -251,7 +375,8 @@ class AuthController extends GetxController {
 
       if (result.status == LoginStatus.success) {
         final accessToken = result.accessToken!.token;
-        return await _handleSocialLoginResponse('facebook', accessToken, userType: userType);
+        return await _handleSocialLoginResponse('facebook', accessToken,
+            userType: userType);
       } else {
         Helpers.showErrorSnackbar(result.message ?? 'Facebook sign in failed');
         return false;
@@ -281,8 +406,8 @@ class AuthController extends GetxController {
         throw Exception('Failed to get Apple identity token');
       }
 
-      return await _handleSocialLoginResponse('apple', identityToken, userType: userType);
-
+      return await _handleSocialLoginResponse('apple', identityToken,
+          userType: userType);
     } catch (e) {
       String errorMessage = _extractErrorMessage(e.toString());
       Helpers.showErrorSnackbar('Apple sign in failed: $errorMessage');
@@ -292,9 +417,11 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<bool> _handleSocialLoginResponse(String provider, String token, {String userType = 'user'}) async {
+  Future<bool> _handleSocialLoginResponse(String provider, String token,
+      {String userType = 'user'}) async {
     try {
-      final response = await _authRepository.socialLogin(provider, token, userType: userType);
+      final response = await _authRepository.socialLogin(provider, token,
+          userType: userType);
 
       if (response.containsKey('token') && response.containsKey('user')) {
         await StorageService.saveToken(response['token']);
@@ -310,7 +437,8 @@ class AuthController extends GetxController {
         // تحديث WebSocket مع المستخدم الجديد - إضافة جديدة
         await _updateWebSocketUser(currentUser.value?.id);
 
-        Helpers.showSuccessSnackbar('${_capitalizeProvider(provider)} login successful');
+        Helpers.showSuccessSnackbar(
+            '${_capitalizeProvider(provider)} login successful');
 
         if (currentUser.value?.userType == 'owner') {
           Get.offAllNamed(AppRoutes.ownerHome);
@@ -376,14 +504,17 @@ class AuthController extends GetxController {
         await _reloadUserSpecificData();
 
         return true;
-      } else if (response.containsKey('status') && response.containsKey('user')) {
+      } else if (response.containsKey('status') &&
+          response.containsKey('user')) {
         if (response['status'] == true) {
           await StorageService.saveUserData(response['user']);
-          Helpers.showSuccessSnackbar(response['message'] ?? 'Account created successfully');
+          Helpers.showSuccessSnackbar(
+              response['message'] ?? 'Account created successfully');
           Get.offAllNamed(AppRoutes.login);
           return true;
         } else {
-          Helpers.showErrorSnackbar(response['message'] ?? 'Registration failed');
+          Helpers.showErrorSnackbar(
+              response['message'] ?? 'Registration failed');
           return false;
         }
       } else {
@@ -430,14 +561,32 @@ class AuthController extends GetxController {
   }
 
   bool get isGuest => !isLoggedIn.value;
+
   bool get isOwner => currentUser.value?.userType == 'owner';
+
   bool get isUser => currentUser.value?.userType == 'user';
+
   String get displayName => currentUser.value?.username ?? 'Guest';
+
   String get userEmail => currentUser.value?.email ?? '';
 
+  // دالة محدثة لتحديث بيانات المستخدم
   Future<void> refreshUserData() async {
+    print("🔄 Refreshing user data...");
     isUserDataLoaded.value = false;
-    await _checkLoginStatus();
+
+    // إعادة تحميل البيانات من Storage
+    await _loadUserData();
+
+    if (currentUser.value != null) {
+      print("✅ User data refreshed");
+      print("🖼️ Current image URL: ${currentUser.value?.fullProfileImage}");
+      currentUser.refresh(); // فرض تحديث الـ UI
+    } else {
+      print("❌ Failed to refresh user data");
+    }
+
+    isUserDataLoaded.value = true;
   }
 
   bool get hasCompleteProfile {

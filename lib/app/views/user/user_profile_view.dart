@@ -250,11 +250,11 @@ class UserProfileView extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 58,
                   backgroundColor: Colors.white.withOpacity(0.2),
-                  child: user.profileImage != null && user.profileImage!.isNotEmpty
+                  child: user.fullProfileImage != null && user.profileImage!.isNotEmpty
                       ? ClipRRect(
                     borderRadius: BorderRadius.circular(58),
                     child: Image.network(
-                      user.profileImage!,
+                      user.fullProfileImage!,
                       width: 116,
                       height: 116,
                       fit: BoxFit.cover,

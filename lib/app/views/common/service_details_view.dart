@@ -52,16 +52,43 @@ class ServiceDetailsView extends StatelessWidget {
               ),
             ),
             actions: [
-              IconButton(
-                icon: Icon(Icons.bookmark_border), // TODO: Change based on saved state
-                onPressed: () {
-                  if (authController.isGuest) {
-                    _showGuestDialog();
-                  } else {
-                    _toggleSaveService(service);
-                  }
-                },
-              ),
+              Obx(() {
+                if (authController.isGuest) {
+                  return IconButton(
+                    icon: Icon(Icons.bookmark_border, color: Colors.white70),
+                    onPressed: () {
+                      _showGuestDialog();
+                    },
+                    tooltip: 'Login to save',
+                  );
+                }
+
+                final isBookmarked = serviceController.isServiceSaved(service.id);
+
+                return IconButton(
+                  icon: Container(
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: isBookmarked
+                          ? Colors.orange.withOpacity(0.2)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                      color: isBookmarked ? Colors.orange[700] : Colors.white,
+                      size: 22,
+                    ),
+                  ),
+                  onPressed: () async {
+                    final userId = authController.currentUser.value?.id;
+                    if (userId != null) {
+                      await serviceController.toggleSaveService(service.id, userId);
+                    }
+                  },
+                  tooltip: isBookmarked ? 'Remove from saved' : 'Save service',
+                );
+              }),
             ],
           ),
           SliverToBoxAdapter(

@@ -70,7 +70,11 @@ class ApiProvider {
   }
 
   // دالة جديدة لتحديث الملف الشخصي مع رفع الصورة
-  Future<Response> updateProfileWithImage(String userId, Map<String, dynamic> data, File? imageFile) async {
+  Future<Response> updateProfileWithImage(
+      String userId,
+      Map<String, dynamic> data,
+      File? imageFile,
+      ) async {
     try {
       print("ApiProvider: updateProfileWithImage called for user $userId");
 
@@ -90,7 +94,7 @@ class ApiProvider {
 
         formData.files.add(
           MapEntry(
-            'images', // هذا يطابق اسم الحقل في backend controller
+            'profileImage', // ✅ لازم يطابق الباك
             await MultipartFile.fromFile(
               imageFile.path,
               filename: fileName,
@@ -106,6 +110,7 @@ class ApiProvider {
         data: formData,
         options: Options(
           headers: {
+            'Authorization': 'Bearer ${StorageService.getToken()}',
             'Content-Type': 'multipart/form-data',
           },
         ),
