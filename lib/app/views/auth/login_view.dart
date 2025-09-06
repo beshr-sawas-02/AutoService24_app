@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:io';
 import '../../controllers/auth_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../config/app_colors.dart';
 
 class LoginView extends StatefulWidget {
+  const LoginView({super.key});
+
   @override
   _LoginViewState createState() => _LoginViewState();
 }
@@ -34,10 +35,10 @@ class _LoginViewState extends State<LoginView> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
           onPressed: () => Get.back(),
         ),
-        title: Text(
+        title: const Text(
           'Login',
           style: TextStyle(
             color: AppColors.textPrimary,
@@ -48,14 +49,14 @@ class _LoginViewState extends State<LoginView> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Welcome Back!',
                 style: TextStyle(
                   fontSize: 32,
@@ -63,28 +64,28 @@ class _LoginViewState extends State<LoginView> {
                   color: AppColors.textPrimary,
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
+              const SizedBox(height: 8),
+              const Text(
                 'Sign in to your account',
                 style: TextStyle(
                   fontSize: 16,
                   color: AppColors.textSecondary,
                 ),
               ),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
 
               // Social Login Section
               _buildSocialLoginSection(),
 
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // User Type Selection
               _buildUserTypeSelection(),
 
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
 
               // Divider
-              Row(
+              const Row(
                 children: [
                   Expanded(child: Divider(color: AppColors.border, thickness: 1)),
                   Padding(
@@ -102,7 +103,7 @@ class _LoginViewState extends State<LoginView> {
                 ],
               ),
 
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
 
               // Email Field
               _buildTextField(
@@ -117,7 +118,7 @@ class _LoginViewState extends State<LoginView> {
                 },
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Password Field
               _buildTextField(
@@ -139,14 +140,14 @@ class _LoginViewState extends State<LoginView> {
                 },
               ),
 
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // Forgot Password Link
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
                   onTap: () => Get.toNamed(AppRoutes.forgotPassword),
-                  child: Text(
+                  child: const Text(
                     'Forgot Password?',
                     style: TextStyle(
                       color: AppColors.primary,
@@ -157,10 +158,10 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
 
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
               // Login Button
-              Obx(() => Container(
+              Obx(() => SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
@@ -173,7 +174,7 @@ class _LoginViewState extends State<LoginView> {
                     shadowColor: Colors.transparent,
                   ),
                   child: authController.isLoading.value
-                      ? SizedBox(
+                      ? const SizedBox(
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(
@@ -181,26 +182,26 @@ class _LoginViewState extends State<LoginView> {
                       strokeWidth: 2.5,
                     ),
                   )
-                      : Text(
+                      : const Text(
                     'Login',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               )),
 
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
               // Register Link
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     "Don't have an account? ",
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
                   ),
                   GestureDetector(
                     onTap: () => Get.toNamed(AppRoutes.register),
-                    child: Text(
+                    child: const Text(
                       'Sign Up',
                       style: TextStyle(
                         color: AppColors.primary,
@@ -212,16 +213,16 @@ class _LoginViewState extends State<LoginView> {
                 ],
               ),
 
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
 
               // Continue as Guest
               Center(
                 child: TextButton(
                   onPressed: () => Get.offAllNamed(AppRoutes.userHome),
                   style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Continue as Guest',
                     style: TextStyle(
                       color: AppColors.textSecondary,
@@ -234,7 +235,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -258,7 +259,7 @@ class _LoginViewState extends State<LoginView> {
               : () => _socialLogin('google'),
           isGoogle: true,
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
 
         // Facebook Login
         _buildSocialButton(
@@ -274,7 +275,7 @@ class _LoginViewState extends State<LoginView> {
         ),
 
         // Apple Login
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildSocialButton(
           label: 'Continue with Apple',
           backgroundColor: AppColors.textPrimary,
@@ -294,7 +295,7 @@ class _LoginViewState extends State<LoginView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Login as:',
           style: TextStyle(
             fontSize: 16,
@@ -302,13 +303,13 @@ class _LoginViewState extends State<LoginView> {
             color: AppColors.textPrimary,
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
               child: _buildUserTypeButton('Regular User', Icons.person, 'user'),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: _buildUserTypeButton('Workshop Owner', Icons.build, 'owner'),
             ),
@@ -323,7 +324,7 @@ class _LoginViewState extends State<LoginView> {
     return GestureDetector(
       onTap: () => setState(() => _selectedUserType = type),
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
@@ -340,7 +341,7 @@ class _LoginViewState extends State<LoginView> {
               color: selected ? AppColors.primary : AppColors.textSecondary,
               size: 20,
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Flexible(
               child: Text(
                 label,
@@ -372,14 +373,14 @@ class _LoginViewState extends State<LoginView> {
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w500,
         color: AppColors.textPrimary,
       ),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(
+        labelStyle: const TextStyle(
           color: AppColors.textSecondary,
           fontSize: 16,
           fontWeight: FontWeight.w500,
@@ -394,26 +395,26 @@ class _LoginViewState extends State<LoginView> {
         fillColor: AppColors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.border, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.border, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.border, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.border, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.borderFocus, width: 2),
+          borderSide: const BorderSide(color: AppColors.borderFocus, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.error, width: 2),
+          borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.error, width: 2),
+          borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-        errorStyle: TextStyle(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        errorStyle: const TextStyle(
           color: AppColors.error,
           fontSize: 13,
           fontWeight: FontWeight.w500,
@@ -447,9 +448,9 @@ class _LoginViewState extends State<LoginView> {
           boxShadow: [
             if (onTap != null)
               BoxShadow(
-                color: backgroundColor.withOpacity(0.1),
+                color: backgroundColor.withValues(alpha: 0.1),
                 blurRadius: 8,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
           ],
         ),
@@ -468,7 +469,7 @@ class _LoginViewState extends State<LoginView> {
                 color: onTap != null ? (iconColor ?? textColor) : AppColors.textHint,
                 size: 24,
               ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Flexible(
               child: Text(
                 label,

@@ -27,6 +27,7 @@ enum ServiceType {
 class ServiceModel {
   final String id;
   final String workshopId;
+  final String userId; // إضافة هذا الحقل
   final String title;
   final String description;
   final double price;
@@ -41,6 +42,7 @@ class ServiceModel {
   ServiceModel({
     required this.id,
     required this.workshopId,
+    required this.userId, // إضافة هذا
     required this.title,
     required this.description,
     required this.price,
@@ -72,6 +74,7 @@ class ServiceModel {
     return ServiceModel(
       id: json['_id'] ?? '',
       workshopId: workshopId,
+      userId: json['user_id'] ?? workshopData?['user_id'] ?? '', // إضافة هذا
       title: json['title'] ?? '',
       description: json['description'] ?? '',
       price: _parsePrice(json['price']),
@@ -83,7 +86,7 @@ class ServiceModel {
     );
   }
 
-  // Helper method to parse price safely
+  // باقي الدوال كما هي...
   static double _parsePrice(dynamic price) {
     if (price == null) return 0.0;
     if (price is double) return price;
@@ -94,7 +97,6 @@ class ServiceModel {
     return 0.0;
   }
 
-  // Helper method to parse images safely
   static List<String> _parseImages(dynamic images) {
     if (images == null) return [];
     if (images is List) {
@@ -103,7 +105,6 @@ class ServiceModel {
     return [];
   }
 
-  // Helper method to parse DateTime safely
   static DateTime? _parseDateTime(dynamic dateTime) {
     if (dateTime == null) return null;
     if (dateTime is String) {
@@ -119,6 +120,7 @@ class ServiceModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
       'workshop_id': workshopId,
+      'user_id': userId, // إضافة هذا
       'title': title,
       'description': description,
       'price': price,
@@ -132,6 +134,7 @@ class ServiceModel {
   ServiceModel copyWith({
     String? id,
     String? workshopId,
+    String? userId, // إضافة هذا
     String? title,
     String? description,
     double? price,
@@ -144,6 +147,7 @@ class ServiceModel {
     return ServiceModel(
       id: id ?? this.id,
       workshopId: workshopId ?? this.workshopId,
+      userId: userId ?? this.userId, // إضافة هذا
       title: title ?? this.title,
       description: description ?? this.description,
       price: price ?? this.price,

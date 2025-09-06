@@ -9,8 +9,8 @@ class ApiProvider {
   ApiProvider(Dio dio) {
     _dio = dio;
     _dio.options.baseUrl = baseUrl;
-    _dio.options.connectTimeout = Duration(seconds: 30);
-    _dio.options.receiveTimeout = Duration(seconds: 30);
+    _dio.options.connectTimeout = const Duration(seconds: 30);
+    _dio.options.receiveTimeout = const Duration(seconds: 30);
 
     // Add interceptors
     _dio.interceptors.add(InterceptorsWrapper(
@@ -41,7 +41,6 @@ class ApiProvider {
 
   Future<Response> socialLogin(Map<String, dynamic> data) async {
     try {
-      print("ApiProvider: socialLogin called with provider: ${data['provider']}");
 
       final response = await _dio.post(
         '/auth/social-login',
@@ -53,14 +52,10 @@ class ApiProvider {
         ),
       );
 
-      print("ApiProvider: socialLogin response status: ${response.statusCode}");
       return response;
     } on DioException catch (e) {
-      print("ApiProvider: socialLogin DioException: ${e.message}");
-      print("ApiProvider: socialLogin response data: ${e.response?.data}");
       rethrow;
     } catch (e) {
-      print("ApiProvider: socialLogin general error: $e");
       rethrow;
     }
   }
@@ -76,7 +71,6 @@ class ApiProvider {
       File? imageFile,
       ) async {
     try {
-      print("ApiProvider: updateProfileWithImage called for user $userId");
 
       FormData formData = FormData();
 
@@ -90,7 +84,6 @@ class ApiProvider {
       // إضافة الصورة إذا كانت موجودة
       if (imageFile != null) {
         String fileName = imageFile.path.split('/').last;
-        print("ApiProvider: Adding image file: $fileName");
 
         formData.files.add(
           MapEntry(
@@ -103,7 +96,6 @@ class ApiProvider {
         );
       }
 
-      print("ApiProvider: Sending PUT request to /auth/edit/$userId");
 
       final response = await _dio.put(
         '/auth/edit/$userId',
@@ -116,10 +108,8 @@ class ApiProvider {
         ),
       );
 
-      print("ApiProvider: updateProfileWithImage response status: ${response.statusCode}");
       return response;
     } catch (e) {
-      print("ApiProvider updateProfileWithImage Error: $e");
       rethrow;
     }
   }
@@ -137,12 +127,9 @@ class ApiProvider {
   // User by ID endpoint - دالة جديدة
   Future<Response> getUserById(String userId) async {
     try {
-      print('ApiProvider: Getting user by ID: $userId');
       final response = await _dio.get('/user/$userId');
-      print('ApiProvider: getUserById response status: ${response.statusCode}');
       return response;
     } catch (e) {
-      print('ApiProvider: getUserById error: $e');
       rethrow;
     }
   }
@@ -219,7 +206,6 @@ class ApiProvider {
         ),
       );
     } catch (e) {
-      print("ApiProvider createServiceWithImages Error: $e");
       rethrow;
     }
   }
@@ -252,7 +238,6 @@ class ApiProvider {
         ),
       );
     } catch (e) {
-      print("ApiProvider uploadServiceImages Error: $e");
       rethrow;
     }
   }
@@ -322,26 +307,15 @@ class ApiProvider {
   // Message endpoints
   Future<Response> sendMessage(Map<String, dynamic> data) async {
     try {
-      print('ApiProvider: Sending message to /messages/sendmessage');
-      print('ApiProvider: Message data: $data');
 
       final response = await _dio.post('/messages/sendmessage', data: data);
 
-      print('ApiProvider: Send message response received');
-      print('ApiProvider: Status: ${response.statusCode}');
 
       return response;
     } on DioException catch (e) {
-      print('ApiProvider: DioException in sendMessage:');
-      print('  - Type: ${e.type}');
-      print('  - Message: ${e.message}');
-      print('  - Response status: ${e.response?.statusCode}');
-      print('  - Response data: ${e.response?.data}');
-      print('  - Request data: ${e.requestOptions.data}');
 
       rethrow;
     } catch (e) {
-      print('ApiProvider: General error in sendMessage: $e');
       rethrow;
     }
   }
@@ -381,7 +355,6 @@ class ApiProvider {
         ),
       );
     } catch (e) {
-      print("ApiProvider sendMessageWithImage Error: $e");
       rethrow;
     }
   }

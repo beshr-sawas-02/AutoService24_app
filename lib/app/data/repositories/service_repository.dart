@@ -94,7 +94,6 @@ class ServiceRepository {
 
   Future<ServiceModel> createServiceWithImages(Map<String, dynamic> serviceData, List<File>? imageFiles) async {
     try {
-      print("ServiceRepository: createServiceWithImages called");
 
       final response = await _apiProvider.createServiceWithImages(serviceData, imageFiles);
 

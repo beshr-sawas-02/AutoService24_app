@@ -9,6 +9,41 @@ import 'helpers.dart';
 class ImageService {
   static final ImagePicker _picker = ImagePicker();
 
+  // التحقق الموحد من الصورة
+  static Future<String?> validateImageFile(File file) async {
+    try {
+      // التحقق من وجود الملف
+      if (!await file.exists()) {
+        return 'Image file not found';
+      }
+
+      // التحقق من الامتداد
+      final fileName = file.path.toLowerCase();
+      final allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+
+      bool hasValidExtension = allowedExtensions.any(
+              (ext) => fileName.endsWith(ext)
+      );
+
+      if (!hasValidExtension) {
+        return 'Please select a valid image file (JPG, PNG, GIF, WebP)';
+      }
+
+      // التحقق من حجم الملف
+      final fileSize = await file.length();
+      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+
+      if (fileSize > maxSizeInBytes) {
+        final sizeMB = (fileSize / (1024 * 1024)).toStringAsFixed(1);
+        return 'Image size is ${sizeMB}MB. Maximum allowed is 5MB';
+      }
+
+      return null; // الصورة صحيحة
+    } catch (e) {
+      return 'Image validation failed: ${e.toString()}';
+    }
+  }
+
   // Pick single image from gallery
   static Future<File?> pickImageFromGallery() async {
     try {
@@ -21,9 +56,14 @@ class ImageService {
 
       if (image != null) {
         final file = File(image.path);
-        if (await _validateImage(file)) {
-          return file;
+        final validationError = await validateImageFile(file);
+
+        if (validationError != null) {
+          Helpers.showErrorSnackbar(validationError);
+          return null;
         }
+
+        return file;
       }
       return null;
     } catch (e) {
@@ -44,9 +84,14 @@ class ImageService {
 
       if (image != null) {
         final file = File(image.path);
-        if (await _validateImage(file)) {
-          return file;
+        final validationError = await validateImageFile(file);
+
+        if (validationError != null) {
+          Helpers.showErrorSnackbar(validationError);
+          return null;
         }
+
+        return file;
       }
       return null;
     } catch (e) {
@@ -70,11 +115,22 @@ class ImageService {
       }
 
       List<File> validFiles = [];
-      for (XFile image in images) {
-        final file = File(image.path);
-        if (await _validateImage(file)) {
+      List<String> errors = [];
+
+      for (int i = 0; i < images.length; i++) {
+        final file = File(images[i].path);
+        final validationError = await validateImageFile(file);
+
+        if (validationError == null) {
           validFiles.add(file);
+        } else {
+          errors.add('Image ${i + 1}: $validationError');
         }
+      }
+
+      // إظهار أخطاء التحقق إن وجدت
+      if (errors.isNotEmpty) {
+        Helpers.showErrorSnackbar('Some images were skipped:\n${errors.join('\n')}');
       }
 
       return validFiles;
@@ -84,123 +140,150 @@ class ImageService {
     }
   }
 
-  // Show image source selection dialog - النسخة المحسّنة والمبسطة
+  // Show image source selection dialog - نسخة محسنة
   static Future<File?> showImageSourceDialog() async {
     try {
       final result = await Get.dialog<ImageSource>(
         AlertDialog(
-          title: Text('Select Image Source'),
+          title: const Text(
+            'Select Image Source',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
-                leading: Icon(Icons.photo_library, color: Colors.orange),
-                title: Text('Gallery'),
-                subtitle: Text('Choose from existing photos'),
-                onTap: () => Get.back(result: ImageSource.gallery),
+              _buildSourceOption(
+                icon: Icons.photo_library,
+                title: 'Gallery',
+                subtitle: 'Choose from existing photos',
+                source: ImageSource.gallery,
               ),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.camera_alt, color: Colors.orange),
-                title: Text('Camera'),
-                subtitle: Text('Take a new photo'),
-                onTap: () => Get.back(result: ImageSource.camera),
+              const SizedBox(height: 8),
+              _buildSourceOption(
+                icon: Icons.camera_alt,
+                title: 'Camera',
+                subtitle: 'Take a new photo',
+                source: ImageSource.camera,
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Get.back(),
-              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Colors.grey[600]),
+              ),
             ),
           ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
+        barrierDismissible: true,
       );
 
       if (result != null) {
-        print("ImageService: User selected ${result.name}");
 
         final XFile? pickedFile = await _picker.pickImage(
           source: result,
-          maxWidth: 800,
-          maxHeight: 800,
+          maxWidth: 1920,
+          maxHeight: 1080,
           imageQuality: 80,
         );
 
         if (pickedFile != null) {
-          print("ImageService: Image picked successfully: ${pickedFile.path}");
-          return File(pickedFile.path);
+          final file = File(pickedFile.path);
+          final validationError = await validateImageFile(file);
+
+          if (validationError != null) {
+            Helpers.showErrorSnackbar(validationError);
+            return null;
+          }
+
+          return file;
         } else {
-          print("ImageService: No image was picked");
         }
       } else {
-        print("ImageService: User cancelled dialog");
       }
     } catch (e) {
-      print("ImageService showImageSourceDialog error: $e");
       Helpers.showErrorSnackbar('Failed to pick image: ${e.toString()}');
     }
 
     return null;
   }
 
-  // Validate image file
-  static Future<bool> _validateImage(File file) async {
-    try {
-      // Check if file exists
-      if (!await file.exists()) {
-        Helpers.showErrorSnackbar('Image file not found');
-        return false;
-      }
-
-      // Check file size (max 5MB)
-      final fileSize = await file.length();
-      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
-
-      if (fileSize > maxSizeInBytes) {
-        Helpers.showErrorSnackbar('Image size must be less than 5MB');
-        return false;
-      }
-
-      // Check file extension
-      final fileName = file.path.toLowerCase();
-      final allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
-
-      bool hasValidExtension = allowedExtensions.any(
-              (ext) => fileName.endsWith(ext)
-      );
-
-      if (!hasValidExtension) {
-        Helpers.showErrorSnackbar('Please select a valid image file (JPG, PNG, GIF)');
-        return false;
-      }
-
-      return true;
-    } catch (e) {
-      Helpers.showErrorSnackbar('Image validation failed: ${e.toString()}');
-      return false;
-    }
+  // مساعد لبناء خيارات مصدر الصورة
+  static Widget _buildSourceOption({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required ImageSource source,
+  }) {
+    return InkWell(
+      onTap: () => Get.back(result: source),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey[300]!),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: Colors.orange, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   // Convert file to base64 string
   static Future<String?> fileToBase64(File file) async {
     try {
+      final validationError = await validateImageFile(file);
+      if (validationError != null) {
+        Helpers.showErrorSnackbar(validationError);
+        return null;
+      }
+
       final bytes = await file.readAsBytes();
       return base64Encode(bytes);
     } catch (e) {
       Helpers.showErrorSnackbar('Failed to process image: ${e.toString()}');
-      return null;
-    }
-  }
-
-  // Save image to device storage
-  static Future<String?> saveImageToDevice(File file, String fileName) async {
-    try {
-      // This would typically use path_provider to get app directory
-      // For now, return the current path
-      return file.path;
-    } catch (e) {
-      Helpers.showErrorSnackbar('Failed to save image: ${e.toString()}');
       return null;
     }
   }
@@ -215,53 +298,48 @@ class ImageService {
       }
       return false;
     } catch (e) {
-      Helpers.showErrorSnackbar('Failed to delete image: ${e.toString()}');
       return false;
     }
   }
 
-  // Compress image
-  static Future<File?> compressImage(File file, {int quality = 80}) async {
-    try {
-      // This is a simplified version
-      // In a real app, you might use packages like flutter_image_compress
-      return file;
-    } catch (e) {
-      Helpers.showErrorSnackbar('Failed to compress image: ${e.toString()}');
-      return null;
-    }
-  }
+  // دوال مساعدة:
 
-  // دوال إضافية مفيدة:
-
-  // التحقق من صحة الصورة
-  static bool isValidImageFile(File file) {
-    final validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-    final extension = file.path.split('.').last.toLowerCase();
+  // التحقق من صحة امتداد الصورة
+  static bool isValidImageExtension(String filePath) {
+    final validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    final extension = filePath.split('.').last.toLowerCase();
     return validExtensions.contains(extension);
   }
 
   // حجم الملف بالـ MB
-  static double getFileSizeInMB(File file) {
-    final bytes = file.lengthSync();
+  static Future<double> getFileSizeInMB(File file) async {
+    final bytes = await file.length();
     return bytes / (1024 * 1024);
   }
 
   // التحقق من حجم الملف
-  static bool isValidFileSize(File file, {double maxSizeMB = 5.0}) {
-    return getFileSizeInMB(file) <= maxSizeMB;
+  static Future<bool> isValidFileSize(File file, {double maxSizeMB = 5.0}) async {
+    final sizeMB = await getFileSizeInMB(file);
+    return sizeMB <= maxSizeMB;
   }
 
-  // التحقق الشامل
-  static String? validateImage(File file) {
-    if (!isValidImageFile(file)) {
-      return 'Only JPG, JPEG, PNG, and GIF files are allowed';
-    }
+  // معلومات الصورة
+  static Future<Map<String, dynamic>> getImageInfo(File file) async {
+    try {
+      final size = await file.length();
+      final sizeMB = size / (1024 * 1024);
+      final extension = file.path.split('.').last.toLowerCase();
 
-    if (!isValidFileSize(file)) {
-      return 'Image size must be less than 5MB';
+      return {
+        'path': file.path,
+        'size_bytes': size,
+        'size_mb': double.parse(sizeMB.toStringAsFixed(2)),
+        'extension': extension,
+        'is_valid_extension': isValidImageExtension(file.path),
+        'is_valid_size': sizeMB <= 5.0,
+      };
+    } catch (e) {
+      return {'error': e.toString()};
     }
-
-    return null; // الصورة صحيحة
   }
 }

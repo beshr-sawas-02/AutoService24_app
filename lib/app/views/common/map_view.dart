@@ -8,6 +8,8 @@ import '../../routes/app_routes.dart';
 import '../../config/app_colors.dart';
 
 class MapView extends StatefulWidget {
+  const MapView({super.key});
+
   @override
   _MapViewState createState() => _MapViewState();
 }
@@ -29,12 +31,12 @@ class _MapViewState extends State<MapView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Workshop Locations'),
+        title: const Text('Workshop Locations'),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.my_location),
+            icon: const Icon(Icons.my_location),
             onPressed: _goToCurrentLocation,
           ),
         ],
@@ -43,7 +45,7 @@ class _MapViewState extends State<MapView> {
         onMapCreated: (GoogleMapController controller) {
           _mapController = controller;
         },
-        initialCameraPosition: CameraPosition(
+        initialCameraPosition: const CameraPosition(
           target: LatLng(33.5138, 36.2765), // Damascus, Syria default
           zoom: 12,
         ),
@@ -60,18 +62,18 @@ class _MapViewState extends State<MapView> {
           FloatingActionButton(
             heroTag: "refresh",
             onPressed: _loadWorkshopMarkers,
-            child: Icon(Icons.refresh),
             backgroundColor: AppColors.primary,
             foregroundColor: AppColors.white,
             mini: true,
+            child: const Icon(Icons.refresh),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           FloatingActionButton(
             heroTag: "location",
             onPressed: _goToCurrentLocation,
-            child: Icon(Icons.my_location),
             backgroundColor: AppColors.primary,
             foregroundColor: AppColors.white,
+            child: const Icon(Icons.my_location),
           ),
         ],
       ),
@@ -166,7 +168,7 @@ class _MapViewState extends State<MapView> {
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.white,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => DraggableScrollableSheet(
@@ -174,7 +176,7 @@ class _MapViewState extends State<MapView> {
         minChildSize: 0.3,
         maxChildSize: 0.8,
         builder: (context, scrollController) => Container(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -189,7 +191,7 @@ class _MapViewState extends State<MapView> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Workshop info
               Row(
@@ -208,33 +210,33 @@ class _MapViewState extends State<MapView> {
                         workshop.profileImage!,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
-                          return Icon(Icons.business, color: AppColors.grey400);
+                          return const Icon(Icons.business, color: AppColors.grey400);
                         },
                       )
-                          : Icon(Icons.business, color: AppColors.grey400),
+                          : const Icon(Icons.business, color: AppColors.grey400),
                     ),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           workshop.name,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
-                            SizedBox(width: 4),
+                            const Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
+                            const SizedBox(width: 4),
                             Text(
                               workshop.workingHours,
-                              style: TextStyle(color: AppColors.textSecondary),
+                              style: const TextStyle(color: AppColors.textSecondary),
                             ),
                           ],
                         ),
@@ -244,17 +246,17 @@ class _MapViewState extends State<MapView> {
                 ],
               ),
 
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               Text(
                 workshop.description,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   color: AppColors.textSecondary,
                 ),
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Action buttons
               Row(
@@ -268,40 +270,40 @@ class _MapViewState extends State<MapView> {
                           arguments: workshop,
                         );
                       },
-                      child: Text('View Details'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: AppColors.white,
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
+                      child: const Text('View Details'),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
                         _getDirections(workshop);
                       },
-                      child: Text('Directions'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.primary,
-                        side: BorderSide(color: AppColors.primary),
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        side: const BorderSide(color: AppColors.primary),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
+                      child: const Text('Directions'),
                     ),
                   ),
                 ],
               ),
 
               if (_currentPosition != null) ...[
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Row(
                   children: [
-                    Icon(Icons.directions_car, size: 16, color: AppColors.textSecondary),
-                    SizedBox(width: 8),
+                    const Icon(Icons.directions_car, size: 16, color: AppColors.textSecondary),
+                    const SizedBox(width: 8),
                     Text(
                       'Distance: ${_calculateDistance(workshop).toStringAsFixed(1)} km',
-                      style: TextStyle(color: AppColors.textSecondary),
+                      style: const TextStyle(color: AppColors.textSecondary),
                     ),
                   ],
                 ),

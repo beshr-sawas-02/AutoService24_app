@@ -35,23 +35,19 @@ class WebSocketService extends GetxService {
   @override
   void onInit() {
     super.onInit();
-    print('WebSocketService: Initialized');
   }
 
   Future<void> connect() async {
     if (_isConnected || _isReconnecting) {
-      print('WebSocketService: Already connected or reconnecting');
       return;
     }
 
     try {
       _currentUserId = await StorageService.getUserId();
       if (_currentUserId == null || _currentUserId!.isEmpty) {
-        print('WebSocketService: No user ID found, cannot connect');
         return;
       }
 
-      print('WebSocketService: Connecting to $WS_URL for user $_currentUserId');
       connectionStatus.value = 'Connecting...';
 
       _channel = WebSocketChannel.connect(Uri.parse(WS_URL));
@@ -67,7 +63,6 @@ class WebSocketService extends GetxService {
       connectionStatus.value = 'Connected';
       _reconnectAttempts = 0;
 
-      print('WebSocketService: Connected successfully');
 
       await _authenticate();
       _startHeartbeat();
@@ -77,13 +72,11 @@ class WebSocketService extends GetxService {
       }
 
     } catch (e) {
-      print('WebSocketService: Connection failed: $e');
       _onConnectionFailed();
     }
   }
 
   void disconnect() {
-    print('WebSocketService: Disconnecting...');
 
     _isConnected = false;
     isConnected.value = false;
@@ -101,7 +94,6 @@ class WebSocketService extends GetxService {
     // تنظيف cache الرسائل المعالجة
     _processedMessageIds.clear();
 
-    print('WebSocketService: Disconnected');
   }
 
   Future<void> _authenticate() async {
@@ -115,12 +107,10 @@ class WebSocketService extends GetxService {
     };
 
     _sendMessage(authMessage);
-    print('WebSocketService: Authentication sent for user $_currentUserId');
   }
 
   Future<void> joinRooms(List<String> chatIds) async {
     if (!_isConnected || chatIds.isEmpty) {
-      print('WebSocketService: Cannot join rooms - not connected or empty list');
       return;
     }
 
@@ -132,12 +122,10 @@ class WebSocketService extends GetxService {
     };
 
     _sendMessage(joinMessage);
-    print('WebSocketService: Joining rooms: $chatIds');
   }
 
   void sendTypingStatus(String chatId, bool isTyping) {
     if (!_isConnected) {
-      print('WebSocketService: Cannot send typing - not connected');
       return;
     }
 
@@ -148,33 +136,26 @@ class WebSocketService extends GetxService {
     };
 
     _sendMessage(typingMessage);
-    print('WebSocketService: Sent typing status: $isTyping for chat $chatId');
   }
 
   void _sendMessage(Map<String, dynamic> message) {
     if (_channel?.sink != null && _isConnected) {
       try {
         _channel!.sink.add(json.encode(message));
-      } catch (e) {
-        print('WebSocketService: Failed to send message: $e');
-      }
+      } catch (e) {}
     } else {
-      print('WebSocketService: Cannot send message - channel not available or not connected');
     }
   }
 
   void _onMessage(dynamic message) {
     try {
       final data = json.decode(message);
-      print('WebSocketService: Received message: ${data['type']}');
 
       switch (data['type']) {
         case 'auth-confirmation':
-          print('WebSocketService: Authentication confirmed for user ${data['userId']}');
           break;
 
         case 'rooms-joined':
-          print('WebSocketService: Successfully joined rooms: ${data['chatIds']}');
           break;
 
         case 'newMessage':
@@ -186,23 +167,18 @@ class WebSocketService extends GetxService {
           break;
 
         case 'pong':
-          print('WebSocketService: Received pong');
           break;
 
         case 'error':
-          print('WebSocketService: Server error: ${data['message']}');
           break;
 
         case 'server-shutdown':
-          print('WebSocketService: Server is shutting down');
           _onDisconnected();
           break;
 
         default:
-          print('WebSocketService: Unknown message type: ${data['type']}');
       }
     } catch (e) {
-      print('WebSocketService: Error parsing message: $e');
     }
   }
 
@@ -212,7 +188,6 @@ class WebSocketService extends GetxService {
 
       // تحقق من عدم معالجة الرسالة من قبل
       if (_processedMessageIds.contains(messageId)) {
-        print('WebSocketService: Duplicate message ignored: $messageId');
         return;
       }
 
@@ -225,7 +200,6 @@ class WebSocketService extends GetxService {
         _processedMessageIds.removeAll(toRemove);
       }
 
-      print('WebSocketService: Processing new message: ${messageData['content']}');
 
       final message = MessageModel(
         id: messageId,
@@ -246,12 +220,9 @@ class WebSocketService extends GetxService {
         final exists = chatController.messages.any((m) => m.id == message.id);
         if (!exists) {
           chatController.messages.add(message);
-          print('WebSocketService: Message added to ChatController');
         } else {
-          print('WebSocketService: Message already exists in ChatController');
         }
       } catch (e) {
-        print('WebSocketService: ChatController not available: $e');
       }
 
       // إظهار إشعار إذا كانت الرسالة من مستخدم آخر
@@ -260,7 +231,6 @@ class WebSocketService extends GetxService {
       }
 
     } catch (e) {
-      print('WebSocketService: Error handling new message: $e');
     }
   }
 
@@ -270,7 +240,6 @@ class WebSocketService extends GetxService {
       final chatId = data['chatId']?.toString() ?? '';
       final typing = data['isTyping'] ?? false;
 
-      print('WebSocketService: User $userId is ${typing ? 'typing' : 'stopped typing'} in chat $chatId');
 
       // تحديث حالة الكتابة إذا كان من مستخدم آخر
       if (userId != _currentUserId) {
@@ -278,7 +247,7 @@ class WebSocketService extends GetxService {
 
         // إيقاف مؤشر الكتابة تلقائياً بعد 5 ثواني
         if (typing) {
-          Timer(Duration(seconds: 5), () {
+          Timer(const Duration(seconds: 5), () {
             if (otherUserTyping.value) {
               otherUserTyping.value = false;
             }
@@ -286,7 +255,6 @@ class WebSocketService extends GetxService {
         }
       }
     } catch (e) {
-      print('WebSocketService: Error handling typing status: $e');
     }
   }
 
@@ -295,17 +263,15 @@ class WebSocketService extends GetxService {
       'رسالة جديدة',
       message.content ?? 'صورة',
       snackPosition: SnackPosition.TOP,
-      duration: Duration(seconds: 3),
+      duration: const Duration(seconds: 3),
     );
   }
 
   void _onError(error) {
-    print('WebSocketService: Connection error: $error');
     _onConnectionFailed();
   }
 
   void _onDisconnected() {
-    print('WebSocketService: Connection lost');
     _isConnected = false;
     isConnected.value = false;
     connectionStatus.value = 'Disconnected';
@@ -329,10 +295,9 @@ class WebSocketService extends GetxService {
     _isReconnecting = true;
     _reconnectAttempts++;
 
-    print('WebSocketService: Attempting reconnect $_reconnectAttempts/$MAX_RECONNECT_ATTEMPTS');
     connectionStatus.value = 'Reconnecting... ($_reconnectAttempts/$MAX_RECONNECT_ATTEMPTS)';
 
-    _reconnectTimer = Timer(Duration(seconds: RECONNECT_DELAY_SECONDS), () {
+    _reconnectTimer = Timer(const Duration(seconds: RECONNECT_DELAY_SECONDS), () {
       _isReconnecting = false;
       connect();
     });
@@ -340,9 +305,8 @@ class WebSocketService extends GetxService {
 
   void _startHeartbeat() {
     _heartbeatTimer?.cancel();
-    _heartbeatTimer = Timer.periodic(Duration(seconds: 30), (timer) {
+    _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       if (_isConnected && _channel != null) {
-        print('WebSocketService: Sending heartbeat ping');
         _sendMessage({'type': 'ping'});
       } else {
         timer.cancel();
@@ -352,13 +316,12 @@ class WebSocketService extends GetxService {
 
   Future<void> setUser(String? userId) async {
     if (_currentUserId != userId) {
-      print('WebSocketService: Changing user from $_currentUserId to $userId');
       disconnect();
       _currentUserId = userId;
       _joinedChatIds.clear();
 
       if (userId != null && userId.isNotEmpty) {
-        await Future.delayed(Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 1));
         connect();
       }
     }
@@ -380,7 +343,6 @@ class WebSocketService extends GetxService {
 
   @override
   void onClose() {
-    print('WebSocketService: Service closing...');
     disconnect();
     super.onClose();
   }

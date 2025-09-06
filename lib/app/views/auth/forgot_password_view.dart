@@ -8,6 +8,8 @@ import '../../widgets/custom_button.dart';
 import '../../config/app_colors.dart';
 
 class ForgotPasswordView extends StatefulWidget {
+  const ForgotPasswordView({super.key});
+
   @override
   _ForgotPasswordViewState createState() => _ForgotPasswordViewState();
 }
@@ -25,33 +27,33 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reset Password'),
+        title: const Text('Reset Password'),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Progress Indicator
               _buildProgressIndicator(),
 
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
               // Header
               _buildHeader(),
 
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
               // Form Fields based on current step
               _buildFormFields(),
 
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
 
               // Action Button
               Obx(() => CustomButton(
@@ -60,16 +62,16 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 isLoading: authController.isLoading.value,
               )),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Back to Login
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Remember your password? '),
+                  const Text('Remember your password? '),
                   GestureDetector(
                     onTap: () => Get.offNamed(AppRoutes.login),
-                    child: Text(
+                    child: const Text(
                       'Login',
                       style: TextStyle(
                         color: AppColors.primary,
@@ -98,7 +100,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             ),
           ),
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Expanded(
           child: Container(
             height: 4,
@@ -149,20 +151,20 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             color: AppColors.primary,
           ),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
           subtitle,
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.textSecondary,
             fontSize: 16,
           ),
@@ -194,15 +196,15 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
           keyboardType: TextInputType.emailAddress,
           validator: Validators.validateEmail,
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.info.withOpacity(0.1),
+            color: AppColors.info.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.info.withOpacity(0.3)),
+            border: Border.all(color: AppColors.info.withValues(alpha: 0.3)),
           ),
-          child: Row(
+          child: const Row(
             children: [
               Icon(Icons.info_outline, color: AppColors.info),
               SizedBox(width: 12),
@@ -233,7 +235,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
           obscureText: true,
           validator: Validators.validatePassword,
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         CustomTextField(
           controller: _confirmPasswordController,
           labelText: 'Confirm New Password',
@@ -245,18 +247,18 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             _newPasswordController.text,
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.success.withOpacity(0.1),
+            color: AppColors.success.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.success.withOpacity(0.3)),
+            border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
+              const Row(
                 children: [
                   Icon(Icons.security, color: AppColors.success),
                   SizedBox(width: 8),
@@ -269,7 +271,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   ),
                 ],
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               _buildPasswordRequirement('At least 6 characters'),
               _buildPasswordRequirement('Contains letters and numbers'),
               _buildPasswordRequirement('No spaces allowed'),
@@ -282,18 +284,18 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
   Widget _buildPasswordRequirement(String requirement) {
     return Padding(
-      padding: EdgeInsets.only(left: 32, top: 4),
+      padding: const EdgeInsets.only(left: 32, top: 4),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.check_circle_outline,
             size: 16,
             color: AppColors.success,
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text(
             requirement,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppColors.success,
               fontSize: 12,
             ),
@@ -307,12 +309,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: AppColors.success.withOpacity(0.1),
+            color: AppColors.success.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Column(
+          child: const Column(
             children: [
               Icon(
                 Icons.check_circle,
@@ -376,7 +378,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   Future<void> _verifyEmail() async {
     // In a real app, you would verify the email with the backend
     // For now, we'll simulate this step
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
 
     setState(() {
       _currentStep = 1;

@@ -1,6 +1,5 @@
 import '../providers/api_provider.dart';
 import '../models/user_model.dart';
-import 'dart:io';
 
 class UserRepository {
   final ApiProvider _apiProvider;

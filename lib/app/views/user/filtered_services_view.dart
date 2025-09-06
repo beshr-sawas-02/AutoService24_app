@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:io';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/service_controller.dart';
-import '../../controllers/workshop_controller.dart'; // إضافة جديدة
+import '../../controllers/workshop_controller.dart';
 import '../../data/models/service_model.dart';
 import '../../routes/app_routes.dart';
 import '../../config/app_colors.dart';
 
 class FilteredServicesView extends StatefulWidget {
+  const FilteredServicesView({super.key});
+
   @override
   _FilteredServicesViewState createState() => _FilteredServicesViewState();
 }
@@ -15,7 +18,7 @@ class FilteredServicesView extends StatefulWidget {
 class _FilteredServicesViewState extends State<FilteredServicesView> {
   final ServiceController serviceController = Get.find<ServiceController>();
   final AuthController authController = Get.find<AuthController>();
-  final WorkshopController workshopController = Get.find<WorkshopController>(); // إضافة جديدة
+  final WorkshopController workshopController = Get.find<WorkshopController>();
 
   late ServiceType selectedServiceType;
   late String categoryTitle;
@@ -42,7 +45,118 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     }
   }
 
-  // الدالة المُعدّلة لبدء المحادثة - هنا الحل الأساسي
+  bool _isServiceOwner(ServiceModel service) {
+    final currentUserId = authController.currentUser.value?.id;
+    if (currentUserId == null || currentUserId.isEmpty) return false;
+
+    return service.userId == currentUserId ||
+        service.workshopData?['user_id'] == currentUserId;
+  }
+
+  Widget _buildImageWidget(String imagePath) {
+    imagePath = imagePath.trim();
+
+    if (imagePath.isEmpty) {
+      return _buildErrorContainer('Empty image path');
+    }
+
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.black,
+        child: Image.network(
+          imagePath,
+          fit: BoxFit.contain,
+          width: double.infinity,
+          height: double.infinity,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildErrorContainer('Network error');
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              color: Colors.black,
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primary,
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                      : null,
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    } else if (imagePath.startsWith('/') || imagePath.contains('/data/')) {
+      return Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.black,
+        child: Image.file(
+          File(imagePath),
+          fit: BoxFit.contain,
+          width: double.infinity,
+          height: double.infinity,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildErrorContainer('File not found');
+          },
+        ),
+      );
+    } else {
+      return Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.black,
+        child: Image.asset(
+          imagePath,
+          fit: BoxFit.contain,
+          width: double.infinity,
+          height: double.infinity,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildErrorContainer('Invalid image path');
+          },
+        ),
+      );
+    }
+  }
+
+  Widget _buildErrorContainer(String message) {
+    return Container(
+      color: AppColors.grey200,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.build_circle,
+              size: 64,
+              color: AppColors.grey400,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Service Image',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 16,
+              ),
+            ),
+            if (message != 'Service Image')
+              Text(
+                message,
+                style: const TextStyle(
+                  color: AppColors.textHint,
+                  fontSize: 10,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _startChatWithWorkshop(ServiceModel service) async {
     try {
       final currentUserId = authController.currentUser.value?.id ?? '';
@@ -51,65 +165,53 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         Get.snackbar(
           'Error',
           'User not logged in',
-          backgroundColor: AppColors.error.withOpacity(0.1),
+          backgroundColor: AppColors.error.withValues(alpha: 0.1),
           colorText: AppColors.error,
         );
         return;
       }
 
-      print('FilteredServicesView: Starting chat with workshop');
-      print('Service ID: ${service.id}');
-      print('Workshop ID from service: ${service.workshopId}');
-      print('Current User ID: $currentUserId');
-
-      // 1. جلب الورشة بواسطة workshop_id للحصول على user_id الحقيقي
-      final workshop = await workshopController.getWorkshopById(service.workshopId);
+      final workshop =
+          await workshopController.getWorkshopById(service.workshopId);
 
       if (workshop == null) {
         Get.snackbar(
           'Error',
           'Workshop not found',
-          backgroundColor: AppColors.error.withOpacity(0.1),
+          backgroundColor: AppColors.error.withValues(alpha: 0.1),
           colorText: AppColors.error,
         );
         return;
       }
 
-      final workshopOwnerId = workshop.userId; // معرف صاحب الورشة الحقيقي
+      final workshopOwnerId = workshop.userId;
       final workshopName = workshop.name;
 
-      print('Workshop found: ${workshop.name}');
-      print('Workshop Owner ID (Real): $workshopOwnerId');
-
-      // التحقق من أن المستخدم لا يحاول محادثة نفسه
       if (workshopOwnerId == currentUserId) {
         Get.snackbar(
           'Info',
           'You cannot chat with yourself',
-          backgroundColor: AppColors.info.withOpacity(0.1),
+          backgroundColor: AppColors.info.withValues(alpha: 0.1),
           colorText: AppColors.info,
         );
         return;
       }
 
-      // التنقل إلى صفحة المحادثة مع البيانات الصحيحة
       Get.toNamed(
         AppRoutes.chat,
         arguments: {
-          'receiverId': workshopOwnerId, // استخدام معرف صاحب الورشة الحقيقي
+          'receiverId': workshopOwnerId,
           'receiverName': workshopName,
           'currentUserId': currentUserId,
           'serviceId': service.id,
           'serviceTitle': service.title,
         },
       );
-
     } catch (e) {
-      print('Error starting chat: $e');
       Get.snackbar(
         'Error',
         'Failed to start chat. Please try again.',
-        backgroundColor: AppColors.error.withOpacity(0.1),
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,
       );
     }
@@ -124,19 +226,19 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         elevation: 0,
         title: Text(
           categoryTitle,
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Get.back(),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.tune, color: AppColors.textSecondary),
+            icon: const Icon(Icons.tune, color: AppColors.textSecondary),
             onPressed: () {
               _showFilterBottomSheet();
             },
@@ -145,7 +247,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       ),
       body: Obx(() {
         if (serviceController.isLoading.value) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(
               color: AppColors.primary,
             ),
@@ -160,10 +262,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
             .where((service) => service.serviceType == selectedServiceType)
             .toList();
 
-        print('FilteredServicesView: Total ${isOwner ? "owner" : "all"} services: ${sourceServices.length}');
-        print('FilteredServicesView: Filtered services: ${filteredServices.length}');
-        print('FilteredServicesView: Looking for type: ${selectedServiceType.name}');
-
         if (filteredServices.isEmpty) {
           return _buildEmptyState();
         }
@@ -174,7 +272,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           },
           color: AppColors.primary,
           child: ListView.builder(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             itemCount: filteredServices.length,
             itemBuilder: (context, index) {
               final service = filteredServices[index];
@@ -188,7 +286,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
 
   Widget _buildServicePostCard(ServiceModel service) {
     return Container(
-      margin: EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
@@ -196,7 +294,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           BoxShadow(
             color: AppColors.shadowLight,
             blurRadius: 15,
-            offset: Offset(0, 5),
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -213,8 +311,10 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
   }
 
   Widget _buildPostHeader(ServiceModel service) {
+    final isServiceOwner = _isServiceOwner(service);
+
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           CircleAvatar(
@@ -224,22 +324,21 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               service.workshopName.isNotEmpty
                   ? service.workshopName[0].toUpperCase()
                   : 'W',
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
             ),
           ),
-          SizedBox(width: 12),
-
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   service.workshopData?['name'] ?? 'Unknown Workshop',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -248,7 +347,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                 if (service.workshopData?['working_hours'] != null)
                   Text(
                     service.workshopData!['working_hours'],
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
@@ -256,53 +355,78 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               ],
             ),
           ),
-
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: AppColors.primaryWithOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               service.serviceTypeName,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 10,
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
+          if (isServiceOwner) ...[
+            const SizedBox(width: 8),
+            PopupMenuButton<String>(
+              icon: const Icon(
+                Icons.more_vert,
+                color: AppColors.textSecondary,
+                size: 20,
+              ),
+              offset: const Offset(0, 40),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 8,
+              onSelected: (value) {
+                switch (value) {
+                  case 'delete':
+                    _showDeleteConfirmation(service);
+                    break;
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.delete_outline,
+                        size: 18,
+                        color: AppColors.error,
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                        'Delete Service',
+                        style: TextStyle(
+                          color: AppColors.error,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
 
   Widget _buildServiceImage(ServiceModel service) {
-    return Container(
+    return SizedBox(
       height: 250,
       width: double.infinity,
       child: service.images.isNotEmpty
           ? ClipRRect(
-        child: Image.network(
-          service.images.first,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return _buildPlaceholderImage();
-          },
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primary,
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                    loadingProgress.expectedTotalBytes!
-                    : null,
-              ),
-            );
-          },
-        ),
-      )
+              child: _buildImageWidget(service.images.first),
+            )
           : _buildPlaceholderImage(),
     );
   }
@@ -310,7 +434,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
   Widget _buildPlaceholderImage() {
     return Container(
       color: AppColors.grey200,
-      child: Center(
+      child: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -335,23 +459,22 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
 
   Widget _buildServiceContent(ServiceModel service) {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             service.title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 8),
-
+          const SizedBox(height: 8),
           Text(
             service.description,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textSecondary,
               height: 1.4,
@@ -359,24 +482,23 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
-          SizedBox(height: 12),
-
+          const SizedBox(height: 12),
           Row(
             children: [
               Text(
                 service.formattedPrice,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: AppColors.success,
                 ),
               ),
-              Spacer(),
-
-              if (service.workshopData?['location_x'] != null && service.workshopData?['location_y'] != null)
+              const Spacer(),
+              if (service.workshopData?['location_x'] != null &&
+                  service.workshopData?['location_y'] != null)
                 GestureDetector(
                   onTap: () {},
-                  child: Row(
+                  child: const Row(
                     children: [
                       Icon(
                         Icons.location_on,
@@ -402,11 +524,13 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
   }
 
   Widget _buildActionButtons(ServiceModel service) {
+    final isServiceOwner = _isServiceOwner(service);
+
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          if (!isOwner)
+          if (!isServiceOwner)
             Row(
               children: [
                 Expanded(
@@ -423,8 +547,10 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
 
                         if (isSaved) {
                           final savedService = serviceController.savedServices
-                              .firstWhere((saved) => saved.serviceId == service.id);
-                          await serviceController.unsaveService(savedService.id);
+                              .firstWhere(
+                                  (saved) => saved.serviceId == service.id);
+                          await serviceController
+                              .unsaveService(savedService.id);
                         } else {
                           await serviceController.saveService(
                             service.id,
@@ -435,12 +561,16 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                       icon: Icon(
                         isSaved ? Icons.bookmark : Icons.bookmark_border,
                         size: 18,
-                        color: isSaved ? AppColors.primary : AppColors.textSecondary,
+                        color: isSaved
+                            ? AppColors.primary
+                            : AppColors.textSecondary,
                       ),
                       label: Text(
                         isSaved ? 'Saved' : 'Save',
                         style: TextStyle(
-                          color: isSaved ? AppColors.primary : AppColors.textSecondary,
+                          color: isSaved
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
                           fontSize: 14,
                         ),
                       ),
@@ -451,13 +581,13 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
                       ),
                     );
                   }),
                 ),
-                SizedBox(width: 12),
-
+                const SizedBox(width: 12),
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
@@ -467,12 +597,12 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                       }
                       _startChatWithWorkshop(service);
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.chat_bubble_outline,
                       size: 18,
                       color: AppColors.info,
                     ),
-                    label: Text(
+                    label: const Text(
                       'Chat',
                       style: TextStyle(
                         color: AppColors.info,
@@ -480,26 +610,25 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                       ),
                     ),
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(
+                      side: const BorderSide(
                         color: AppColors.info,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 16),
                     ),
                   ),
                 ),
               ],
             ),
-
-          if (!isOwner) SizedBox(height: 12),
-
-          Container(
+          if (!isServiceOwner) const SizedBox(height: 12),
+          SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                if (authController.isGuest && !isOwner) {
+                if (authController.isGuest && !isServiceOwner) {
                   _showGuestDialog();
                   return;
                 }
@@ -509,16 +638,16 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                   arguments: service,
                 );
               },
-              child: Text('View Details'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: AppColors.white,
-                padding: EdgeInsets.symmetric(vertical: 14),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
                 elevation: 0,
               ),
+              child: const Text('View Details'),
             ),
           ),
         ],
@@ -526,18 +655,164 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     );
   }
 
+  void _showDeleteConfirmation(ServiceModel service) {
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: AppColors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: AppColors.error),
+            SizedBox(width: 12),
+            Text(
+              'Delete Service',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Are you sure you want to delete this service?',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppColors.error.withValues(alpha: 0.3),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    service.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    service.formattedPrice,
+                    style: const TextStyle(
+                      color: AppColors.success,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'This action cannot be undone.',
+              style: TextStyle(
+                color: AppColors.error,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+              _performDelete(service);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  void _performDelete(ServiceModel service) async {
+    try {
+      final success = await serviceController.deleteService(service.id);
+      if (success) {
+        Get.snackbar(
+          'Deleted',
+          'Service deleted successfully',
+          backgroundColor: AppColors.success.withValues(alpha: 0.1),
+          colorText: AppColors.success,
+          duration: const Duration(seconds: 2),
+          icon: const Icon(Icons.check_circle, color: AppColors.success),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 8,
+          snackPosition: SnackPosition.TOP,
+        );
+
+        await _loadAndFilterServices();
+      } else {
+        Get.snackbar(
+          'Error',
+          'Failed to delete service. Please try again.',
+          backgroundColor: AppColors.error.withValues(alpha: 0.1),
+          colorText: AppColors.error,
+          duration: const Duration(seconds: 3),
+          icon: const Icon(Icons.error_outline, color: AppColors.error),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 8,
+          snackPosition: SnackPosition.TOP,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'An error occurred while deleting the service.',
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+        colorText: AppColors.error,
+        duration: const Duration(seconds: 3),
+        icon: const Icon(Icons.error_outline, color: AppColors.error),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 8,
+        snackPosition: SnackPosition.TOP,
+      );
+    }
+  }
+
   Widget _buildEmptyState() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.search_off,
             size: 80,
             color: AppColors.grey400,
           ),
-          SizedBox(height: 16),
-          Text(
+          const SizedBox(height: 16),
+          const Text(
             'No services found',
             style: TextStyle(
               fontSize: 20,
@@ -545,34 +820,34 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               color: AppColors.textSecondary,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             isOwner
                 ? 'You haven\'t created any services for $categoryTitle'
                 : 'No services available for $categoryTitle',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textHint,
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () async {
               await _loadAndFilterServices();
             },
-            child: Text('Refresh'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
             ),
+            child: const Text('Refresh'),
           ),
           if (isOwner) ...[
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             ElevatedButton.icon(
               onPressed: () => Get.toNamed(AppRoutes.addService),
-              icon: Icon(Icons.add),
-              label: Text('Add Service'),
+              icon: const Icon(Icons.add),
+              label: const Text('Add Service'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.success,
                 foregroundColor: AppColors.white,
@@ -584,9 +859,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     );
   }
 
-  void _showFilterBottomSheet() {
-    // يمكنك إضافة فلاتر إضافية هنا
-  }
+  void _showFilterBottomSheet() {}
 
   void _showGuestDialog() {
     Get.dialog(
@@ -599,14 +872,14 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           'Login Required',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        content: Text(
+        content: const Text(
           'Please login or register to access this feature.',
           style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text(
+            child: const Text(
               'Cancel',
               style: TextStyle(color: AppColors.textSecondary),
             ),
@@ -616,7 +889,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               Get.back();
               Get.toNamed(AppRoutes.login);
             },
-            child: const Text('Login'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
@@ -624,6 +896,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
+            child: const Text('Login'),
           ),
         ],
       ),

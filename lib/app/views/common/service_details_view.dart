@@ -1,6 +1,7 @@
 import 'package:autoservice24/app/config/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:io'; // أضافة هذا للتعامل مع الملفات المحلية
 import '../../controllers/auth_controller.dart';
 import '../../controllers/service_controller.dart';
 import '../../data/models/service_model.dart';
@@ -9,6 +10,9 @@ import '../../routes/app_routes.dart';
 class ServiceDetailsView extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
   final ServiceController serviceController = Get.find<ServiceController>();
+  final PageController pageController = PageController();
+
+  ServiceDetailsView({super.key}); // إضافة controller للصور
 
   @override
   Widget build(BuildContext context) {
@@ -18,44 +22,71 @@ class ServiceDetailsView extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 250,
+            expandedHeight: 300, // زيادة الارتفاع قليلاً
             pinned: true,
             backgroundColor: AppColors.primary,
             flexibleSpace: FlexibleSpaceBar(
               background: service.images.isNotEmpty
-                  ? PageView.builder(
-                itemCount: service.images.length,
-                itemBuilder: (context, index) {
-                  return Image.network(
-                    service.images[index],
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey[300],
-                        child: Icon(
-                          Icons.build,
-                          size: 80,
-                          color: Colors.grey[600],
-                        ),
+                  ? Stack(
+                children: [
+                  PageView.builder(
+                    controller: pageController,
+                    itemCount: service.images.length,
+                    itemBuilder: (context, index) {
+                      return SizedBox(
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: _buildImageWidget(service.images[index]),
                       );
                     },
-                  );
-                },
+                  ),
+                  // مؤشر الصور إذا كان فيه أكتر من صورة
+                  if (service.images.length > 1)
+                    Positioned(
+                      bottom: 20,
+                      left: 0,
+                      right: 0,
+                      child: _buildImageIndicator(service.images.length),
+                    ),
+                  // رقم الصورة
+                  if (service.images.length > 1)
+                    Positioned(
+                      top: 50,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.6),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Obx(() {
+                          return Text(
+                            '${pageController.hasClients ? (pageController.page?.round() ?? 0) + 1 : 1}/${service.images.length}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          );
+                        }),
+                      ),
+                    ),
+                ],
               )
-                  : Container(
-                color: Colors.grey[300],
-                child: Icon(
-                  Icons.build,
-                  size: 80,
-                  color: Colors.grey[600],
-                ),
-              ),
+                  : _buildPlaceholderImage(),
             ),
             actions: [
               Obx(() {
                 if (authController.isGuest) {
                   return IconButton(
-                    icon: Icon(Icons.bookmark_border, color: Colors.white70),
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.bookmark_border, color: Colors.white, size: 20),
+                    ),
                     onPressed: () {
                       _showGuestDialog();
                     },
@@ -67,17 +98,17 @@ class ServiceDetailsView extends StatelessWidget {
 
                 return IconButton(
                   icon: Container(
-                    padding: EdgeInsets.all(6),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: isBookmarked
-                          ? Colors.orange.withOpacity(0.2)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(8),
+                          ? AppColors.primary.withValues(alpha: 0.9)
+                          : Colors.black.withValues(alpha: 0.3),
+                      shape: BoxShape.circle,
                     ),
                     child: Icon(
                       isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                      color: isBookmarked ? Colors.orange[700] : Colors.white,
-                      size: 22,
+                      color: Colors.white,
+                      size: 20,
                     ),
                   ),
                   onPressed: () async {
@@ -93,7 +124,7 @@ class ServiceDetailsView extends StatelessWidget {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -106,22 +137,23 @@ class ServiceDetailsView extends StatelessWidget {
                           children: [
                             Text(
                               service.title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
                               ),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
-                                color: Colors.orange.withOpacity(0.1),
+                                color: AppColors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
                                 service.serviceTypeName,
-                                style: TextStyle(
-                                  color: Colors.orange.shade700,
+                                style: const TextStyle(
+                                  color: AppColors.primary,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -131,7 +163,7 @@ class ServiceDetailsView extends StatelessWidget {
                       ),
                       Text(
                         service.formattedPrice,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary,
@@ -140,27 +172,28 @@ class ServiceDetailsView extends StatelessWidget {
                     ],
                   ),
 
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
                   // Description
-                  Text(
+                  const Text(
                     'Description',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     service.description,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[700],
+                      color: AppColors.textSecondary,
                       height: 1.5,
                     ),
                   ),
 
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
                   // Workshop Info
                   _buildInfoCard(
@@ -172,37 +205,19 @@ class ServiceDetailsView extends StatelessWidget {
                     ],
                   ),
 
-                  // SizedBox(height: 16),
-                  //
-                  // // Rating and Reviews
-                  // _buildInfoCard(
-                  //   'Reviews',
-                  //   [
-                  //     Row(
-                  //       children: [
-                  //         Row(
-                  //           children: List.generate(5, (index) {
-                  //             return Icon(
-                  //               Icons.star,
-                  //               color: index < 4 ? Colors.amber : Colors.grey[300],
-                  //               size: 20,
-                  //             );
-                  //           }),
-                  //         ),
-                  //         SizedBox(width: 8),
-                  //         Text('4.5 (32 reviews)', style: TextStyle(fontSize: 16)),
-                  //       ],
-                  //     ),
-                  //   ],
-                  // ),
+                  // عرض الصور الإضافية إذا كان فيه أكتر من صورة
+                  if (service.images.length > 1) ...[
+                    const SizedBox(height: 24),
+                    _buildImageGallery(service.images),
+                  ],
 
-                  SizedBox(height: 32),
+                  const SizedBox(height: 32),
 
                   // Action Buttons
                   Row(
                     children: [
                       Expanded(
-                        child: ElevatedButton(
+                        child: ElevatedButton.icon(
                           onPressed: () {
                             if (authController.isGuest) {
                               _showGuestDialog();
@@ -210,41 +225,23 @@ class ServiceDetailsView extends StatelessWidget {
                               _contactWorkshop(service);
                             }
                           },
-                          child: Text('Contact Workshop'),
+                          icon: const Icon(Icons.chat_bubble_outline, size: 20),
+                          label: const Text('Contact Workshop'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             foregroundColor: AppColors.white,
-                            padding: EdgeInsets.symmetric(vertical: 16),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12),
                             ),
+                            elevation: 2,
                           ),
                         ),
                       ),
-                      SizedBox(width: 12),
-                      // Expanded(
-                      //   child: OutlinedButton(
-                      //     onPressed: () {
-                      //       Get.toNamed(
-                      //         AppRoutes.workshopDetails,
-                      //         arguments: service.workshopId,
-                      //       );
-                      //     },
-                      //     child: Text('View Workshop'),
-                      //     style: OutlinedButton.styleFrom(
-                      //       foregroundColor: Colors.orange,
-                      //       side: BorderSide(color: Colors.orange),
-                      //       padding: EdgeInsets.symmetric(vertical: 16),
-                      //       shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.circular(10),
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
                     ],
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -254,21 +251,233 @@ class ServiceDetailsView extends StatelessWidget {
     );
   }
 
+  // الدالة المحسنة لمعالجة الصور
+  Widget _buildImageWidget(String imagePath) {
+    imagePath = imagePath.trim();
+
+    if (imagePath.isEmpty) {
+      return _buildErrorContainer('Empty image path');
+    }
+
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.black, // خلفية سوداء للصورة
+        child: Image.network(
+          imagePath,
+          fit: BoxFit.contain, // تغيير إلى contain لإظهار الصورة كاملة
+          width: double.infinity,
+          height: double.infinity,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildErrorContainer('Network error');
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              color: AppColors.grey200,
+              child: Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                      : null,
+                  strokeWidth: 3,
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
+    else if (imagePath.startsWith('/') || imagePath.contains('/data/')) {
+      return Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.black,
+        child: Image.file(
+          File(imagePath),
+          fit: BoxFit.contain,
+          width: double.infinity,
+          height: double.infinity,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildErrorContainer('File not found');
+          },
+        ),
+      );
+    }
+    else {
+      return Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.black,
+        child: Image.asset(
+          imagePath,
+          fit: BoxFit.contain,
+          width: double.infinity,
+          height: double.infinity,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildErrorContainer('Invalid image path');
+          },
+        ),
+      );
+    }
+  }
+
+  // دالة لعرض صورة placeholder
+  Widget _buildPlaceholderImage() {
+    return Container(
+      color: AppColors.grey200,
+      child: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.build_circle,
+              size: 80,
+              color: AppColors.grey400,
+            ),
+            SizedBox(height: 12),
+            Text(
+              'Service Image',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // دالة لعرض مؤشر الصور
+  Widget _buildImageIndicator(int imageCount) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(
+        imageCount,
+            (index) => Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white.withValues(alpha: 0.7),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // دالة لعرض معرض الصور الصغير
+  Widget _buildImageGallery(List<String> images) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'More Images',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 100,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: images.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  // الانتقال للصورة في الـ PageView الرئيسي
+                  pageController.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                  // العودة لأعلى الصفحة
+                  Scrollable.ensureVisible(
+                    context,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                  );
+                },
+                child: Container(
+                  width: 100,
+                  margin: const EdgeInsets.only(right: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.border,
+                      width: 2,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: _buildImageWidget(images[index]),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // دالة لعرض حاوية الخطأ
+  Widget _buildErrorContainer(String message) {
+    return Container(
+      color: AppColors.grey200,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.broken_image_outlined,
+              size: 60,
+              color: AppColors.grey400,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildInfoCard(String title, List<Widget> children) {
     return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             ...children,
           ],
         ),
@@ -278,19 +487,31 @@ class ServiceDetailsView extends StatelessWidget {
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.grey[600]),
-          SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 16, color: AppColors.primary),
+          ),
+          const SizedBox(width: 12),
           Text(
             '$label: ',
-            style: TextStyle(fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
           ),
           Expanded(
             child: Text(
               value,
-              style: TextStyle(color: Colors.grey[700]),
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
         ],
@@ -298,41 +519,57 @@ class ServiceDetailsView extends StatelessWidget {
     );
   }
 
-  void _toggleSaveService(ServiceModel service) async {
-    final userId = authController.currentUser.value?.id;
-    if (userId != null) {
-      await serviceController.saveService(service.id, userId);
-    }
-  }
-
   void _contactWorkshop(ServiceModel service) {
-    // Navigate to chat or contact workshop
     Get.snackbar(
       'Contact Workshop',
       'This feature will open a chat with the workshop owner',
+      backgroundColor: AppColors.info.withValues(alpha: 0.1),
+      colorText: AppColors.info,
+      icon: const Icon(Icons.info_outline, color: AppColors.info),
+      margin: const EdgeInsets.all(16),
+      borderRadius: 8,
+      snackPosition: SnackPosition.TOP,
     );
   }
 
   void _showGuestDialog() {
     Get.dialog(
       AlertDialog(
-        title: Text('Login Required'),
-        content: Text('Please login or register to access this feature.'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Login Required',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: const Text(
+          'Please login or register to access this feature.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back();
               Get.toNamed(AppRoutes.login);
             },
-            child: Text('Login'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
+            child: const Text('Login'),
           ),
         ],
       ),

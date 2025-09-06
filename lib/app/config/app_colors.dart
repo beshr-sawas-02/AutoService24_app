@@ -59,9 +59,9 @@ class AppColors {
   );
 
   // Shadow Colors
-  static Color shadow = Colors.black.withOpacity(0.1);
-  static Color shadowLight = Colors.black.withOpacity(0.05);
-  static Color shadowMedium = Colors.black.withOpacity(0.15);
+  static Color shadow = Colors.black.withValues(alpha: 0.1);
+  static Color shadowLight = Colors.black.withValues(alpha: 0.05);
+  static Color shadowMedium = Colors.black.withValues(alpha: 0.15);
 
   // Helper method to create MaterialColor
   static MaterialColor createMaterialColor(Color color) {
@@ -73,7 +73,7 @@ class AppColors {
       strengths.add(0.1 * i);
     }
 
-    strengths.forEach((strength) {
+    for (var strength in strengths) {
       final double ds = 0.5 - strength;
       swatch[(strength * 1000).round()] = Color.fromRGBO(
         r + ((ds < 0 ? r : (255 - r)) * ds).round(),
@@ -81,7 +81,7 @@ class AppColors {
         b + ((ds < 0 ? b : (255 - b)) * ds).round(),
         1,
       );
-    });
+    }
 
     return MaterialColor(color.value, swatch);
   }

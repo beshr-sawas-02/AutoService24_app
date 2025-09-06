@@ -8,6 +8,8 @@ import '../../widgets/guest_banner.dart';
 import '../../config/app_colors.dart';
 
 class UserHomeView extends StatefulWidget {
+   const UserHomeView({super.key});
+
   @override
   _UserHomeViewState createState() => _UserHomeViewState();
 }
@@ -96,7 +98,7 @@ class _UserHomeViewState extends State<UserHomeView> {
       Get.snackbar(
         "Error",
         "Failed to refresh services",
-        backgroundColor: AppColors.error.withOpacity(0.8),
+        backgroundColor: AppColors.error.withValues(alpha: 0.8),
         colorText: AppColors.white,
       );
     }
@@ -109,7 +111,7 @@ class _UserHomeViewState extends State<UserHomeView> {
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Auto Services',
           style: TextStyle(
             color: AppColors.textPrimary,
@@ -120,15 +122,15 @@ class _UserHomeViewState extends State<UserHomeView> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.message, color: AppColors.textSecondary),
+            icon: const Icon(Icons.message, color: AppColors.textSecondary),
             onPressed: () {
               Get.toNamed(AppRoutes.chatList);
             },
           ),
           Obx(() {
-            if (authController.isGuest) return SizedBox.shrink();
+            if (authController.isGuest) return const SizedBox.shrink();
             return IconButton(
-              icon: Icon(Icons.logout, color: AppColors.textSecondary),
+              icon: const Icon(Icons.logout, color: AppColors.textSecondary),
               onPressed: () async {
                 await authController.logout();
               },
@@ -188,20 +190,20 @@ class _UserHomeViewState extends State<UserHomeView> {
 
     return Column(
       children: [
-        Obx(() => authController.isGuest ? GuestBanner() : SizedBox.shrink()),
+        Obx(() => authController.isGuest ? const GuestBanner() : const SizedBox.shrink()),
         Expanded(
           child: RefreshIndicator(
             onRefresh: _handleRefresh,
             color: AppColors.primary,
             child: SingleChildScrollView(
-              physics: AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.all(20),
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildSearchBar(),
                   const SizedBox(height: 24),
-                  Text(
+                  const Text(
                     'Categories',
                     style: TextStyle(
                       fontSize: 28,
@@ -229,7 +231,7 @@ class _UserHomeViewState extends State<UserHomeView> {
           BoxShadow(
             color: AppColors.shadowLight,
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -237,15 +239,15 @@ class _UserHomeViewState extends State<UserHomeView> {
         controller: _searchController,
         decoration: InputDecoration(
           hintText: 'Search categories...',
-          hintStyle: TextStyle(color: AppColors.textHint),
-          prefixIcon: Icon(Icons.search, color: AppColors.grey400),
+          hintStyle: const TextStyle(color: AppColors.textHint),
+          prefixIcon: const Icon(Icons.search, color: AppColors.grey400),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
           filled: true,
           fillColor: AppColors.white,
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
         onChanged: (query) {
           setState(() {
@@ -259,8 +261,8 @@ class _UserHomeViewState extends State<UserHomeView> {
   Widget _buildServiceCategories(List<Map<String, dynamic>> categoriesToShow) {
     return GridView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 1.4,
         crossAxisSpacing: 16,
@@ -287,7 +289,7 @@ class _UserHomeViewState extends State<UserHomeView> {
                 BoxShadow(
                   color: AppColors.shadowMedium,
                   blurRadius: 8,
-                  offset: Offset(0, 4),
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -306,8 +308,8 @@ class _UserHomeViewState extends State<UserHomeView> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              (category['color'] as Color).withOpacity(0.8),
-                              (category['color'] as Color).withOpacity(0.6),
+                              (category['color'] as Color).withValues(alpha: 0.8),
+                              (category['color'] as Color).withValues(alpha: 0.6),
                             ],
                           ),
                         ),
@@ -337,7 +339,7 @@ class _UserHomeViewState extends State<UserHomeView> {
                         shadows: [
                           Shadow(
                             color: AppColors.blackWithOpacity(0.7),
-                            offset: Offset(0, 2),
+                            offset: const Offset(0, 2),
                             blurRadius: 4,
                           ),
                         ],
@@ -353,44 +355,44 @@ class _UserHomeViewState extends State<UserHomeView> {
     );
   }
 
-  void _showGuestDialog() {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text(
-          'Login Required',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: const Text(
-          'Please login or register to access this feature.',
-          style: TextStyle(color: Colors.grey),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-              Get.toNamed(AppRoutes.login);
-            },
-            child: const Text('Login'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showGuestDialog() {
+  //   Get.dialog(
+  //     AlertDialog(
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(16),
+  //       ),
+  //       title: const Text(
+  //         'Login Required',
+  //         style: TextStyle(fontWeight: FontWeight.bold),
+  //       ),
+  //       content: const Text(
+  //         'Please login or register to access this feature.',
+  //         style: TextStyle(color: Colors.grey),
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Get.back(),
+  //           child: const Text(
+  //             'Cancel',
+  //             style: TextStyle(color: AppColors.textSecondary),
+  //           ),
+  //         ),
+  //         ElevatedButton(
+  //           onPressed: () {
+  //             Get.back();
+  //             Get.toNamed(AppRoutes.login);
+  //           },
+  //           style: ElevatedButton.styleFrom(
+  //             backgroundColor: AppColors.primary,
+  //             foregroundColor: AppColors.white,
+  //             shape: RoundedRectangleBorder(
+  //               borderRadius: BorderRadius.circular(8),
+  //             ),
+  //           ),
+  //           child: const Text('Login'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

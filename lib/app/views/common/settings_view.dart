@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
-import '../../utils/storage_service.dart';
 import '../../utils/helpers.dart';
 import '../../config/app_colors.dart';
 
 class SettingsView extends StatefulWidget {
+  const SettingsView({super.key});
+
   @override
   _SettingsViewState createState() => _SettingsViewState();
 }
@@ -40,12 +41,12 @@ class _SettingsViewState extends State<SettingsView> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text('Settings'),
+        title: const Text('Settings'),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
       ),
       body: ListView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         children: [
           // Account Section
           _buildSectionHeader('Account'),
@@ -62,7 +63,7 @@ class _SettingsViewState extends State<SettingsView> {
             onTap: () => _showChangePasswordDialog(),
           ),
 
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
 
           // Preferences Section
           _buildSectionHeader('Preferences'),
@@ -104,7 +105,7 @@ class _SettingsViewState extends State<SettingsView> {
             },
           ),
 
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
 
           // App Section
           _buildSectionHeader('App'),
@@ -139,7 +140,7 @@ class _SettingsViewState extends State<SettingsView> {
             onTap: () => _showTermsOfService(),
           ),
 
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
 
           // Data Section
           _buildSectionHeader('Data'),
@@ -156,22 +157,22 @@ class _SettingsViewState extends State<SettingsView> {
             onTap: () => _clearCache(),
           ),
 
-          SizedBox(height: 32),
+          const SizedBox(height: 32),
 
           // Sign Out Button
-          Container(
+          SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () => _showSignOutDialog(),
-              child: Text('Sign Out'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.error,
                 foregroundColor: AppColors.white,
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
+              child: const Text('Sign Out'),
             ),
           ),
         ],
@@ -181,10 +182,10 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
           color: AppColors.primary,
@@ -200,13 +201,13 @@ class _SettingsViewState extends State<SettingsView> {
     required VoidCallback onTap,
   }) {
     return Card(
-      margin: EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 8),
       color: AppColors.cardBackground,
       child: ListTile(
         leading: Icon(icon, color: AppColors.textSecondary),
-        title: Text(title, style: TextStyle(color: AppColors.textPrimary)),
-        subtitle: Text(subtitle, style: TextStyle(color: AppColors.textSecondary)),
-        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.grey400),
+        title: Text(title, style: const TextStyle(color: AppColors.textPrimary)),
+        subtitle: Text(subtitle, style: const TextStyle(color: AppColors.textSecondary)),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.grey400),
         onTap: onTap,
       ),
     );
@@ -220,12 +221,12 @@ class _SettingsViewState extends State<SettingsView> {
     required ValueChanged<bool> onChanged,
   }) {
     return Card(
-      margin: EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 8),
       color: AppColors.cardBackground,
       child: SwitchListTile(
         secondary: Icon(icon, color: AppColors.textSecondary),
-        title: Text(title, style: TextStyle(color: AppColors.textPrimary)),
-        subtitle: Text(subtitle, style: TextStyle(color: AppColors.textSecondary)),
+        title: Text(title, style: const TextStyle(color: AppColors.textPrimary)),
+        subtitle: Text(subtitle, style: const TextStyle(color: AppColors.textSecondary)),
         value: value,
         onChanged: onChanged,
         activeColor: AppColors.primary,
@@ -250,23 +251,23 @@ class _SettingsViewState extends State<SettingsView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: Text('Change Password', style: TextStyle(color: AppColors.textPrimary)),
-        content: Text('Password change functionality would be implemented here.', style: TextStyle(color: AppColors.textSecondary)),
+        title: const Text('Change Password', style: TextStyle(color: AppColors.textPrimary)),
+        content: const Text('Password change functionality would be implemented here.', style: TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back();
               // Implement password change
             },
-            child: Text('Change'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
             ),
+            child: const Text('Change'),
           ),
         ],
       ),
@@ -279,12 +280,12 @@ class _SettingsViewState extends State<SettingsView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: Text('Select Language', style: TextStyle(color: AppColors.textPrimary)),
+        title: const Text('Select Language', style: TextStyle(color: AppColors.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: languages.map((language) {
             return RadioListTile<String>(
-              title: Text(language, style: TextStyle(color: AppColors.textPrimary)),
+              title: Text(language, style: const TextStyle(color: AppColors.textPrimary)),
               value: language,
               groupValue: _selectedLanguage,
               onChanged: (value) {
@@ -301,7 +302,7 @@ class _SettingsViewState extends State<SettingsView> {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
         ],
       ),
@@ -312,8 +313,8 @@ class _SettingsViewState extends State<SettingsView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: Text('About AutoService24', style: TextStyle(color: AppColors.textPrimary)),
-        content: Column(
+        title: const Text('About AutoService24', style: TextStyle(color: AppColors.textPrimary)),
+        content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -329,11 +330,11 @@ class _SettingsViewState extends State<SettingsView> {
         actions: [
           ElevatedButton(
             onPressed: () => Get.back(),
-            child: Text('OK'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
             ),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -344,8 +345,8 @@ class _SettingsViewState extends State<SettingsView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: Text('Help & Support', style: TextStyle(color: AppColors.textPrimary)),
-        content: Column(
+        title: const Text('Help & Support', style: TextStyle(color: AppColors.textPrimary)),
+        content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -371,11 +372,11 @@ class _SettingsViewState extends State<SettingsView> {
         actions: [
           ElevatedButton(
             onPressed: () => Get.back(),
-            child: Text('OK'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
             ),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -398,12 +399,12 @@ class _SettingsViewState extends State<SettingsView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: Text('Clear Cache', style: TextStyle(color: AppColors.textPrimary)),
-        content: Text('Are you sure you want to clear the app cache? This will remove temporary files and may slow down the app initially.', style: TextStyle(color: AppColors.textSecondary)),
+        title: const Text('Clear Cache', style: TextStyle(color: AppColors.textPrimary)),
+        content: const Text('Are you sure you want to clear the app cache? This will remove temporary files and may slow down the app initially.', style: TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -411,11 +412,11 @@ class _SettingsViewState extends State<SettingsView> {
               // Implement cache clearing
               Helpers.showSuccessSnackbar('Cache cleared successfully');
             },
-            child: Text('Clear'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
             ),
+            child: const Text('Clear'),
           ),
         ],
       ),
@@ -426,23 +427,23 @@ class _SettingsViewState extends State<SettingsView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: Text('Sign Out', style: TextStyle(color: AppColors.textPrimary)),
-        content: Text('Are you sure you want to sign out?', style: TextStyle(color: AppColors.textSecondary)),
+        title: const Text('Sign Out', style: TextStyle(color: AppColors.textPrimary)),
+        content: const Text('Are you sure you want to sign out?', style: TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back();
               authController.logout();
             },
-            child: Text('Sign Out'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
               foregroundColor: AppColors.white,
             ),
+            child: const Text('Sign Out'),
           ),
         ],
       ),

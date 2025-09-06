@@ -41,22 +41,17 @@ class ChatController extends GetxController {
       _webSocketService = Get.find<WebSocketService>();
       await _webSocketService?.connect();
 
-      // ربط مؤشر الكتابة من WebSocketService
       if (_webSocketService != null) {
         otherUserTyping.bindStream(_webSocketService!.otherUserTyping.stream);
       }
-    } catch (e) {
-      print('ChatController: Failed to initialize WebSocket: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> loadChats() async {
     try {
       isLoading.value = true;
-      print('ChatController: Loading chats...');
 
       final chatList = await _chatRepository.getAllChats();
-      print('ChatController: Loaded ${chatList.length} chats');
 
       chats.value = chatList;
 
@@ -68,7 +63,6 @@ class ChatController extends GetxController {
 
       _loadUsersInBackground(chatList);
     } catch (e) {
-      print('ChatController: Error loading chats: $e');
       ErrorHandler.handleAndShowError(e);
     } finally {
       isLoading.value = false;
@@ -78,7 +72,6 @@ class ChatController extends GetxController {
   Future<void> loadMessages(String chatId) async {
     try {
       isLoadingMessages.value = true;
-      print('ChatController: Loading messages for chat: $chatId');
 
       final messageList = await _chatRepository.getChatMessages(chatId);
       messages.value = messageList;
@@ -87,10 +80,7 @@ class ChatController extends GetxController {
       if (_webSocketService != null) {
         await _webSocketService!.joinRooms([chatId]);
       }
-
-      print('ChatController: Loaded ${messageList.length} messages');
     } catch (e) {
-      print('ChatController: Error loading messages: $e');
       ErrorHandler.handleAndShowError(e);
     } finally {
       isLoadingMessages.value = false;
@@ -107,7 +97,6 @@ class ChatController extends GetxController {
     try {
       // حماية من الإرسال المكرر
       if (_isSendingMessage) {
-        print('ChatController: Message sending in progress, skipping duplicate request');
         return false;
       }
 
@@ -116,15 +105,12 @@ class ChatController extends GetxController {
       if (_lastSentContent == content &&
           _lastSentTime != null &&
           now.difference(_lastSentTime!).inMilliseconds < 1000) {
-        print('ChatController: Duplicate message detected within 1 second, skipping');
         return false;
       }
 
       _isSendingMessage = true;
       _lastSentContent = content;
       _lastSentTime = now;
-
-      print('ChatController: Attempting to send message');
 
       if (chatId.isEmpty || senderId.isEmpty || receiverId.isEmpty) {
         throw Exception('Missing required fields for sending message');
@@ -149,31 +135,25 @@ class ChatController extends GetxController {
 
       // إضافة الرسالة محلياً فقط إذا لم تكن موجودة
       final exists = messages.any((m) =>
-      m.content == newMessage.content &&
+          m.content == newMessage.content &&
           m.senderId == newMessage.senderId &&
           m.chatId == newMessage.chatId &&
-          (newMessage.createdAt == null || m.createdAt == null ||
-              newMessage.createdAt!.difference(m.createdAt!).inSeconds.abs() < 5)
-      );
+          (newMessage.createdAt == null ||
+              m.createdAt == null ||
+              newMessage.createdAt!.difference(m.createdAt!).inSeconds.abs() <
+                  5));
 
       if (!exists) {
         messages.add(newMessage);
-        print('ChatController: Message added to local list');
-      } else {
-        print('ChatController: Message already exists in local list, skipping add');
-      }
+      } else {}
 
       // إيقاف مؤشر الكتابة إذا كان نشطاً
       if (isTyping.value && _webSocketService != null) {
         _webSocketService!.stopTyping(chatId);
       }
 
-      print('ChatController: Message sent successfully');
       return true;
-
     } catch (e) {
-      print('ChatController: Error sending message: $e');
-
       String errorMessage = 'Failed to send message';
       if (e.toString().contains('500')) {
         errorMessage = 'Server error - Please check the backend logs';
@@ -184,21 +164,19 @@ class ChatController extends GetxController {
       Get.snackbar(
         'Send Message Failed',
         errorMessage,
-        backgroundColor: AppColors.error.withOpacity(0.1),
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,
-        duration: Duration(seconds: 5),
+        duration: const Duration(seconds: 5),
       );
 
       return false;
     } finally {
-      // تحرير القفل بعد تأخير قصير لتجنب الطلبات السريعة المتتالية
-      Future.delayed(Duration(milliseconds: 500), () {
+      Future.delayed(const Duration(milliseconds: 500), () {
         _isSendingMessage = false;
       });
     }
   }
 
-  // دوال WebSocket الجديدة
   void startTyping(String chatId) {
     if (_webSocketService != null && !isTyping.value) {
       isTyping.value = true;
@@ -229,28 +207,19 @@ class ChatController extends GetxController {
   Future<UserModel?> getUserById(String userId) async {
     try {
       if (userId.isEmpty || userId == '0' || userId == 'null') {
-        print('ChatController: Invalid userId: $userId');
         return null;
       }
 
       if (usersCache.containsKey(userId)) {
-        print('ChatController: User $userId found in cache');
         return usersCache[userId];
       }
-
-      print('ChatController: Fetching user $userId from API');
 
       final user = await _chatRepository.getUserById(userId);
       if (user != null) {
         usersCache[userId] = user;
-        print(
-            'ChatController: User $userId cached successfully - ${user.username}');
-      } else {
-        print('ChatController: User $userId not found');
-      }
+      } else {}
       return user;
     } catch (e) {
-      print('ChatController: Error getting user by id: $e');
       return null;
     }
   }
@@ -260,7 +229,6 @@ class ChatController extends GetxController {
       final user = await getUserById(userId);
       return user?.username ?? 'User $userId';
     } catch (e) {
-      print('ChatController: Error getting user name: $e');
       return 'User $userId';
     }
   }
@@ -287,7 +255,6 @@ class ChatController extends GetxController {
 
     try {
       isLoadingUsers.value = true;
-      print('ChatController: Loading users in background...');
 
       Set<String> userIdsToLoad = {};
 
@@ -307,18 +274,12 @@ class ChatController extends GetxController {
         }
       }
 
-      print('ChatController: Need to load ${userIdsToLoad.length} users');
-
       for (String userId in userIdsToLoad) {
         try {
           await getUserById(userId);
-          await Future.delayed(Duration(milliseconds: 100));
-        } catch (e) {
-          print('ChatController: Error loading user $userId: $e');
-        }
+          await Future.delayed(const Duration(milliseconds: 100));
+        } catch (e) {}
       }
-
-      print('ChatController: Finished loading users');
     } finally {
       isLoadingUsers.value = false;
     }
@@ -326,16 +287,11 @@ class ChatController extends GetxController {
 
   Future<ChatModel?> createChat(String user1Id, String user2Id) async {
     try {
-      print('ChatController: Creating chat between $user1Id and $user2Id');
-
       final existingChat =
           await _chatRepository.findChatBetweenUsers(user1Id, user2Id);
       if (existingChat != null) {
-        print('ChatController: Found existing chat: ${existingChat.id}');
         return existingChat;
       }
-
-      print('ChatController: No existing chat found, creating new one...');
 
       final newChat = await _chatRepository.createChat({
         'user1Id': user1Id,
@@ -343,10 +299,8 @@ class ChatController extends GetxController {
       });
 
       chats.add(newChat);
-      print('ChatController: Successfully created chat: ${newChat.id}');
       return newChat;
     } catch (e) {
-      print('ChatController: Error creating chat: $e');
       ErrorHandler.handleAndShowError(e);
       return null;
     }
@@ -360,8 +314,6 @@ class ChatController extends GetxController {
     File? imageFile,
   }) async {
     try {
-      print("ChatController: sendMessageWithImage() called");
-
       final newMessage = await _chatRepository.sendMessageWithImage(
         {
           'chatId': chatId,
@@ -376,7 +328,6 @@ class ChatController extends GetxController {
       Helpers.showSuccessSnackbar('Message sent successfully');
       return true;
     } catch (e) {
-      print("ChatController: sendMessageWithImage error: $e");
       String errorMessage = _extractErrorMessage(e.toString());
       Helpers.showErrorSnackbar(errorMessage);
       return false;

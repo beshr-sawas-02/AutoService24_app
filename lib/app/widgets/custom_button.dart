@@ -16,7 +16,7 @@ class CustomButton extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
 
   const CustomButton({
-    Key? key,
+    super.key,
     required this.text,
     this.onPressed,
     this.isLoading = false,
@@ -28,7 +28,7 @@ class CustomButton extends StatelessWidget {
     this.height,
     this.borderRadius,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,7 @@ class CustomButton extends StatelessWidget {
                 borderRadius ?? AppConstants.buttonBorderRadius,
               ),
             ),
-            padding: padding ?? EdgeInsets.symmetric(
+            padding: padding ?? const EdgeInsets.symmetric(
               horizontal: AppConstants.defaultPadding,
               vertical: AppConstants.smallPadding,
             ),
@@ -68,14 +68,14 @@ class CustomButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
           foregroundColor: onPrimaryColor,
-          disabledBackgroundColor: primaryColor.withOpacity(0.6),
-          disabledForegroundColor: onPrimaryColor.withOpacity(0.6),
+          disabledBackgroundColor: primaryColor.withValues(alpha: 0.6),
+          disabledForegroundColor: onPrimaryColor.withValues(alpha: 0.6),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(
               borderRadius ?? AppConstants.buttonBorderRadius,
             ),
           ),
-          padding: padding ?? EdgeInsets.symmetric(
+          padding: padding ?? const EdgeInsets.symmetric(
             horizontal: AppConstants.defaultPadding,
             vertical: AppConstants.smallPadding,
           ),
@@ -103,10 +103,10 @@ class CustomButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 18),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text(
             text,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
@@ -117,7 +117,7 @@ class CustomButton extends StatelessWidget {
 
     return Text(
       text,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,
       ),

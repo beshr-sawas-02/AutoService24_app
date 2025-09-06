@@ -22,7 +22,7 @@ class LocationService extends GetxService {
       // Get current position
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
-        timeLimit: Duration(seconds: 15),
+        timeLimit: const Duration(seconds: 15),
       );
 
       currentPosition.value = position;
@@ -119,7 +119,7 @@ class LocationService extends GetxService {
   // Start location tracking
   Stream<Position> startLocationTracking() {
     return Geolocator.getPositionStream(
-      locationSettings: LocationSettings(
+      locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: 10, // Update every 10 meters
         timeLimit: Duration(seconds: 30),

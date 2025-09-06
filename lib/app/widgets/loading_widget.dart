@@ -8,11 +8,11 @@ class LoadingWidget extends StatelessWidget {
   final double? size;
 
   const LoadingWidget({
-    Key? key,
+    super.key,
     this.message,
     this.color,
     this.size,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +25,10 @@ class LoadingWidget extends StatelessWidget {
             strokeWidth: 3,
           ),
           if (message != null) ...[
-            SizedBox(height: AppSizes.spaceMedium),
+            const SizedBox(height: AppSizes.spaceMedium),
             Text(
               message!,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: AppSizes.textMedium,
                 color: AppColors.textSecondary,
               ),
@@ -47,11 +47,11 @@ class LoadingOverlay extends StatelessWidget {
   final String? loadingMessage;
 
   const LoadingOverlay({
-    Key? key,
+    super.key,
     required this.child,
     required this.isLoading,
     this.loadingMessage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class LoadingOverlay extends StatelessWidget {
         child,
         if (isLoading)
           Container(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             child: LoadingWidget(message: loadingMessage),
           ),
       ],
@@ -75,12 +75,12 @@ class ShimmerLoading extends StatefulWidget {
   final Color? highlightColor;
 
   const ShimmerLoading({
-    Key? key,
+    super.key,
     required this.child,
     required this.isLoading,
     this.baseColor,
     this.highlightColor,
-  }) : super(key: key);
+  });
 
   @override
   _ShimmerLoadingState createState() => _ShimmerLoadingState();
@@ -95,7 +95,7 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
     _animation = Tween<double>(begin: -1.0, end: 2.0).animate(

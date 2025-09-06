@@ -4,11 +4,13 @@ import '../routes/app_routes.dart';
 import '../config/app_colors.dart';
 
 class GuestBanner extends StatelessWidget {
+  const GuestBanner({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(16),
-      padding: EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.primary,
         borderRadius: BorderRadius.circular(12),
@@ -16,14 +18,14 @@ class GuestBanner extends StatelessWidget {
           BoxShadow(
             color: AppColors.primaryWithOpacity(0.3),
             blurRadius: 8,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(
                 Icons.info_outline,
@@ -41,7 +43,7 @@ class GuestBanner extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             'Login or register to save services, chat with workshops, and access more features.',
             style: TextStyle(
@@ -49,36 +51,36 @@ class GuestBanner extends StatelessWidget {
               fontSize: 14,
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
                 child: ElevatedButton(
                   onPressed: () => Get.toNamed(AppRoutes.login),
-                  child: Text('Login'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.white,
                     foregroundColor: AppColors.primary,
-                    padding: EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
+                  child: const Text('Login'),
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => Get.toNamed(AppRoutes.register),
-                  child: Text('Register'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.white,
-                    side: BorderSide(color: AppColors.white),
-                    padding: EdgeInsets.symmetric(vertical: 8),
+                    side: const BorderSide(color: AppColors.white),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
+                  child: const Text('Register'),
                 ),
               ),
             ],

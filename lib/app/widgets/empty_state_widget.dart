@@ -11,27 +11,27 @@ class EmptyStateWidget extends StatelessWidget {
   final Widget? customAction;
 
   const EmptyStateWidget({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     this.subtitle,
     this.buttonText,
     this.onButtonPressed,
     this.customAction,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(AppConstants.largePadding),
+        padding: const EdgeInsets.all(AppConstants.largePadding),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               width: 120,
               height: 120,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.lightGrey,
                 shape: BoxShape.circle,
               ),
@@ -41,10 +41,10 @@ class EmptyStateWidget extends StatelessWidget {
                 color: AppColors.mediumGrey,
               ),
             ),
-            SizedBox(height: AppSizes.spaceLarge),
+            const SizedBox(height: AppSizes.spaceLarge),
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: AppSizes.titleMedium,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -52,10 +52,10 @@ class EmptyStateWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
-              SizedBox(height: AppSizes.spaceSmall),
+              const SizedBox(height: AppSizes.spaceSmall),
               Text(
                 subtitle!,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: AppSizes.textLarge,
                   color: AppColors.textSecondary,
                 ),
@@ -63,14 +63,13 @@ class EmptyStateWidget extends StatelessWidget {
               ),
             ],
             if (buttonText != null && onButtonPressed != null) ...[
-              SizedBox(height: AppSizes.spaceLarge),
+              const SizedBox(height: AppSizes.spaceLarge),
               ElevatedButton(
                 onPressed: onButtonPressed,
-                child: Text(buttonText!),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: AppSizes.spaceLarge,
                     vertical: AppSizes.spaceMedium,
                   ),
@@ -80,10 +79,11 @@ class EmptyStateWidget extends StatelessWidget {
                     ),
                   ),
                 ),
+                child: Text(buttonText!),
               ),
             ],
             if (customAction != null) ...[
-              SizedBox(height: AppSizes.spaceLarge),
+              const SizedBox(height: AppSizes.spaceLarge),
               customAction!,
             ],
           ],
@@ -97,7 +97,7 @@ class EmptyStateWidget extends StatelessWidget {
 class NoServicesFound extends StatelessWidget {
   final VoidCallback? onRefresh;
 
-  const NoServicesFound({Key? key, this.onRefresh}) : super(key: key);
+  const NoServicesFound({super.key, this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +114,7 @@ class NoServicesFound extends StatelessWidget {
 class NoWorkshopsFound extends StatelessWidget {
   final VoidCallback? onRefresh;
 
-  const NoWorkshopsFound({Key? key, this.onRefresh}) : super(key: key);
+  const NoWorkshopsFound({super.key, this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +131,7 @@ class NoWorkshopsFound extends StatelessWidget {
 class NoSavedServices extends StatelessWidget {
   final VoidCallback? onBrowse;
 
-  const NoSavedServices({Key? key, this.onBrowse}) : super(key: key);
+  const NoSavedServices({super.key, this.onBrowse});
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +148,7 @@ class NoSavedServices extends StatelessWidget {
 class NoChatsFound extends StatelessWidget {
   final VoidCallback? onStartChat;
 
-  const NoChatsFound({Key? key, this.onStartChat}) : super(key: key);
+  const NoChatsFound({super.key, this.onStartChat});
 
   @override
   Widget build(BuildContext context) {
@@ -167,10 +167,10 @@ class SearchNoResults extends StatelessWidget {
   final VoidCallback? onClearSearch;
 
   const SearchNoResults({
-    Key? key,
+    super.key,
     this.searchTerm,
     this.onClearSearch,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

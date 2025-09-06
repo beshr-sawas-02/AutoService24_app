@@ -19,7 +19,6 @@ class AuthRepository {
         throw Exception('Login failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      print("AuthRepository Login Error: $e");
 
       if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
         if (e.toString().contains('400')) {
@@ -41,7 +40,6 @@ class AuthRepository {
 
   Future<Map<String, dynamic>> socialLogin(String provider, String token, {String userType = 'user'}) async {
     try {
-      print("AuthRepository: Attempting social login with $provider, userType: $userType");
 
       final response = await _apiProvider.socialLogin({
         'provider': provider,
@@ -55,7 +53,6 @@ class AuthRepository {
         throw Exception('Social login failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      print("AuthRepository Social Login Error: $e");
 
       if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
         if (e.toString().contains('400')) {
@@ -79,7 +76,6 @@ class AuthRepository {
 
   Future<Map<String, dynamic>> register(Map<String, dynamic> userData) async {
     try {
-      print("AuthRepository: Attempting registration for ${userData['email']}");
 
       final response = await _apiProvider.register(userData);
 
@@ -89,7 +85,6 @@ class AuthRepository {
         throw Exception('Registration failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      print("AuthRepository Registration Error: $e");
 
       if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
         if (e.toString().contains('400')) {
@@ -112,7 +107,6 @@ class AuthRepository {
   // دالة جديدة لتحديث الملف الشخصي مع الصورة
   Future<Map<String, dynamic>> updateProfileWithImage(String userId, Map<String, dynamic> data, File? imageFile) async {
     try {
-      print("AuthRepository: updateProfileWithImage for user $userId");
 
       final response = await _apiProvider.updateProfileWithImage(userId, data, imageFile);
 
@@ -122,7 +116,6 @@ class AuthRepository {
         throw Exception('Profile update failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      print("AuthRepository updateProfileWithImage Error: $e");
 
       if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
         if (e.toString().contains('400')) {
@@ -153,7 +146,6 @@ class AuthRepository {
         throw Exception('Password reset failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      print("AuthRepository Forgot Password Error: $e");
 
       if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
         if (e.toString().contains('404')) {
@@ -177,7 +169,6 @@ class AuthRepository {
         throw Exception('Account deletion failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      print("AuthRepository Delete Account Error: $e");
 
       if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
         if (e.toString().contains('404')) {

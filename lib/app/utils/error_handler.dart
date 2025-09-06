@@ -110,8 +110,8 @@ class ErrorHandler {
       AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.error_outline, color: Colors.red),
-            SizedBox(width: 8),
+            const Icon(Icons.error_outline, color: Colors.red),
+            const SizedBox(width: 8),
             Expanded(child: Text(title)),
           ],
         ),
@@ -120,25 +120,25 @@ class ErrorHandler {
           if (onCancel != null)
             TextButton(
               onPressed: onCancel,
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
           if (onRetry != null)
             ElevatedButton(
               onPressed: onRetry,
-              child: Text('Retry'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
                 foregroundColor: Colors.white,
               ),
+              child: const Text('Retry'),
             ),
           if (onRetry == null && onCancel == null)
             ElevatedButton(
               onPressed: () => Get.back(),
-              child: Text('OK'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
                 foregroundColor: Colors.white,
               ),
+              child: const Text('OK'),
             ),
         ],
       ),

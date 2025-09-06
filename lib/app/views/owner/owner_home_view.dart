@@ -8,6 +8,8 @@ import '../../data/models/service_model.dart';
 import '../../config/app_colors.dart';
 
 class OwnerHomeView extends StatefulWidget {
+  const OwnerHomeView({super.key});
+
   @override
   _OwnerHomeViewState createState() => _OwnerHomeViewState();
 }
@@ -30,7 +32,6 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       await workshopController.loadOwnerWorkshops(userId);
       await serviceController.loadOwnerServices();
     } else {
-      print("OwnerHomeView: User ID is null, cannot load owner workshops");
     }
   }
 
@@ -41,7 +42,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
-        title: Text(
+        title: const Text(
           'CarServiceHub - Owner',
           style: TextStyle(
             color: AppColors.textPrimary,
@@ -52,11 +53,11 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.message, color: AppColors.textSecondary),
+            icon: const Icon(Icons.message, color: AppColors.textSecondary),
             onPressed: () => Get.toNamed(AppRoutes.chatList),
           ),
           IconButton(
-            icon: Icon(Icons.logout, color: AppColors.textSecondary),
+            icon: const Icon(Icons.logout, color: AppColors.textSecondary),
             onPressed: () => _showLogoutDialog(),
           ),
         ],
@@ -102,10 +103,10 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.toNamed(AppRoutes.addService),
-        child: Icon(Icons.add),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         tooltip: 'Add Service',
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -119,14 +120,14 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       children: [
         Expanded(
           child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.all(20),
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildWelcomeCard(),
                 const SizedBox(height: 24),
-                Text(
+                const Text(
                   'Service Categories',
                   style: TextStyle(
                     fontSize: 28,
@@ -148,7 +149,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
   Widget _buildWelcomeCard() {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: AppColors.primaryGradient,
         borderRadius: BorderRadius.circular(16),
@@ -156,18 +157,18 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
           BoxShadow(
             color: AppColors.primaryWithOpacity(0.3),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
-          Icon(Icons.business_center, color: AppColors.white, size: 36),
-          SizedBox(width: 12),
+          const Icon(Icons.business_center, color: AppColors.white, size: 36),
+          const SizedBox(width: 12),
           Expanded(
             child: Obx(() => Text(
               'Hello ${authController.displayName}',
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -251,8 +252,8 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
 
     return GridView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 1.4,
         crossAxisSpacing: 16,
@@ -279,7 +280,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
                 BoxShadow(
                   color: AppColors.shadowMedium,
                   blurRadius: 8,
-                  offset: Offset(0, 4),
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -298,8 +299,8 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              (category['color'] as Color).withOpacity(0.8),
-                              (category['color'] as Color).withOpacity(0.6),
+                              (category['color'] as Color).withValues(alpha: 0.8),
+                              (category['color'] as Color).withValues(alpha: 0.6),
                             ],
                           ),
                         ),
@@ -329,7 +330,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
                         shadows: [
                           Shadow(
                             color: AppColors.blackWithOpacity(0.7),
-                            offset: Offset(0, 2),
+                            offset: const Offset(0, 2),
                             blurRadius: 4,
                           ),
                         ],
@@ -347,23 +348,23 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
 
   void _showLogoutDialog() {
     Get.dialog(AlertDialog(
-      title: Text('Logout'),
-      content: Text('Are you sure you want to logout?'),
+      title: const Text('Logout'),
+      content: const Text('Are you sure you want to logout?'),
       actions: [
         TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary))
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary))
         ),
         ElevatedButton(
           onPressed: () {
             Get.back();
             authController.logout();
           },
-          child: Text('Logout'),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.error,
             foregroundColor: AppColors.white,
           ),
+          child: const Text('Logout'),
         ),
       ],
     ));

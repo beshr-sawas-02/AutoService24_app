@@ -39,7 +39,7 @@ class AuthController extends GetxController {
 
   Future<void> _checkLoginStatus() async {
     try {
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
 
       final token = await StorageService.getToken();
 
@@ -95,7 +95,6 @@ class AuthController extends GetxController {
         serviceController.filteredServices.clear();
       }
     } catch (e) {
-      print("AuthController: Error clearing service data: $e");
     }
   }
 
@@ -107,7 +106,6 @@ class AuthController extends GetxController {
         chatController.updateWebSocketUser(userId);
       }
     } catch (e) {
-      print('AuthController: Failed to update WebSocket user silently: $e');
       // لا نعرض خطأ للمستخدم، فقط نسجل في الـ console
     }
   }
@@ -120,7 +118,6 @@ class AuthController extends GetxController {
         await chatController.updateWebSocketUser(userId);
       }
     } catch (e) {
-      print('AuthController: Failed to update WebSocket user: $e');
       // نسجل الخطأ لكن لا نمنع باقي العملية
     }
   }
@@ -175,19 +172,12 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
 
-      print("🔄 Starting profile update with image...");
-      print("👤 User ID: $userId");
-      print("📊 Data: $data");
-      print("🖼️ Has image: ${imageFile != null}");
 
       final response =
           await _authRepository.updateProfileWithImage(userId, data, imageFile);
-      print("📡 Server response: $response");
 
       if (response.containsKey('user')) {
         final updatedUserData = response['user'];
-        print("✅ Received updated user data from server");
-        print("🖼️ New profile image URL: ${updatedUserData['profile_image']}");
 
         // تحديث currentUser بالبيانات الجديدة
         currentUser.value = UserModel.fromJson(updatedUserData);
@@ -197,13 +187,11 @@ class AuthController extends GetxController {
 
         // فرض تحديث الـ UI
         currentUser.refresh();
-        print("🔄 UI refresh triggered");
 
         Helpers.showSuccessSnackbar('Profile updated successfully');
         return true;
       } else if (response.containsKey('status') && response['status'] == true) {
         // في حالة عدم إرجاع user object كامل
-        print("⚠️ Server didn't return full user object");
 
         final updatedUser = currentUser.value!.copyWith(
           username: data['username'],
@@ -221,11 +209,9 @@ class AuthController extends GetxController {
         Helpers.showSuccessSnackbar('Profile updated successfully');
         return true;
       } else {
-        print("❌ Invalid response structure: $response");
         throw Exception('Invalid response from server');
       }
     } catch (e) {
-      print("❌ Error updating profile: $e");
       String errorMessage = _extractErrorMessage(e.toString());
       Helpers.showErrorSnackbar(errorMessage);
       return false;
@@ -240,7 +226,6 @@ class AuthController extends GetxController {
       if (currentUser.value == null) return false;
 
       isLoading.value = true;
-      print("🖼️ Updating profile image only...");
 
       final response = await _authRepository.updateProfileWithImage(
         currentUser.value!.id,
@@ -258,7 +243,6 @@ class AuthController extends GetxController {
           newImageUrl = response['profileImage'] ?? '';
         }
 
-        print("🖼️ New image URL: $newImageUrl");
 
         // تحديث الصورة في currentUser
         final updatedUser = currentUser.value!.copyWith(
@@ -271,14 +255,12 @@ class AuthController extends GetxController {
         // فرض تحديث الـ UI
         currentUser.refresh();
 
-        print("✅ Profile image updated successfully");
         Helpers.showSuccessSnackbar('Profile image updated successfully');
         return true;
       }
 
       return false;
     } catch (e) {
-      print("❌ Error updating profile image: $e");
       String errorMessage = _extractErrorMessage(e.toString());
       Helpers.showErrorSnackbar(errorMessage);
       return false;
@@ -289,17 +271,11 @@ class AuthController extends GetxController {
 
   // دالة للتحقق من حالة الصورة الشخصية
   void debugProfileImage() {
-    print("=== Profile Image Debug ===");
-    print("👤 Current user: ${currentUser.value?.username}");
-    print("🖼️ Profile image URL: ${currentUser.value?.fullProfileImage}");
-    print("📱 Is logged in: ${isLoggedIn.value}");
-    print("💾 User data loaded: ${isUserDataLoaded.value}");
-    print("========================");
   }
 
   Future<void> _reloadUserSpecificData() async {
     try {
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
 
       if (Get.isRegistered<ServiceController>()) {
         final serviceController = Get.find<ServiceController>();
@@ -308,7 +284,6 @@ class AuthController extends GetxController {
         await serviceController.loadSavedServices();
       }
     } catch (e) {
-      print("AuthController: Error reloading user data: $e");
     }
   }
 
@@ -316,47 +291,28 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
 
-      print("🔵 Starting Google Sign-In...");
-      print("🔍 GoogleSignIn config - ClientID: ${_googleSignIn.clientId}");
 
       final account = await _googleSignIn.signIn();
 
       if (account == null) {
-        print("❌ User cancelled Google Sign-In");
         Helpers.showErrorSnackbar('Google sign in cancelled');
         return false;
       }
 
-      print("✅ Account received: ${account.email}");
-      print("👤 Display name: ${account.displayName}");
-      print("🔄 Getting authentication...");
 
       final authentication = await account.authentication;
 
-      print("✅ Authentication object created");
-      print(
-          "🔑 Access token length: ${authentication.accessToken?.length ?? 0}");
-      print("🆔 ID token length: ${authentication.idToken?.length ?? 0}");
-      print("🔑 Access token exists: ${authentication.accessToken != null}");
-      print("🆔 ID token exists: ${authentication.idToken != null}");
 
       final idToken = authentication.idToken;
 
       if (idToken == null) {
-        print("❌ ID Token is NULL - This is the main issue");
-        print(
-            "🔍 Access token: ${authentication.accessToken != null ? 'EXISTS' : 'NULL'}");
         throw Exception('Failed to get Google ID token');
       }
 
-      print("✅ ID Token received successfully");
-      print("🔄 Calling backend with token...");
 
       return await _handleSocialLoginResponse('google', idToken,
           userType: userType);
     } catch (e) {
-      print("❌ Full error details: $e");
-      print("❌ Error type: ${e.runtimeType}");
       String errorMessage = _extractErrorMessage(e.toString());
       Helpers.showErrorSnackbar('Google sign in failed: $errorMessage');
       return false;
@@ -572,18 +528,14 @@ class AuthController extends GetxController {
 
   // دالة محدثة لتحديث بيانات المستخدم
   Future<void> refreshUserData() async {
-    print("🔄 Refreshing user data...");
     isUserDataLoaded.value = false;
 
     // إعادة تحميل البيانات من Storage
     await _loadUserData();
 
     if (currentUser.value != null) {
-      print("✅ User data refreshed");
-      print("🖼️ Current image URL: ${currentUser.value?.fullProfileImage}");
       currentUser.refresh(); // فرض تحديث الـ UI
     } else {
-      print("❌ Failed to refresh user data");
     }
 
     isUserDataLoaded.value = true;

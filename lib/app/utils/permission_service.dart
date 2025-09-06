@@ -45,7 +45,7 @@ class PermissionService {
 
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
-        timeLimit: Duration(seconds: 10),
+        timeLimit: const Duration(seconds: 10),
       );
 
       return position;
@@ -70,25 +70,25 @@ class PermissionService {
   static Future<void> _showLocationServiceDialog() async {
     await Get.dialog(
       AlertDialog(
-        title: Text('Location Service Disabled'),
-        content: Text(
+        title: const Text('Location Service Disabled'),
+        content: const Text(
           'Location services are disabled. Please enable location services in your device settings to use this feature.',
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () async {
               Get.back();
               await Geolocator.openLocationSettings();
             },
-            child: Text('Open Settings'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
             ),
+            child: const Text('Open Settings'),
           ),
         ],
       ),
@@ -99,25 +99,25 @@ class PermissionService {
   static Future<void> _showPermissionDeniedDialog(String permissionType) async {
     await Get.dialog(
       AlertDialog(
-        title: Text('Permission Required'),
+        title: const Text('Permission Required'),
         content: Text(
           '$permissionType permission is permanently denied. Please enable it in your device settings to use this feature.',
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () async {
               Get.back();
               await Geolocator.openAppSettings();
             },
-            child: Text('Open Settings'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
             ),
+            child: const Text('Open Settings'),
           ),
         ],
       ),
@@ -177,18 +177,18 @@ class PermissionService {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Not Now'),
+            child: const Text('Not Now'),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back();
               onAccept();
             },
-            child: Text('Allow'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
             ),
+            child: const Text('Allow'),
           ),
         ],
       ),

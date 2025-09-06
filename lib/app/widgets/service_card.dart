@@ -15,19 +15,19 @@ class ServiceCard extends StatelessWidget {
   final VoidCallback? onDelete;
 
   const ServiceCard({
-    Key? key,
+    super.key,
     required this.service,
     required this.onTap,
     this.isOwner = false,
     this.showSaveButton = true,
     this.onEdit,
     this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -37,7 +37,7 @@ class ServiceCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -49,22 +49,22 @@ class ServiceCard extends StatelessWidget {
                       children: [
                         Text(
                           service.title,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: AppColors.primaryWithOpacity(0.1),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
                             service.serviceTypeName,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.primary,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -89,7 +89,7 @@ class ServiceCard extends StatelessWidget {
                         }
                       },
                       itemBuilder: (context) => [
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'edit',
                           child: Row(
                             children: [
@@ -99,7 +99,7 @@ class ServiceCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
@@ -113,10 +113,10 @@ class ServiceCard extends StatelessWidget {
                     ),
                 ],
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
                 service.description,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 14,
                 ),
@@ -124,8 +124,8 @@ class ServiceCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               if (service.images.isNotEmpty) ...[
-                SizedBox(height: 12),
-                Container(
+                const SizedBox(height: 12),
+                SizedBox(
                   height: 120,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
@@ -133,7 +133,7 @@ class ServiceCard extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return Container(
                         width: 120,
-                        margin: EdgeInsets.only(right: 8),
+                        margin: const EdgeInsets.only(right: 8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           color: AppColors.grey200,
@@ -146,7 +146,7 @@ class ServiceCard extends StatelessWidget {
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
                                 color: AppColors.grey200,
-                                child: Icon(
+                                child: const Icon(
                                   Icons.image_not_supported,
                                   color: AppColors.grey400,
                                 ),
@@ -159,19 +159,19 @@ class ServiceCard extends StatelessWidget {
                   ),
                 ),
               ],
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     service.formattedPrice,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: AppColors.primary,
                     ),
                   ),
-                  Row(
+                  const Row(
                     children: [
                       Icon(
                         Icons.star,
@@ -208,7 +208,7 @@ class ServiceCard extends StatelessWidget {
             onPressed: () {
               _showGuestDialog();
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.bookmark_border,
               color: AppColors.grey400,
               size: 20,
@@ -250,28 +250,28 @@ class ServiceCard extends StatelessWidget {
         title: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: AppColors.primaryWithOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(Icons.bookmark, color: AppColors.primary),
+              child: const Icon(Icons.bookmark, color: AppColors.primary),
             ),
-            SizedBox(width: 12),
-            Text('Save Service', style: TextStyle(color: AppColors.textPrimary)),
+            const SizedBox(width: 12),
+            const Text('Save Service', style: TextStyle(color: AppColors.textPrimary)),
           ],
         ),
-        content: Text(
+        content: const Text(
           'Create an account to save your favorite services and access them anytime.',
           style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel'),
             style: TextButton.styleFrom(
               foregroundColor: AppColors.textSecondary,
             ),
+            child: const Text('Cancel'),
           ),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -281,23 +281,23 @@ class ServiceCard extends StatelessWidget {
                   Get.back();
                   Get.toNamed(AppRoutes.login);
                 },
-                child: Text('Sign In'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primary,
-                  side: BorderSide(color: AppColors.primary),
+                  side: const BorderSide(color: AppColors.primary),
                 ),
+                child: const Text('Sign In'),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: () {
                   Get.back();
                   Get.toNamed(AppRoutes.register);
                 },
-                child: Text('Register'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: AppColors.white,
                 ),
+                child: const Text('Register'),
               ),
             ],
           ),

@@ -12,6 +12,8 @@ import '../../widgets/custom_text_field.dart';
 import '../../widgets/custom_button.dart';
 
 class AddServiceView extends StatefulWidget {
+  const AddServiceView({super.key});
+
   @override
   _AddServiceViewState createState() => _AddServiceViewState();
 }
@@ -34,17 +36,17 @@ class _AddServiceViewState extends State<AddServiceView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Service'),
+        title: const Text('Add Service'),
         backgroundColor: AppColors.primary,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
+              const Text(
                 'Create New Service',
                 style: TextStyle(
                   fontSize: 24,
@@ -52,10 +54,10 @@ class _AddServiceViewState extends State<AddServiceView> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
 
               _buildWorkshopDropdown(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               CustomTextField(
                 controller: _titleController,
@@ -63,10 +65,10 @@ class _AddServiceViewState extends State<AddServiceView> {
                 prefixIcon: Icons.build,
                 validator: Validators.validateServiceTitle,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               _buildServiceTypeDropdown(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               CustomTextField(
                 controller: _descriptionController,
@@ -75,19 +77,19 @@ class _AddServiceViewState extends State<AddServiceView> {
                 maxLines: 3,
                 validator: Validators.validateDescription,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               CustomTextField(
                 controller: _priceController,
                 labelText: 'Price (\$)',
                 prefixIcon: Icons.attach_money,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: Validators.validatePrice,
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
 
               _buildImagesSection(),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
 
               Obx(() => CustomButton(
                 text: 'Create Service',
@@ -107,13 +109,13 @@ class _AddServiceViewState extends State<AddServiceView> {
 
       if (workshops.isEmpty) {
         return Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.orange.withOpacity(0.1),
+            color: Colors.orange.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.orange.withOpacity(0.3)),
+            border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
           ),
-          child: Row(
+          child: const Row(
             children: [
               Icon(Icons.info, color: AppColors.primary),
               SizedBox(width: 12),
@@ -132,7 +134,7 @@ class _AddServiceViewState extends State<AddServiceView> {
         value: _selectedWorkshopId,
         decoration: InputDecoration(
           labelText: 'Select Workshop',
-          prefixIcon: Icon(Icons.business),
+          prefixIcon: const Icon(Icons.business),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -165,7 +167,7 @@ class _AddServiceViewState extends State<AddServiceView> {
       value: _selectedServiceType,
       decoration: InputDecoration(
         labelText: 'Service Type',
-        prefixIcon: Icon(Icons.category),
+        prefixIcon: const Icon(Icons.category),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -192,14 +194,14 @@ class _AddServiceViewState extends State<AddServiceView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Service Images',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Container(
           width: double.infinity,
           height: 120,
@@ -218,7 +220,7 @@ class _AddServiceViewState extends State<AddServiceView> {
                   size: 40,
                   color: Colors.grey[600],
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   'Add Images',
                   style: TextStyle(
@@ -231,8 +233,8 @@ class _AddServiceViewState extends State<AddServiceView> {
           ),
         ),
         if (_selectedImages.isNotEmpty) ...[
-          SizedBox(height: 16),
-          Container(
+          const SizedBox(height: 16),
+          SizedBox(
             height: 100,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -240,7 +242,7 @@ class _AddServiceViewState extends State<AddServiceView> {
               itemBuilder: (context, index) {
                 return Container(
                   width: 100,
-                  margin: EdgeInsets.only(right: 8),
+                  margin: const EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.grey[300]!),
@@ -262,12 +264,12 @@ class _AddServiceViewState extends State<AddServiceView> {
                         child: GestureDetector(
                           onTap: () => _removeImage(index),
                           child: Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
                               color: Colors.red,
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.close,
                               color: Colors.white,
                               size: 16,
@@ -312,8 +314,8 @@ class _AddServiceViewState extends State<AddServiceView> {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
-        margin: EdgeInsets.all(16),
-        duration: Duration(seconds: 3),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 3),
       );
       return;
     }
@@ -338,11 +340,10 @@ class _AddServiceViewState extends State<AddServiceView> {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green,
         colorText: Colors.white,
-        margin: EdgeInsets.all(16),
-        duration: Duration(seconds: 3),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 3),
       );
 
-      // إعادة تعيين الحقول
       _formKey.currentState!.reset();
       _titleController.clear();
       _descriptionController.clear();
@@ -360,8 +361,8 @@ class _AddServiceViewState extends State<AddServiceView> {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
-        margin: EdgeInsets.all(16),
-        duration: Duration(seconds: 3),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 3),
       );
     }
   }

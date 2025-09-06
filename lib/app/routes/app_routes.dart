@@ -46,29 +46,29 @@ class AppRoutes {
     // Authentication Routes
     GetPage(
       name: splash,
-      page: () => SplashView(),
+      page: () => const SplashView(),
       binding: AuthBinding(),
     ),
     GetPage(
       name: login,
-      page: () => LoginView(),
+      page: () => const LoginView(),
       binding: AuthBinding(),
     ),
     GetPage(
       name: register,
-      page: () => RegisterView(),
+      page: () => const RegisterView(),
       binding: AuthBinding(),
     ),
     GetPage(
       name: forgotPassword,
-      page: () => ForgotPasswordView(),
+      page: () => const ForgotPasswordView(),
       binding: AuthBinding(),
     ),
 
     // User Routes
     GetPage(
       name: userHome,
-      page: () => UserHomeView(),
+      page: () => const UserHomeView(),
       binding: UserBinding(),
     ),
     GetPage(
@@ -78,20 +78,20 @@ class AppRoutes {
     ),
     GetPage(
       name: savedServices,
-      page: () => SavedServicesView(),
+      page: () => const SavedServicesView(),
       binding: UserBinding(),
     ),
     // الصفحة الجديدة للخدمات المفلترة
     GetPage(
       name: filteredServices,
-      page: () => FilteredServicesView(),
+      page: () => const FilteredServicesView(),
       binding: UserBinding(), // استخدام نفس binding لأن ServiceController موجود فيه
     ),
 
     // Owner Routes
     GetPage(
       name: ownerHome,
-      page: () => OwnerHomeView(),
+      page: () => const OwnerHomeView(),
       binding: OwnerBinding(),
     ),
     GetPage(
@@ -101,24 +101,24 @@ class AppRoutes {
     ),
     GetPage(
       name: addWorkshop,
-      page: () => AddWorkshopView(),
+      page: () => const AddWorkshopView(),
       binding: OwnerBinding(),
     ),
     GetPage(
       name: addService,
-      page: () => AddServiceView(),
+      page: () => const AddServiceView(),
       binding: OwnerBinding(),
     ),
 
     // Common/Shared Routes
     GetPage(
       name: chatList,
-      page: () => ChatListView(),
+      page: () => const ChatListView(),
       binding: CommonBinding(),
     ),
     GetPage(
       name: chat,
-      page: () => ChatView(),
+      page: () => const ChatView(),
       binding: CommonBinding(),
     ),
     GetPage(
@@ -128,22 +128,22 @@ class AppRoutes {
     ),
     GetPage(
       name: workshopDetails,
-      page: () => WorkshopDetailsView(),
+      page: () => const WorkshopDetailsView(),
       binding: CommonBinding(),
     ),
     GetPage(
       name: map,
-      page: () => MapView(),
+      page: () => const MapView(),
       binding: CommonBinding(),
     ),
     GetPage(
       name: editProfile,
-      page: () => EditProfileView(),
+      page: () => const EditProfileView(),
       binding: CommonBinding(),
     ),
     GetPage(
       name: settings,
-      page: () => SettingsView(),
+      page: () => const SettingsView(),
       binding: CommonBinding(),
     ),
   ];

@@ -25,7 +25,7 @@ class CustomTextField extends StatefulWidget {
   final EdgeInsetsGeometry? contentPadding;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     this.labelText,
     this.hintText,
     this.controller,
@@ -45,7 +45,7 @@ class CustomTextField extends StatefulWidget {
     this.focusNode,
     this.textCapitalization = TextCapitalization.none,
     this.contentPadding,
-  }) : super(key: key);
+  });
 
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
@@ -89,7 +89,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         filled: true,
         fillColor: widget.enabled ? AppColors.lightGrey : Colors.grey[100],
         contentPadding: widget.contentPadding ??
-            EdgeInsets.symmetric(
+            const EdgeInsets.symmetric(
               horizontal: AppConstants.defaultPadding,
               vertical: AppConstants.defaultPadding,
             ),
@@ -103,33 +103,33 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.buttonBorderRadius),
-          borderSide: BorderSide(color: AppColors.primary, width: 2),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.buttonBorderRadius),
-          borderSide: BorderSide(color: AppColors.error, width: 2),
+          borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.buttonBorderRadius),
-          borderSide: BorderSide(color: AppColors.error, width: 2),
+          borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.buttonBorderRadius),
           borderSide: BorderSide(color: Colors.grey[200]!),
         ),
-        labelStyle: TextStyle(
+        labelStyle: const TextStyle(
           color: AppColors.textSecondary,
           fontSize: AppSizes.textMedium,
         ),
-        hintStyle: TextStyle(
+        hintStyle: const TextStyle(
           color: AppColors.textHint,
           fontSize: AppSizes.textMedium,
         ),
-        errorStyle: TextStyle(
+        errorStyle: const TextStyle(
           color: AppColors.error,
           fontSize: AppSizes.textSmall,
         ),
-        counterStyle: TextStyle(
+        counterStyle: const TextStyle(
           color: AppColors.textSecondary,
           fontSize: AppSizes.textSmall,
         ),

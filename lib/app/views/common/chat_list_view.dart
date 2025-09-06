@@ -8,6 +8,8 @@ import '../../routes/app_routes.dart';
 import '../../config/app_colors.dart';
 
 class ChatListView extends StatefulWidget {
+  const ChatListView({super.key});
+
   @override
   _ChatListViewState createState() => _ChatListViewState();
 }
@@ -32,7 +34,7 @@ class _ChatListViewState extends State<ChatListView> {
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Messages',
           style: TextStyle(
             color: AppColors.textPrimary,
@@ -41,7 +43,7 @@ class _ChatListViewState extends State<ChatListView> {
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.textSecondary),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textSecondary),
           onPressed: () => Get.back(),
         ),
       ),
@@ -58,12 +60,12 @@ class _ChatListViewState extends State<ChatListView> {
   Widget _buildGuestChatContent() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: AppColors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -71,7 +73,7 @@ class _ChatListViewState extends State<ChatListView> {
                   BoxShadow(
                     color: AppColors.shadowLight,
                     blurRadius: 10,
-                    offset: Offset(0, 4),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -84,14 +86,14 @@ class _ChatListViewState extends State<ChatListView> {
                       color: AppColors.primaryWithOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.chat_bubble_outline,
                       size: 40,
                       color: AppColors.primary,
                     ),
                   ),
-                  SizedBox(height: 20),
-                  Text(
+                  const SizedBox(height: 20),
+                  const Text(
                     'Connect with Service Providers',
                     style: TextStyle(
                       fontSize: 24,
@@ -100,8 +102,8 @@ class _ChatListViewState extends State<ChatListView> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 12),
-                  Text(
+                  const SizedBox(height: 12),
+                  const Text(
                     'Sign in to chat directly with workshops and service providers.',
                     style: TextStyle(
                       fontSize: 16,
@@ -109,18 +111,18 @@ class _ChatListViewState extends State<ChatListView> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
                   Container(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.info.withOpacity(0.05),
+                      color: AppColors.info.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Chat features:',
                           style: TextStyle(
                             fontSize: 16,
@@ -128,7 +130,7 @@ class _ChatListViewState extends State<ChatListView> {
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         _buildChatFeatureRow(Icons.message, 'Direct messaging with providers'),
                         _buildChatFeatureRow(Icons.schedule, 'Schedule appointments easily'),
                         _buildChatFeatureRow(Icons.attach_money, 'Get instant price quotes'),
@@ -138,48 +140,48 @@ class _ChatListViewState extends State<ChatListView> {
                     ),
                   ),
 
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
                   Row(
                     children: [
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () => Get.toNamed(AppRoutes.login),
-                          child: Text('Sign In'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.primary,
-                            side: BorderSide(color: AppColors.primary),
+                            side: const BorderSide(color: AppColors.primary),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            padding: EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
+                          child: const Text('Sign In'),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () => Get.toNamed(AppRoutes.register),
-                          child: Text('Register'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             foregroundColor: AppColors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            padding: EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
+                          child: const Text('Register'),
                         ),
                       ),
                     ],
                   ),
 
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
                   TextButton.icon(
                     onPressed: () => Get.back(),
-                    icon: Icon(Icons.explore, color: AppColors.textSecondary),
-                    label: Text(
+                    icon: const Icon(Icons.explore, color: AppColors.textSecondary),
+                    label: const Text(
                       'Explore Services Instead',
                       style: TextStyle(color: AppColors.textSecondary),
                     ),
@@ -195,22 +197,22 @@ class _ChatListViewState extends State<ChatListView> {
 
   Widget _buildChatFeatureRow(IconData icon, String text) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(4),
+            padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: AppColors.info.withOpacity(0.2),
+              color: AppColors.info.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, size: 16, color: AppColors.info),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),
@@ -223,7 +225,7 @@ class _ChatListViewState extends State<ChatListView> {
 
   Widget _buildUserChatContent() {
     if (chatController.isLoading.value) {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(
           color: AppColors.primary,
         ),
@@ -235,7 +237,7 @@ class _ChatListViewState extends State<ChatListView> {
     }
 
     return ListView.builder(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       itemCount: chatController.chats.length,
       itemBuilder: (context, index) {
         final chat = chatController.chats[index];
@@ -256,14 +258,14 @@ class _ChatListViewState extends State<ChatListView> {
               color: AppColors.primaryWithOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
+            child: const Icon(
               Icons.chat_bubble_outline,
               size: 60,
               color: AppColors.primary,
             ),
           ),
-          SizedBox(height: 24),
-          Text(
+          const SizedBox(height: 24),
+          const Text(
             'No conversations yet',
             style: TextStyle(
               fontSize: 22,
@@ -271,8 +273,8 @@ class _ChatListViewState extends State<ChatListView> {
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 12),
-          Text(
+          const SizedBox(height: 12),
+          const Text(
             'Start chatting with workshop owners and service providers',
             style: TextStyle(
               fontSize: 16,
@@ -280,15 +282,15 @@ class _ChatListViewState extends State<ChatListView> {
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           ElevatedButton.icon(
             onPressed: () => Get.back(),
-            icon: Icon(Icons.search),
-            label: Text('Browse Services'),
+            icon: const Icon(Icons.search),
+            label: const Text('Browse Services'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -305,14 +307,14 @@ class _ChatListViewState extends State<ChatListView> {
     final otherUserId = isCurrentUserUser1 ? chat.user2Id : chat.user1Id;
 
     return Card(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
       color: AppColors.cardBackground,
       child: ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: _buildUserAvatar(otherUserId.toString()),
         title: _buildUserName(otherUserId.toString()),
         subtitle: _buildUserSubtitle(otherUserId.toString()),
@@ -322,16 +324,16 @@ class _ChatListViewState extends State<ChatListView> {
           children: [
             Text(
               _formatTime(chat.updatedAt ?? chat.createdAt),
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.textHint,
                 fontSize: 12,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Container(
               width: 8,
               height: 8,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.primary,
                 shape: BoxShape.circle,
               ),
@@ -347,7 +349,7 @@ class _ChatListViewState extends State<ChatListView> {
     return Container(
       width: 50,
       height: 50,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: AppColors.primaryGradient,
         shape: BoxShape.circle,
       ),
@@ -393,7 +395,7 @@ class _ChatListViewState extends State<ChatListView> {
 
       return Text(
         displayName,
-        style: TextStyle(
+        style: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 16,
           color: AppColors.textPrimary,
@@ -404,7 +406,7 @@ class _ChatListViewState extends State<ChatListView> {
 
   Widget _buildUserSubtitle(String userId) {
     return Padding(
-      padding: EdgeInsets.only(top: 4),
+      padding: const EdgeInsets.only(top: 4),
       child: Obx(() {
         final user = chatController.usersCache[userId];
         String subtitle = 'Tap to view conversation';
@@ -419,7 +421,7 @@ class _ChatListViewState extends State<ChatListView> {
 
         return Text(
           subtitle,
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.textSecondary,
             fontSize: 14,
           ),
@@ -447,16 +449,16 @@ class _ChatListViewState extends State<ChatListView> {
     );
   }
 
-  void _showErrorSnackbar(String message) {
-    Get.snackbar(
-      'خطأ',
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-      duration: Duration(seconds: 3),
-    );
-  }
+  // void _showErrorSnackbar(String message) {
+  //   Get.snackbar(
+  //     'خطأ',
+  //     message,
+  //     snackPosition: SnackPosition.BOTTOM,
+  //     backgroundColor: Colors.red,
+  //     colorText: Colors.white,
+  //     duration: Duration(seconds: 3),
+  //   );
+  // }
 
   // دالة مساعدة لتنسيق الوقت
   String _formatTime(DateTime? dateTime) {

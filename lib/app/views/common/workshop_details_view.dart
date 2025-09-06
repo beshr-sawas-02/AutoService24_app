@@ -10,6 +10,8 @@ import '../../routes/app_routes.dart';
 import '../../config/app_colors.dart';
 
 class WorkshopDetailsView extends StatefulWidget {
+  const WorkshopDetailsView({super.key});
+
   @override
   _WorkshopDetailsViewState createState() => _WorkshopDetailsViewState();
 }
@@ -41,7 +43,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 workshop.name,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: AppColors.white,
@@ -54,7 +56,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
                     color: AppColors.grey300,
-                    child: Icon(
+                    child: const Icon(
                       Icons.business,
                       size: 80,
                       color: AppColors.textSecondary,
@@ -64,7 +66,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               )
                   : Container(
                 color: AppColors.grey300,
-                child: Icon(
+                child: const Icon(
                   Icons.business,
                   size: 80,
                   color: AppColors.textSecondary,
@@ -73,7 +75,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             ),
             actions: [
               IconButton(
-                icon: Icon(Icons.message),
+                icon: const Icon(Icons.message),
                 onPressed: () {
                   if (authController.isGuest) {
                     _showGuestDialog();
@@ -86,19 +88,19 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Workshop Info
                   _buildWorkshopInfo(),
 
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
                   // Map
                   _buildLocationMap(),
 
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
                   // Services Section
                   _buildServicesSection(),
@@ -116,8 +118,8 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             _startChat();
           }
         },
-        label: Text('Contact Workshop'),
-        icon: Icon(Icons.message),
+        label: const Text('Contact Workshop'),
+        icon: const Icon(Icons.message),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
       ),
@@ -128,11 +130,11 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
     return Card(
       color: AppColors.cardBackground,
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Workshop Information',
               style: TextStyle(
                 fontSize: 20,
@@ -140,21 +142,21 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
                 color: AppColors.textPrimary,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             _buildInfoRow(Icons.description, 'Description', workshop.description),
             _buildInfoRow(Icons.access_time, 'Working Hours', workshop.workingHours),
             _buildInfoRow(Icons.location_on, 'Location',
                 'Lat: ${workshop.latitude.toStringAsFixed(4)}, Lng: ${workshop.longitude.toStringAsFixed(4)}'),
 
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Rating and Reviews (placeholder)
             Row(
               children: [
-                Icon(Icons.star, color: AppColors.warning),
-                SizedBox(width: 8),
-                Text(
+                const Icon(Icons.star, color: AppColors.warning),
+                const SizedBox(width: 8),
+                const Text(
                   '4.5 (24 reviews)',
                   style: TextStyle(
                     fontSize: 16,
@@ -162,12 +164,12 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 TextButton(
                   onPressed: () {
                     // Show reviews
                   },
-                  child: Text('View Reviews'),
+                  child: const Text('View Reviews'),
                 ),
               ],
             ),
@@ -179,27 +181,27 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: 20, color: AppColors.textSecondary),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.w500,
                     color: AppColors.textSecondary,
                   ),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
                   value,
-                  style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
+                  style: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
                 ),
               ],
             ),
@@ -256,7 +258,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               'Services',
               style: TextStyle(
                 fontSize: 20,
@@ -268,15 +270,15 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               onPressed: () {
                 // Show all services
               },
-              child: Text('View All'),
+              child: const Text('View All'),
             ),
           ],
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
 
         Obx(() {
           if (serviceController.isLoading.value) {
-            return Center(child: CircularProgressIndicator(color: AppColors.primary));
+            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
           }
 
           // Filter services for this workshop
@@ -290,7 +292,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
 
           return ListView.builder(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: workshopServices.length,
             itemBuilder: (context, index) {
               return ServiceCard(
@@ -310,7 +312,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
   }
 
   Widget _buildEmptyServices() {
-    return Card(
+    return const Card(
       color: AppColors.cardBackground,
       child: Padding(
         padding: EdgeInsets.all(32),
@@ -365,23 +367,23 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: Text('Login Required', style: TextStyle(color: AppColors.textPrimary)),
-        content: Text('Please login or register to contact workshops.', style: TextStyle(color: AppColors.textSecondary)),
+        title: const Text('Login Required', style: TextStyle(color: AppColors.textPrimary)),
+        content: const Text('Please login or register to contact workshops.', style: TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back();
               Get.toNamed(AppRoutes.login);
             },
-            child: Text('Login'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
             ),
+            child: const Text('Login'),
           ),
         ],
       ),

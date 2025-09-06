@@ -14,16 +14,12 @@ class ChatRepository {
   // User operations - إضافة جديدة
   Future<UserModel?> getUserById(String userId) async {
     try {
-      print('ChatRepository: Getting user by ID: $userId');
       final response = await _apiProvider.getUserById(userId);
       if (response.statusCode == 200) {
-        print('ChatRepository: User $userId fetched successfully');
         return UserModel.fromJson(response.data);
       } else {
-        print('ChatRepository: Failed to get user $userId, status: ${response.statusCode}');
       }
     } catch (e) {
-      print('ChatRepository: Error fetching user $userId: $e');
     }
     return null;
   }
@@ -40,28 +36,21 @@ class ChatRepository {
 
   Future<List<ChatModel>> getAllChats() async {
     try {
-      print('ChatRepository: Getting all chats');
       final response = await _apiProvider.getChats();
       final List<dynamic> chatList = response.data;
 
-      print('ChatRepository: Received ${chatList.length} chats from server');
 
       List<ChatModel> chats = [];
       for (var chatJson in chatList) {
         try {
           final chat = ChatModel.fromJson(chatJson);
           chats.add(chat);
-          print('ChatRepository: Successfully parsed chat ${chat.id}');
         } catch (e) {
-          print('ChatRepository: Error parsing chat: $chatJson');
-          print('ChatRepository: Parse error: $e');
         }
       }
 
-      print('ChatRepository: Successfully parsed ${chats.length} chats');
       return chats;
     } catch (e) {
-      print('ChatRepository: Error getting chats: $e');
       throw Exception('Failed to get chats: ${e.toString()}');
     }
   }
@@ -86,19 +75,15 @@ class ChatRepository {
   // Message operations - معدل بالكامل
   Future<MessageModel> sendMessage(Map<String, dynamic> messageData) async {
     try {
-      print('ChatRepository: Sending message with data: $messageData');
 
       final response = await _apiProvider.sendMessage(messageData);
 
-      print('ChatRepository: Send message response status: ${response.statusCode}');
-      print('ChatRepository: Send message response data: ${response.data}');
 
       // التحقق من نوع البيانات المُرجعة
       dynamic responseData = response.data;
 
       // إذا كان الـ response فارغ أو null، أنشئ MessageModel من البيانات المُرسلة
       if (responseData == null || responseData.toString().trim().isEmpty) {
-        print('ChatRepository: Empty response, creating message from sent data');
 
         return MessageModel(
           id: DateTime.now().millisecondsSinceEpoch.toString(), // ID مؤقت
@@ -116,7 +101,6 @@ class ChatRepository {
         try {
           responseData = json.decode(responseData);
         } catch (e) {
-          print('ChatRepository: Failed to parse JSON string: $e');
           // إذا فشل parsing، أنشئ MessageModel من البيانات المُرسلة
           return MessageModel(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -152,14 +136,8 @@ class ChatRepository {
       }
 
     } catch (e) {
-      print('ChatRepository: Error sending message: $e');
 
       if (e is DioException) {
-        print('ChatRepository: DioException details:');
-        print('  - Status code: ${e.response?.statusCode}');
-        print('  - Response data: ${e.response?.data}');
-        print('  - Request data: ${e.requestOptions.data}');
-        print('  - Request path: ${e.requestOptions.path}');
       }
 
       throw Exception('Failed to send message: ${e.toString()}');
@@ -169,7 +147,6 @@ class ChatRepository {
   // دالة جديدة لإرسال رسالة مع صورة
   Future<MessageModel> sendMessageWithImage(Map<String, dynamic> messageData, File? imageFile) async {
     try {
-      print("ChatRepository: sendMessageWithImage called");
 
       final response = await _apiProvider.sendMessageWithImage(messageData, imageFile);
 
@@ -220,18 +197,15 @@ class ChatRepository {
         throw Exception('Message sending failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      print("ChatRepository sendMessageWithImage Error: $e");
       rethrow;
     }
   }
 
   Future<List<MessageModel>> getChatMessages(String chatId) async {
     try {
-      print('ChatRepository: Getting messages for chat: $chatId');
       final response = await _apiProvider.getChatMessages(chatId);
       final List<dynamic> messageList = response.data;
 
-      print('ChatRepository: Received ${messageList.length} messages');
 
       List<MessageModel> messages = [];
       for (var messageJson in messageList) {
@@ -239,15 +213,11 @@ class ChatRepository {
           final message = MessageModel.fromJson(messageJson);
           messages.add(message);
         } catch (e) {
-          print('ChatRepository: Error parsing message: $messageJson');
-          print('ChatRepository: Parse error: $e');
         }
       }
 
-      print('ChatRepository: Successfully parsed ${messages.length} messages');
       return messages;
     } catch (e) {
-      print('ChatRepository: Error getting messages: $e');
       throw Exception('Failed to get messages: ${e.toString()}');
     }
   }

@@ -4,6 +4,8 @@ import '../controllers/auth_controller.dart';
 import '../routes/app_routes.dart';
 
 class SplashView extends StatefulWidget {
+  const SplashView({super.key});
+
   @override
   _SplashViewState createState() => _SplashViewState();
 }
@@ -18,7 +20,7 @@ class _SplashViewState extends State<SplashView> {
   }
 
   Future<void> _checkAuthStatus() async {
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 3));
 
     if (await authController.isLoggedIn()) {
       final userType = authController.currentUser.value?.userType;
@@ -37,10 +39,10 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1C1C1C), // خلفية سوداء فاتحة
+      backgroundColor: const Color(0xFF1C1C1C),
       body: Center(
         child: Image.asset(
-          'assets/images/logo1.png', // ضع هنا مسار صورتك
+          'assets/images/logo1.png',
           width: 150,
           height: 150,
         ),

@@ -76,7 +76,6 @@ class AppModule {
         permanent: true
     );
 
-    print("🚀 AppModule: All dependencies initialized successfully");
   }
 
   // دالة للتحقق من أن كل التبعيات تم تحميلها بنجاح
@@ -96,26 +95,19 @@ class AppModule {
       Get.find<ServiceController>();
       Get.find<ChatController>();
 
-      print("✅ AppModule: All dependencies verified successfully");
-    } catch (e) {
-      print("❌ AppModule: Dependency verification failed: $e");
-    }
+    } catch (e) {}
   }
 
-  // دالة لتنظيف جميع التبعيات (مفيدة للاختبارات أو إعادة التشغيل)
+
   static void cleanup() {
     try {
-      // قطع اتصال WebSocket قبل التنظيف
+
       if (Get.isRegistered<WebSocketService>()) {
         Get.find<WebSocketService>().disconnect();
       }
 
-      // حذف جميع التبعيات
       Get.deleteAll(force: true);
-      print("🧹 AppModule: All dependencies cleaned up");
-    } catch (e) {
-      print("❌ AppModule: Cleanup failed: $e");
-    }
+    } catch (e) {}
   }
 
   // دالة لإعادة تهيئة WebSocket (مفيدة عند تغيير المستخدم)
@@ -124,12 +116,10 @@ class AppModule {
       if (Get.isRegistered<WebSocketService>()) {
         final webSocketService = Get.find<WebSocketService>();
         webSocketService.disconnect();
-        await Future.delayed(Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 1));
         await webSocketService.connect();
-        print("🔄 AppModule: WebSocket reinitialized");
       }
     } catch (e) {
-      print("❌ AppModule: WebSocket reinitialization failed: $e");
     }
   }
 }

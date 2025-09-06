@@ -1,14 +1,14 @@
 import 'package:get/get.dart';
 import 'dart:io';
 import '../data/repositories/user_repository.dart';
-import '../data/repositories/auth_repository.dart';  // إضافة مهمة
+import '../data/repositories/auth_repository.dart';
 import '../data/models/user_model.dart';
 import '../utils/error_handler.dart';
 import '../utils/helpers.dart';
 
 class UserController extends GetxController {
   final UserRepository _userRepository;
-  final AuthRepository _authRepository;  // إضافة AuthRepository
+  final AuthRepository _authRepository;
 
   UserController(this._userRepository, this._authRepository);
 
@@ -16,30 +16,21 @@ class UserController extends GetxController {
   var user = Rx<UserModel?>(null);
   var users = <UserModel>[].obs;
 
-  // دالة محدّثة لتحديث الملف الشخصي مع رفع الصورة
   Future<bool> updateProfileWithImage(String userId, Map<String, dynamic> data, File? imageFile) async {
     try {
       isLoading.value = true;
-      print("UserController: updateProfileWithImage() for user $userId");
-
-      // استخدام AuthRepository لأن endpoint موجود في auth module
       final response = await _authRepository.updateProfileWithImage(userId, data, imageFile);
 
-      print("UserController: Profile update response: ${response.keys}");
-
       if (response.containsKey('user')) {
-        // تحديث البيانات المحلية
+
         user.value = UserModel.fromJson(response['user']);
-        print("UserController: Profile updated successfully with user data");
         return true;
       } else if (response.containsKey('status') && response['status'] == true) {
-        print("UserController: Profile updated successfully with status response");
         return true;
       } else {
         throw Exception('Invalid response from server');
       }
     } catch (e) {
-      print("UserController: updateProfileWithImage error: $e");
       String errorMessage = _extractErrorMessage(e.toString());
       Helpers.showErrorSnackbar(errorMessage);
       return false;
@@ -48,7 +39,6 @@ class UserController extends GetxController {
     }
   }
 
-  // الدالة القديمة للتحديث بدون صورة
   Future<bool> updateProfile(String userId, Map<String, dynamic> userData) async {
     return await updateProfileWithImage(userId, userData, null);
   }

@@ -9,10 +9,11 @@ import '../../utils/validators.dart';
 import '../../utils/helpers.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/custom_button.dart';
-import '../../utils/storage_service.dart';
 import '../../config/app_colors.dart';
 
 class EditProfileView extends StatefulWidget {
+  const EditProfileView({super.key});
+
   @override
   _EditProfileViewState createState() => _EditProfileViewState();
 }
@@ -50,13 +51,13 @@ class _EditProfileViewState extends State<EditProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Profile'),
+        title: const Text('Edit Profile'),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         actions: [
           TextButton(
             onPressed: _isLoading ? null : _saveProfile,
-            child: Text(
+            child: const Text(
               'Save',
               style: TextStyle(
                 color: AppColors.white,
@@ -67,17 +68,17 @@ class _EditProfileViewState extends State<EditProfileView> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Profile Image Section
               _buildProfileImageSection(),
 
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
 
               // User Info Card
               Card(
@@ -87,11 +88,11 @@ class _EditProfileViewState extends State<EditProfileView> {
                 ),
                 color: AppColors.cardBackground,
                 child: Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Personal Information',
                         style: TextStyle(
                           fontSize: 18,
@@ -99,7 +100,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                           color: AppColors.primary,
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
                       // Username Field
                       CustomTextField(
@@ -108,7 +109,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                         prefixIcon: Icons.person,
                         validator: Validators.validateUsername,
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
                       // Email Field
                       CustomTextField(
@@ -118,7 +119,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                         keyboardType: TextInputType.emailAddress,
                         validator: Validators.validateEmail,
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
                       // Phone Field
                       CustomTextField(
@@ -133,7 +134,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                 ),
               ),
 
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
 
               // Account Type Info
               Card(
@@ -143,18 +144,18 @@ class _EditProfileViewState extends State<EditProfileView> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
                       Icon(
                         authController.isOwner ? Icons.business : Icons.person,
                         color: AppColors.primary,
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Account Type',
                             style: TextStyle(
                               fontSize: 14,
@@ -163,7 +164,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                           ),
                           Text(
                             authController.isOwner ? 'Workshop Owner' : 'User',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: AppColors.primary,
@@ -176,7 +177,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                 ),
               ),
 
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
 
               // Save Button
               Obx(() => CustomButton(
@@ -186,7 +187,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                 width: double.infinity,
               )),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -212,7 +213,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                     color: AppColors.shadowLight,
                     spreadRadius: 2,
                     blurRadius: 8,
-                    offset: Offset(0, 4),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -238,11 +239,11 @@ class _EditProfileViewState extends State<EditProfileView> {
                         color: AppColors.shadowLight,
                         spreadRadius: 1,
                         blurRadius: 4,
-                        offset: Offset(0, 2),
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.camera_alt,
                     color: AppColors.white,
                     size: 20,
@@ -252,8 +253,8 @@ class _EditProfileViewState extends State<EditProfileView> {
             ),
           ],
         ),
-        SizedBox(height: 16),
-        Text(
+        const SizedBox(height: 16),
+        const Text(
           'Tap camera icon to change photo',
           style: TextStyle(
             color: AppColors.textSecondary,
@@ -261,14 +262,14 @@ class _EditProfileViewState extends State<EditProfileView> {
           ),
         ),
         if (_selectedImage != null) ...[
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.success.withOpacity(0.1),
+              color: AppColors.success.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Text(
+            child: const Text(
               'New photo selected',
               style: TextStyle(
                 color: AppColors.success,
@@ -301,7 +302,7 @@ class _EditProfileViewState extends State<EditProfileView> {
         height: 120,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return Icon(
+          return const Icon(
             Icons.person,
             size: 60,
             color: AppColors.grey400,
@@ -320,7 +321,7 @@ class _EditProfileViewState extends State<EditProfileView> {
         },
       );
     } else {
-      return Icon(
+      return const Icon(
         Icons.person,
         size: 60,
         color: AppColors.grey400,
@@ -330,12 +331,9 @@ class _EditProfileViewState extends State<EditProfileView> {
 
   Future<void> _pickImage() async {
     try {
-      print("_pickImage: Starting image selection...");
 
       final image = await ImageService.showImageSourceDialog();
       if (image != null) {
-        print("_pickImage: Image selected: ${image.path}");
-        print("_pickImage: File size: ${(image.lengthSync() / (1024 * 1024)).toStringAsFixed(2)} MB");
 
         setState(() {
           _selectedImage = image;
@@ -343,10 +341,8 @@ class _EditProfileViewState extends State<EditProfileView> {
 
         Helpers.showSuccessSnackbar('Image selected successfully');
       } else {
-        print("_pickImage: No image selected");
       }
     } catch (e) {
-      print("_pickImage error: $e");
       Helpers.showErrorSnackbar('Failed to select image');
     }
   }

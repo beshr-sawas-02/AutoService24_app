@@ -10,7 +10,6 @@ class AuthBinding extends Bindings {
   void dependencies() {
     // Auth dependencies are already handled in AppModule
     // This binding ensures AuthController is available for auth views
-    print("AuthBinding: Loading auth dependencies");
   }
 }
 
@@ -19,7 +18,6 @@ class UserBinding extends Bindings {
   void dependencies() {
     // Since controllers are already created in AppModule with permanent: true,
     // we just need to ensure they're accessible (they already are)
-    print("UserBinding: User view dependencies ready");
 
     // Optional: Force initialize controllers if needed
     try {
@@ -28,7 +26,6 @@ class UserBinding extends Bindings {
       Get.find<ChatController>();
       Get.find<AuthController>();
     } catch (e) {
-      print("UserBinding error: Some controllers not found - $e");
     }
   }
 }
@@ -38,7 +35,6 @@ class OwnerBinding extends Bindings {
   void dependencies() {
     // Since controllers are already created in AppModule with permanent: true,
     // we just need to ensure they're accessible (they already are)
-    print("OwnerBinding: Owner view dependencies ready");
 
     // Optional: Force initialize controllers if needed
     try {
@@ -48,7 +44,6 @@ class OwnerBinding extends Bindings {
       Get.find<AuthController>();
       Get.find<UserController>();
     } catch (e) {
-      print("OwnerBinding error: Some controllers not found - $e");
     }
   }
 }

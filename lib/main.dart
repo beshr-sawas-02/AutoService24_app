@@ -19,10 +19,12 @@ void main() async {
   // Initialize network service
   Get.put(NetworkService(), permanent: true);
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -51,7 +53,7 @@ class MyApp extends StatelessWidget {
         canvasColor: AppColors.white,
 
         // AppBar Theme
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.white,
           foregroundColor: AppColors.textPrimary,
           elevation: 0,
@@ -65,7 +67,7 @@ class MyApp extends StatelessWidget {
         ),
 
         // BottomNavigationBar Theme
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           selectedItemColor: AppColors.primary,
           unselectedItemColor: AppColors.textSecondary,
           backgroundColor: AppColors.white,
@@ -84,8 +86,8 @@ class MyApp extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            textStyle: TextStyle(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            textStyle: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 16,
             ),
@@ -95,12 +97,12 @@ class MyApp extends StatelessWidget {
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.primary,
-            side: BorderSide(color: AppColors.primary, width: 1.5),
+            side: const BorderSide(color: AppColors.primary, width: 1.5),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            textStyle: TextStyle(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            textStyle: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 16,
             ),
@@ -110,7 +112,7 @@ class MyApp extends StatelessWidget {
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             foregroundColor: AppColors.primary,
-            textStyle: TextStyle(
+            textStyle: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 16,
             ),
@@ -124,7 +126,7 @@ class MyApp extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          margin: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         ),
 
         // Input Decoration Theme
@@ -133,30 +135,30 @@ class MyApp extends StatelessWidget {
           fillColor: AppColors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.border),
+            borderSide: const BorderSide(color: AppColors.border),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.border),
+            borderSide: const BorderSide(color: AppColors.border),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.borderFocus, width: 2),
+            borderSide: const BorderSide(color: AppColors.borderFocus, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.error, width: 2),
+            borderSide: const BorderSide(color: AppColors.error, width: 2),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.error, width: 2),
+            borderSide: const BorderSide(color: AppColors.error, width: 2),
           ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          hintStyle: TextStyle(color: AppColors.textHint),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          hintStyle: const TextStyle(color: AppColors.textHint),
         ),
 
         // FloatingActionButton Theme
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.white,
           elevation: 4,
@@ -170,7 +172,7 @@ class MyApp extends StatelessWidget {
         ),
 
         // Chip Theme
-        chipTheme: ChipThemeData(
+        chipTheme: const ChipThemeData(
           backgroundColor: AppColors.grey100,
           selectedColor: AppColors.primary,
           secondarySelectedColor: AppColors.primaryDark,
@@ -186,12 +188,12 @@ class MyApp extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          titleTextStyle: TextStyle(
+          titleTextStyle: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
-          contentTextStyle: TextStyle(
+          contentTextStyle: const TextStyle(
             color: AppColors.textSecondary,
             fontSize: 16,
           ),
@@ -200,7 +202,7 @@ class MyApp extends StatelessWidget {
         // Snackbar Theme
         snackBarTheme: SnackBarThemeData(
           backgroundColor: AppColors.grey800,
-          contentTextStyle: TextStyle(color: AppColors.white),
+          contentTextStyle: const TextStyle(color: AppColors.white),
           actionTextColor: AppColors.primary,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -209,7 +211,7 @@ class MyApp extends StatelessWidget {
         ),
 
         // Text Theme
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           displayLarge: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
           displayMedium: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
           displaySmall: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
@@ -228,18 +230,18 @@ class MyApp extends StatelessWidget {
         ),
 
         // Icon Theme
-        iconTheme: IconThemeData(
+        iconTheme: const IconThemeData(
           color: AppColors.textSecondary,
           size: 24,
         ),
-        primaryIconTheme: IconThemeData(
+        primaryIconTheme: const IconThemeData(
           color: AppColors.white,
           size: 24,
         ),
 
         // List Tile Theme
         listTileTheme: ListTileThemeData(
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           tileColor: AppColors.white,
           selectedTileColor: AppColors.primaryWithOpacity(0.1),
           iconColor: AppColors.textSecondary,

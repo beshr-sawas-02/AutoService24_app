@@ -12,7 +12,7 @@ class WorkshopCard extends StatelessWidget {
   final VoidCallback? onMessage;
 
   const WorkshopCard({
-    Key? key,
+    super.key,
     required this.workshop,
     required this.onTap,
     this.isOwner = false,
@@ -20,12 +20,12 @@ class WorkshopCard extends StatelessWidget {
     this.onDelete,
     this.onViewLocation,
     this.onMessage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -35,7 +35,7 @@ class WorkshopCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -55,7 +55,7 @@ class WorkshopCard extends StatelessWidget {
                       child: _buildWorkshopImage(),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
 
                   // Workshop Info
                   Expanded(
@@ -64,7 +64,7 @@ class WorkshopCard extends StatelessWidget {
                       children: [
                         Text(
                           workshop.name,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
@@ -72,19 +72,19 @@ class WorkshopCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.access_time,
                               size: 16,
                               color: AppColors.textSecondary,
                             ),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Expanded(
                               child: Text(
                                 workshop.workingHours,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 12,
                                 ),
@@ -94,7 +94,7 @@ class WorkshopCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         _buildRatingRow(),
                       ],
                     ),
@@ -108,12 +108,12 @@ class WorkshopCard extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               // Description
               Text(
                 workshop.description,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 14,
                   height: 1.4,
@@ -122,7 +122,7 @@ class WorkshopCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
 
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               // Location and Status Row
               Row(
@@ -131,16 +131,16 @@ class WorkshopCard extends StatelessWidget {
                   Expanded(
                     child: Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.location_on,
                           size: 16,
                           color: AppColors.primary,
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             _getLocationText(),
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 12,
                             ),
@@ -159,7 +159,7 @@ class WorkshopCard extends StatelessWidget {
 
               // Action Buttons Row (for non-owners)
               if (!isOwner) ...[
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 _buildActionButtons(),
               ],
             ],
@@ -179,7 +179,7 @@ class WorkshopCard extends StatelessWidget {
         },
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(
               color: AppColors.primary,
               strokeWidth: 2,
@@ -195,7 +195,7 @@ class WorkshopCard extends StatelessWidget {
   Widget _buildDefaultIcon() {
     return Container(
       color: AppColors.grey100,
-      child: Icon(
+      child: const Icon(
         Icons.business,
         color: AppColors.grey400,
         size: 30,
@@ -213,8 +213,8 @@ class WorkshopCard extends StatelessWidget {
             color: index < 4 ? AppColors.warning : AppColors.grey300,
           );
         }),
-        SizedBox(width: 4),
-        Text(
+        const SizedBox(width: 4),
+        const Text(
           '4.5',
           style: TextStyle(
             color: AppColors.textSecondary,
@@ -222,8 +222,8 @@ class WorkshopCard extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        SizedBox(width: 2),
-        Text(
+        const SizedBox(width: 2),
+        const Text(
           '(24)',
           style: TextStyle(
             color: AppColors.textHint,
@@ -250,7 +250,7 @@ class WorkshopCard extends StatelessWidget {
         }
       },
       itemBuilder: (context) => [
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'edit',
           child: Row(
             children: [
@@ -260,7 +260,7 @@ class WorkshopCard extends StatelessWidget {
             ],
           ),
         ),
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'location',
           child: Row(
             children: [
@@ -270,7 +270,7 @@ class WorkshopCard extends StatelessWidget {
             ],
           ),
         ),
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'delete',
           child: Row(
             children: [
@@ -282,12 +282,12 @@ class WorkshopCard extends StatelessWidget {
         ),
       ],
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: AppColors.grey100,
           borderRadius: BorderRadius.circular(6),
         ),
-        child: Icon(
+        child: const Icon(
           Icons.more_vert,
           size: 18,
           color: AppColors.textSecondary,
@@ -303,12 +303,12 @@ class WorkshopCard extends StatelessWidget {
           GestureDetector(
             onTap: onMessage,
             child: Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: AppColors.primaryWithOpacity(0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.message,
                 size: 18,
                 color: AppColors.primary,
@@ -316,16 +316,16 @@ class WorkshopCard extends StatelessWidget {
             ),
           ),
         if (onViewLocation != null) ...[
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           GestureDetector(
             onTap: onViewLocation,
             child: Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.info.withOpacity(0.1),
+                color: AppColors.info.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.location_on,
                 size: 18,
                 color: AppColors.info,
@@ -341,12 +341,12 @@ class WorkshopCard extends StatelessWidget {
     bool isOpen = _isWorkshopOpen();
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: isOpen ? AppColors.success.withOpacity(0.1) : AppColors.error.withOpacity(0.1),
+        color: isOpen ? AppColors.success.withValues(alpha: 0.1) : AppColors.error.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isOpen ? AppColors.success.withOpacity(0.3) : AppColors.error.withOpacity(0.3),
+          color: isOpen ? AppColors.success.withValues(alpha: 0.3) : AppColors.error.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -360,7 +360,7 @@ class WorkshopCard extends StatelessWidget {
               shape: BoxShape.circle,
             ),
           ),
-          SizedBox(width: 4),
+          const SizedBox(width: 4),
           Text(
             isOpen ? 'Open' : 'Closed',
             style: TextStyle(
@@ -381,12 +381,12 @@ class WorkshopCard extends StatelessWidget {
           Expanded(
             child: OutlinedButton.icon(
               onPressed: onViewLocation,
-              icon: Icon(Icons.location_on, size: 16),
-              label: Text('Location'),
+              icon: const Icon(Icons.location_on, size: 16),
+              label: const Text('Location'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.info,
-                side: BorderSide(color: AppColors.info),
-                padding: EdgeInsets.symmetric(vertical: 8),
+                side: const BorderSide(color: AppColors.info),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -394,17 +394,17 @@ class WorkshopCard extends StatelessWidget {
             ),
           ),
         if (onViewLocation != null && onMessage != null)
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
         if (onMessage != null)
           Expanded(
             child: ElevatedButton.icon(
               onPressed: onMessage,
-              icon: Icon(Icons.message, size: 16),
-              label: Text('Message'),
+              icon: const Icon(Icons.message, size: 16),
+              label: const Text('Message'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: AppColors.white,
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),

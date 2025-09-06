@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'helpers.dart';
 
@@ -22,7 +21,7 @@ class NetworkService extends GetxService {
 
   void _initNetworkMonitoring() {
     // Simple network monitoring using periodic checks
-    Timer.periodic(Duration(seconds: 10), (timer) {
+    Timer.periodic(const Duration(seconds: 10), (timer) {
       _checkNetworkStatus();
     });
   }

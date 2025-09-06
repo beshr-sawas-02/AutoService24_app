@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../routes/app_routes.dart';
-import '../../utils/helpers.dart';
 
 class UserProfileView extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
+
+   UserProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +29,12 @@ class UserProfileView extends StatelessWidget {
 
   Widget _buildGuestProfile() {
     return SingleChildScrollView(
-      physics: AlwaysScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Container(
-        height: Get.height, // حتى يشتغل السحب لتحديث
+        height: Get.height,
         width: double.infinity,
-        padding: EdgeInsets.fromLTRB(20, 80, 20, 40),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.fromLTRB(20, 80, 20, 40),
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFFFF8A50), Color(0xFFFF6B35)],
             begin: Alignment.topCenter,
@@ -49,12 +50,12 @@ class UserProfileView extends StatelessWidget {
                 GestureDetector(
                   onTap: () => Get.back(),
                   child: Container(
-                    padding: EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.arrow_back,
                       color: Colors.white,
                       size: 20,
@@ -79,16 +80,16 @@ class UserProfileView extends StatelessWidget {
                     ),
                     child: CircleAvatar(
                       radius: 58,
-                      backgroundColor: Colors.white.withOpacity(0.2),
-                      child: Icon(
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
+                      child: const Icon(
                         Icons.person,
                         size: 50,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                  SizedBox(height: 24),
-                  Text(
+                  const SizedBox(height: 24),
+                  const Text(
                     'Guest User',
                     style: TextStyle(
                       fontSize: 32,
@@ -97,27 +98,27 @@ class UserProfileView extends StatelessWidget {
                       letterSpacing: 1,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'You\'re browsing as a guest',
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  SizedBox(height: 40),
+                  const SizedBox(height: 40),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: ElevatedButton.icon(
                       onPressed: () => Get.toNamed(AppRoutes.login),
-                      icon: Icon(Icons.login),
-                      label: Text('Login to Your Account'),
+                      icon: const Icon(Icons.login),
+                      label: const Text('Login to Your Account'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.orange,
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -125,18 +126,18 @@ class UserProfileView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: OutlinedButton.icon(
                       onPressed: () => Get.toNamed(AppRoutes.register),
-                      icon: Icon(Icons.person_add),
-                      label: Text('Create New Account'),
+                      icon: const Icon(Icons.person_add),
+                      label: const Text('Create New Account'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        side: BorderSide(color: Colors.white),
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        side: const BorderSide(color: Colors.white),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -156,22 +157,22 @@ class UserProfileView extends StatelessWidget {
     final user = authController.currentUser.value!;
 
     return SingleChildScrollView(
-      physics: AlwaysScrollableScrollPhysics(), // ضروري عشان يشتغل السحب
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
         children: [
           _buildProfileHeader(user),
           Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               children: [
                 _buildContactInformationCard(user),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildProfileOptions(),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 _buildLogoutButton(),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 _buildDeleteAccountButton(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -183,8 +184,8 @@ class UserProfileView extends StatelessWidget {
   Widget _buildProfileHeader(user) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.fromLTRB(20, 60, 20, 40),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.fromLTRB(20, 60, 20, 40),
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFFF8A50), Color(0xFFFF6B35)],
           begin: Alignment.topCenter,
@@ -201,12 +202,12 @@ class UserProfileView extends StatelessWidget {
               GestureDetector(
                 onTap: () => Get.back(),
                 child: Container(
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.arrow_back,
                     color: Colors.white,
                     size: 20,
@@ -217,12 +218,12 @@ class UserProfileView extends StatelessWidget {
               GestureDetector(
                 onTap: () => Get.toNamed(AppRoutes.editProfile),
                 child: Container(
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.edit,
                     color: Colors.white,
                     size: 20,
@@ -232,7 +233,7 @@ class UserProfileView extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Profile Avatar with camera icon
           Stack(
@@ -249,8 +250,8 @@ class UserProfileView extends StatelessWidget {
                 ),
                 child: CircleAvatar(
                   radius: 58,
-                  backgroundColor: Colors.white.withOpacity(0.2),
-                  child: user.fullProfileImage != null && user.profileImage!.isNotEmpty
+                  backgroundColor: Colors.white.withValues(alpha: 0.2),
+                  child: user.fullProfileImage != null && user.fullProfileImage!.isNotEmpty
                       ? ClipRRect(
                     borderRadius: BorderRadius.circular(58),
                     child: Image.network(
@@ -261,7 +262,7 @@ class UserProfileView extends StatelessWidget {
                       errorBuilder: (context, error, stackTrace) {
                         return Text(
                           user.username.substring(0, 1).toUpperCase(),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -272,7 +273,7 @@ class UserProfileView extends StatelessWidget {
                   )
                       : Text(
                     user.username.substring(0, 1).toUpperCase(),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 48,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -290,19 +291,19 @@ class UserProfileView extends StatelessWidget {
                     // Handle profile picture change
                   },
                   child: Container(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 4,
-                          offset: Offset(0, 2),
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.camera_alt,
                       color: Colors.orange,
                       size: 16,
@@ -313,12 +314,12 @@ class UserProfileView extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
 
           // User name
           Text(
             user.username,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.w300,
               color: Colors.white,
@@ -326,14 +327,14 @@ class UserProfileView extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
 
           // User type
           Text(
             user.isOwner ? 'Workshop Owner' : 'Regular User',
             style: TextStyle(
               fontSize: 18,
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -348,22 +349,22 @@ class UserProfileView extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Contact Information',
             style: TextStyle(
               fontSize: 20,
@@ -371,20 +372,20 @@ class UserProfileView extends StatelessWidget {
               color: Colors.black87,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Email
           Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(Icons.email_outlined, color: Colors.grey[600], size: 20),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -395,10 +396,10 @@ class UserProfileView extends StatelessWidget {
                       fontSize: 14,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
                     email,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
@@ -408,20 +409,20 @@ class UserProfileView extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Phone
           Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(Icons.phone_outlined, color: Colors.grey[600], size: 20),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -432,7 +433,7 @@ class UserProfileView extends StatelessWidget {
                       fontSize: 14,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
                     phone,
                     style: TextStyle(
@@ -490,15 +491,15 @@ class UserProfileView extends StatelessWidget {
   Widget _buildSectionCard({required String title, required List<Widget> children}) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -507,13 +508,13 @@ class UserProfileView extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           ...children,
         ],
       ),
@@ -532,8 +533,8 @@ class UserProfileView extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: EdgeInsets.all(12),
-        margin: EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.only(bottom: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey[200]!),
@@ -541,9 +542,9 @@ class UserProfileView extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: (iconColor ?? Colors.grey[600])!.withOpacity(0.1),
+                color: (iconColor ?? Colors.grey[600])!.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -552,7 +553,7 @@ class UserProfileView extends StatelessWidget {
                 size: 20,
               ),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -565,7 +566,7 @@ class UserProfileView extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: TextStyle(
@@ -588,16 +589,16 @@ class UserProfileView extends StatelessWidget {
   }
 
   Widget _buildLogoutButton() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: _showLogoutDialog,
-        icon: Icon(Icons.logout),
-        label: Text('Sign Out'),
+        icon: const Icon(Icons.logout),
+        label: const Text('Sign Out'),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red,
           foregroundColor: Colors.white,
-          padding: EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -608,16 +609,16 @@ class UserProfileView extends StatelessWidget {
   }
 
   Widget _buildDeleteAccountButton() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
         onPressed: _showDeleteAccountDialog,
-        icon: Icon(Icons.delete_forever),
-        label: Text('Delete Account'),
+        icon: const Icon(Icons.delete_forever),
+        label: const Text('Delete Account'),
         style: OutlinedButton.styleFrom(
           foregroundColor: Colors.red[700],
           side: BorderSide(color: Colors.red[700]!),
-          padding: EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -635,32 +636,31 @@ class UserProfileView extends StatelessWidget {
         title: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
+                color: Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(Icons.logout, color: Colors.red),
+              child: const Icon(Icons.logout, color: Colors.red),
             ),
-            SizedBox(width: 12),
-            Text('Sign Out'),
+            const SizedBox(width: 12),
+            const Text('Sign Out'),
           ],
         ),
-        content: Text('Are you sure you want to sign out of your account?'),
+        content: const Text('Are you sure you want to sign out of your account?'),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel'),
             style: TextButton.styleFrom(
               foregroundColor: Colors.grey[600],
             ),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back();
               authController.logout();
             },
-            child: Text('Sign Out'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
@@ -668,6 +668,7 @@ class UserProfileView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
+            child: const Text('Sign Out'),
           ),
         ],
       ),
@@ -683,24 +684,24 @@ class UserProfileView extends StatelessWidget {
         title: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
+                color: Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(Icons.warning, color: Colors.red),
+              child: const Icon(Icons.warning, color: Colors.red),
             ),
-            SizedBox(width: 12),
-            Text('Delete Account'),
+            const SizedBox(width: 12),
+            const Text('Delete Account'),
           ],
         ),
         content: Container(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Row(
+          child: const Row(
             children: [
               Icon(Icons.warning, color: Colors.red, size: 16),
               SizedBox(width: 8),
@@ -719,10 +720,10 @@ class UserProfileView extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel'),
             style: TextButton.styleFrom(
               foregroundColor: Colors.grey[600],
             ),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -732,7 +733,6 @@ class UserProfileView extends StatelessWidget {
                 Get.snackbar('Error', 'Failed to delete account. Please try again.');
               }
             },
-            child: Text('Delete'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
@@ -740,6 +740,7 @@ class UserProfileView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
+            child: const Text('Delete'),
           ),
         ],
       ),
