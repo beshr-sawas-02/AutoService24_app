@@ -27,7 +27,7 @@ enum ServiceType {
 class ServiceModel {
   final String id;
   final String workshopId;
-  final String userId; // إضافة هذا الحقل
+  final String userId;
   final String title;
   final String description;
   final double price;
@@ -42,7 +42,7 @@ class ServiceModel {
   ServiceModel({
     required this.id,
     required this.workshopId,
-    required this.userId, // إضافة هذا
+    required this.userId,
     required this.title,
     required this.description,
     required this.price,
@@ -74,7 +74,7 @@ class ServiceModel {
     return ServiceModel(
       id: json['_id'] ?? '',
       workshopId: workshopId,
-      userId: json['user_id'] ?? workshopData?['user_id'] ?? '', // إضافة هذا
+      userId: json['user_id'] ?? workshopData?['user_id'] ?? '',
       title: json['title'] ?? '',
       description: json['description'] ?? '',
       price: _parsePrice(json['price']),
@@ -86,7 +86,7 @@ class ServiceModel {
     );
   }
 
-  // باقي الدوال كما هي...
+
   static double _parsePrice(dynamic price) {
     if (price == null) return 0.0;
     if (price is double) return price;
@@ -120,7 +120,7 @@ class ServiceModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
       'workshop_id': workshopId,
-      'user_id': userId, // إضافة هذا
+      'user_id': userId,
       'title': title,
       'description': description,
       'price': price,
@@ -134,7 +134,7 @@ class ServiceModel {
   ServiceModel copyWith({
     String? id,
     String? workshopId,
-    String? userId, // إضافة هذا
+    String? userId,
     String? title,
     String? description,
     double? price,
@@ -147,7 +147,7 @@ class ServiceModel {
     return ServiceModel(
       id: id ?? this.id,
       workshopId: workshopId ?? this.workshopId,
-      userId: userId ?? this.userId, // إضافة هذا
+      userId: userId ?? this.userId,
       title: title ?? this.title,
       description: description ?? this.description,
       price: price ?? this.price,

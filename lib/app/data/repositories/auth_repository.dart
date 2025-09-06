@@ -43,7 +43,7 @@ class AuthRepository {
 
       final response = await _apiProvider.socialLogin({
         'provider': provider,
-        'Token': token,  // تأكد من الحرف الكبير كما في backend
+        'Token': token,
         'usertype': userType,
       });
 
@@ -104,7 +104,7 @@ class AuthRepository {
     }
   }
 
-  // دالة جديدة لتحديث الملف الشخصي مع الصورة
+
   Future<Map<String, dynamic>> updateProfileWithImage(String userId, Map<String, dynamic> data, File? imageFile) async {
     try {
 

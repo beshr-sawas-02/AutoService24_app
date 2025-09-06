@@ -9,15 +9,15 @@ import 'helpers.dart';
 class ImageService {
   static final ImagePicker _picker = ImagePicker();
 
-  // التحقق الموحد من الصورة
+
   static Future<String?> validateImageFile(File file) async {
     try {
-      // التحقق من وجود الملف
+
       if (!await file.exists()) {
         return 'Image file not found';
       }
 
-      // التحقق من الامتداد
+
       final fileName = file.path.toLowerCase();
       final allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
 
@@ -29,7 +29,7 @@ class ImageService {
         return 'Please select a valid image file (JPG, PNG, GIF, WebP)';
       }
 
-      // التحقق من حجم الملف
+
       final fileSize = await file.length();
       const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
 
@@ -38,7 +38,7 @@ class ImageService {
         return 'Image size is ${sizeMB}MB. Maximum allowed is 5MB';
       }
 
-      return null; // الصورة صحيحة
+      return null;
     } catch (e) {
       return 'Image validation failed: ${e.toString()}';
     }
@@ -128,7 +128,7 @@ class ImageService {
         }
       }
 
-      // إظهار أخطاء التحقق إن وجدت
+
       if (errors.isNotEmpty) {
         Helpers.showErrorSnackbar('Some images were skipped:\n${errors.join('\n')}');
       }
@@ -140,7 +140,7 @@ class ImageService {
     }
   }
 
-  // Show image source selection dialog - نسخة محسنة
+
   static Future<File?> showImageSourceDialog() async {
     try {
       final result = await Get.dialog<ImageSource>(
@@ -216,7 +216,7 @@ class ImageService {
     return null;
   }
 
-  // مساعد لبناء خيارات مصدر الصورة
+
   static Widget _buildSourceOption({
     required IconData icon,
     required String title,
@@ -302,28 +302,28 @@ class ImageService {
     }
   }
 
-  // دوال مساعدة:
 
-  // التحقق من صحة امتداد الصورة
+
+
   static bool isValidImageExtension(String filePath) {
     final validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     final extension = filePath.split('.').last.toLowerCase();
     return validExtensions.contains(extension);
   }
 
-  // حجم الملف بالـ MB
+
   static Future<double> getFileSizeInMB(File file) async {
     final bytes = await file.length();
     return bytes / (1024 * 1024);
   }
 
-  // التحقق من حجم الملف
+
   static Future<bool> isValidFileSize(File file, {double maxSizeMB = 5.0}) async {
     final sizeMB = await getFileSizeInMB(file);
     return sizeMB <= maxSizeMB;
   }
 
-  // معلومات الصورة
+
   static Future<Map<String, dynamic>> getImageInfo(File file) async {
     try {
       final size = await file.length();

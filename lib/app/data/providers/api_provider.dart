@@ -41,7 +41,6 @@ class ApiProvider {
 
   Future<Response> socialLogin(Map<String, dynamic> data) async {
     try {
-
       final response = await _dio.post(
         '/auth/social-login',
         data: data,
@@ -64,30 +63,26 @@ class ApiProvider {
     return await _dio.post('/auth/forgot-password', data: data);
   }
 
-  // دالة جديدة لتحديث الملف الشخصي مع رفع الصورة
   Future<Response> updateProfileWithImage(
-      String userId,
-      Map<String, dynamic> data,
-      File? imageFile,
-      ) async {
+    String userId,
+    Map<String, dynamic> data,
+    File? imageFile,
+  ) async {
     try {
-
       FormData formData = FormData();
 
-      // إضافة البيانات النصية
       data.forEach((key, value) {
         if (value != null) {
           formData.fields.add(MapEntry(key, value.toString()));
         }
       });
 
-      // إضافة الصورة إذا كانت موجودة
       if (imageFile != null) {
         String fileName = imageFile.path.split('/').last;
 
         formData.files.add(
           MapEntry(
-            'profileImage', // ✅ لازم يطابق الباك
+            'profileImage',
             await MultipartFile.fromFile(
               imageFile.path,
               filename: fileName,
@@ -95,7 +90,6 @@ class ApiProvider {
           ),
         );
       }
-
 
       final response = await _dio.put(
         '/auth/edit/$userId',
@@ -119,12 +113,10 @@ class ApiProvider {
     return await _dio.get('/user');
   }
 
-  // تحديث دالة getUser لتوافق getUserById
   Future<Response> getUser(String id) async {
     return await getUserById(id);
   }
 
-  // User by ID endpoint - دالة جديدة
   Future<Response> getUserById(String userId) async {
     try {
       final response = await _dio.get('/user/$userId');
@@ -168,19 +160,18 @@ class ApiProvider {
     return await _dio.post('/services/createservice', data: data);
   }
 
-  // دالة جديدة لإنشاء خدمة مع صور
-  Future<Response> createServiceWithImages(Map<String, dynamic> data, List<File>? imageFiles) async {
+  Future<Response> createServiceWithImages(
+      Map<String, dynamic> data, List<File>? imageFiles) async {
     try {
       FormData formData = FormData();
 
-      // إضافة البيانات النصية
       data.forEach((key, value) {
         if (value != null) {
           formData.fields.add(MapEntry(key, value.toString()));
         }
       });
 
-      // إضافة الصور إذا كانت موجودة
+
       if (imageFiles != null && imageFiles.isNotEmpty) {
         for (File imageFile in imageFiles) {
           String fileName = imageFile.path.split('/').last;
@@ -210,8 +201,9 @@ class ApiProvider {
     }
   }
 
-  // دالة لرفع صور إضافية لخدمة موجودة
-  Future<Response> uploadServiceImages(String serviceId, List<File> imageFiles) async {
+
+  Future<Response> uploadServiceImages(
+      String serviceId, List<File> imageFiles) async {
     try {
       FormData formData = FormData();
 
@@ -307,31 +299,30 @@ class ApiProvider {
   // Message endpoints
   Future<Response> sendMessage(Map<String, dynamic> data) async {
     try {
-
       final response = await _dio.post('/messages/sendmessage', data: data);
-
 
       return response;
     } on DioException catch (e) {
-
       rethrow;
     } catch (e) {
       rethrow;
     }
   }
-  // دالة جديدة لإرسال رسالة مع صورة
-  Future<Response> sendMessageWithImage(Map<String, dynamic> data, File? imageFile) async {
+
+
+  Future<Response> sendMessageWithImage(
+      Map<String, dynamic> data, File? imageFile) async {
     try {
       FormData formData = FormData();
 
-      // إضافة البيانات النصية
+
       data.forEach((key, value) {
         if (value != null) {
           formData.fields.add(MapEntry(key, value.toString()));
         }
       });
 
-      // إضافة الصورة إذا كانت موجودة
+
       if (imageFile != null) {
         String fileName = imageFile.path.split('/').last;
         formData.files.add(

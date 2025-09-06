@@ -1,7 +1,7 @@
 import 'package:autoservice24/app/config/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:io'; // أضافة هذا للتعامل مع الملفات المحلية
+import 'dart:io';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/service_controller.dart';
 import '../../data/models/service_model.dart';
@@ -12,7 +12,7 @@ class ServiceDetailsView extends StatelessWidget {
   final ServiceController serviceController = Get.find<ServiceController>();
   final PageController pageController = PageController();
 
-  ServiceDetailsView({super.key}); // إضافة controller للصور
+  ServiceDetailsView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,57 +22,56 @@ class ServiceDetailsView extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 300, // زيادة الارتفاع قليلاً
+            expandedHeight: 300,
             pinned: true,
             backgroundColor: AppColors.primary,
             flexibleSpace: FlexibleSpaceBar(
               background: service.images.isNotEmpty
                   ? Stack(
-                children: [
-                  PageView.builder(
-                    controller: pageController,
-                    itemCount: service.images.length,
-                    itemBuilder: (context, index) {
-                      return SizedBox(
-                        width: double.infinity,
-                        height: double.infinity,
-                        child: _buildImageWidget(service.images[index]),
-                      );
-                    },
-                  ),
-                  // مؤشر الصور إذا كان فيه أكتر من صورة
-                  if (service.images.length > 1)
-                    Positioned(
-                      bottom: 20,
-                      left: 0,
-                      right: 0,
-                      child: _buildImageIndicator(service.images.length),
-                    ),
-                  // رقم الصورة
-                  if (service.images.length > 1)
-                    Positioned(
-                      top: 50,
-                      right: 16,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.6),
-                          borderRadius: BorderRadius.circular(20),
+                      children: [
+                        PageView.builder(
+                          controller: pageController,
+                          itemCount: service.images.length,
+                          itemBuilder: (context, index) {
+                            return SizedBox(
+                              width: double.infinity,
+                              height: double.infinity,
+                              child: _buildImageWidget(service.images[index]),
+                            );
+                          },
                         ),
-                        child: Obx(() {
-                          return Text(
-                            '${pageController.hasClients ? (pageController.page?.round() ?? 0) + 1 : 1}/${service.images.length}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
+                        if (service.images.length > 1)
+                          Positioned(
+                            bottom: 20,
+                            left: 0,
+                            right: 0,
+                            child: _buildImageIndicator(service.images.length),
+                          ),
+                        if (service.images.length > 1)
+                          Positioned(
+                            top: 50,
+                            right: 16,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.6),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Obx(() {
+                                return Text(
+                                  '${pageController.hasClients ? (pageController.page?.round() ?? 0) + 1 : 1}/${service.images.length}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                );
+                              }),
                             ),
-                          );
-                        }),
-                      ),
-                    ),
-                ],
-              )
+                          ),
+                      ],
+                    )
                   : _buildPlaceholderImage(),
             ),
             actions: [
@@ -85,7 +84,8 @@ class ServiceDetailsView extends StatelessWidget {
                         color: Colors.black.withValues(alpha: 0.3),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.bookmark_border, color: Colors.white, size: 20),
+                      child: const Icon(Icons.bookmark_border,
+                          color: Colors.white, size: 20),
                     ),
                     onPressed: () {
                       _showGuestDialog();
@@ -94,7 +94,8 @@ class ServiceDetailsView extends StatelessWidget {
                   );
                 }
 
-                final isBookmarked = serviceController.isServiceSaved(service.id);
+                final isBookmarked =
+                    serviceController.isServiceSaved(service.id);
 
                 return IconButton(
                   icon: Container(
@@ -114,7 +115,8 @@ class ServiceDetailsView extends StatelessWidget {
                   onPressed: () async {
                     final userId = authController.currentUser.value?.id;
                     if (userId != null) {
-                      await serviceController.toggleSaveService(service.id, userId);
+                      await serviceController.toggleSaveService(
+                          service.id, userId);
                     }
                   },
                   tooltip: isBookmarked ? 'Remove from saved' : 'Save service',
@@ -145,7 +147,8 @@ class ServiceDetailsView extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
                                 color: AppColors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(20),
@@ -199,13 +202,14 @@ class ServiceDetailsView extends StatelessWidget {
                   _buildInfoCard(
                     'Workshop Information',
                     [
-                      _buildInfoRow(Icons.business, 'Workshop ID', service.workshopId),
-                      _buildInfoRow(Icons.access_time, 'Service Duration', '1-2 hours'),
+                      _buildInfoRow(
+                          Icons.business, 'Workshop ID', service.workshopId),
+                      _buildInfoRow(
+                          Icons.access_time, 'Service Duration', '1-2 hours'),
                       _buildInfoRow(Icons.check_circle, 'Warranty', '30 days'),
                     ],
                   ),
 
-                  // عرض الصور الإضافية إذا كان فيه أكتر من صورة
                   if (service.images.length > 1) ...[
                     const SizedBox(height: 24),
                     _buildImageGallery(service.images),
@@ -251,7 +255,6 @@ class ServiceDetailsView extends StatelessWidget {
     );
   }
 
-  // الدالة المحسنة لمعالجة الصور
   Widget _buildImageWidget(String imagePath) {
     imagePath = imagePath.trim();
 
@@ -263,10 +266,10 @@ class ServiceDetailsView extends StatelessWidget {
       return Container(
         width: double.infinity,
         height: double.infinity,
-        color: Colors.black, // خلفية سوداء للصورة
+        color: Colors.black,
         child: Image.network(
           imagePath,
-          fit: BoxFit.contain, // تغيير إلى contain لإظهار الصورة كاملة
+          fit: BoxFit.contain,
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
@@ -280,18 +283,18 @@ class ServiceDetailsView extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
+                          loadingProgress.expectedTotalBytes!
                       : null,
                   strokeWidth: 3,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
               ),
             );
           },
         ),
       );
-    }
-    else if (imagePath.startsWith('/') || imagePath.contains('/data/')) {
+    } else if (imagePath.startsWith('/') || imagePath.contains('/data/')) {
       return Container(
         width: double.infinity,
         height: double.infinity,
@@ -306,8 +309,7 @@ class ServiceDetailsView extends StatelessWidget {
           },
         ),
       );
-    }
-    else {
+    } else {
       return Container(
         width: double.infinity,
         height: double.infinity,
@@ -325,7 +327,6 @@ class ServiceDetailsView extends StatelessWidget {
     }
   }
 
-  // دالة لعرض صورة placeholder
   Widget _buildPlaceholderImage() {
     return Container(
       color: AppColors.grey200,
@@ -353,13 +354,12 @@ class ServiceDetailsView extends StatelessWidget {
     );
   }
 
-  // دالة لعرض مؤشر الصور
   Widget _buildImageIndicator(int imageCount) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
         imageCount,
-            (index) => Container(
+        (index) => Container(
           margin: const EdgeInsets.symmetric(horizontal: 4),
           width: 8,
           height: 8,
@@ -372,7 +372,6 @@ class ServiceDetailsView extends StatelessWidget {
     );
   }
 
-  // دالة لعرض معرض الصور الصغير
   Widget _buildImageGallery(List<String> images) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,13 +393,12 @@ class ServiceDetailsView extends StatelessWidget {
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
-                  // الانتقال للصورة في الـ PageView الرئيسي
                   pageController.animateToPage(
                     index,
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                   );
-                  // العودة لأعلى الصفحة
+
                   Scrollable.ensureVisible(
                     context,
                     duration: const Duration(milliseconds: 500),
@@ -430,7 +428,6 @@ class ServiceDetailsView extends StatelessWidget {
     );
   }
 
-  // دالة لعرض حاوية الخطأ
   Widget _buildErrorContainer(String message) {
     return Container(
       color: AppColors.grey200,

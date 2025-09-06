@@ -11,8 +11,6 @@ class AppColors {
   static const mediumGrey = Color(0xFF9E9E9E);
   static const lightGrey = Color(0xFFF5F5F5);
 
-
-
   // Background Colors
   static const Color background = Color(0xFFF8F9FA);
   static const Color surface = Color(0xFFFFFFFF);
@@ -83,11 +81,11 @@ class AppColors {
       );
     }
 
-    return MaterialColor(color.value, swatch);
+    return MaterialColor((0xFF000000 | (r << 16) | (g << 8) | b), swatch);
   }
 
   // Transparent variations
-  static Color primaryWithOpacity(double opacity) => primary.withOpacity(opacity);
-  static Color whiteWithOpacity(double opacity) => white.withOpacity(opacity);
-  static Color blackWithOpacity(double opacity) => Colors.black.withOpacity(opacity);
+  static Color primaryWithOpacity(double opacity) => primary.withValues(alpha: opacity);
+  static Color whiteWithOpacity(double opacity) => white.withValues(alpha: opacity);
+  static Color blackWithOpacity(double opacity) => Colors.black.withValues(alpha: opacity);
 }

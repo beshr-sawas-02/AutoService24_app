@@ -259,7 +259,9 @@ class _RegisterViewState extends State<RegisterView> {
                 obscureText: !_isPasswordVisible,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    _isPasswordVisible
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     color: Colors.grey[600],
                   ),
                   onPressed: () {
@@ -285,11 +287,14 @@ class _RegisterViewState extends State<RegisterView> {
                 obscureText: !_isConfirmPasswordVisible,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isConfirmPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    _isConfirmPasswordVisible
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     color: Colors.grey[600],
                   ),
                   onPressed: () {
-                    setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible);
+                    setState(() =>
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible);
                   },
                 ),
                 validator: (value) {
@@ -306,43 +311,45 @@ class _RegisterViewState extends State<RegisterView> {
 
               // Create Account Button
               Obx(() => SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: authController.isLoading.value ? null : _register,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF8A50),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed:
+                          authController.isLoading.value ? null : _register,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFF8A50),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 0,
+                        shadowColor: Colors.transparent,
+                      ),
+                      child: authController.isLoading.value
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                          : const Text(
+                              'Create Account',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                     ),
-                    elevation: 0,
-                    shadowColor: Colors.transparent,
-                  ),
-                  child: authController.isLoading.value
-                      ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2.5,
-                    ),
-                  )
-                      : const Text(
-                    'Create Account',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              )),
+                  )),
               const SizedBox(height: 24),
 
               // Divider with "or continue with"
               Row(
                 children: [
-                  Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
+                  Expanded(
+                      child: Divider(color: Colors.grey[300], thickness: 1)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
@@ -354,16 +361,15 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                     ),
                   ),
-                  Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
+                  Expanded(
+                      child: Divider(color: Colors.grey[300], thickness: 1)),
                 ],
               ),
               const SizedBox(height: 24),
 
-              // Social Login Buttons - محسنة
               _buildSocialLoginSection(),
               const SizedBox(height: 32),
 
-              // Login Link - مصححة
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -394,7 +400,8 @@ class _RegisterViewState extends State<RegisterView> {
                 child: TextButton(
                   onPressed: () => Get.offAllNamed(AppRoutes.userHome),
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
                   ),
                   child: Text(
                     'Continue as Guest',
@@ -418,50 +425,50 @@ class _RegisterViewState extends State<RegisterView> {
 
   Widget _buildSocialLoginSection() {
     return Obx(() => Column(
-      children: [
-        // Google Login
-        _buildSocialButton(
-          label: 'Continue with Google',
-          backgroundColor: Colors.grey[100]!,
-          borderColor: Colors.grey[400]!,
-          textColor: Colors.grey[800]!,
-          icon: Icons.account_circle_outlined,
-          iconColor: Colors.red[600],
-          onTap: authController.isLoading.value
-              ? null
-              : () => _socialLogin('google'),
-          isGoogle: true, // إضافة معرف Google
-        ),
-        const SizedBox(height: 16),
+          children: [
+            // Google Login
+            _buildSocialButton(
+              label: 'Continue with Google',
+              backgroundColor: Colors.grey[100]!,
+              borderColor: Colors.grey[400]!,
+              textColor: Colors.grey[800]!,
+              icon: Icons.account_circle_outlined,
+              iconColor: Colors.red[600],
+              onTap: authController.isLoading.value
+                  ? null
+                  : () => _socialLogin('google'),
+              isGoogle: true,
+            ),
+            const SizedBox(height: 16),
 
-        // Facebook Login
-        _buildSocialButton(
-          label: 'Continue with Facebook',
-          backgroundColor: const Color(0xFF1877F2),
-          borderColor: const Color(0xFF1877F2),
-          textColor: Colors.white,
-          icon: Icons.facebook_rounded,
-          iconColor: Colors.white,
-          onTap: authController.isLoading.value
-              ? null
-              : () => _socialLogin('facebook'),
-        ),
+            // Facebook Login
+            _buildSocialButton(
+              label: 'Continue with Facebook',
+              backgroundColor: const Color(0xFF1877F2),
+              borderColor: const Color(0xFF1877F2),
+              textColor: Colors.white,
+              icon: Icons.facebook_rounded,
+              iconColor: Colors.white,
+              onTap: authController.isLoading.value
+                  ? null
+                  : () => _socialLogin('facebook'),
+            ),
 
-        // Apple Login
-        const SizedBox(height: 16),
-        _buildSocialButton(
-          label: 'Continue with Apple',
-          backgroundColor: Colors.black,
-          borderColor: Colors.black,
-          textColor: Colors.white,
-          icon: Icons.apple_rounded,
-          iconColor: Colors.white,
-          onTap: authController.isLoading.value
-              ? null
-              : () => _socialLogin('apple'),
-        ),
-      ],
-    ));
+            // Apple Login
+            const SizedBox(height: 16),
+            _buildSocialButton(
+              label: 'Continue with Apple',
+              backgroundColor: Colors.black,
+              borderColor: Colors.black,
+              textColor: Colors.white,
+              icon: Icons.apple_rounded,
+              iconColor: Colors.white,
+              onTap: authController.isLoading.value
+                  ? null
+                  : () => _socialLogin('apple'),
+            ),
+          ],
+        ));
   }
 
   Widget _buildTextField({
@@ -518,7 +525,8 @@ class _RegisterViewState extends State<RegisterView> {
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.red[400]!, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         errorStyle: TextStyle(
           color: Colors.red[600],
           fontSize: 13,
@@ -536,7 +544,7 @@ class _RegisterViewState extends State<RegisterView> {
     required IconData icon,
     Color? iconColor,
     required VoidCallback? onTap,
-    bool isGoogle = false, // إضافة معرف Google
+    bool isGoogle = false,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -562,7 +570,6 @@ class _RegisterViewState extends State<RegisterView> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // أيقونة Google من ملف assets أو الأيقونات العادية
             if (isGoogle)
               Image.asset(
                 'assets/icons/google_icon.png',
@@ -572,7 +579,8 @@ class _RegisterViewState extends State<RegisterView> {
             else
               Icon(
                 icon,
-                color: onTap != null ? (iconColor ?? textColor) : Colors.grey[500],
+                color:
+                    onTap != null ? (iconColor ?? textColor) : Colors.grey[500],
                 size: 24,
               ),
             const SizedBox(width: 12),
@@ -606,9 +614,7 @@ class _RegisterViewState extends State<RegisterView> {
 
       final success = await authController.register(userData);
 
-      if (!success) {
-        // الخطأ سيتم عرضه من AuthController
-      }
+      if (!success) {}
     }
   }
 
@@ -617,18 +623,19 @@ class _RegisterViewState extends State<RegisterView> {
 
     switch (provider) {
       case 'google':
-        success = await authController.signInWithGoogle(userType: _selectedUserType);
+        success =
+            await authController.signInWithGoogle(userType: _selectedUserType);
         break;
       case 'facebook':
-        success = await authController.signInWithFacebook(userType: _selectedUserType);
+        success = await authController.signInWithFacebook(
+            userType: _selectedUserType);
         break;
       case 'apple':
-        success = await authController.signInWithApple(userType: _selectedUserType);
+        success =
+            await authController.signInWithApple(userType: _selectedUserType);
         break;
     }
 
-    if (!success) {
-      // الخطأ سيتم عرضه من AuthController
-    }
+    if (!success) {}
   }
 }

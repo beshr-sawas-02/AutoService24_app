@@ -57,7 +57,8 @@ class ServiceCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: AppColors.primaryWithOpacity(0.1),
                             borderRadius: BorderRadius.circular(16),
@@ -74,11 +75,7 @@ class ServiceCard extends StatelessWidget {
                       ],
                     ),
                   ),
-
-                  // إضافة زر الحفظ للمستخدمين العاديين
                   if (showSaveButton && !isOwner) _buildSaveButton(),
-
-                  // قائمة خيارات المالك
                   if (isOwner)
                     PopupMenuButton<String>(
                       onSelected: (value) {
@@ -103,9 +100,11 @@ class ServiceCard extends StatelessWidget {
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(Icons.delete, size: 16, color: AppColors.error),
+                              Icon(Icons.delete,
+                                  size: 16, color: AppColors.error),
                               SizedBox(width: 8),
-                              Text('Delete', style: TextStyle(color: AppColors.error)),
+                              Text('Delete',
+                                  style: TextStyle(color: AppColors.error)),
                             ],
                           ),
                         ),
@@ -202,7 +201,6 @@ class ServiceCard extends StatelessWidget {
       builder: (serviceController) {
         final authController = Get.find<AuthController>();
 
-        // إذا كان مستضيف، اعرض زر غير نشط
         if (authController.isGuest) {
           return IconButton(
             onPressed: () {
@@ -217,7 +215,6 @@ class ServiceCard extends StatelessWidget {
           );
         }
 
-        // للمستخدمين المسجلين، اعرض الحالة الفعلية
         return Obx(() {
           final isBookmarked = serviceController.isServiceSaved(service.id);
 
@@ -258,7 +255,8 @@ class ServiceCard extends StatelessWidget {
               child: const Icon(Icons.bookmark, color: AppColors.primary),
             ),
             const SizedBox(width: 12),
-            const Text('Save Service', style: TextStyle(color: AppColors.textPrimary)),
+            const Text('Save Service',
+                style: TextStyle(color: AppColors.textPrimary)),
           ],
         ),
         content: const Text(

@@ -376,10 +376,10 @@ class _EditProfileViewState extends State<EditProfileView> {
       );
 
       if (success) {
-        // تحديث UI محلياً مباشرة
+
         setState(() {
           _currentImageUrl = authController.currentUser.value?.profileImage;
-          _selectedImage = null; // مسح الصورة المؤقتة
+          _selectedImage = null;
         });
 
         Helpers.showSuccessSnackbar('Profile updated successfully');

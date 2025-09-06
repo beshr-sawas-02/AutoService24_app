@@ -1,7 +1,7 @@
 class MessageModel {
   final String id;
-  final String senderId;    // تغيير من int إلى String
-  final String receiverId;  // تغيير من int إلى String
+  final String senderId;
+  final String receiverId;
   final String chatId;
   final String? content;
   final String? image;
@@ -22,8 +22,8 @@ class MessageModel {
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
       id: json['_id']?.toString() ?? '',
-      senderId: json['senderId']?.toString() ?? '',      // إبقاء كـ String
-      receiverId: json['receiverId']?.toString() ?? '',  // إبقاء كـ String
+      senderId: json['senderId']?.toString() ?? '',
+      receiverId: json['receiverId']?.toString() ?? '',
       chatId: json['chatId']?.toString() ?? '',
       content: json['content']?.toString(),
       image: json['image']?.toString(),

@@ -60,7 +60,7 @@ class Helpers {
           '${digitsOnly.substring(4, 7)}-${digitsOnly.substring(7)}';
     }
 
-    return phone; // إذا ما قدر يفرمت يرجع النص الأصلي
+    return phone;
   }
 
   static String capitalizeFirst(String? text) {

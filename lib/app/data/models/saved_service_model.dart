@@ -20,14 +20,14 @@ class SavedServiceModel {
     );
   }
 
-  // Helper method لاستخراج User ID من Object أو String
+
   static String _extractUserId(dynamic data) {
     if (data == null) return '';
 
-    // إذا كان String، أرجعه مباشرة
+
     if (data is String) return data;
 
-    // إذا كان Map، استخرج _id من user object
+
     if (data is Map<String, dynamic>) {
       return data['_id']?.toString() ?? '';
     }
@@ -35,14 +35,14 @@ class SavedServiceModel {
     return data.toString();
   }
 
-  // Helper method لاستخراج Service ID من Object أو String
+
   static String _extractServiceId(dynamic data) {
     if (data == null) return '';
 
-    // إذا كان String، أرجعه مباشرة
+
     if (data is String) return data;
 
-    // إذا كان Map، استخرج _id من service object
+
     if (data is Map<String, dynamic>) {
       return data['_id']?.toString() ?? '';
     }
@@ -50,13 +50,13 @@ class SavedServiceModel {
     return data.toString();
   }
 
-  // Helper method لمعالجة saved_at بطرق مختلفة
+
   static DateTime _parseSavedAt(dynamic savedAtData) {
     if (savedAtData == null) {
       return DateTime.now();
     }
 
-    // إذا كان String، parse مباشرة
+
     if (savedAtData is String) {
       try {
         return DateTime.parse(savedAtData);
@@ -65,9 +65,9 @@ class SavedServiceModel {
       }
     }
 
-    // إذا كان Map (مثل MongoDB date object)
+
     if (savedAtData is Map<String, dynamic>) {
-      // بحث عن قيم مختلفة في الـ Map
+
       final possibleKeys = ['\$date', 'date', 'value', 'timestamp'];
 
       for (String key in possibleKeys) {

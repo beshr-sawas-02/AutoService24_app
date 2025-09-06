@@ -45,7 +45,6 @@ class MyApp extends StatelessWidget {
           secondary: AppColors.primary,
           primary: AppColors.primary,
           surface: AppColors.surface,
-          background: AppColors.background,
         ),
 
         // Background Colors
@@ -199,7 +198,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
 
-        // Snackbar Theme
+
         snackBarTheme: SnackBarThemeData(
           backgroundColor: AppColors.grey800,
           contentTextStyle: const TextStyle(color: AppColors.white),

@@ -27,7 +27,7 @@ class AuthController extends GetxController {
         'email',
         'profile'
       ],
-      //serverClientId: '1073993043012-5h7p6pe3q4s6fbpkvflpppfmndg0lu3p.apps.googleusercontent.com'
+
       clientId:
           '1073993043012-but35ubclk4kel50nri6ih64i3965i1i.apps.googleusercontent.com');
 
@@ -49,7 +49,7 @@ class AuthController extends GetxController {
         if (currentUser.value != null) {
           isLoggedIn.value = true;
 
-          // تحديث WebSocket مع المستخدم المحمل - إضافة جديدة
+
           _updateWebSocketUserSilently(currentUser.value?.id);
         } else {
           isLoggedIn.value = false;
@@ -98,7 +98,7 @@ class AuthController extends GetxController {
     }
   }
 
-  // دالة مساعدة لتحديث WebSocket بصمت (بدون أخطاء)
+
   void _updateWebSocketUserSilently(String? userId) {
     try {
       if (Get.isRegistered<ChatController>()) {
@@ -106,11 +106,10 @@ class AuthController extends GetxController {
         chatController.updateWebSocketUser(userId);
       }
     } catch (e) {
-      // لا نعرض خطأ للمستخدم، فقط نسجل في الـ console
     }
   }
 
-  // دالة لتحديث WebSocket مع معالجة الأخطاء
+
   Future<void> _updateWebSocketUser(String? userId) async {
     try {
       if (Get.isRegistered<ChatController>()) {
@@ -118,7 +117,7 @@ class AuthController extends GetxController {
         await chatController.updateWebSocketUser(userId);
       }
     } catch (e) {
-      // نسجل الخطأ لكن لا نمنع باقي العملية
+
     }
   }
 
@@ -139,7 +138,7 @@ class AuthController extends GetxController {
 
         await _clearServiceData();
 
-        // تحديث WebSocket مع المستخدم الجديد - إضافة جديدة
+
         await _updateWebSocketUser(currentUser.value?.id);
 
         Helpers.showSuccessSnackbar('Login successful');
@@ -166,7 +165,7 @@ class AuthController extends GetxController {
     }
   }
 
-  // دالة محدثة لتحديث البروفايل مع الصورة
+
   Future<bool> updateProfileWithImage(
       String userId, Map<String, dynamic> data, File? imageFile) async {
     try {
@@ -179,25 +178,24 @@ class AuthController extends GetxController {
       if (response.containsKey('user')) {
         final updatedUserData = response['user'];
 
-        // تحديث currentUser بالبيانات الجديدة
+
         currentUser.value = UserModel.fromJson(updatedUserData);
 
-        // حفظ البيانات محلياً
+
         await StorageService.saveUserData(updatedUserData);
 
-        // فرض تحديث الـ UI
+
         currentUser.refresh();
 
         Helpers.showSuccessSnackbar('Profile updated successfully');
         return true;
       } else if (response.containsKey('status') && response['status'] == true) {
-        // في حالة عدم إرجاع user object كامل
+
 
         final updatedUser = currentUser.value!.copyWith(
           username: data['username'],
           email: data['email'],
           phone: data['phone'],
-          // إضافة profileImage إذا كان متوفراً في الـ response
           profileImage:
               response['profileImage'] ?? currentUser.value!.profileImage,
         );
@@ -220,7 +218,7 @@ class AuthController extends GetxController {
     }
   }
 
-  // دالة جديدة لتحديث الصورة الشخصية فقط
+
   Future<bool> updateProfileImage(File imageFile) async {
     try {
       if (currentUser.value == null) return false;
@@ -229,7 +227,7 @@ class AuthController extends GetxController {
 
       final response = await _authRepository.updateProfileWithImage(
         currentUser.value!.id,
-        {}, // بيانات فارغة - تحديث الصورة فقط
+        {},
         imageFile,
       );
 
@@ -244,7 +242,7 @@ class AuthController extends GetxController {
         }
 
 
-        // تحديث الصورة في currentUser
+
         final updatedUser = currentUser.value!.copyWith(
           profileImage: newImageUrl,
         );
@@ -252,7 +250,6 @@ class AuthController extends GetxController {
         currentUser.value = updatedUser;
         await StorageService.saveUserData(updatedUser.toJson());
 
-        // فرض تحديث الـ UI
         currentUser.refresh();
 
         Helpers.showSuccessSnackbar('Profile image updated successfully');
@@ -269,7 +266,7 @@ class AuthController extends GetxController {
     }
   }
 
-  // دالة للتحقق من حالة الصورة الشخصية
+
   void debugProfileImage() {
   }
 
@@ -390,7 +387,6 @@ class AuthController extends GetxController {
 
         await _clearServiceData();
 
-        // تحديث WebSocket مع المستخدم الجديد - إضافة جديدة
         await _updateWebSocketUser(currentUser.value?.id);
 
         Helpers.showSuccessSnackbar(
@@ -446,7 +442,6 @@ class AuthController extends GetxController {
 
         await _clearServiceData();
 
-        // تحديث WebSocket مع المستخدم الجديد - إضافة جديدة
         await _updateWebSocketUser(currentUser.value?.id);
 
         Helpers.showSuccessSnackbar('Account created successfully');
@@ -488,7 +483,6 @@ class AuthController extends GetxController {
 
   Future<void> logout() async {
     try {
-      // قطع اتصال WebSocket أولاً - إضافة جديدة
       await _updateWebSocketUser(null);
 
       await _signOutFromSocialProviders();
@@ -512,7 +506,7 @@ class AuthController extends GetxController {
       await _googleSignIn.signOut();
       await FacebookAuth.instance.logOut();
     } catch (e) {
-      // تجاهل الأخطاء هنا
+
     }
   }
 
@@ -526,15 +520,15 @@ class AuthController extends GetxController {
 
   String get userEmail => currentUser.value?.email ?? '';
 
-  // دالة محدثة لتحديث بيانات المستخدم
+
   Future<void> refreshUserData() async {
     isUserDataLoaded.value = false;
 
-    // إعادة تحميل البيانات من Storage
+
     await _loadUserData();
 
     if (currentUser.value != null) {
-      currentUser.refresh(); // فرض تحديث الـ UI
+      currentUser.refresh();
     } else {
     }
 
@@ -557,7 +551,7 @@ class AuthController extends GetxController {
       if (currentUser.value?.id != null) {
         await _authRepository.deleteAccount(currentUser.value!.id);
 
-        // قطع اتصال WebSocket قبل حذف الحساب
+
         await _updateWebSocketUser(null);
 
         await logout();

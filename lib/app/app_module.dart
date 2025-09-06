@@ -11,7 +11,7 @@ import 'data/repositories/user_repository.dart';
 import 'data/repositories/workshop_repository.dart';
 import 'data/repositories/service_repository.dart';
 import 'data/repositories/chat_repository.dart';
-import 'utils/websocket_service.dart'; // إضافة جديدة
+import 'utils/websocket_service.dart';
 
 class AppModule {
   static void init() {
@@ -46,7 +46,7 @@ class AppModule {
         permanent: true
     );
 
-    // WebSocket Service - إضافة جديدة (يجب أن تكون قبل ChatController)
+
     Get.put<WebSocketService>(WebSocketService(), permanent: true);
 
     // Controllers
@@ -55,7 +55,7 @@ class AppModule {
         permanent: true
     );
 
-    // تصحيح UserController - يحتاج UserRepository و AuthRepository
+
     Get.put<UserController>(
         UserController(Get.find<UserRepository>(), Get.find<AuthRepository>()),
         permanent: true
@@ -70,7 +70,7 @@ class AppModule {
         permanent: true
     );
 
-    // ChatController يجب أن يكون بعد WebSocketService
+
     Get.put<ChatController>(
         ChatController(Get.find<ChatRepository>()),
         permanent: true
@@ -78,7 +78,7 @@ class AppModule {
 
   }
 
-  // دالة للتحقق من أن كل التبعيات تم تحميلها بنجاح
+
   static void verifyDependencies() {
     try {
       Get.find<Dio>();
@@ -88,7 +88,7 @@ class AppModule {
       Get.find<WorkshopRepository>();
       Get.find<ServiceRepository>();
       Get.find<ChatRepository>();
-      Get.find<WebSocketService>(); // إضافة جديدة
+      Get.find<WebSocketService>();
       Get.find<AuthController>();
       Get.find<UserController>();
       Get.find<WorkshopController>();
@@ -110,7 +110,7 @@ class AppModule {
     } catch (e) {}
   }
 
-  // دالة لإعادة تهيئة WebSocket (مفيدة عند تغيير المستخدم)
+
   static Future<void> reinitializeWebSocket() async {
     try {
       if (Get.isRegistered<WebSocketService>()) {

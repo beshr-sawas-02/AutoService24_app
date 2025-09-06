@@ -28,17 +28,17 @@ class NetworkService extends GetxService {
 
   Future<void> _checkNetworkStatus() async {
     try {
-      // حاول تعمل lookup على موقع ثابت (مثلاً Google DNS)
+
       final result = await InternetAddress.lookup('google.com');
 
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // إذا في انترنت
+
         if (!isConnected.value) {
           isConnected.value = true;
           Helpers.showSuccessSnackbar('Back online');
         }
       } else {
-        // إذا ما في انترنت
+
         if (isConnected.value) {
           isConnected.value = false;
           Helpers.showErrorSnackbar('No internet connection');

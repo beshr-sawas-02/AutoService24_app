@@ -20,30 +20,28 @@ class UserModel {
     this.provider = 'local',
     this.providerId,
   });
+/// here
+  static const String baseUrl = "http://192.168.201.167:8000";
 
-  /// Base URL للسيرفر، عدّل حسب بيئة التطوير أو الإنتاج
-  static const String baseUrl = "http://192.168.201.167:8000"; // مثال: للمحاكي Android
 
-  /// رابط كامل للصورة لو موجودة، أو null لو ما فيه
   String? get fullProfileImage {
     if (profileImage != null && profileImage!.isNotEmpty) {
-      // لو الرابط كامل، رجّعه كما هو
       if (profileImage!.startsWith('http')) return profileImage;
       return '$baseUrl$profileImage';
     }
     return null;
   }
 
-  /// Check إذا المستخدم مالك ورشة
+
   bool get isOwner => userType == 'owner';
 
-  /// Check إذا المستخدم عادي
+
   bool get isUser => userType == 'user';
 
-  /// Check إذا المستخدم محلي (local)
+
   bool get isLocalUser => provider == 'local';
 
-  /// Check إذا المستخدم عن طريق حساب اجتماعي
+
   bool get isSocialUser => provider != 'local';
 
   factory UserModel.fromJson(Map<String, dynamic> json) {

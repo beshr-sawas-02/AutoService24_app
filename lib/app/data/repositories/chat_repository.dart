@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'dart:convert'; // إضافة جديدة
+import 'dart:convert';
 import '../providers/api_provider.dart';
 import '../models/chat_model.dart';
 import '../models/message_model.dart';
@@ -11,7 +11,7 @@ class ChatRepository {
 
   ChatRepository(this._apiProvider);
 
-  // User operations - إضافة جديدة
+
   Future<UserModel?> getUserById(String userId) async {
     try {
       final response = await _apiProvider.getUserById(userId);
@@ -72,21 +72,21 @@ class ChatRepository {
     }
   }
 
-  // Message operations - معدل بالكامل
+
   Future<MessageModel> sendMessage(Map<String, dynamic> messageData) async {
     try {
 
       final response = await _apiProvider.sendMessage(messageData);
 
 
-      // التحقق من نوع البيانات المُرجعة
+
       dynamic responseData = response.data;
 
-      // إذا كان الـ response فارغ أو null، أنشئ MessageModel من البيانات المُرسلة
+
       if (responseData == null || responseData.toString().trim().isEmpty) {
 
         return MessageModel(
-          id: DateTime.now().millisecondsSinceEpoch.toString(), // ID مؤقت
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
           senderId: messageData['senderId'].toString(),
           receiverId: messageData['receiverId'].toString(),
           chatId: messageData['chatId'].toString(),
@@ -101,7 +101,7 @@ class ChatRepository {
         try {
           responseData = json.decode(responseData);
         } catch (e) {
-          // إذا فشل parsing، أنشئ MessageModel من البيانات المُرسلة
+
           return MessageModel(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
             senderId: messageData['senderId'].toString(),
@@ -122,7 +122,7 @@ class ChatRepository {
           return MessageModel.fromJson(responseData);
         }
       } else {
-        // إذا كان النوع غير متوقع، أنشئ MessageModel من البيانات المُرسلة
+
         return MessageModel(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           senderId: messageData['senderId'].toString(),
@@ -144,14 +144,14 @@ class ChatRepository {
     }
   }
 
-  // دالة جديدة لإرسال رسالة مع صورة
+
   Future<MessageModel> sendMessageWithImage(Map<String, dynamic> messageData, File? imageFile) async {
     try {
 
       final response = await _apiProvider.sendMessageWithImage(messageData, imageFile);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // نفس منطق sendMessage للتعامل مع response
+
         dynamic responseData = response.data;
 
         if (responseData == null || responseData.toString().trim().isEmpty) {
@@ -161,7 +161,7 @@ class ChatRepository {
             receiverId: messageData['receiverId'].toString(),
             chatId: messageData['chatId'].toString(),
             content: messageData['content']?.toString(),
-            image: 'uploaded_image', // سنضع placeholder للصورة
+            image: 'uploaded_image',
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           );

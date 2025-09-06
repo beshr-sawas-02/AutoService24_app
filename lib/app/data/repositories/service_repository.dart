@@ -149,32 +149,32 @@ class ServiceRepository {
 
   Future<List<SavedServiceModel>> getSavedServices() async {
     try {
-      // الحصول على معرف المستخدم الحالي
+
       final currentUserId = await StorageService.getUserId();
       if (currentUserId == null) {
         return [];
       }
       final response = await _apiProvider.getSavedServices();
 
-      // تحقق من نوع الـ response
+
       if (response.data is! List) {
-        // إذا كان Response empty أو null
+
         if (response.data == null || response.data == []) {
           return [];
         }
 
-        // إذا كان Response Map يحتوي على List داخلي
+
         if (response.data is Map<String, dynamic>) {
           final Map<String, dynamic> responseMap = response.data;
 
-          // ابحث عن keys مثل 'data', 'savedServices', 'services', etc.
+
           final possibleKeys = ['data', 'savedServices', 'services', 'items', 'results'];
 
           for (String key in possibleKeys) {
             if (responseMap.containsKey(key) && responseMap[key] is List) {
               final List<dynamic> savedList = responseMap[key];
 
-              // فلترة النتائج حسب المستخدم الحالي
+
               final userSavedServices = savedList.where((json) {
                 final userId = json['user_id']?.toString() ?? json['userId']?.toString();
                 return userId == currentUserId;
@@ -192,22 +192,22 @@ class ServiceRepository {
 
       final List<dynamic> savedList = response.data;
 
-      // فلترة النتائج حسب المستخدم الحالي
+
       final userSavedServices = savedList.where((json) {
         try {
-          // استخراج معرف المستخدم من الحقول المختلفة
+
           String? userId;
 
-          // إذا كان user_id عبارة عن Object
+
           if (json['user_id'] is Map<String, dynamic>) {
             final userObject = json['user_id'] as Map<String, dynamic>;
             userId = userObject['_id']?.toString();
           }
-          // إذا كان user_id عبارة عن String
+
           else if (json['user_id'] is String) {
             userId = json['user_id'] as String;
           }
-          // تجربة حقول أخرى
+
           else {
             userId = json['userId']?.toString() ??
                 json['user']?.toString() ??
@@ -247,7 +247,7 @@ class ServiceRepository {
     }
   }
 
-  // دالة debug لطباعة الاستجابة الخام من API
+
   Future<Map<String, dynamic>> debugGetSavedServicesRaw() async {
     try {
       final currentUserId = await StorageService.getUserId();

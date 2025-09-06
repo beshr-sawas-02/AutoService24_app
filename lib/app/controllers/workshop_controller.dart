@@ -143,7 +143,7 @@ class WorkshopController extends GetxController {
     }
   }
 
-  // دالة للحصول على ورش العمل القريبة (يمكن تطويرها لاحقاً مع GPS)
+
   List<WorkshopModel> getNearbyWorkshops({double? userLat, double? userLng, double radiusKm = 10.0}) {
     if (userLat == null || userLng == null) {
       return workshops.toList();
@@ -158,9 +158,9 @@ class WorkshopController extends GetxController {
     }).toList();
   }
 
-  // حساب المسافة بين نقطتين (Haversine formula)
+
   double _calculateDistance(double lat1, double lng1, double lat2, double lng2) {
-    const double earthRadius = 6371; // كيلومتر
+    const double earthRadius = 6371;
 
     double dLat = _degreesToRadians(lat2 - lat1);
     double dLng = _degreesToRadians(lng2 - lng1);

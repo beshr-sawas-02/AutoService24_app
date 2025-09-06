@@ -21,7 +21,6 @@ class ChatController extends GetxController {
   var usersCache = <String, UserModel>{}.obs;
   var isLoadingUsers = false.obs;
 
-  // WebSocket variables - إضافة جديدة
   WebSocketService? _webSocketService;
   var isTyping = false.obs;
   var otherUserTyping = false.obs;
@@ -55,7 +54,7 @@ class ChatController extends GetxController {
 
       chats.value = chatList;
 
-      // الانضمام لجميع غرف المحادثات في WebSocket
+
       final chatIds = chatList.map((chat) => chat.id).toList();
       if (chatIds.isNotEmpty && _webSocketService != null) {
         await _webSocketService!.joinRooms(chatIds);
@@ -76,7 +75,7 @@ class ChatController extends GetxController {
       final messageList = await _chatRepository.getChatMessages(chatId);
       messages.value = messageList;
 
-      // الانضمام لغرفة هذه المحادثة
+
       if (_webSocketService != null) {
         await _webSocketService!.joinRooms([chatId]);
       }
@@ -95,12 +94,12 @@ class ChatController extends GetxController {
     String? image,
   }) async {
     try {
-      // حماية من الإرسال المكرر
+
       if (_isSendingMessage) {
         return false;
       }
 
-      // حماية إضافية: تحقق من المحتوى والوقت
+
       final now = DateTime.now();
       if (_lastSentContent == content &&
           _lastSentTime != null &&
@@ -133,7 +132,7 @@ class ChatController extends GetxController {
 
       final newMessage = await _chatRepository.sendMessage(messageData);
 
-      // إضافة الرسالة محلياً فقط إذا لم تكن موجودة
+
       final exists = messages.any((m) =>
           m.content == newMessage.content &&
           m.senderId == newMessage.senderId &&
@@ -147,7 +146,7 @@ class ChatController extends GetxController {
         messages.add(newMessage);
       } else {}
 
-      // إيقاف مؤشر الكتابة إذا كان نشطاً
+
       if (isTyping.value && _webSocketService != null) {
         _webSocketService!.stopTyping(chatId);
       }
@@ -201,9 +200,9 @@ class ChatController extends GetxController {
     _webSocketService?.disconnect();
   }
 
-  // باقي الدوال تبقى كما هي...
 
-  // User methods - معدلة
+
+
   Future<UserModel?> getUserById(String userId) async {
     try {
       if (userId.isEmpty || userId == '0' || userId == 'null') {

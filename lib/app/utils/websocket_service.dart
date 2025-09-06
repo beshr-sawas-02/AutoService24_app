@@ -24,7 +24,6 @@ class WebSocketService extends GetxService {
   String? _currentUserId;
   List<String> _joinedChatIds = [];
 
-  // إضافة مجموعة لتتبع الرسائل المستلمة لمنع التكرار
   final Set<String> _processedMessageIds = <String>{};
 
   var isConnected = false.obs;
@@ -63,21 +62,18 @@ class WebSocketService extends GetxService {
       connectionStatus.value = 'Connected';
       _reconnectAttempts = 0;
 
-
       await _authenticate();
       _startHeartbeat();
 
       if (_joinedChatIds.isNotEmpty) {
         await joinRooms(_joinedChatIds);
       }
-
     } catch (e) {
       _onConnectionFailed();
     }
   }
 
   void disconnect() {
-
     _isConnected = false;
     isConnected.value = false;
     connectionStatus.value = 'Disconnected';
@@ -91,9 +87,7 @@ class WebSocketService extends GetxService {
       _channel = null;
     }
 
-    // تنظيف cache الرسائل المعالجة
     _processedMessageIds.clear();
-
   }
 
   Future<void> _authenticate() async {
@@ -143,8 +137,7 @@ class WebSocketService extends GetxService {
       try {
         _channel!.sink.add(json.encode(message));
       } catch (e) {}
-    } else {
-    }
+    } else {}
   }
 
   void _onMessage(dynamic message) {
@@ -178,60 +171,57 @@ class WebSocketService extends GetxService {
 
         default:
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   void _handleNewMessage(Map<String, dynamic> messageData) {
     try {
-      final messageId = messageData['_id'] ?? messageData['id'] ?? DateTime.now().millisecondsSinceEpoch.toString();
+      final messageId = messageData['_id'] ??
+          messageData['id'] ??
+          DateTime.now().millisecondsSinceEpoch.toString();
 
-      // تحقق من عدم معالجة الرسالة من قبل
       if (_processedMessageIds.contains(messageId)) {
         return;
       }
 
-      // إضافة معرف الرسالة للمجموعة
       _processedMessageIds.add(messageId);
 
-      // تنظيف cache الرسائل القديمة (احتفظ بآخر 1000 رسالة)
       if (_processedMessageIds.length > 1000) {
-        final toRemove = _processedMessageIds.take(_processedMessageIds.length - 1000);
+        final toRemove =
+            _processedMessageIds.take(_processedMessageIds.length - 1000);
         _processedMessageIds.removeAll(toRemove);
       }
-
 
       final message = MessageModel(
         id: messageId,
         senderId: messageData['senderId']?.toString() ?? '',
-        receiverId: messageData['receiverId']?.toString() ?? messageData['reciverId']?.toString() ?? '',
+        receiverId: messageData['receiverId']?.toString() ??
+            messageData['reciverId']?.toString() ??
+            '',
         chatId: messageData['chatId']?.toString() ?? '',
         content: messageData['content']?.toString(),
         image: messageData['image']?.toString(),
-        createdAt: messageData['createdAt'] != null ? DateTime.parse(messageData['createdAt']) : DateTime.now(),
-        updatedAt: messageData['updatedAt'] != null ? DateTime.parse(messageData['updatedAt']) : DateTime.now(),
+        createdAt: messageData['createdAt'] != null
+            ? DateTime.parse(messageData['createdAt'])
+            : DateTime.now(),
+        updatedAt: messageData['updatedAt'] != null
+            ? DateTime.parse(messageData['updatedAt'])
+            : DateTime.now(),
       );
 
-      // تحديث ChatController فقط إذا كان متاحًا
       try {
         final chatController = Get.find<ChatController>();
 
-        // التحقق من عدم وجود الرسالة مسبقاً في ChatController أيضاً
         final exists = chatController.messages.any((m) => m.id == message.id);
         if (!exists) {
           chatController.messages.add(message);
-        } else {
-        }
-      } catch (e) {
-      }
+        } else {}
+      } catch (e) {}
 
-      // إظهار إشعار إذا كانت الرسالة من مستخدم آخر
       if (message.senderId != _currentUserId) {
         _showNotification(message);
       }
-
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   void _handleTypingStatus(Map<String, dynamic> data) {
@@ -240,12 +230,9 @@ class WebSocketService extends GetxService {
       final chatId = data['chatId']?.toString() ?? '';
       final typing = data['isTyping'] ?? false;
 
-
-      // تحديث حالة الكتابة إذا كان من مستخدم آخر
       if (userId != _currentUserId) {
         otherUserTyping.value = typing;
 
-        // إيقاف مؤشر الكتابة تلقائياً بعد 5 ثواني
         if (typing) {
           Timer(const Duration(seconds: 5), () {
             if (otherUserTyping.value) {
@@ -254,8 +241,7 @@ class WebSocketService extends GetxService {
           });
         }
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   void _showNotification(MessageModel message) {
@@ -295,9 +281,11 @@ class WebSocketService extends GetxService {
     _isReconnecting = true;
     _reconnectAttempts++;
 
-    connectionStatus.value = 'Reconnecting... ($_reconnectAttempts/$MAX_RECONNECT_ATTEMPTS)';
+    connectionStatus.value =
+        'Reconnecting... ($_reconnectAttempts/$MAX_RECONNECT_ATTEMPTS)';
 
-    _reconnectTimer = Timer(const Duration(seconds: RECONNECT_DELAY_SECONDS), () {
+    _reconnectTimer =
+        Timer(const Duration(seconds: RECONNECT_DELAY_SECONDS), () {
       _isReconnecting = false;
       connect();
     });

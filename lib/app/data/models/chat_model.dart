@@ -1,7 +1,7 @@
 class ChatModel {
   final String id;
-  final String user1Id;  // تغيير من int إلى String
-  final String user2Id;  // تغيير من int إلى String
+  final String user1Id;
+  final String user2Id;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -16,8 +16,8 @@ class ChatModel {
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     return ChatModel(
       id: json['_id']?.toString() ?? '',
-      user1Id: json['user1Id']?.toString() ?? '',  // إبقاء كـ String
-      user2Id: json['user2Id']?.toString() ?? '',  // إبقاء كـ String
+      user1Id: json['user1Id']?.toString() ?? '',
+      user2Id: json['user2Id']?.toString() ?? '',
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
     );

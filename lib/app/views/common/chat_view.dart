@@ -28,7 +28,6 @@ class _ChatViewState extends State<ChatView> {
   bool isNewChat = false;
   bool isCreatingChat = false;
 
-  // متغيرات WebSocket جديدة
   Timer? _typingTimer;
   bool _isCurrentlyTyping = false;
 
@@ -40,7 +39,6 @@ class _ChatViewState extends State<ChatView> {
   void initState() {
     super.initState();
 
-    // التحقق من وجود arguments
     final arguments = Get.arguments;
     if (arguments == null || arguments is! Map<String, dynamic>) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -55,19 +53,16 @@ class _ChatViewState extends State<ChatView> {
       return;
     }
 
-    // استخراج البيانات من arguments
     chatId = arguments['chatId']?.toString();
     receiverId = arguments['receiverId']?.toString() ?? '';
     receiverName = arguments['receiverName']?.toString() ?? 'Unknown User';
     currentUserId = arguments['currentUserId']?.toString() ??
-        authController.currentUser.value?.id ?? '';
+        authController.currentUser.value?.id ??
+        '';
 
-    // البيانات الاختيارية للخدمة
     serviceId = arguments['serviceId']?.toString();
     serviceTitle = arguments['serviceTitle']?.toString();
 
-
-    // التحقق من صحة البيانات الأساسية
     if (receiverId.isEmpty || currentUserId.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.back();
@@ -81,13 +76,12 @@ class _ChatViewState extends State<ChatView> {
       return;
     }
 
-    // تحديد ما إذا كانت محادثة جديدة أم موجودة
     if (chatId == null || chatId!.isEmpty) {
       isNewChat = true;
       _handleNewChat();
     } else {
       isNewChat = false;
-      // تحميل الرسائل للمحادثة الموجودة
+
       chatController.loadMessages(chatId!);
     }
   }
@@ -98,15 +92,13 @@ class _ChatViewState extends State<ChatView> {
         isCreatingChat = true;
       });
 
-
-      // البحث عن محادثة موجودة أولاً
-      final existingChat = await chatController.createChat(currentUserId, receiverId);
+      final existingChat =
+          await chatController.createChat(currentUserId, receiverId);
 
       if (existingChat != null) {
         chatId = existingChat.id;
         isNewChat = false;
 
-        // تحميل الرسائل
         await chatController.loadMessages(chatId!);
       } else {
         Get.back();
@@ -134,7 +126,6 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    // إظهار loading إذا كانت المحادثة قيد الإنشاء
     if (isCreatingChat) {
       return Scaffold(
         backgroundColor: AppColors.background,
@@ -200,15 +191,15 @@ class _ChatViewState extends State<ChatView> {
                       overflow: TextOverflow.ellipsis,
                     )
                   else
-                  // إظهار حالة الاتصال
                     Obx(() {
                       final webSocketService = Get.find<WebSocketService>();
                       return Text(
-                        webSocketService.isConnected.value ? 'Online' : 'Offline',
+                        webSocketService.isConnected.value
+                            ? 'Online'
+                            : 'Offline',
                         style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.whiteWithOpacity(0.7)
-                        ),
+                            color: AppColors.whiteWithOpacity(0.7)),
                       );
                     }),
                 ],
@@ -309,7 +300,8 @@ class _ChatViewState extends State<ChatView> {
                 reverse: true,
                 itemCount: chatController.messages.length,
                 itemBuilder: (context, index) {
-                  final message = chatController.messages[chatController.messages.length - 1 - index];
+                  final message = chatController
+                      .messages[chatController.messages.length - 1 - index];
                   final isMe = message.senderId.toString() == currentUserId;
 
                   return _buildMessageBubble(message, isMe);
@@ -410,8 +402,10 @@ class _ChatViewState extends State<ChatView> {
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(18),
             topRight: const Radius.circular(18),
-            bottomLeft: isMe ? const Radius.circular(18) : const Radius.circular(4),
-            bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(18),
+            bottomLeft:
+                isMe ? const Radius.circular(18) : const Radius.circular(4),
+            bottomRight:
+                isMe ? const Radius.circular(4) : const Radius.circular(18),
           ),
         ),
         child: Column(
@@ -444,7 +438,8 @@ class _ChatViewState extends State<ChatView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.error, color: AppColors.textSecondary),
-                            Text('Failed to load image', style: TextStyle(fontSize: 12)),
+                            Text('Failed to load image',
+                                style: TextStyle(fontSize: 12)),
                           ],
                         ),
                       ),
@@ -457,7 +452,9 @@ class _ChatViewState extends State<ChatView> {
             Text(
               _formatTime(message.createdAt),
               style: TextStyle(
-                color: isMe ? AppColors.whiteWithOpacity(0.7) : AppColors.textSecondary,
+                color: isMe
+                    ? AppColors.whiteWithOpacity(0.7)
+                    : AppColors.textSecondary,
                 fontSize: 12,
               ),
             ),
@@ -482,7 +479,6 @@ class _ChatViewState extends State<ChatView> {
       ),
       child: Column(
         children: [
-          // مؤشر "يكتب الآن" - إضافة جديدة
           Obx(() {
             if (chatController.otherUserTyping.value) {
               return Container(
@@ -490,7 +486,8 @@ class _ChatViewState extends State<ChatView> {
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: AppColors.grey200,
                         borderRadius: BorderRadius.circular(12),
@@ -524,8 +521,6 @@ class _ChatViewState extends State<ChatView> {
             }
             return const SizedBox.shrink();
           }),
-
-          // Connection status indicator - إضافة جديدة
           Obx(() {
             final webSocketService = Get.find<WebSocketService>();
             if (!webSocketService.isConnected.value) {
@@ -534,7 +529,8 @@ class _ChatViewState extends State<ChatView> {
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: AppColors.error.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
@@ -564,12 +560,11 @@ class _ChatViewState extends State<ChatView> {
             }
             return const SizedBox.shrink();
           }),
-
-          // حقل إدخال الرسالة
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.attach_file, color: AppColors.textSecondary),
+                icon: const Icon(Icons.attach_file,
+                    color: AppColors.textSecondary),
                 onPressed: () {
                   Get.snackbar(
                     'Feature Coming Soon',
@@ -598,7 +593,7 @@ class _ChatViewState extends State<ChatView> {
                   maxLines: null,
                   textCapitalization: TextCapitalization.sentences,
                   onSubmitted: (_) => _sendMessage(),
-                  onChanged: _onTextChanged, // إضافة جديدة
+                  onChanged: _onTextChanged,
                 ),
               ),
               const SizedBox(width: 8),
@@ -619,17 +614,14 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 
-  // دالة جديدة لمعالجة تغيير النص
   void _onTextChanged(String text) {
     if (chatId == null) return;
 
-    // إذا بدأ المستخدم بالكتابة
     if (text.isNotEmpty && !_isCurrentlyTyping) {
       _isCurrentlyTyping = true;
       chatController.startTyping(chatId!);
     }
 
-    // إعادة ضبط المؤقت
     _typingTimer?.cancel();
     _typingTimer = Timer(const Duration(seconds: 2), () {
       if (_isCurrentlyTyping) {
@@ -638,7 +630,6 @@ class _ChatViewState extends State<ChatView> {
       }
     });
 
-    // إذا مسح المستخدم النص تماماً
     if (text.isEmpty && _isCurrentlyTyping) {
       _isCurrentlyTyping = false;
       chatController.stopTyping(chatId!);
@@ -650,12 +641,10 @@ class _ChatViewState extends State<ChatView> {
     final content = _messageController.text.trim();
     if (content.isEmpty) return;
 
-    // حماية من الإرسال المكرر
     if (_isSending) {
       return;
     }
 
-    // حماية إضافية من الإرسال السريع للمحتوى نفسه
     final now = DateTime.now();
     if (_lastMessageContent == content &&
         _lastSendTime != null &&
@@ -668,16 +657,13 @@ class _ChatViewState extends State<ChatView> {
     _lastSendTime = now;
 
     try {
-      // مسح النص فوراً لمنع المستخدم من الضغط مرة أخرى
       _messageController.clear();
 
-      // إذا كانت محادثة جديدة، إنشاء المحادثة أولاً
       if (isNewChat && (chatId == null || chatId!.isEmpty)) {
         await _createChatAndSendMessage(content);
         return;
       }
 
-      // إذا كانت المحادثة موجودة، إرسال الرسالة مباشرة
       final success = await chatController.sendMessage(
         chatId: chatId!,
         senderId: currentUserId,
@@ -688,15 +674,11 @@ class _ChatViewState extends State<ChatView> {
       if (success) {
         _scrollToBottom();
       } else {
-        // في حالة فشل الإرسال، أعد النص إلى الحقل
         _messageController.text = content;
       }
-
     } catch (e) {
-      // في حالة حدوث خطأ، أعد النص إلى الحقل
       _messageController.text = content;
     } finally {
-      // تحرير القفل بعد تأخير قصير
       Future.delayed(const Duration(milliseconds: 800), () {
         _isSending = false;
       });
@@ -705,16 +687,13 @@ class _ChatViewState extends State<ChatView> {
 
   Future<void> _createChatAndSendMessage(String content) async {
     try {
-
-      // إنشاء المحادثة
-      final newChat = await chatController.createChat(currentUserId, receiverId);
+      final newChat =
+          await chatController.createChat(currentUserId, receiverId);
 
       if (newChat != null) {
         chatId = newChat.id;
         isNewChat = false;
 
-
-        // إرسال الرسالة
         final success = await chatController.sendMessage(
           chatId: chatId!,
           senderId: currentUserId,
@@ -725,11 +704,9 @@ class _ChatViewState extends State<ChatView> {
         if (success) {
           _scrollToBottom();
         } else {
-          // في حالة فشل الإرسال، أعد النص إلى الحقل
           _messageController.text = content;
         }
       } else {
-        // في حالة فشل إنشاء المحادثة، أعد النص إلى الحقل
         _messageController.text = content;
         Get.snackbar(
           'Error',
@@ -739,7 +716,6 @@ class _ChatViewState extends State<ChatView> {
         );
       }
     } catch (e) {
-      // في حالة حدوث خطأ، أعد النص إلى الحقل
       _messageController.text = content;
       Get.snackbar(
         'Error',
@@ -831,7 +807,6 @@ class _ChatViewState extends State<ChatView> {
   void dispose() {
     _typingTimer?.cancel();
 
-    // إيقاف مؤشر الكتابة عند الخروج من الشاشة
     if (_isCurrentlyTyping && chatId != null) {
       chatController.stopTyping(chatId!);
     }

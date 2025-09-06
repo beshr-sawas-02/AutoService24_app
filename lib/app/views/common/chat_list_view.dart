@@ -21,7 +21,7 @@ class _ChatListViewState extends State<ChatListView> {
   @override
   void initState() {
     super.initState();
-    // تحميل المحادثات فقط للمستخدمين المسجلين
+
     if (authController.isLoggedIn.value && !authController.isGuest) {
       chatController.loadChats();
     }
@@ -388,9 +388,9 @@ class _ChatListViewState extends State<ChatListView> {
       final user = chatController.usersCache[userId];
       String displayName = user?.username ?? 'Loading...';
 
-      // إذا لم يتم تحميل المستخدم بعد، حاول تحميله
+
       if (user == null && !chatController.isLoadingUsers.value) {
-        chatController.getUserById(userId); // يمكن أن يكون Future<void>
+        chatController.getUserById(userId);
       }
 
       return Text(
@@ -434,7 +434,7 @@ class _ChatListViewState extends State<ChatListView> {
     final isCurrentUserUser1 = chat.user1Id.toString() == currentUserId;
     final otherUserId = isCurrentUserUser1 ? chat.user2Id : chat.user1Id;
 
-    // جلب المستخدم إذا لم يكن موجودًا في الكاش
+
     final otherUser = await chatController.getUserById(otherUserId.toString());
     final otherUserName = otherUser?.username ?? 'User';
 
@@ -460,7 +460,7 @@ class _ChatListViewState extends State<ChatListView> {
   //   );
   // }
 
-  // دالة مساعدة لتنسيق الوقت
+
   String _formatTime(DateTime? dateTime) {
     if (dateTime == null) return '';
 
