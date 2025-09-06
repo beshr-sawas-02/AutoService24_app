@@ -76,12 +76,16 @@ class _ChatViewState extends State<ChatView> {
       return;
     }
 
+    // تحميل بيانات المستخدم المستقبل
+    if (receiverId.isNotEmpty) {
+      chatController.getUserById(receiverId);
+    }
+
     if (chatId == null || chatId!.isEmpty) {
       isNewChat = true;
       _handleNewChat();
     } else {
       isNewChat = false;
-
       chatController.loadMessages(chatId!);
     }
   }
@@ -93,7 +97,7 @@ class _ChatViewState extends State<ChatView> {
       });
 
       final existingChat =
-          await chatController.createChat(currentUserId, receiverId);
+      await chatController.createChat(currentUserId, receiverId);
 
       if (existingChat != null) {
         chatId = existingChat.id;
@@ -157,17 +161,47 @@ class _ChatViewState extends State<ChatView> {
       appBar: AppBar(
         title: Row(
           children: [
-            CircleAvatar(
-              backgroundColor: AppColors.whiteWithOpacity(0.2),
-              radius: 20,
-              child: Text(
-                receiverName.isNotEmpty ? receiverName[0].toUpperCase() : 'U',
-                style: const TextStyle(
-                  color: AppColors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            // عرض صورة المستخدم الحقيقية
+            Obx(() {
+              final receiverUser = chatController.usersCache[receiverId];
+
+              if (receiverUser?.fullProfileImage != null && receiverUser!.fullProfileImage!.isNotEmpty) {
+                return CircleAvatar(
+                  backgroundColor: AppColors.whiteWithOpacity(0.2),
+                  radius: 20,
+                  child: ClipOval(
+                    child: Image.network(
+                      receiverUser.fullProfileImage!,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Text(
+                          receiverName.isNotEmpty ? receiverName[0].toUpperCase() : 'U',
+                          style: const TextStyle(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              } else {
+                // لو مافيش صورة، اعرض الحرف الأول
+                return CircleAvatar(
+                  backgroundColor: AppColors.whiteWithOpacity(0.2),
+                  radius: 20,
+                  child: Text(
+                    receiverName.isNotEmpty ? receiverName[0].toUpperCase() : 'U',
+                    style: const TextStyle(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                );
+              }
+            }),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -403,9 +437,9 @@ class _ChatViewState extends State<ChatView> {
             topLeft: const Radius.circular(18),
             topRight: const Radius.circular(18),
             bottomLeft:
-                isMe ? const Radius.circular(18) : const Radius.circular(4),
+            isMe ? const Radius.circular(18) : const Radius.circular(4),
             bottomRight:
-                isMe ? const Radius.circular(4) : const Radius.circular(18),
+            isMe ? const Radius.circular(4) : const Radius.circular(18),
           ),
         ),
         child: Column(
@@ -424,7 +458,7 @@ class _ChatViewState extends State<ChatView> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  message.image!,
+                  message.fullImageUrl!,
                   width: 200,
                   height: 150,
                   fit: BoxFit.cover,
@@ -688,7 +722,7 @@ class _ChatViewState extends State<ChatView> {
   Future<void> _createChatAndSendMessage(String content) async {
     try {
       final newChat =
-          await chatController.createChat(currentUserId, receiverId);
+      await chatController.createChat(currentUserId, receiverId);
 
       if (newChat != null) {
         chatId = newChat.id;

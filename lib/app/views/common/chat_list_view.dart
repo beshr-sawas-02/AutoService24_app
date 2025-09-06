@@ -356,10 +356,10 @@ class _ChatListViewState extends State<ChatListView> {
       child: Obx(() {
         final user = chatController.usersCache[userId];
 
-        if (user?.profileImage != null && user!.profileImage!.isNotEmpty) {
+        if (user?.fullProfileImage != null && user!.fullProfileImage!.isNotEmpty) {
           return ClipOval(
             child: Image.network(
-              user.profileImage!,
+              user.fullProfileImage!,
               fit: BoxFit.cover,
               width: 50,
               height: 50,
@@ -374,7 +374,6 @@ class _ChatListViewState extends State<ChatListView> {
       }),
     );
   }
-
   Widget _buildDefaultAvatar(UserModel? user) {
     return Icon(
       user?.isOwner == true ? Icons.build : Icons.person,
