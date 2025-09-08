@@ -253,17 +253,6 @@ class _ChatViewState extends State<ChatView> {
         foregroundColor: AppColors.white,
         elevation: 1,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.phone),
-            onPressed: () {
-              Get.snackbar(
-                'Feature Coming Soon',
-                'Voice call feature will be available soon',
-                backgroundColor: AppColors.primaryWithOpacity(0.1),
-                colorText: AppColors.primary,
-              );
-            },
-          ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
             onSelected: (String result) {
