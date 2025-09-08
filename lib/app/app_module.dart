@@ -94,6 +94,7 @@ class AppModule {
       Get.find<WorkshopController>();
       Get.find<ServiceController>();
       Get.find<ChatController>();
+      Get.find<Translations>();
 
     } catch (e) {}
   }

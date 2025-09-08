@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'app/controllers/Language_Controller.dart';
 import 'app/routes/app_routes.dart';
 import 'app/app_module.dart';
 import 'app/utils/storage_service.dart';
@@ -18,6 +19,9 @@ void main() async {
 
   // Initialize network service
   Get.put(NetworkService(), permanent: true);
+
+  // Initialize language controller
+  Get.put(LanguageController());
 
   runApp(const MyApp());
 }
