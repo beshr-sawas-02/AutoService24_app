@@ -41,7 +41,7 @@ class _SettingsViewState extends State<SettingsView> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text('settings'.tr),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
       ),
@@ -49,28 +49,28 @@ class _SettingsViewState extends State<SettingsView> {
         padding: const EdgeInsets.all(16),
         children: [
           // Account Section
-          _buildSectionHeader('Account'),
+          _buildSectionHeader('account'.tr),
           _buildSettingsTile(
             icon: Icons.person,
-            title: 'Edit Profile',
-            subtitle: 'Update your personal information',
+            title: 'edit_profile'.tr,
+            subtitle: 'update_password'.tr,
             onTap: () => Get.toNamed('/edit-profile'),
           ),
           _buildSettingsTile(
             icon: Icons.lock,
-            title: 'Change Password',
-            subtitle: 'Update your password',
+            title: 'change_password'.tr,
+            subtitle: 'update_password'.tr,
             onTap: () => _showChangePasswordDialog(),
           ),
 
           const SizedBox(height: 24),
 
           // Preferences Section
-          _buildSectionHeader('Preferences'),
+          _buildSectionHeader('preferences'.tr),
           _buildSwitchTile(
             icon: Icons.notifications,
-            title: 'Push Notifications',
-            subtitle: 'Receive notifications about new messages and updates',
+            title: 'push_notifications'.tr,
+            subtitle: 'receive_notifications'.tr,
             value: _notificationsEnabled,
             onChanged: (value) {
               setState(() {
@@ -81,8 +81,8 @@ class _SettingsViewState extends State<SettingsView> {
           ),
           _buildSwitchTile(
             icon: Icons.location_on,
-            title: 'Location Services',
-            subtitle: 'Allow app to access your location',
+            title: 'location_services'.tr,
+            subtitle: 'allow_location'.tr,
             value: _locationEnabled,
             onChanged: (value) {
               setState(() {
@@ -93,8 +93,8 @@ class _SettingsViewState extends State<SettingsView> {
           ),
           _buildSwitchTile(
             icon: Icons.dark_mode,
-            title: 'Dark Mode',
-            subtitle: 'Use dark theme',
+            title: 'dark_mode'.tr,
+            subtitle: 'use_dark_theme'.tr,
             value: _darkModeEnabled,
             onChanged: (value) {
               setState(() {
@@ -108,52 +108,52 @@ class _SettingsViewState extends State<SettingsView> {
           const SizedBox(height: 24),
 
           // App Section
-          _buildSectionHeader('App'),
+          _buildSectionHeader('app'.tr),
           _buildSettingsTile(
             icon: Icons.language,
-            title: 'Language',
+            title: 'language'.tr,
             subtitle: _selectedLanguage,
             onTap: () => _showLanguageDialog(),
           ),
           _buildSettingsTile(
             icon: Icons.info,
-            title: 'About',
-            subtitle: 'App version and information',
+            title: 'about'.tr,
+            subtitle: 'app_version_info'.tr,
             onTap: () => _showAboutDialog(),
           ),
           _buildSettingsTile(
             icon: Icons.help,
-            title: 'Help & Support',
-            subtitle: 'Get help and contact support',
+            title: 'help_support'.tr,
+            subtitle: 'get_help_support'.tr,
             onTap: () => _showHelpDialog(),
           ),
           _buildSettingsTile(
             icon: Icons.privacy_tip,
-            title: 'Privacy Policy',
-            subtitle: 'Read our privacy policy',
+            title: 'privacy_policy'.tr,
+            subtitle: 'read_privacy_policy'.tr,
             onTap: () => _showPrivacyPolicy(),
           ),
           _buildSettingsTile(
             icon: Icons.description,
-            title: 'Terms of Service',
-            subtitle: 'Read our terms of service',
+            title: 'terms_of_service'.tr,
+            subtitle: 'read_terms'.tr,
             onTap: () => _showTermsOfService(),
           ),
 
           const SizedBox(height: 24),
 
           // Data Section
-          _buildSectionHeader('Data'),
+          _buildSectionHeader('data'.tr),
           _buildSettingsTile(
             icon: Icons.download,
-            title: 'Download Data',
-            subtitle: 'Download a copy of your data',
+            title: 'download_data'.tr,
+            subtitle: 'download_copy_data'.tr,
             onTap: () => _downloadData(),
           ),
           _buildSettingsTile(
             icon: Icons.clear,
-            title: 'Clear Cache',
-            subtitle: 'Clear app cache and temporary files',
+            title: 'clear_cache'.tr,
+            subtitle: 'clear_temp_files'.tr,
             onTap: () => _clearCache(),
           ),
 
@@ -172,7 +172,7 @@ class _SettingsViewState extends State<SettingsView> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text('Sign Out'),
+              child: Text('sign_out'.tr),
             ),
           ),
         ],
@@ -244,19 +244,19 @@ class _SettingsViewState extends State<SettingsView> {
     };
 
     // You would save this to SharedPreferences or secure storage
-    Helpers.showSuccessSnackbar('Settings saved');
+    Helpers.showSuccessSnackbar('settings_saved'.tr);
   }
 
   void _showChangePasswordDialog() {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: const Text('Change Password', style: TextStyle(color: AppColors.textPrimary)),
-        content: const Text('Password change functionality would be implemented here.', style: TextStyle(color: AppColors.textSecondary)),
+        title: Text('change_password'.tr, style: const TextStyle(color: AppColors.textPrimary)),
+        content: Text('password_change_implemented'.tr, style: const TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -267,7 +267,7 @@ class _SettingsViewState extends State<SettingsView> {
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
             ),
-            child: const Text('Change'),
+            child: Text('change'.tr),
           ),
         ],
       ),
@@ -275,23 +275,32 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   void _showLanguageDialog() {
-    final languages = ['English', 'Arabic', 'French', 'Spanish'];
+    final languages = [
+      {'code': 'en', 'name': 'english'.tr},
+      {'code': 'ar', 'name': 'arabic'.tr},
+      {'code': 'de', 'name': 'german'.tr},
+      {'code': 'fr', 'name': 'french'.tr},
+      {'code': 'es', 'name': 'spanish'.tr},
+    ];
 
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: const Text('Select Language', style: TextStyle(color: AppColors.textPrimary)),
+        title: Text('select_language'.tr, style: const TextStyle(color: AppColors.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: languages.map((language) {
             return RadioListTile<String>(
-              title: Text(language, style: const TextStyle(color: AppColors.textPrimary)),
-              value: language,
+              title: Text(language['name']!, style: const TextStyle(color: AppColors.textPrimary)),
+              value: language['name']!,
               groupValue: _selectedLanguage,
               onChanged: (value) {
                 setState(() {
                   _selectedLanguage = value!;
                 });
+                // Change app language
+                String languageCode = languages.firstWhere((lang) => lang['name'] == value)['code']!;
+                Get.updateLocale(Locale(languageCode));
                 _saveSettings();
                 Get.back();
               },
@@ -302,7 +311,7 @@ class _SettingsViewState extends State<SettingsView> {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
         ],
       ),
@@ -313,18 +322,18 @@ class _SettingsViewState extends State<SettingsView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: const Text('About AutoService24', style: TextStyle(color: AppColors.textPrimary)),
-        content: const Column(
+        title: Text('about_autoservice'.tr, style: const TextStyle(color: AppColors.textPrimary)),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Version: 1.0.0', style: TextStyle(color: AppColors.textPrimary)),
-            SizedBox(height: 8),
-            Text('Your Car Service Partner', style: TextStyle(color: AppColors.textPrimary)),
-            SizedBox(height: 8),
-            Text('Find and book automotive services near you.', style: TextStyle(color: AppColors.textSecondary)),
-            SizedBox(height: 16),
-            Text('© 2024 AutoService24. All rights reserved.', style: TextStyle(color: AppColors.textSecondary)),
+            Text('version'.tr, style: const TextStyle(color: AppColors.textPrimary)),
+            const SizedBox(height: 8),
+            Text('car_service_partner'.tr, style: const TextStyle(color: AppColors.textPrimary)),
+            const SizedBox(height: 8),
+            Text('find_book_services'.tr, style: const TextStyle(color: AppColors.textSecondary)),
+            const SizedBox(height: 16),
+            Text('copyright'.tr, style: const TextStyle(color: AppColors.textSecondary)),
           ],
         ),
         actions: [
@@ -334,7 +343,7 @@ class _SettingsViewState extends State<SettingsView> {
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
             ),
-            child: const Text('OK'),
+            child: Text('ok'.tr),
           ),
         ],
       ),
@@ -345,26 +354,26 @@ class _SettingsViewState extends State<SettingsView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: const Text('Help & Support', style: TextStyle(color: AppColors.textPrimary)),
-        content: const Column(
+        title: Text('help_support'.tr, style: const TextStyle(color: AppColors.textPrimary)),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Need help? Contact us:', style: TextStyle(color: AppColors.textPrimary)),
-            SizedBox(height: 16),
+            Text('need_help_contact'.tr, style: const TextStyle(color: AppColors.textPrimary)),
+            const SizedBox(height: 16),
             Row(
               children: [
-                Icon(Icons.email, color: AppColors.primary),
-                SizedBox(width: 8),
-                Text('support@autoservice24.com', style: TextStyle(color: AppColors.textPrimary)),
+                const Icon(Icons.email, color: AppColors.primary),
+                const SizedBox(width: 8),
+                Text('support_email'.tr, style: const TextStyle(color: AppColors.textPrimary)),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.phone, color: AppColors.primary),
-                SizedBox(width: 8),
-                Text('+1 (555) 123-4567', style: TextStyle(color: AppColors.textPrimary)),
+                const Icon(Icons.phone, color: AppColors.primary),
+                const SizedBox(width: 8),
+                Text('support_phone'.tr, style: const TextStyle(color: AppColors.textPrimary)),
               ],
             ),
           ],
@@ -376,7 +385,7 @@ class _SettingsViewState extends State<SettingsView> {
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
             ),
-            child: const Text('OK'),
+            child: Text('ok'.tr),
           ),
         ],
       ),
@@ -384,39 +393,39 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   void _showPrivacyPolicy() {
-    Helpers.showInfoSnackbar('Privacy Policy would be displayed here');
+    Helpers.showInfoSnackbar('privacy_displayed_here'.tr);
   }
 
   void _showTermsOfService() {
-    Helpers.showInfoSnackbar('Terms of Service would be displayed here');
+    Helpers.showInfoSnackbar('terms_displayed_here'.tr);
   }
 
   void _downloadData() {
-    Helpers.showInfoSnackbar('Data download functionality would be implemented here');
+    Helpers.showInfoSnackbar('data_download_implemented'.tr);
   }
 
   void _clearCache() {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: const Text('Clear Cache', style: TextStyle(color: AppColors.textPrimary)),
-        content: const Text('Are you sure you want to clear the app cache? This will remove temporary files and may slow down the app initially.', style: TextStyle(color: AppColors.textSecondary)),
+        title: Text('clear_cache'.tr, style: const TextStyle(color: AppColors.textPrimary)),
+        content: Text('are_you_sure_clear_cache'.tr, style: const TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back();
               // Implement cache clearing
-              Helpers.showSuccessSnackbar('Cache cleared successfully');
+              Helpers.showSuccessSnackbar('cache_cleared'.tr);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
             ),
-            child: const Text('Clear'),
+            child: Text('clear'.tr),
           ),
         ],
       ),
@@ -427,12 +436,12 @@ class _SettingsViewState extends State<SettingsView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: const Text('Sign Out', style: TextStyle(color: AppColors.textPrimary)),
-        content: const Text('Are you sure you want to sign out?', style: TextStyle(color: AppColors.textSecondary)),
+        title: Text('sign_out'.tr, style: const TextStyle(color: AppColors.textPrimary)),
+        content: Text('are_you_sure_sign_out'.tr, style: const TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -443,7 +452,7 @@ class _SettingsViewState extends State<SettingsView> {
               backgroundColor: AppColors.error,
               foregroundColor: AppColors.white,
             ),
-            child: const Text('Sign Out'),
+            child: Text('sign_out'.tr),
           ),
         ],
       ),

@@ -6,15 +6,41 @@ class StorageService {
 
   static const String _tokenKey = 'auth_token';
   static const String _userDataKey = 'user_data';
+  static const String _languageKey = 'app_language';
 
+  // ------------- Initialization -------------
   static Future<void> init() async {
     try {
       _prefs = await SharedPreferences.getInstance();
+      // ← هنا
     } catch (e) {
     }
   }
 
-  // Token methods
+  // -------------------- Language --------------------
+  static Future<void> saveLanguage(String langCode) async {
+    try {
+      await _prefs?.setString(_languageKey, langCode);
+    } catch (e) {
+    }
+  }
+
+  static String? getLanguage() {
+    try {
+      return _prefs?.getString(_languageKey);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Future<void> removeLanguage() async {
+    try {
+      await _prefs?.remove(_languageKey);
+    } catch (e) {
+    }
+  }
+
+  // -------------------- Token --------------------
   static Future<void> saveToken(String token) async {
     try {
       await _prefs?.setString(_tokenKey, token);
@@ -24,8 +50,7 @@ class StorageService {
 
   static Future<String?> getToken() async {
     try {
-      final token = _prefs?.getString(_tokenKey);
-      return token;
+      return _prefs?.getString(_tokenKey);
     } catch (e) {
       return null;
     }
@@ -38,7 +63,7 @@ class StorageService {
     }
   }
 
-  // User data methods
+  // -------------------- User data --------------------
   static Future<void> saveUserData(Map<String, dynamic> userData) async {
     try {
       final jsonString = jsonEncode(userData);
@@ -50,7 +75,6 @@ class StorageService {
   static Future<Map<String, dynamic>?> getUserData() async {
     try {
       final jsonString = _prefs?.getString(_userDataKey);
-
       if (jsonString != null && jsonString.isNotEmpty) {
         final userData = jsonDecode(jsonString) as Map<String, dynamic>;
         return userData;
@@ -68,7 +92,7 @@ class StorageService {
     }
   }
 
-  // Clear all data
+  // -------------------- Clear all --------------------
   static Future<void> clearAll() async {
     try {
       await _prefs?.clear();
@@ -76,59 +100,47 @@ class StorageService {
     }
   }
 
-  // Check if user is logged in
+  // -------------------- Auth helpers --------------------
   static Future<bool> isLoggedIn() async {
     try {
       final token = await getToken();
       final userData = await getUserData();
-      final isLoggedIn = token != null && token.isNotEmpty && userData != null;
-      return isLoggedIn;
+      return token != null && token.isNotEmpty && userData != null;
     } catch (e) {
       return false;
     }
   }
 
-  // Get user type
   static Future<String?> getUserType() async {
     try {
       final userData = await getUserData();
-      final userType = userData?['user_type'];
-      return userType;
+      return userData?['user_type'];
     } catch (e) {
       return null;
     }
   }
 
-  // Get user ID
   static Future<String?> getUserId() async {
     try {
       final userData = await getUserData();
-      final userId = userData?['_id'];
-      return userId;
+      return userData?['_id'];
     } catch (e) {
       return null;
     }
   }
 
-  // Debug method to print all stored data
+  // -------------------- Debug --------------------
   static Future<void> debugPrintStoredData() async {
     try {
       final token = await getToken();
       final userData = await getUserData();
-
-      if (token != null) {
-      }
-      if (userData != null) {
-      }
+      final lang = getLanguage();
 
 
       if (_prefs != null) {
         final keys = _prefs!.getKeys();
         for (String key in keys) {
           final value = _prefs!.get(key);
-          if (key == _tokenKey) {
-          } else {
-          }
         }
       }
     } catch (e) {

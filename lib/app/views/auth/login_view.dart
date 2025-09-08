@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../controllers/Language_Controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../config/app_colors.dart';
@@ -260,10 +261,13 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Widget _buildLanguageSwitcher() {
+    final LanguageController languageController = Get.find<LanguageController>();
+
     return PopupMenuButton<String>(
       icon: Icon(Icons.language, color: AppColors.textSecondary),
       onSelected: (String languageCode) {
-        Get.updateLocale(Locale(languageCode));
+        // تحديث اللغة وحفظها
+        languageController.changeLocale(languageCode);
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
@@ -273,6 +277,14 @@ class _LoginViewState extends State<LoginView> {
               Text('🇺🇸'),
               SizedBox(width: 8),
               Text('english'.tr),
+              if (languageController.locale.value.languageCode == 'en')
+                Spacer()
+              else
+                SizedBox.shrink(),
+              if (languageController.locale.value.languageCode == 'en')
+                Icon(Icons.check, color: AppColors.primary)
+              else
+                SizedBox.shrink(),
             ],
           ),
         ),
@@ -283,6 +295,14 @@ class _LoginViewState extends State<LoginView> {
               Text('🇩🇪'),
               SizedBox(width: 8),
               Text('german'.tr),
+              if (languageController.locale.value.languageCode == 'de')
+                Spacer()
+              else
+                SizedBox.shrink(),
+              if (languageController.locale.value.languageCode == 'de')
+                Icon(Icons.check, color: AppColors.primary)
+              else
+                SizedBox.shrink(),
             ],
           ),
         ),

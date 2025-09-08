@@ -36,7 +36,7 @@ class _AddServiceViewState extends State<AddServiceView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Service'),
+        title: Text('add_service'.tr),
         backgroundColor: AppColors.primary,
       ),
       body: SingleChildScrollView(
@@ -46,9 +46,9 @@ class _AddServiceViewState extends State<AddServiceView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Create New Service',
-                style: TextStyle(
+              Text(
+                'create_new_service'.tr,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -61,9 +61,15 @@ class _AddServiceViewState extends State<AddServiceView> {
 
               CustomTextField(
                 controller: _titleController,
-                labelText: 'Service Title',
+                labelText: 'service_title'.tr,
                 prefixIcon: Icons.build,
-                validator: Validators.validateServiceTitle,
+                validator: (value) {
+                  final result = Validators.validateServiceTitle(value);
+                  if (result != null) {
+                    return 'please_enter_service_title'.tr;
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
 
@@ -72,19 +78,31 @@ class _AddServiceViewState extends State<AddServiceView> {
 
               CustomTextField(
                 controller: _descriptionController,
-                labelText: 'Description',
+                labelText: 'description'.tr,
                 prefixIcon: Icons.description,
                 maxLines: 3,
-                validator: Validators.validateDescription,
+                validator: (value) {
+                  final result = Validators.validateDescription(value);
+                  if (result != null) {
+                    return 'please_enter_description'.tr;
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
 
               CustomTextField(
                 controller: _priceController,
-                labelText: 'Price (\€)',
+                labelText: 'price_usd'.tr,
                 prefixIcon: Icons.euro,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                validator: Validators.validatePrice,
+                validator: (value) {
+                  final result = Validators.validatePrice(value);
+                  if (result != null) {
+                    return 'please_enter_valid_price'.tr;
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 24),
 
@@ -92,7 +110,7 @@ class _AddServiceViewState extends State<AddServiceView> {
               const SizedBox(height: 32),
 
               Obx(() => CustomButton(
-                text: 'Create Service',
+                text: 'create_service'.tr,
                 onPressed: serviceController.isLoading.value ? null : _createService,
                 isLoading: serviceController.isLoading.value,
               )),
@@ -115,14 +133,14 @@ class _AddServiceViewState extends State<AddServiceView> {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.info, color: AppColors.primary),
-              SizedBox(width: 12),
+              const Icon(Icons.info, color: AppColors.primary),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'You need to create a workshop first before adding services.',
-                  style: TextStyle(color: AppColors.primary),
+                  'create_workshop_first'.tr,
+                  style: const TextStyle(color: AppColors.primary),
                 ),
               ),
             ],
@@ -133,7 +151,7 @@ class _AddServiceViewState extends State<AddServiceView> {
       return DropdownButtonFormField<String>(
         value: _selectedWorkshopId,
         decoration: InputDecoration(
-          labelText: 'Select Workshop',
+          labelText: 'select_workshop'.tr,
           prefixIcon: const Icon(Icons.business),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -154,7 +172,7 @@ class _AddServiceViewState extends State<AddServiceView> {
         },
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Please select a workshop';
+            return 'please_select_workshop'.tr;
           }
           return null;
         },
@@ -166,7 +184,7 @@ class _AddServiceViewState extends State<AddServiceView> {
     return DropdownButtonFormField<ServiceType>(
       value: _selectedServiceType,
       decoration: InputDecoration(
-        labelText: 'Service Type',
+        labelText: 'service_type'.tr,
         prefixIcon: const Icon(Icons.category),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -194,9 +212,9 @@ class _AddServiceViewState extends State<AddServiceView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Service Images',
-          style: TextStyle(
+        Text(
+          'service_images'.tr,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -222,7 +240,7 @@ class _AddServiceViewState extends State<AddServiceView> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Add Images',
+                  'add_images'.tr,
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontSize: 16,
@@ -309,8 +327,8 @@ class _AddServiceViewState extends State<AddServiceView> {
 
     if (_selectedWorkshopId == null) {
       Get.snackbar(
-        'Error',
-        'Please select a workshop',
+        'error'.tr,
+        'please_select_workshop'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -335,8 +353,8 @@ class _AddServiceViewState extends State<AddServiceView> {
 
     if (success) {
       Get.snackbar(
-        'Success',
-        'Service created successfully!',
+        'success'.tr,
+        'service_created_successfully'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green,
         colorText: Colors.white,
@@ -356,8 +374,8 @@ class _AddServiceViewState extends State<AddServiceView> {
 
     } else {
       Get.snackbar(
-        'Error',
-        'Failed to create service',
+        'error'.tr,
+        'failed_create_service'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,

@@ -118,7 +118,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             _startChat();
           }
         },
-        label: const Text('Contact Workshop'),
+        label: Text('contact_workshop'.tr),
         icon: const Icon(Icons.message),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
@@ -134,9 +134,9 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Workshop Information',
-              style: TextStyle(
+            Text(
+              'workshop_information'.tr,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -144,9 +144,9 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             ),
             const SizedBox(height: 16),
 
-            _buildInfoRow(Icons.description, 'Description', workshop.description),
-            _buildInfoRow(Icons.access_time, 'Working Hours', workshop.workingHours),
-            _buildInfoRow(Icons.location_on, 'Location',
+            _buildInfoRow(Icons.description, 'description'.tr, workshop.description),
+            _buildInfoRow(Icons.access_time, 'working_hours'.tr, workshop.workingHours),
+            _buildInfoRow(Icons.location_on, 'location'.tr,
                 'Lat: ${workshop.latitude.toStringAsFixed(4)}, Lng: ${workshop.longitude.toStringAsFixed(4)}'),
 
             const SizedBox(height: 16),
@@ -156,9 +156,9 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               children: [
                 const Icon(Icons.star, color: AppColors.warning),
                 const SizedBox(width: 8),
-                const Text(
-                  '4.5 (24 reviews)',
-                  style: TextStyle(
+                Text(
+                  'rating_reviews'.tr,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary,
@@ -169,7 +169,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
                   onPressed: () {
                     // Show reviews
                   },
-                  child: const Text('View Reviews'),
+                  child: Text('view_reviews'.tr),
                 ),
               ],
             ),
@@ -258,9 +258,9 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Services',
-              style: TextStyle(
+            Text(
+              'services'.tr,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -270,7 +270,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               onPressed: () {
                 // Show all services
               },
-              child: const Text('View All'),
+              child: Text('view_all'.tr),
             ),
           ],
         ),
@@ -312,31 +312,31 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
   }
 
   Widget _buildEmptyServices() {
-    return const Card(
+    return Card(
       color: AppColors.cardBackground,
       child: Padding(
-        padding: EdgeInsets.all(32),
+        padding: const EdgeInsets.all(32),
         child: Column(
           children: [
-            Icon(
+            const Icon(
               Icons.build_outlined,
               size: 48,
               color: AppColors.textSecondary,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
-              'No services available',
-              style: TextStyle(
+              'no_services_available'.tr,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: AppColors.textSecondary,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              'This workshop hasn\'t added any services yet',
+              'workshop_no_services'.tr,
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary),
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -352,8 +352,8 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
   void _startChat() {
     // Navigate to chat with workshop owner
     Get.snackbar(
-      'Chat',
-      'Starting conversation with ${workshop.name}',
+      'chat'.tr,
+      'starting_conversation'.tr + ' ${workshop.name}',
       snackPosition: SnackPosition.BOTTOM,
     );
 
@@ -367,12 +367,12 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: const Text('Login Required', style: TextStyle(color: AppColors.textPrimary)),
-        content: const Text('Please login or register to contact workshops.', style: TextStyle(color: AppColors.textSecondary)),
+        title: Text('login_required'.tr, style: const TextStyle(color: AppColors.textPrimary)),
+        content: Text('login_contact_workshops'.tr, style: const TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -383,7 +383,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
             ),
-            child: const Text('Login'),
+            child: Text('login'.tr),
           ),
         ],
       ),

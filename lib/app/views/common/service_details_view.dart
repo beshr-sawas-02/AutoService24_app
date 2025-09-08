@@ -28,50 +28,50 @@ class ServiceDetailsView extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               background: service.images.isNotEmpty
                   ? Stack(
-                      children: [
-                        PageView.builder(
-                          controller: pageController,
-                          itemCount: service.images.length,
-                          itemBuilder: (context, index) {
-                            return SizedBox(
-                              width: double.infinity,
-                              height: double.infinity,
-                              child: _buildImageWidget(service.images[index]),
-                            );
-                          },
+                children: [
+                  PageView.builder(
+                    controller: pageController,
+                    itemCount: service.images.length,
+                    itemBuilder: (context, index) {
+                      return SizedBox(
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: _buildImageWidget(service.images[index]),
+                      );
+                    },
+                  ),
+                  if (service.images.length > 1)
+                    Positioned(
+                      bottom: 20,
+                      left: 0,
+                      right: 0,
+                      child: _buildImageIndicator(service.images.length),
+                    ),
+                  if (service.images.length > 1)
+                    Positioned(
+                      top: 50,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.6),
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        if (service.images.length > 1)
-                          Positioned(
-                            bottom: 20,
-                            left: 0,
-                            right: 0,
-                            child: _buildImageIndicator(service.images.length),
-                          ),
-                        if (service.images.length > 1)
-                          Positioned(
-                            top: 50,
-                            right: 16,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.6),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Obx(() {
-                                return Text(
-                                  '${pageController.hasClients ? (pageController.page?.round() ?? 0) + 1 : 1}/${service.images.length}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                );
-                              }),
+                        child: Obx(() {
+                          return Text(
+                            '${pageController.hasClients ? (pageController.page?.round() ?? 0) + 1 : 1}/${service.images.length}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                             ),
-                          ),
-                      ],
-                    )
+                          );
+                        }),
+                      ),
+                    ),
+                ],
+              )
                   : _buildPlaceholderImage(),
             ),
             actions: [
@@ -90,12 +90,12 @@ class ServiceDetailsView extends StatelessWidget {
                     onPressed: () {
                       _showGuestDialog();
                     },
-                    tooltip: 'Login to save',
+                    tooltip: 'login_to_save'.tr,
                   );
                 }
 
                 final isBookmarked =
-                    serviceController.isServiceSaved(service.id);
+                serviceController.isServiceSaved(service.id);
 
                 return IconButton(
                   icon: Container(
@@ -119,7 +119,7 @@ class ServiceDetailsView extends StatelessWidget {
                           service.id, userId);
                     }
                   },
-                  tooltip: isBookmarked ? 'Remove from saved' : 'Save service',
+                  tooltip: isBookmarked ? 'remove_from_saved'.tr : 'save_service'.tr,
                 );
               }),
             ],
@@ -178,9 +178,9 @@ class ServiceDetailsView extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // Description
-                  const Text(
-                    'Description',
-                    style: TextStyle(
+                  Text(
+                    'description'.tr,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -200,13 +200,13 @@ class ServiceDetailsView extends StatelessWidget {
 
                   // Workshop Info
                   _buildInfoCard(
-                    'Workshop Information',
+                    'workshop_information'.tr,
                     [
                       _buildInfoRow(
-                          Icons.business, 'Workshop ID', service.workshopId),
+                          Icons.business, 'workshop_id'.tr, service.workshopId),
                       _buildInfoRow(
-                          Icons.access_time, 'Service Duration', '1-2 hours'),
-                      _buildInfoRow(Icons.check_circle, 'Warranty', '30 days'),
+                          Icons.access_time, 'service_duration'.tr, '1_2_hours'.tr),
+                      _buildInfoRow(Icons.check_circle, 'warranty'.tr, '30_days'.tr),
                     ],
                   ),
 
@@ -230,7 +230,7 @@ class ServiceDetailsView extends StatelessWidget {
                             }
                           },
                           icon: const Icon(Icons.chat_bubble_outline, size: 20),
-                          label: const Text('Contact Workshop'),
+                          label: Text('contact_workshop'.tr),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             foregroundColor: AppColors.white,
@@ -283,11 +283,11 @@ class ServiceDetailsView extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
+                      loadingProgress.expectedTotalBytes!
                       : null,
                   strokeWidth: 3,
                   valueColor:
-                      const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  const AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
               ),
             );
@@ -330,19 +330,19 @@ class ServiceDetailsView extends StatelessWidget {
   Widget _buildPlaceholderImage() {
     return Container(
       color: AppColors.grey200,
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.build_circle,
               size: 80,
               color: AppColors.grey400,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
-              'Service Image',
-              style: TextStyle(
+              'service_image'.tr,
+              style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
@@ -359,7 +359,7 @@ class ServiceDetailsView extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
         imageCount,
-        (index) => Container(
+            (index) => Container(
           margin: const EdgeInsets.symmetric(horizontal: 4),
           width: 8,
           height: 8,
@@ -376,9 +376,9 @@ class ServiceDetailsView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'More Images',
-          style: TextStyle(
+        Text(
+          'more_images'.tr,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -518,8 +518,8 @@ class ServiceDetailsView extends StatelessWidget {
 
   void _contactWorkshop(ServiceModel service) {
     Get.snackbar(
-      'Contact Workshop',
-      'This feature will open a chat with the workshop owner',
+      'contact_workshop'.tr,
+      'contact_workshop_message'.tr,
       backgroundColor: AppColors.info.withValues(alpha: 0.1),
       colorText: AppColors.info,
       icon: const Icon(Icons.info_outline, color: AppColors.info),
@@ -535,23 +535,23 @@ class ServiceDetailsView extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text(
-          'Login Required',
-          style: TextStyle(
+        title: Text(
+          'login_required'.tr,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),
         ),
-        content: const Text(
-          'Please login or register to access this feature.',
-          style: TextStyle(color: AppColors.textSecondary),
+        content: Text(
+          'login_register_access'.tr,
+          style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+            child: Text(
+              'cancel'.tr,
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -566,7 +566,7 @@ class ServiceDetailsView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Login'),
+            child: Text('login'.tr),
           ),
         ],
       ),

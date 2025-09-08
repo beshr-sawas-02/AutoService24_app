@@ -34,9 +34,9 @@ class _ChatListViewState extends State<ChatListView> {
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
-        title: const Text(
-          'Messages',
-          style: TextStyle(
+        title: Text(
+          'messages'.tr,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -93,9 +93,9 @@ class _ChatListViewState extends State<ChatListView> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    'Connect with Service Providers',
-                    style: TextStyle(
+                  Text(
+                    'connect_service_providers'.tr,
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -103,9 +103,9 @@ class _ChatListViewState extends State<ChatListView> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Sign in to chat directly with workshops and service providers.',
-                    style: TextStyle(
+                  Text(
+                    'sign_in_to_chat'.tr,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: AppColors.textSecondary,
                     ),
@@ -122,20 +122,20 @@ class _ChatListViewState extends State<ChatListView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Chat features:',
-                          style: TextStyle(
+                        Text(
+                          'chat_features'.tr,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 12),
-                        _buildChatFeatureRow(Icons.message, 'Direct messaging with providers'),
-                        _buildChatFeatureRow(Icons.schedule, 'Schedule appointments easily'),
-                        _buildChatFeatureRow(Icons.attach_money, 'Get instant price quotes'),
-                        _buildChatFeatureRow(Icons.photo_camera, 'Share photos of your vehicle'),
-                        _buildChatFeatureRow(Icons.location_on, 'Share location details'),
+                        _buildChatFeatureRow(Icons.message, 'direct_messaging'.tr),
+                        _buildChatFeatureRow(Icons.schedule, 'schedule_appointments'.tr),
+                        _buildChatFeatureRow(Icons.attach_money, 'instant_quotes'.tr),
+                        _buildChatFeatureRow(Icons.photo_camera, 'share_photos'.tr),
+                        _buildChatFeatureRow(Icons.location_on, 'share_location'.tr),
                       ],
                     ),
                   ),
@@ -155,7 +155,7 @@ class _ChatListViewState extends State<ChatListView> {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          child: const Text('Sign In'),
+                          child: Text('sign_in'.tr),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -170,7 +170,7 @@ class _ChatListViewState extends State<ChatListView> {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          child: const Text('Register'),
+                          child: Text('register'.tr),
                         ),
                       ),
                     ],
@@ -181,9 +181,9 @@ class _ChatListViewState extends State<ChatListView> {
                   TextButton.icon(
                     onPressed: () => Get.back(),
                     icon: const Icon(Icons.explore, color: AppColors.textSecondary),
-                    label: const Text(
-                      'Explore Services Instead',
-                      style: TextStyle(color: AppColors.textSecondary),
+                    label: Text(
+                      'explore_services_instead'.tr,
+                      style: const TextStyle(color: AppColors.textSecondary),
                     ),
                   ),
                 ],
@@ -265,18 +265,18 @@ class _ChatListViewState extends State<ChatListView> {
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
-            'No conversations yet',
-            style: TextStyle(
+          Text(
+            'no_conversations_yet'.tr,
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Start chatting with workshop owners and service providers',
-            style: TextStyle(
+          Text(
+            'start_chatting'.tr,
+            style: const TextStyle(
               fontSize: 16,
               color: AppColors.textSecondary,
             ),
@@ -286,7 +286,7 @@ class _ChatListViewState extends State<ChatListView> {
           ElevatedButton.icon(
             onPressed: () => Get.back(),
             icon: const Icon(Icons.search),
-            label: const Text('Browse Services'),
+            label: Text('browse_services'.tr),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
@@ -385,8 +385,7 @@ class _ChatListViewState extends State<ChatListView> {
   Widget _buildUserName(String userId) {
     return Obx(() {
       final user = chatController.usersCache[userId];
-      String displayName = user?.username ?? 'Loading...';
-
+      String displayName = user?.username ?? 'loading_user'.tr;
 
       if (user == null && !chatController.isLoadingUsers.value) {
         chatController.getUserById(userId);
@@ -408,13 +407,13 @@ class _ChatListViewState extends State<ChatListView> {
       padding: const EdgeInsets.only(top: 4),
       child: Obx(() {
         final user = chatController.usersCache[userId];
-        String subtitle = 'Tap to view conversation';
+        String subtitle = 'tap_to_view_conversation'.tr;
 
         if (user != null) {
           if (user.isOwner) {
-            subtitle = 'Workshop Owner • Tap to chat';
+            subtitle = '${'workshop_owner'.tr} • ${'tap_to_chat'.tr}';
           } else {
-            subtitle = 'User • Tap to chat';
+            subtitle = '${'user'.tr} • ${'tap_to_chat'.tr}';
           }
         }
 
@@ -433,9 +432,8 @@ class _ChatListViewState extends State<ChatListView> {
     final isCurrentUserUser1 = chat.user1Id.toString() == currentUserId;
     final otherUserId = isCurrentUserUser1 ? chat.user2Id : chat.user1Id;
 
-
     final otherUser = await chatController.getUserById(otherUserId.toString());
-    final otherUserName = otherUser?.username ?? 'User';
+    final otherUserName = otherUser?.username ?? 'user'.tr;
 
     Get.toNamed(
       AppRoutes.chat,
@@ -447,18 +445,6 @@ class _ChatListViewState extends State<ChatListView> {
       },
     );
   }
-
-  // void _showErrorSnackbar(String message) {
-  //   Get.snackbar(
-  //     'خطأ',
-  //     message,
-  //     snackPosition: SnackPosition.BOTTOM,
-  //     backgroundColor: Colors.red,
-  //     colorText: Colors.white,
-  //     duration: Duration(seconds: 3),
-  //   );
-  // }
-
 
   String _formatTime(DateTime? dateTime) {
     if (dateTime == null) return '';
@@ -473,7 +459,7 @@ class _ChatListViewState extends State<ChatListView> {
     } else if (difference.inMinutes > 0) {
       return '${difference.inMinutes}m';
     } else {
-      return 'now';
+      return 'now'.tr;
     }
   }
 }

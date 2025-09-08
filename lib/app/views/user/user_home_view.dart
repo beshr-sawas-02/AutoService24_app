@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../controllers/Language_Controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/service_controller.dart';
 import '../../data/models/service_model.dart';
@@ -23,67 +24,67 @@ class _UserHomeViewState extends State<UserHomeView> {
 
   final List<Map<String, dynamic>> categories = [
     {
-      'title': 'Vehicle\nInspection',
+      'title': 'vehicle_inspection',
       'type': ServiceType.VEHICLE_INSPECTION,
       'color': AppColors.primary,
       'image': 'assets/images/remove.jpg',
     },
     {
-      'title': 'Change Oil',
+      'title': 'change_oil',
       'type': ServiceType.CHANGE_OIL,
       'color': AppColors.info,
       'image': 'assets/images/oil_change.jpg',
     },
     {
-      'title': 'Change Tires',
+      'title': 'change_tires',
       'type': ServiceType.CHANGE_TIRES,
       'color': AppColors.grey500,
       'image': 'assets/images/change_tires.jpg',
     },
     {
-      'title': 'Remove & Install\nTires',
+      'title': 'remove_install_tires',
       'type': ServiceType.REMOVE_INSTALL_TIRES,
       'color': Colors.purple,
       'image': 'assets/images/remove.jpg',
     },
     {
-      'title': 'Cleaning',
+      'title': 'cleaning',
       'type': ServiceType.CLEANING,
       'color': AppColors.success,
       'image': 'assets/images/remove.jpg',
     },
     {
-      'title': 'Diagnostic Test',
+      'title': 'diagnostic_test',
       'type': ServiceType.DIAGNOSTIC_TEST,
       'color': AppColors.error,
       'image': 'assets/images/remove.jpg',
     },
     {
-      'title': 'Pre-TÜV Check',
+      'title': 'pre_tuv_check',
       'type': ServiceType.PRE_TUV_CHECK,
       'color': Colors.teal,
       'image': 'assets/images/remove.jpg',
     },
     {
-      'title': 'Balance Tires',
+      'title': 'balance_tires',
       'type': ServiceType.BALANCE_TIRES,
       'color': Colors.indigo,
       'image': 'assets/images/remove.jpg',
     },
     {
-      'title': 'Wheel\nAlignment',
+      'title': 'wheel_alignment',
       'type': ServiceType.WHEEL_ALIGNMENT,
       'color': Colors.deepPurple,
       'image': 'assets/images/remove.jpg',
     },
     {
-      'title': 'Polish',
+      'title': 'polish',
       'type': ServiceType.POLISH,
       'color': AppColors.warning,
       'image': 'assets/images/remove.jpg',
     },
     {
-      'title': 'Change Brake\nFluid',
+      'title': 'change_brake_fluid',
       'type': ServiceType.CHANGE_BRAKE_FLUID,
       'color': Colors.brown,
       'image': 'assets/images/remove.jpg',
@@ -96,8 +97,8 @@ class _UserHomeViewState extends State<UserHomeView> {
       await serviceController.loadServices();
     } catch (e) {
       Get.snackbar(
-        "Error",
-        "Failed to refresh services",
+        "error".tr,
+        "failed_refresh_services".tr,
         backgroundColor: AppColors.error.withValues(alpha: 0.8),
         colorText: AppColors.white,
       );
@@ -111,9 +112,9 @@ class _UserHomeViewState extends State<UserHomeView> {
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
-        title: const Text(
-          'Auto Services',
-          style: TextStyle(
+        title: Text(
+          'auto_services'.tr,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -161,18 +162,18 @@ class _UserHomeViewState extends State<UserHomeView> {
             _currentIndex = index;
           });
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home),
+            label: 'home'.tr,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
-            label: 'Saved',
+            icon: const Icon(Icons.bookmark),
+            label: 'saved'.tr,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: const Icon(Icons.person),
+            label: 'profile'.tr,
           ),
         ],
       ),
@@ -180,28 +181,31 @@ class _UserHomeViewState extends State<UserHomeView> {
   }
 
   Widget _buildLanguageSwitcher() {
+    final LanguageController languageController = Get.find<LanguageController>();
+
     return PopupMenuButton<String>(
-      icon: Icon(Icons.language, color: AppColors.textSecondary),
+      icon: const Icon(Icons.language, color: AppColors.textSecondary),
       tooltip: 'switch_language'.tr,
       onSelected: (String languageCode) {
-        Get.updateLocale(Locale(languageCode));
+        // استدعاء changeLocale لتحديث اللغة وحفظها
+        languageController.changeLocale(languageCode);
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
           value: 'en',
           child: Row(
             children: [
-              Text('🇺🇸'),
-              SizedBox(width: 8),
+              const Text('🇺🇸'),
+              const SizedBox(width: 8),
               Text('english'.tr),
-              if (Get.locale?.languageCode == 'en')
-                Spacer()
+              if (languageController.locale.value.languageCode == 'en')
+                const Spacer()
               else
-                SizedBox.shrink(),
-              if (Get.locale?.languageCode == 'en')
-                Icon(Icons.check, color: AppColors.primary)
+                const SizedBox.shrink(),
+              if (languageController.locale.value.languageCode == 'en')
+                const Icon(Icons.check, color: AppColors.primary)
               else
-                SizedBox.shrink(),
+                const SizedBox.shrink(),
             ],
           ),
         ),
@@ -209,17 +213,17 @@ class _UserHomeViewState extends State<UserHomeView> {
           value: 'de',
           child: Row(
             children: [
-              Text('🇩🇪'),
-              SizedBox(width: 8),
+              const Text('🇩🇪'),
+              const SizedBox(width: 8),
               Text('german'.tr),
-              if (Get.locale?.languageCode == 'de')
-                Spacer()
+              if (languageController.locale.value.languageCode == 'de')
+                const Spacer()
               else
-                SizedBox.shrink(),
-              if (Get.locale?.languageCode == 'de')
-                Icon(Icons.check, color: AppColors.primary)
+                const SizedBox.shrink(),
+              if (languageController.locale.value.languageCode == 'de')
+                const Icon(Icons.check, color: AppColors.primary)
               else
-                SizedBox.shrink(),
+                const SizedBox.shrink(),
             ],
           ),
         ),
@@ -227,13 +231,14 @@ class _UserHomeViewState extends State<UserHomeView> {
     );
   }
 
+
   Widget _getBody() {
     return _buildHomeContent();
   }
 
   Widget _buildHomeContent() {
     final filteredCategories = categories.where((cat) {
-      final title = (cat['title'] as String).toLowerCase();
+      final title = (cat['title'] as String).tr.toLowerCase();
       return title.contains(_searchQuery.toLowerCase());
     }).toList();
 
@@ -254,9 +259,9 @@ class _UserHomeViewState extends State<UserHomeView> {
                 children: [
                   _buildSearchBar(),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Categories',
-                    style: TextStyle(
+                  Text(
+                    'categories'.tr,
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -289,7 +294,7 @@ class _UserHomeViewState extends State<UserHomeView> {
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
-          hintText: 'Search categories...',
+          hintText: 'search_categories'.tr,
           hintStyle: const TextStyle(color: AppColors.textHint),
           prefixIcon: const Icon(Icons.search, color: AppColors.grey400),
           border: OutlineInputBorder(
@@ -299,7 +304,7 @@ class _UserHomeViewState extends State<UserHomeView> {
           filled: true,
           fillColor: AppColors.white,
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
         onChanged: (query) {
           setState(() {
@@ -329,7 +334,7 @@ class _UserHomeViewState extends State<UserHomeView> {
               AppRoutes.filteredServices,
               arguments: {
                 'serviceType': category['type'] as ServiceType,
-                'title': category['title'] as String,
+                'title': (category['title'] as String).tr,
                 'isOwner': false,
               },
             );
@@ -384,7 +389,7 @@ class _UserHomeViewState extends State<UserHomeView> {
                   ),
                   Center(
                     child: Text(
-                      category['title'] as String,
+                      (category['title'] as String).tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: AppColors.white,
@@ -415,20 +420,20 @@ class _UserHomeViewState extends State<UserHomeView> {
 //       shape: RoundedRectangleBorder(
 //         borderRadius: BorderRadius.circular(16),
 //       ),
-//       title: const Text(
-//         'Login Required',
-//         style: TextStyle(fontWeight: FontWeight.bold),
+//       title: Text(
+//         'login_required'.tr,
+//         style: const TextStyle(fontWeight: FontWeight.bold),
 //       ),
-//       content: const Text(
-//         'Please login or register to access this feature.',
-//         style: TextStyle(color: Colors.grey),
+//       content: Text(
+//         'login_register_access'.tr,
+//         style: const TextStyle(color: Colors.grey),
 //       ),
 //       actions: [
 //         TextButton(
 //           onPressed: () => Get.back(),
-//           child: const Text(
-//             'Cancel',
-//             style: TextStyle(color: AppColors.textSecondary),
+//           child: Text(
+//             'cancel'.tr,
+//             style: const TextStyle(color: AppColors.textSecondary),
 //           ),
 //         ),
 //         ElevatedButton(
@@ -443,7 +448,7 @@ class _UserHomeViewState extends State<UserHomeView> {
 //               borderRadius: BorderRadius.circular(8),
 //             ),
 //           ),
-//           child: const Text('Login'),
+//           child: Text('login'.tr),
 //         ),
 //       ],
 //     ),

@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final LanguageController languageController = Get.find<LanguageController>();
 
-    return GetMaterialApp(
+    return Obx(() => GetMaterialApp(
       title: 'CarServiceHub',
       debugShowCheckedModeBanner: false,
       translations: AppTranslations(),
@@ -260,6 +260,6 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: AppRoutes.splash,
       getPages: AppRoutes.routes,
-    );
+    ));
   }
 }

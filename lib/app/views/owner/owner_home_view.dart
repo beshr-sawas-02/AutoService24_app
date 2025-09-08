@@ -42,9 +42,9 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
-        title: const Text(
-          'CarServiceHub - Owner',
-          style: TextStyle(
+        title: Text(
+          'carservicehub_owner'.tr,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -86,18 +86,18 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
             _currentIndex = index;
           });
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home),
+            label: 'home'.tr,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: const Icon(Icons.person),
+            label: 'profile'.tr,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_business),
-            label: 'Add Workshop',
+            icon: const Icon(Icons.add_business),
+            label: 'add_workshop'.tr,
           ),
         ],
       ),
@@ -105,7 +105,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         onPressed: () => Get.toNamed(AppRoutes.addService),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
-        tooltip: 'Add Service',
+        tooltip: 'add_service'.tr,
         child: const Icon(Icons.add),
       ),
     );
@@ -127,9 +127,9 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
               children: [
                 _buildWelcomeCard(),
                 const SizedBox(height: 24),
-                const Text(
-                  'Service Categories',
-                  style: TextStyle(
+                Text(
+                  'service_categories'.tr,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -167,7 +167,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
           const SizedBox(width: 12),
           Expanded(
             child: Obx(() => Text(
-              'Hello ${authController.displayName}',
+              'hello_user'.tr.replaceAll('{name}', authController.displayName),
               style: const TextStyle(
                 color: AppColors.white,
                 fontSize: 18,
@@ -183,67 +183,67 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
   Widget _buildServiceCategories() {
     final categories = [
       {
-        'title': 'Vehicle\nInspection',
+        'title': 'vehicle_inspection',
         'type': ServiceType.VEHICLE_INSPECTION,
         'color': AppColors.primary,
         'image': 'assets/images/vehicle_inspection.jpg',
       },
       {
-        'title': 'Change Oil',
+        'title': 'change_oil',
         'type': ServiceType.CHANGE_OIL,
         'color': AppColors.info,
         'image': 'assets/images/oil_change.jpg',
       },
       {
-        'title': 'Change Tires',
+        'title': 'change_tires',
         'type': ServiceType.CHANGE_TIRES,
         'color': AppColors.grey500,
         'image': 'assets/images/change_tires.jpg',
       },
       {
-        'title': 'Remove & Install\nTires',
+        'title': 'remove_install_tires',
         'type': ServiceType.REMOVE_INSTALL_TIRES,
         'color': Colors.purple,
         'image': 'assets/images/remove.jpg',
       },
       {
-        'title': 'Cleaning',
+        'title': 'cleaning',
         'type': ServiceType.CLEANING,
         'color': AppColors.success,
         'image': 'assets/images/car_cleaning.jpg',
       },
       {
-        'title': 'Diagnostic Test',
+        'title': 'diagnostic_test',
         'type': ServiceType.DIAGNOSTIC_TEST,
         'color': AppColors.error,
         'image': 'assets/images/diagnostic.jpg',
       },
       {
-        'title': 'Pre-TÜV Check',
+        'title': 'pre_tuv_check',
         'type': ServiceType.PRE_TUV_CHECK,
         'color': Colors.teal,
         'image': 'assets/images/pre_tuv.jpg',
       },
       {
-        'title': 'Balance Tires',
+        'title': 'balance_tires',
         'type': ServiceType.BALANCE_TIRES,
         'color': Colors.indigo,
         'image': 'assets/images/tire_balance.jpg',
       },
       {
-        'title': 'Wheel\nAlignment',
+        'title': 'wheel_alignment',
         'type': ServiceType.WHEEL_ALIGNMENT,
         'color': Colors.deepPurple,
         'image': 'assets/images/wheel_alignment.jpg',
       },
       {
-        'title': 'Polish',
+        'title': 'polish',
         'type': ServiceType.POLISH,
         'color': AppColors.warning,
         'image': 'assets/images/car_polish.jpg',
       },
       {
-        'title': 'Change Brake\nFluid',
+        'title': 'change_brake_fluid',
         'type': ServiceType.CHANGE_BRAKE_FLUID,
         'color': Colors.brown,
         'image': 'assets/images/brake_fluid.jpg',
@@ -268,7 +268,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
               AppRoutes.filteredServices,
               arguments: {
                 'serviceType': category['type'] as ServiceType,
-                'title': category['title'] as String,
+                'title': (category['title'] as String).tr,
                 'isOwner': true,
               },
             );
@@ -321,7 +321,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
                   ),
                   Center(
                     child: Text(
-                      category['title'] as String,
+                      (category['title'] as String).tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: AppColors.white,
@@ -348,12 +348,12 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
 
   void _showLogoutDialog() {
     Get.dialog(AlertDialog(
-      title: const Text('Logout'),
-      content: const Text('Are you sure you want to logout?'),
+      title: Text('logout'.tr),
+      content: Text('are_you_sure_logout'.tr),
       actions: [
         TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary))
+            child: Text('cancel'.tr, style: const TextStyle(color: AppColors.textSecondary))
         ),
         ElevatedButton(
           onPressed: () {
@@ -364,7 +364,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
             backgroundColor: AppColors.error,
             foregroundColor: AppColors.white,
           ),
-          child: const Text('Logout'),
+          child: Text('logout'.tr),
         ),
       ],
     ));

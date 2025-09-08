@@ -11,7 +11,7 @@ class OwnerProfileView extends StatelessWidget {
   final WorkshopController workshopController = Get.find<WorkshopController>();
   final ServiceController serviceController = Get.find<ServiceController>();
 
-   OwnerProfileView({super.key});
+  OwnerProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -138,33 +138,33 @@ class OwnerProfileView extends StatelessWidget {
                   backgroundColor: Colors.white.withValues(alpha: 0.2),
                   child: user?.fullProfileImage != null
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(58),
-                          child: Image.network(
-                            user!.fullProfileImage!,
-                            width: 116,
-                            height: 116,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Text(
-                                user?.username?.substring(0, 1).toUpperCase() ??
-                                    'N',
-                                style: const TextStyle(
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : Text(
-                          user?.username?.substring(0, 1).toUpperCase() ?? 'N',
+                    borderRadius: BorderRadius.circular(58),
+                    child: Image.network(
+                      user!.fullProfileImage!,
+                      width: 116,
+                      height: 116,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Text(
+                          user?.username?.substring(0, 1).toUpperCase() ??
+                              'N',
                           style: const TextStyle(
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
-                        ),
+                        );
+                      },
+                    ),
+                  )
+                      : Text(
+                    user?.username?.substring(0, 1).toUpperCase() ?? 'N',
+                    style: const TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
 
@@ -217,7 +217,7 @@ class OwnerProfileView extends StatelessWidget {
 
           // User type
           Text(
-            'Workshop Owner',
+            'workshop_owner'.tr,
             style: TextStyle(
               fontSize: 18,
               color: Colors.white.withValues(alpha: 0.9),
@@ -247,9 +247,9 @@ class OwnerProfileView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Contact Information',
-            style: TextStyle(
+          Text(
+            'contact_information'.tr,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
@@ -274,7 +274,7 @@ class OwnerProfileView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Email',
+                    'email'.tr,
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
@@ -312,7 +312,7 @@ class OwnerProfileView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Phone',
+                    'phone'.tr,
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
@@ -320,7 +320,7 @@ class OwnerProfileView extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    user?.phone ?? 'Not provided',
+                    user?.phone ?? 'not_provided'.tr,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -338,47 +338,14 @@ class OwnerProfileView extends StatelessWidget {
     );
   }
 
-  // Widget _buildStatItem(
-  //     String label, String value, IconData icon, Color color) {
-  //   return Column(
-  //     children: [
-  //       Container(
-  //         padding: EdgeInsets.all(12),
-  //         decoration: BoxDecoration(
-  //           color: color.withValues(alpha: 0.1),
-  //           borderRadius: BorderRadius.circular(12),
-  //         ),
-  //         child: Icon(icon, color: color, size: 24),
-  //       ),
-  //       SizedBox(height: 8),
-  //       Text(
-  //         value,
-  //         style: TextStyle(
-  //           fontSize: 18,
-  //           fontWeight: FontWeight.bold,
-  //           color: color,
-  //         ),
-  //       ),
-  //       Text(
-  //         label,
-  //         style: TextStyle(
-  //           color: Colors.grey[600],
-  //           fontSize: 12,
-  //         ),
-  //         textAlign: TextAlign.center,
-  //       ),
-  //     ],
-  //   );
-  // }
-
   Widget _buildProfileOptions() {
     return _buildSectionCard(
-      title: 'Profile',
+      title: 'profile'.tr,
       children: [
         _buildProfileOption(
           icon: Icons.edit_outlined,
-          title: 'Edit Profile',
-          subtitle: 'Update your personal information',
+          title: 'edit_profile'.tr,
+          subtitle: 'update_personal_information'.tr,
           onTap: () => Get.toNamed(AppRoutes.editProfile),
           iconColor: Colors.orange,
         ),
@@ -493,7 +460,7 @@ class OwnerProfileView extends StatelessWidget {
       child: ElevatedButton.icon(
         onPressed: _showLogoutDialog,
         icon: const Icon(Icons.logout),
-        label: const Text('Sign Out'),
+        label: Text('sign_out'.tr),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red,
           foregroundColor: Colors.white,
@@ -513,7 +480,7 @@ class OwnerProfileView extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: _showDeleteAccountDialog,
         icon: const Icon(Icons.delete_forever),
-        label: const Text('Delete Account'),
+        label: Text('delete_account'.tr),
         style: OutlinedButton.styleFrom(
           foregroundColor: Colors.red[700],
           side: BorderSide(color: Colors.red[700]!),
@@ -543,17 +510,17 @@ class OwnerProfileView extends StatelessWidget {
               child: const Icon(Icons.logout, color: Colors.red),
             ),
             const SizedBox(width: 12),
-            const Text('Sign Out'),
+            Text('sign_out'.tr),
           ],
         ),
-        content: const Text('Are you sure you want to sign out of your account?'),
+        content: Text('are_you_sure_sign_out_account'.tr),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
             style: TextButton.styleFrom(
               foregroundColor: Colors.grey[600],
             ),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -567,7 +534,7 @@ class OwnerProfileView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Sign Out'),
+            child: Text('sign_out'.tr),
           ),
         ],
       ),
@@ -591,35 +558,35 @@ class OwnerProfileView extends StatelessWidget {
               child: const Icon(Icons.warning, color: Colors.red),
             ),
             const SizedBox(width: 12),
-            const Text('Delete Account'),
+            Text('delete_confirmation_title'.tr),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'This will permanently delete:',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Text(
+              'this_will_permanently_delete'.tr,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             ...[
-              'Your account',
-              'All workshops',
-              'All services',
-              'All conversations',
-              'All business data'
+              'your_account'.tr,
+              'all_workshops'.tr,
+              'all_services'.tr,
+              'all_conversations'.tr,
+              'all_business_data'.tr
             ]
                 .map((item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.close, color: Colors.red, size: 16),
-                          const SizedBox(width: 8),
-                          Text(item),
-                        ],
-                      ),
-                    ))
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(
+                children: [
+                  const Icon(Icons.close, color: Colors.red, size: 16),
+                  const SizedBox(width: 8),
+                  Text(item),
+                ],
+              ),
+            ))
                 .toList(),
             const SizedBox(height: 16),
             Container(
@@ -628,14 +595,14 @@ class OwnerProfileView extends StatelessWidget {
                 color: Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.warning, color: Colors.red, size: 16),
-                  SizedBox(width: 8),
+                  const Icon(Icons.warning, color: Colors.red, size: 16),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'This action cannot be undone.',
-                      style: TextStyle(
+                      'action_cannot_be_undone'.tr,
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.red,
                       ),
@@ -652,7 +619,7 @@ class OwnerProfileView extends StatelessWidget {
             style: TextButton.styleFrom(
               foregroundColor: Colors.grey[600],
             ),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -666,7 +633,7 @@ class OwnerProfileView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Delete'),
+            child: Text('delete'.tr),
           ),
         ],
       ),
@@ -681,16 +648,16 @@ class OwnerProfileView extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text('Final Confirmation'),
+        title: Text('final_confirmation'.tr),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Type "DELETE" to confirm account deletion:'),
+            Text('type_delete_confirm'.tr),
             const SizedBox(height: 16),
             TextField(
               controller: confirmController,
               decoration: InputDecoration(
-                hintText: 'Type DELETE here',
+                hintText: 'type_delete_here'.tr,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -709,185 +676,218 @@ class OwnerProfileView extends StatelessWidget {
             style: TextButton.styleFrom(
               foregroundColor: Colors.grey[600],
             ),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           Obx(() => ElevatedButton(
-                onPressed: authController.isLoading.value
-                    ? null
-                    : () async {
-                        if (confirmController.text.trim().toUpperCase() ==
-                            'DELETE') {
-                          Get.back();
-                          final success = await authController.deleteAccount();
-                          if (success) {
-                            Get.offAllNamed(AppRoutes.userHome);
-                          }
-                        } else {
-                          Helpers.showErrorSnackbar(
-                              'Please type "DELETE" to confirm');
-                        }
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: authController.isLoading.value
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Text('Confirm Delete'),
-              )),
+            onPressed: authController.isLoading.value
+                ? null
+                : () async {
+              if (confirmController.text.trim().toUpperCase() ==
+                  'DELETE') {
+                Get.back();
+                final success = await authController.deleteAccount();
+                if (success) {
+                  Get.offAllNamed(AppRoutes.userHome);
+                }
+              } else {
+                Helpers.showErrorSnackbar(
+                    'please_type_delete'.tr);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: authController.isLoading.value
+                ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2,
+              ),
+            )
+                : Text('confirm_delete'.tr),
+          )),
         ],
       ),
     );
   }
 
-  // void _showHelpDialog() {
-  //   Get.dialog(
-  //     AlertDialog(
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.circular(16),
-  //       ),
-  //       title: Row(
-  //         children: [
-  //           Container(
-  //             padding: EdgeInsets.all(8),
-  //             decoration: BoxDecoration(
-  //               color: Colors.orange.withOpacity(0.1),
-  //               borderRadius: BorderRadius.circular(8),
-  //             ),
-  //             child: Icon(Icons.help_outline, color: Colors.orange),
-  //           ),
-  //           SizedBox(width: 12),
-  //           Text('Help & Support'),
-  //         ],
-  //       ),
-  //       content: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Text('Need help? Contact us:'),
-  //           SizedBox(height: 16),
-  //           _buildContactRow(
-  //               Icons.email, 'support@autoservice24.com', Colors.orange),
-  //           SizedBox(height: 12),
-  //           _buildContactRow(Icons.phone, '+1 (555) 123-4567', Colors.orange),
-  //           SizedBox(height: 12),
-  //           _buildContactRow(
-  //               Icons.schedule, 'Mon-Fri: 9 AM - 6 PM', Colors.orange),
-  //         ],
-  //       ),
-  //       actions: [
-  //         ElevatedButton(
-  //           onPressed: () => Get.back(),
-  //           child: Text('OK'),
-  //           style: ElevatedButton.styleFrom(
-  //             backgroundColor: Colors.orange,
-  //             foregroundColor: Colors.white,
-  //             shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.circular(8),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+// void _showHelpDialog() {
+//   Get.dialog(
+//     AlertDialog(
+//       shape: RoundedRectangleBorder(
+//         borderRadius: BorderRadius.circular(16),
+//       ),
+//       title: Row(
+//         children: [
+//           Container(
+//             padding: EdgeInsets.all(8),
+//             decoration: BoxDecoration(
+//               color: Colors.orange.withOpacity(0.1),
+//               borderRadius: BorderRadius.circular(8),
+//             ),
+//             child: Icon(Icons.help_outline, color: Colors.orange),
+//           ),
+//           SizedBox(width: 12),
+//           Text('help_support_title'.tr),
+//         ],
+//       ),
+//       content: Column(
+//         mainAxisSize: MainAxisSize.min,
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Text('need_help_contact'.tr),
+//           SizedBox(height: 16),
+//           _buildContactRow(
+//               Icons.email, 'support_email'.tr, Colors.orange),
+//           SizedBox(height: 12),
+//           _buildContactRow(Icons.phone, 'support_phone'.tr, Colors.orange),
+//           SizedBox(height: 12),
+//           _buildContactRow(
+//               Icons.schedule, 'mon_fri_hours'.tr, Colors.orange),
+//         ],
+//       ),
+//       actions: [
+//         ElevatedButton(
+//           onPressed: () => Get.back(),
+//           child: Text('ok'.tr),
+//           style: ElevatedButton.styleFrom(
+//             backgroundColor: Colors.orange,
+//             foregroundColor: Colors.white,
+//             shape: RoundedRectangleBorder(
+//               borderRadius: BorderRadius.circular(8),
+//             ),
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 
-  // Widget _buildContactRow(IconData icon, String text, Color color) {
-  //   return Row(
-  //     children: [
-  //       Container(
-  //         padding: EdgeInsets.all(6),
-  //         decoration: BoxDecoration(
-  //           color: color.withOpacity(0.1),
-  //           borderRadius: BorderRadius.circular(6),
-  //         ),
-  //         child: Icon(icon, color: color, size: 16),
-  //       ),
-  //       SizedBox(width: 12),
-  //       Expanded(
-  //         child: Text(
-  //           text,
-  //           style: TextStyle(fontSize: 14),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
+// Widget _buildContactRow(IconData icon, String text, Color color) {
+//   return Row(
+//     children: [
+//       Container(
+//         padding: EdgeInsets.all(6),
+//         decoration: BoxDecoration(
+//           color: color.withOpacity(0.1),
+//           borderRadius: BorderRadius.circular(6),
+//         ),
+//         child: Icon(icon, color: color, size: 16),
+//       ),
+//       SizedBox(width: 12),
+//       Expanded(
+//         child: Text(
+//           text,
+//           style: TextStyle(fontSize: 14),
+//         ),
+//       ),
+//     ],
+//   );
+// }
 
-  // void _showAboutDialog() {
-  //   Get.dialog(
-  //     AlertDialog(
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.circular(16),
-  //       ),
-  //       title: Row(
-  //         children: [
-  //           Container(
-  //             padding: EdgeInsets.all(8),
-  //             decoration: BoxDecoration(
-  //               color: Colors.blue.withValues(alpha: 0.1),
-  //               borderRadius: BorderRadius.circular(8),
-  //             ),
-  //             child: Icon(Icons.info_outline, color: Colors.blue),
-  //           ),
-  //           SizedBox(width: 12),
-  //           Text('About CarServiceHub'),
-  //         ],
-  //       ),
-  //       content: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Text(
-  //             'Version: 1.0.0',
-  //             style: TextStyle(fontWeight: FontWeight.bold),
-  //           ),
-  //           SizedBox(height: 8),
-  //           Text(
-  //             'Your Car Service Partner',
-  //             style: TextStyle(
-  //               color: Colors.orange,
-  //               fontWeight: FontWeight.w600,
-  //             ),
-  //           ),
-  //           SizedBox(height: 12),
-  //           Text(
-  //             'Connecting workshop owners with customers for easy automotive service management.',
-  //           ),
-  //           SizedBox(height: 16),
-  //           Text(
-  //             '© 2024 CarServiceHub. All rights reserved.',
-  //             style: TextStyle(
-  //               color: Colors.grey[600],
-  //               fontSize: 12,
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //       actions: [
-  //         ElevatedButton(
-  //           onPressed: () => Get.back(),
-  //           child: Text('OK'),
-  //           style: ElevatedButton.styleFrom(
-  //             backgroundColor: Colors.blue,
-  //             foregroundColor: Colors.white,
-  //             shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.circular(8),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+// void _showAboutDialog() {
+//   Get.dialog(
+//     AlertDialog(
+//       shape: RoundedRectangleBorder(
+//         borderRadius: BorderRadius.circular(16),
+//       ),
+//       title: Row(
+//         children: [
+//           Container(
+//             padding: EdgeInsets.all(8),
+//             decoration: BoxDecoration(
+//               color: Colors.blue.withValues(alpha: 0.1),
+//               borderRadius: BorderRadius.circular(8),
+//             ),
+//             child: Icon(Icons.info_outline, color: Colors.blue),
+//           ),
+//           SizedBox(width: 12),
+//           Text('about_carservicehub'.tr),
+//         ],
+//       ),
+//       content: Column(
+//         mainAxisSize: MainAxisSize.min,
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Text(
+//             'version'.tr,
+//             style: TextStyle(fontWeight: FontWeight.bold),
+//           ),
+//           SizedBox(height: 8),
+//           Text(
+//             'your_car_service_partner'.tr,
+//             style: TextStyle(
+//               color: Colors.orange,
+//               fontWeight: FontWeight.w600,
+//             ),
+//           ),
+//           SizedBox(height: 12),
+//           Text(
+//             'connecting_workshops'.tr,
+//           ),
+//           SizedBox(height: 16),
+//           Text(
+//             'carservicehub_rights'.tr,
+//             style: TextStyle(
+//               color: Colors.grey[600],
+//               fontSize: 12,
+//             ),
+//           ),
+//         ],
+//       ),
+//       actions: [
+//         ElevatedButton(
+//           onPressed: () => Get.back(),
+//           child: Text('ok'.tr),
+//           style: ElevatedButton.styleFrom(
+//             backgroundColor: Colors.blue,
+//             foregroundColor: Colors.white,
+//             shape: RoundedRectangleBorder(
+//               borderRadius: BorderRadius.circular(8),
+//             ),
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
+
+// Widget _buildStatItem(
+//     String label, String value, IconData icon, Color color) {
+//   return Column(
+//     children: [
+//       Container(
+//         padding: EdgeInsets.all(12),
+//         decoration: BoxDecoration(
+//           color: color.withValues(alpha: 0.1),
+//           borderRadius: BorderRadius.circular(12),
+//         ),
+//         child: Icon(icon, color: color, size: 24),
+//       ),
+//       SizedBox(height: 8),
+//       Text(
+//         value,
+//         style: TextStyle(
+//           fontSize: 18,
+//           fontWeight: FontWeight.bold,
+//           color: color,
+//         ),
+//       ),
+//       Text(
+//         label,
+//         style: TextStyle(
+//           color: Colors.grey[600],
+//           fontSize: 12,
+//         ),
+//         textAlign: TextAlign.center,
+//       ),
+//     ],
+//   );
+// }
 }

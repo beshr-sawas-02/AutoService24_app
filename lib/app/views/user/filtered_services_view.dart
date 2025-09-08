@@ -82,7 +82,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                   color: AppColors.primary,
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
+                      loadingProgress.expectedTotalBytes!
                       : null,
                 ),
               ),
@@ -136,9 +136,9 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               color: AppColors.grey400,
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Service Image',
-              style: TextStyle(
+            Text(
+              'service_image'.tr,
+              style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 16,
               ),
@@ -163,8 +163,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
 
       if (currentUserId.isEmpty) {
         Get.snackbar(
-          'Error',
-          'User not logged in',
+          'error'.tr,
+          'user_not_logged_in'.tr,
           backgroundColor: AppColors.error.withValues(alpha: 0.1),
           colorText: AppColors.error,
         );
@@ -172,12 +172,12 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       }
 
       final workshop =
-          await workshopController.getWorkshopById(service.workshopId);
+      await workshopController.getWorkshopById(service.workshopId);
 
       if (workshop == null) {
         Get.snackbar(
-          'Error',
-          'Workshop not found',
+          'error'.tr,
+          'workshop_not_found'.tr,
           backgroundColor: AppColors.error.withValues(alpha: 0.1),
           colorText: AppColors.error,
         );
@@ -189,8 +189,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
 
       if (workshopOwnerId == currentUserId) {
         Get.snackbar(
-          'Info',
-          'You cannot chat with yourself',
+          'info'.tr,
+          'cannot_chat_yourself'.tr,
           backgroundColor: AppColors.info.withValues(alpha: 0.1),
           colorText: AppColors.info,
         );
@@ -209,8 +209,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       );
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Failed to start chat. Please try again.',
+        'error'.tr,
+        'failed_start_chat'.tr,
         backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,
       );
@@ -337,7 +337,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  service.workshopData?['name'] ?? 'Unknown Workshop',
+                  service.workshopData?['name'] ?? 'unknown_workshop'.tr,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -391,19 +391,19 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.delete_outline,
                         size: 18,
                         color: AppColors.error,
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Text(
-                        'Delete Service',
-                        style: TextStyle(
+                        'delete_service'.tr,
+                        style: const TextStyle(
                           color: AppColors.error,
                           fontSize: 14,
                         ),
@@ -425,8 +425,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       width: double.infinity,
       child: service.images.isNotEmpty
           ? ClipRRect(
-              child: _buildImageWidget(service.images.first),
-            )
+        child: _buildImageWidget(service.images.first),
+      )
           : _buildPlaceholderImage(),
     );
   }
@@ -434,19 +434,19 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
   Widget _buildPlaceholderImage() {
     return Container(
       color: AppColors.grey200,
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.build_circle,
               size: 64,
               color: AppColors.grey400,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              'Service Image',
-              style: TextStyle(
+              'service_image'.tr,
+              style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 16,
               ),
@@ -498,17 +498,17 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                   service.workshopData?['location_y'] != null)
                 GestureDetector(
                   onTap: () {},
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.location_on,
                         color: AppColors.textSecondary,
                         size: 16,
                       ),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
-                        'View Location',
-                        style: TextStyle(
+                        'view_location'.tr,
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
@@ -566,7 +566,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                             : AppColors.textSecondary,
                       ),
                       label: Text(
-                        isSaved ? 'Saved' : 'Save',
+                        isSaved ? 'saved'.tr : 'save'.tr,
                         style: TextStyle(
                           color: isSaved
                               ? AppColors.primary
@@ -602,9 +602,9 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                       size: 18,
                       color: AppColors.info,
                     ),
-                    label: const Text(
-                      'Chat',
-                      style: TextStyle(
+                    label: Text(
+                      'chat'.tr,
+                      style: const TextStyle(
                         color: AppColors.info,
                         fontSize: 14,
                       ),
@@ -647,7 +647,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                 ),
                 elevation: 0,
               ),
-              child: const Text('View Details'),
+              child: Text('view_details'.tr),
             ),
           ),
         ],
@@ -662,13 +662,13 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: AppColors.error),
-            SizedBox(width: 12),
+            const Icon(Icons.warning_amber_rounded, color: AppColors.error),
+            const SizedBox(width: 12),
             Text(
-              'Delete Service',
-              style: TextStyle(
+              'delete_service'.tr,
+              style: const TextStyle(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
@@ -679,9 +679,9 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Are you sure you want to delete this service?',
-              style: TextStyle(
+            Text(
+              'confirm_delete_service'.tr,
+              style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 16,
               ),
@@ -718,9 +718,9 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'This action cannot be undone.',
-              style: TextStyle(
+            Text(
+              'action_cannot_be_undone'.tr,
+              style: const TextStyle(
                 color: AppColors.error,
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -731,9 +731,9 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+            child: Text(
+              'cancel'.tr,
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -748,7 +748,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Delete'),
+            child: Text('delete'.tr),
           ),
         ],
       ),
@@ -761,8 +761,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       final success = await serviceController.deleteService(service.id);
       if (success) {
         Get.snackbar(
-          'Deleted',
-          'Service deleted successfully',
+          'deleted'.tr,
+          'service_deleted_successfully'.tr,
           backgroundColor: AppColors.success.withValues(alpha: 0.1),
           colorText: AppColors.success,
           duration: const Duration(seconds: 2),
@@ -775,8 +775,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         await _loadAndFilterServices();
       } else {
         Get.snackbar(
-          'Error',
-          'Failed to delete service. Please try again.',
+          'error'.tr,
+          'failed_delete_service'.tr,
           backgroundColor: AppColors.error.withValues(alpha: 0.1),
           colorText: AppColors.error,
           duration: const Duration(seconds: 3),
@@ -788,8 +788,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       }
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'An error occurred while deleting the service.',
+        'error'.tr,
+        'error_deleting_service'.tr,
         backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,
         duration: const Duration(seconds: 3),
@@ -812,9 +812,9 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
             color: AppColors.grey400,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'No services found',
-            style: TextStyle(
+          Text(
+            'no_services_found'.tr,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppColors.textSecondary,
@@ -823,8 +823,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           const SizedBox(height: 8),
           Text(
             isOwner
-                ? 'You haven\'t created any services for $categoryTitle'
-                : 'No services available for $categoryTitle',
+                ? 'havent_created_services'.tr + ' $categoryTitle'
+                : 'no_services_for_category'.tr + ' $categoryTitle',
             style: const TextStyle(
               fontSize: 14,
               color: AppColors.textHint,
@@ -840,14 +840,14 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
             ),
-            child: const Text('Refresh'),
+            child: Text('refresh'.tr),
           ),
           if (isOwner) ...[
             const SizedBox(height: 12),
             ElevatedButton.icon(
               onPressed: () => Get.toNamed(AppRoutes.addService),
               icon: const Icon(Icons.add),
-              label: const Text('Add Service'),
+              label: Text('add_service'.tr),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.success,
                 foregroundColor: AppColors.white,
@@ -868,20 +868,20 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text(
-          'Login Required',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          'login_required'.tr,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        content: const Text(
-          'Please login or register to access this feature.',
-          style: TextStyle(color: AppColors.textSecondary),
+        content: Text(
+          'login_register_access'.tr,
+          style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+            child: Text(
+              'cancel'.tr,
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -896,7 +896,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Login'),
+            child: Text('login'.tr),
           ),
         ],
       ),

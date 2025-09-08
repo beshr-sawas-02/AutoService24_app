@@ -29,7 +29,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Add Workshop'),
+        title: Text('add_workshop'.tr),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
       ),
@@ -40,9 +40,9 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Create Your Workshop',
-                style: TextStyle(
+              Text(
+                'create_your_workshop'.tr,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -55,7 +55,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: 'Workshop Name',
+                  labelText: 'workshop_name'.tr,
                   labelStyle: const TextStyle(color: AppColors.textSecondary),
                   prefixIcon: const Icon(Icons.business, color: AppColors.textSecondary),
                   border: OutlineInputBorder(
@@ -76,7 +76,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 style: const TextStyle(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter workshop name';
+                    return 'please_enter_workshop_name'.tr;
                   }
                   return null;
                 },
@@ -88,7 +88,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 controller: _descriptionController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  labelText: 'Description',
+                  labelText: 'description'.tr,
                   labelStyle: const TextStyle(color: AppColors.textSecondary),
                   prefixIcon: const Icon(Icons.description, color: AppColors.textSecondary),
                   border: OutlineInputBorder(
@@ -109,7 +109,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 style: const TextStyle(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter description';
+                    return 'please_enter_description'.tr;
                   }
                   return null;
                 },
@@ -120,7 +120,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
               TextFormField(
                 controller: _workingHoursController,
                 decoration: InputDecoration(
-                  labelText: 'Working Hours (e.g., 8:00 AM - 6:00 PM)',
+                  labelText: 'working_hours_example'.tr,
                   labelStyle: const TextStyle(color: AppColors.textSecondary),
                   prefixIcon: const Icon(Icons.access_time, color: AppColors.textSecondary),
                   border: OutlineInputBorder(
@@ -141,7 +141,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 style: const TextStyle(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter working hours';
+                    return 'please_enter_working_hours'.tr;
                   }
                   return null;
                 },
@@ -149,18 +149,18 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
               const SizedBox(height: 24),
 
               // Location Section
-              const Text(
-                'Workshop Location',
-                style: TextStyle(
+              Text(
+                'workshop_location'.tr,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Tap on the map to select your workshop location',
-                style: TextStyle(
+              Text(
+                'tap_map_select_location'.tr,
+                style: const TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 14,
                 ),
@@ -194,8 +194,8 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                       Marker(
                         markerId: const MarkerId('workshop'),
                         position: _selectedLocation!,
-                        infoWindow: const InfoWindow(
-                          title: 'Workshop Location',
+                        infoWindow: InfoWindow(
+                          title: 'workshop_location'.tr,
                         ),
                       ),
                     }
@@ -219,7 +219,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Location selected: ${_selectedLocation!.latitude.toStringAsFixed(4)}, ${_selectedLocation!.longitude.toStringAsFixed(4)}',
+                          'location_selected'.tr + ': ${_selectedLocation!.latitude.toStringAsFixed(4)}, ${_selectedLocation!.longitude.toStringAsFixed(4)}',
                           style: const TextStyle(color: AppColors.success),
                         ),
                       ),
@@ -244,7 +244,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 ),
                 child: workshopController.isLoading.value
                     ? const CircularProgressIndicator(color: AppColors.white)
-                    : const Text('Create Workshop'),
+                    : Text('create_workshop'.tr),
               )),
             ],
           ),
@@ -260,8 +260,8 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
 
     if (_selectedLocation == null) {
       Get.snackbar(
-        'Error',
-        'Please select a location on the map',
+        'error'.tr,
+        'please_select_location'.tr,
         backgroundColor: AppColors.error,
         colorText: AppColors.white,
       );
@@ -269,7 +269,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
     }
 
     if (authController.currentUser.value?.id == null) {
-      Get.snackbar('Error', 'User not logged in');
+      Get.snackbar('error'.tr, 'user_not_logged_in'.tr);
       return;
     }
 
@@ -287,8 +287,8 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
     if (success) {
       Get.back();
       Get.snackbar(
-        'Success',
-        'Workshop created successfully!',
+        'success'.tr,
+        'workshop_created_successfully'.tr,
         backgroundColor: AppColors.success,
         colorText: AppColors.white,
       );

@@ -89,9 +89,9 @@ class UserProfileView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Guest User',
-                    style: TextStyle(
+                  Text(
+                    'guest_user'.tr, // Guest User
+                    style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w300,
                       color: Colors.white,
@@ -100,7 +100,7 @@ class UserProfileView extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'You\'re browsing as a guest',
+                    'browsing_as_guest'.tr, // You're browsing as a guest
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white.withValues(alpha: 0.9),
@@ -114,7 +114,7 @@ class UserProfileView extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () => Get.toNamed(AppRoutes.login),
                       icon: const Icon(Icons.login),
-                      label: const Text('Login to Your Account'),
+                      label: Text('login_to_account'.tr), // Login to Your Account
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.orange,
@@ -133,7 +133,7 @@ class UserProfileView extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: () => Get.toNamed(AppRoutes.register),
                       icon: const Icon(Icons.person_add),
-                      label: const Text('Create New Account'),
+                      label: Text('create_new_account'.tr), // Create New Account
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
                         side: const BorderSide(color: Colors.white),
@@ -331,7 +331,7 @@ class UserProfileView extends StatelessWidget {
 
           // User type
           Text(
-            user.isOwner ? 'Workshop Owner' : 'Regular User',
+            user.isOwner ? 'workshop_owner'.tr : 'regular_user'.tr,
             style: TextStyle(
               fontSize: 18,
               color: Colors.white.withValues(alpha: 0.9),
@@ -344,8 +344,8 @@ class UserProfileView extends StatelessWidget {
   }
 
   Widget _buildContactInformationCard(user) {
-    final email = user.email ?? 'Not provided';
-    final phone = user.phone ?? 'Not provided';
+    final email = user.email ?? 'not_provided'.tr;
+    final phone = user.phone ?? 'not_provided'.tr;
 
     return Container(
       width: double.infinity,
@@ -364,8 +364,8 @@ class UserProfileView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Contact Information',
+           Text(
+            'contact_information'.tr,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -390,7 +390,7 @@ class UserProfileView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Email',
+                    'email'.tr,
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
@@ -427,7 +427,7 @@ class UserProfileView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Phone',
+                    'phone'.tr,
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
@@ -439,7 +439,7 @@ class UserProfileView extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: phone != 'Not provided' ? Colors.black87 : Colors.grey[500],
+                      color: phone != 'not_provided'.tr ? Colors.black87 : Colors.grey[500],
                     ),
                   ),
                 ],
@@ -455,11 +455,11 @@ class UserProfileView extends StatelessWidget {
     final user = authController.currentUser.value!;
 
     return _buildSectionCard(
-      title: 'Profile',
+      title: 'profile'.tr,
       children: [
         _buildProfileOption(
           icon: Icons.edit_outlined,
-          title: 'Edit Profile',
+          title: 'edit_profile'.tr,
           subtitle: 'Update your personal information',
           onTap: () => Get.toNamed(AppRoutes.editProfile),
           iconColor: Colors.orange,

@@ -353,25 +353,74 @@ class AppTranslations extends Translations {
       'service_management_soon': 'Service management coming soon',
       'permanently_delete_account': 'This will permanently delete your account and all data. This action cannot be undone.',
       'failed_delete_account': 'Failed to delete account. Please try again.',
-      //guest_banner
-      'You\'re browsing as a guest':'You\'re browsing as a guest',
-      'Login or register to save services, chat with workshops, and access more features.' : 'Login or register to save services, Chat with workshops, And access more features.',
-      'Register':'Registe',
+
+      // Guest banner
+      'browsing_as_guest': 'You\'re browsing as a guest',
+      'login_register_save_chat': 'Login or register to save services, chat with workshops, and access more features.',
 
       // Language switcher
       'switch_language': 'Switch Language',
       'current_language': 'English',
+
+      // New keys for UserHomeView
+      'error': 'Error',
+      'failed_remove_service': 'Failed to remove service. Please try again.',
+      'error_occurred_try_again': 'An error occurred. Please try again.',
+      'service_image': 'Service Image',
+      'user_not_logged_in': 'User not logged in',
+      'info': 'Info',
+      'view_location': 'View Location',
+      'delete_service': 'Delete Service',
+      'unknown_workshop': 'Unknown Workshop',
+      'confirm_delete_service': 'Are you sure you want to delete this service?',
+      'deleted': 'Deleted',
+      'service_deleted_successfully': 'Service deleted successfully',
+      'failed_delete_service': 'Failed to delete service. Please try again.',
+      'error_deleting_service': 'An error occurred while deleting the service.',
+      'workshop_owner': 'Workshop Owner',
+      'update_personal_information': 'Update your personal information',
+      'success': 'Success',
+      'please_enter_service_title': 'Please enter service title',
+      'please_enter_valid_price': 'Please enter a valid price',
+      'more_images': 'More Images',
+      'contact_workshop_message': 'This feature will open a chat with the workshop owner',
+      'more_images': 'More Images',
+      'contact_workshop_message': 'This feature will open a chat with the workshop owner',
     },
 
     'de': {
-      //guest_banner
-      'You\'re browsing as a guest':"Sie surfen als Gast",
-      'Login or register to save services, chat with workshops, and access more features.':'Melden Sie sich an oder registrieren Sie sich, um Dienstleistungen zu speichern, mit Werkstätten zu chatten und auf mehr Funktionen zuzugreifen.',
-      'Register':'Registrieren',
+      'username': 'Benutzername',
+      'login': 'Anmelden',
+      'password': 'Passwort',
+      'forgot_password': 'Passwort vergessen?',
+      'reset_password': 'Passwort zurücksetzen',
+      'new_password': 'Neues Passwort',
+      'confirm_password': 'Passwort bestätigen',
+      'email': 'E-Mail',
+      'more_images': 'Weitere Bilder',
+      'contact_workshop_message': 'Diese Funktion startet einen Chat mit dem Werkstattbesitzer',
+      'please_enter_service_title': 'Bitte geben Sie den Service-Titel ein',
+      'please_enter_valid_price': 'Bitte geben Sie einen gültigen Preis ein',
+      'success': 'Erfolgreich',
+      'workshop_owner': 'Werkstattbesitzer',
+      'update_personal_information': 'Aktualisieren Sie Ihre persönlichen Informationen',
+      'service_image': 'Service-Bild',
+      'user_not_logged_in': 'Benutzer nicht angemeldet',
+      'info': 'Info',
+      'view_location': 'Standort anzeigen',
+      'delete_service': 'Service löschen',
+      'unknown_workshop': 'Unbekannte Werkstatt',
+      'confirm_delete_service': 'Sind Sie sicher, dass Sie diesen Service löschen möchten?',
+      'deleted': 'Gelöscht',
+      'service_deleted_successfully': 'Service erfolgreich gelöscht',
+      'failed_delete_service': 'Service konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.',
+      'error_deleting_service': 'Es ist ein Fehler beim Löschen des Services aufgetreten.',
+
+      // Guest banner
+      'browsing_as_guest': 'Sie surfen als Gast',
+      'login_register_save_chat': 'Melden Sie sich an oder registrieren Sie sich, um Dienstleistungen zu speichern, mit Werkstätten zu chatten und auf mehr Funktionen zuzugreifen.',
 
       // Auth translations
-      'reset_password': 'Passwort zurücksetzen',
-      'forgot_password': 'Passwort vergessen?',
       'enter_email_reset': 'Geben Sie Ihre E-Mail-Adresse ein, um Ihr Passwort zurückzusetzen',
       'set_new_password': 'Neues Passwort festlegen',
       'create_new_password': 'Erstellen Sie ein neues Passwort für Ihr Konto',
@@ -707,7 +756,6 @@ class AppTranslations extends Translations {
 
       // User Profile translations
       'guest_user': 'Gast-Benutzer',
-      'browsing_as_guest': 'Sie browsen als Gast',
       'login_to_account': 'Bei Ihrem Konto anmelden',
       'create_new_account': 'Neues Konto erstellen',
       'my_workshop': 'Meine Werkstatt',
@@ -722,6 +770,11 @@ class AppTranslations extends Translations {
       // Language switcher
       'switch_language': 'Sprache wechseln',
       'current_language': 'Deutsch',
+
+      // New keys for UserHomeView
+      'error': 'Fehler',
+      'failed_remove_service': 'Service konnte nicht entfernt werden. Bitte versuchen Sie es erneut.',
+      'error_occurred_try_again': 'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
     },
   };
 }
