@@ -159,7 +159,7 @@ class ServiceModel {
     );
   }
 
-  String get formattedPrice => '\$${price.toStringAsFixed(2)}';
+  String get formattedPrice => '\€${price.toStringAsFixed(2)}';
   String get serviceTypeName => serviceType.displayName;
 
   // Helper methods to get workshop info if available

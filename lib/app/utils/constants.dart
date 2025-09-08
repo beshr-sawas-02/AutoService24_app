@@ -1,7 +1,7 @@
 class AppConstants {
   // API Configuration
-  static const String baseUrl = 'http://192.168.201.167:8000';
-  static const String wsUrl = 'ws://192.168.201.167:3005';
+  static const String baseUrl = 'http://10.190.159.167:8000';
+  static const String wsUrl = 'ws://10.190.159.167:3005';
 
   static const int connectionTimeout = 30000;
   static const int receiveTimeout = 30000;

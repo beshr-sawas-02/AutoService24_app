@@ -81,8 +81,8 @@ class _AddServiceViewState extends State<AddServiceView> {
 
               CustomTextField(
                 controller: _priceController,
-                labelText: 'Price (\$)',
-                prefixIcon: Icons.attach_money,
+                labelText: 'Price (\€)',
+                prefixIcon: Icons.euro,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: Validators.validatePrice,
               ),
