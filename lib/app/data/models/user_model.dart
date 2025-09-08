@@ -1,3 +1,5 @@
+import '../../utils/constants.dart';
+
 class UserModel {
   final String id;
   final String email;
@@ -20,14 +22,12 @@ class UserModel {
     this.provider = 'local',
     this.providerId,
   });
-/// here
-  static const String baseUrl = "http://192.168.201.167:8000";
 
 
   String? get fullProfileImage {
     if (profileImage != null && profileImage!.isNotEmpty) {
       if (profileImage!.startsWith('http')) return profileImage;
-      return '$baseUrl$profileImage';
+      return '${AppConstants.baseUrl}$profileImage';
     }
     return null;
   }

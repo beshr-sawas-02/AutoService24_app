@@ -1,3 +1,5 @@
+import '../../utils/constants.dart';
+
 class MessageModel {
   final String id;
   final String senderId;
@@ -8,8 +10,6 @@ class MessageModel {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  ///here
-  static const String baseUrl = "http://192.168.201.167:8000";
 
   MessageModel({
     required this.id,
@@ -26,7 +26,8 @@ class MessageModel {
   String? get fullImageUrl {
     if (image != null && image!.isNotEmpty) {
       if (image!.startsWith('http')) return image;
-      return '$baseUrl$image';
+      return '${AppConstants.baseUrl}$image';
+
     }
     return null;
   }

@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../controllers/chat_controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../config/app_colors.dart';
+import '../../utils/constants.dart';
 import '../../utils/websocket_service.dart';
 
 class ChatView extends StatefulWidget {
@@ -18,6 +22,7 @@ class _ChatViewState extends State<ChatView> {
   final AuthController authController = Get.find<AuthController>();
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
+  final ImagePicker _imagePicker = ImagePicker();
 
   String? chatId;
   late String receiverId;
@@ -31,9 +36,15 @@ class _ChatViewState extends State<ChatView> {
   Timer? _typingTimer;
   bool _isCurrentlyTyping = false;
 
+  // Enhanced duplicate prevention variables
   bool _isSending = false;
   String? _lastMessageContent;
   DateTime? _lastSendTime;
+  XFile? _lastSentImage;
+
+  // Variables for image upload
+  bool _isUploadingImage = false;
+  XFile? _selectedImage;
 
   @override
   void initState() {
@@ -76,7 +87,6 @@ class _ChatViewState extends State<ChatView> {
       return;
     }
 
-    // تحميل بيانات المستخدم المستقبل
     if (receiverId.isNotEmpty) {
       chatController.getUserById(receiverId);
     }
@@ -161,7 +171,6 @@ class _ChatViewState extends State<ChatView> {
       appBar: AppBar(
         title: Row(
           children: [
-            // عرض صورة المستخدم الحقيقية
             Obx(() {
               final receiverUser = chatController.usersCache[receiverId];
 
@@ -188,7 +197,6 @@ class _ChatViewState extends State<ChatView> {
                   ),
                 );
               } else {
-                // لو مافيش صورة، اعرض الحرف الأول
                 return CircleAvatar(
                   backgroundColor: AppColors.whiteWithOpacity(0.2),
                   radius: 20,
@@ -311,7 +319,6 @@ class _ChatViewState extends State<ChatView> {
       ),
       body: Column(
         children: [
-          // Service info banner (if available)
           if (serviceTitle != null) _buildServiceBanner(),
 
           Expanded(
@@ -457,28 +464,9 @@ class _ChatViewState extends State<ChatView> {
               if (message.hasContent) const SizedBox(height: 8),
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  message.fullImageUrl!,
-                  width: 200,
-                  height: 150,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: 200,
-                      height: 150,
-                      color: AppColors.grey300,
-                      child: const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.error, color: AppColors.textSecondary),
-                            Text('Failed to load image',
-                                style: TextStyle(fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                child: GestureDetector(
+                  onTap: () => _showFullImage(message.image!),
+                  child: _buildImageWidget(message.image!),
                 ),
               ),
             ],
@@ -492,6 +480,62 @@ class _ChatViewState extends State<ChatView> {
                 fontSize: 12,
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageWidget(String imageData) {
+    if (imageData.startsWith('data:image/')) {
+      try {
+        final base64Data = imageData.split(',')[1];
+        final bytes = base64Decode(base64Data);
+
+        return Image.memory(
+          bytes,
+          width: 200,
+          height: 150,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildImageErrorWidget();
+          },
+        );
+      } catch (e) {
+        return _buildImageErrorWidget();
+      }
+    }
+    else if (imageData.startsWith('http') || imageData.startsWith('/uploads/')) {
+      String imageUrl = imageData;
+      if (imageData.startsWith('/uploads/')) {
+        imageUrl = '${AppConstants.baseUrl}$imageData';      }
+
+      return Image.network(
+        imageUrl,
+        width: 200,
+        height: 150,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildImageErrorWidget();
+        },
+      );
+    }
+    else {
+      return _buildImageErrorWidget();
+    }
+  }
+
+  Widget _buildImageErrorWidget() {
+    return Container(
+      width: 200,
+      height: 150,
+      color: AppColors.grey300,
+      child: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error, color: AppColors.textSecondary),
+            Text('Failed to load image', style: TextStyle(fontSize: 12)),
           ],
         ),
       ),
@@ -513,6 +557,60 @@ class _ChatViewState extends State<ChatView> {
       ),
       child: Column(
         children: [
+          if (_selectedImage != null)
+            Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.grey100,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      File(_selectedImage!.path),
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _selectedImage!.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const Text(
+                          'Ready to send',
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 20),
+                    onPressed: () {
+                      setState(() {
+                        _selectedImage = null;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+
           Obx(() {
             if (chatController.otherUserTyping.value) {
               return Container(
@@ -555,6 +653,7 @@ class _ChatViewState extends State<ChatView> {
             }
             return const SizedBox.shrink();
           }),
+
           Obx(() {
             final webSocketService = Get.find<WebSocketService>();
             if (!webSocketService.isConnected.value) {
@@ -594,25 +693,59 @@ class _ChatViewState extends State<ChatView> {
             }
             return const SizedBox.shrink();
           }),
+
+          if (_isUploadingImage)
+            Container(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryWithOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Uploading image...',
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
           Row(
             children: [
               IconButton(
                 icon: const Icon(Icons.attach_file,
                     color: AppColors.textSecondary),
-                onPressed: () {
-                  Get.snackbar(
-                    'Feature Coming Soon',
-                    'File attachment will be available soon',
-                    backgroundColor: AppColors.primaryWithOpacity(0.1),
-                    colorText: AppColors.primary,
-                  );
-                },
+                onPressed: _showAttachmentOptions,
               ),
               Expanded(
                 child: TextField(
                   controller: _messageController,
                   decoration: InputDecoration(
-                    hintText: 'Type a message...',
+                    hintText: _selectedImage != null
+                        ? 'Add a caption...'
+                        : 'Type a message...',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(25),
                       borderSide: BorderSide.none,
@@ -648,6 +781,275 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 
+  void _showAttachmentOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.grey300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Select Attachment',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildAttachmentOption(
+                  icon: Icons.camera_alt,
+                  label: 'Camera',
+                  onTap: () {
+                    Get.back();
+                    _pickImageFromCamera();
+                  },
+                ),
+                _buildAttachmentOption(
+                  icon: Icons.photo_library,
+                  label: 'Gallery',
+                  onTap: () {
+                    Get.back();
+                    _pickImageFromGallery();
+                  },
+                ),
+                _buildAttachmentOption(
+                  icon: Icons.insert_drive_file,
+                  label: 'File',
+                  onTap: () {
+                    Get.back();
+                    Get.snackbar(
+                      'Feature Coming Soon',
+                      'File attachment will be available soon',
+                      backgroundColor: AppColors.primaryWithOpacity(0.1),
+                      colorText: AppColors.primary,
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAttachmentOption({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: const BoxDecoration(
+              color: AppColors.primary,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: AppColors.white,
+              size: 30,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickImageFromCamera() async {
+    try {
+      final XFile? image = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+        maxWidth: 1024,
+        maxHeight: 1024,
+      );
+
+      if (image != null) {
+        setState(() {
+          _selectedImage = image;
+        });
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Camera Error',
+        'Unable to access camera. Please enable camera permission in device settings.',
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+        colorText: AppColors.error,
+        duration: const Duration(seconds: 4),
+      );
+    }
+  }
+
+  Future<void> _pickImageFromGallery() async {
+    try {
+      final XFile? image = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+        maxWidth: 1024,
+        maxHeight: 1024,
+      );
+
+      if (image != null) {
+        setState(() {
+          _selectedImage = image;
+        });
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Gallery Error',
+        'Unable to access gallery. Please enable storage permission in device settings.',
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+        colorText: AppColors.error,
+        duration: const Duration(seconds: 4),
+      );
+    }
+  }
+
+  void _showFullImage(String imageData) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.black,
+        child: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: Stack(
+            children: [
+              Center(
+                child: InteractiveViewer(
+                  child: _buildFullImageWidget(imageData),
+                ),
+              ),
+              Positioned(
+                top: 40,
+                right: 20,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                  onPressed: () => Get.back(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFullImageWidget(String imageData) {
+    if (imageData.startsWith('data:image/')) {
+      try {
+        final base64Data = imageData.split(',')[1];
+        final bytes = base64Decode(base64Data);
+
+        return Image.memory(
+          bytes,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error, color: Colors.white, size: 50),
+                  SizedBox(height: 16),
+                  Text(
+                    'Failed to load image',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      } catch (e) {
+        return const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error, color: Colors.white, size: 50),
+              SizedBox(height: 16),
+              Text(
+                'Failed to load image',
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        );
+      }
+    } else if (imageData.startsWith('http') || imageData.startsWith('/uploads/')) {
+      String imageUrl = imageData;
+      if (imageData.startsWith('/uploads/')) {
+        imageUrl = 'http://192.168.201.167:8000$imageData';
+      }
+
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error, color: Colors.white, size: 50),
+                SizedBox(height: 16),
+                Text(
+                  'Failed to load image',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } else {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error, color: Colors.white, size: 50),
+            SizedBox(height: 16),
+            Text(
+              'Failed to load image',
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   void _onTextChanged(String text) {
     if (chatId == null) return;
 
@@ -671,77 +1073,159 @@ class _ChatViewState extends State<ChatView> {
     }
   }
 
+  // Enhanced _sendMessage method with better duplicate prevention
   void _sendMessage() async {
     final content = _messageController.text.trim();
-    if (content.isEmpty) return;
+    final hasImage = _selectedImage != null;
 
-    if (_isSending) {
+    // Basic validation
+    if (content.isEmpty && !hasImage) return;
+
+    // Enhanced duplicate prevention
+    if (_isSending || _isUploadingImage) {
       return;
     }
 
     final now = DateTime.now();
-    if (_lastMessageContent == content &&
+
+    // Check for duplicate text message
+    if (!hasImage &&
+        _lastMessageContent == content &&
         _lastSendTime != null &&
-        now.difference(_lastSendTime!).inMilliseconds < 1000) {
+        now.difference(_lastSendTime!).inMilliseconds < 3000) {
       return;
     }
 
+    // Check for duplicate image message
+    if (hasImage &&
+        _lastSentImage != null &&
+        _selectedImage?.path == _lastSentImage?.path &&
+        _lastSendTime != null &&
+        now.difference(_lastSendTime!).inMilliseconds < 5000) {
+      return;
+    }
+
+    // Lock sending state immediately
     _isSending = true;
     _lastMessageContent = content;
+    _lastSentImage = hasImage ? _selectedImage : null;
     _lastSendTime = now;
 
-    try {
-      _messageController.clear();
+    // Clear input immediately to prevent re-sending
+    final currentSelectedImage = _selectedImage;
+    _messageController.clear();
+    setState(() {
+      _selectedImage = null;
+    });
 
+    try {
       if (isNewChat && (chatId == null || chatId!.isEmpty)) {
-        await _createChatAndSendMessage(content);
+        await _createChatAndSendMessage(content, currentSelectedImage);
         return;
       }
 
-      final success = await chatController.sendMessage(
-        chatId: chatId!,
-        senderId: currentUserId,
-        receiverId: receiverId,
-        content: content,
-      );
+      bool success = false;
 
-      if (success) {
-        _scrollToBottom();
+      if (hasImage && currentSelectedImage != null) {
+        setState(() {
+          _isUploadingImage = true;
+        });
+
+        success = await chatController.sendMessageWithImage(
+          chatId: chatId!,
+          senderId: currentUserId,
+          receiverId: receiverId,
+          content: content.isNotEmpty ? content : null,
+          imageFile: File(currentSelectedImage.path),
+        );
+
+        setState(() {
+          _isUploadingImage = false;
+        });
       } else {
-        _messageController.text = content;
-      }
-    } catch (e) {
-      _messageController.text = content;
-    } finally {
-      Future.delayed(const Duration(milliseconds: 800), () {
-        _isSending = false;
-      });
-    }
-  }
-
-  Future<void> _createChatAndSendMessage(String content) async {
-    try {
-      final newChat =
-      await chatController.createChat(currentUserId, receiverId);
-
-      if (newChat != null) {
-        chatId = newChat.id;
-        isNewChat = false;
-
-        final success = await chatController.sendMessage(
+        success = await chatController.sendMessage(
           chatId: chatId!,
           senderId: currentUserId,
           receiverId: receiverId,
           content: content,
         );
+      }
+
+      if (success) {
+        _scrollToBottom();
+      } else {
+        // Restore input only if sending failed
+        _restoreInputOnFailure(content, currentSelectedImage);
+      }
+    } catch (e) {
+      _restoreInputOnFailure(content, currentSelectedImage);
+    } finally {
+      // Release lock after a delay to prevent rapid duplicate sends
+      Future.delayed(const Duration(milliseconds: 2000), () {
+        _isSending = false;
+      });
+    }
+  }
+
+  // Helper method to restore input on failure
+  void _restoreInputOnFailure(String content, XFile? imageFile) {
+    _messageController.text = content;
+    if (imageFile != null) {
+      setState(() {
+        _selectedImage = imageFile;
+      });
+    }
+
+    Get.snackbar(
+      'Error',
+      'Failed to send message',
+      backgroundColor: AppColors.error.withValues(alpha: 0.1),
+      colorText: AppColors.error,
+    );
+  }
+
+  Future<void> _createChatAndSendMessage(String content, XFile? imageFile) async {
+    try {
+      final newChat = await chatController.createChat(currentUserId, receiverId);
+
+      if (newChat != null) {
+        chatId = newChat.id;
+        isNewChat = false;
+
+        bool success = false;
+
+        if (imageFile != null) {
+          setState(() {
+            _isUploadingImage = true;
+          });
+
+          success = await chatController.sendMessageWithImage(
+            chatId: chatId!,
+            senderId: currentUserId,
+            receiverId: receiverId,
+            content: content.isNotEmpty ? content : null,
+            imageFile: File(imageFile.path),
+          );
+
+          setState(() {
+            _isUploadingImage = false;
+          });
+        } else {
+          success = await chatController.sendMessage(
+            chatId: chatId!,
+            senderId: currentUserId,
+            receiverId: receiverId,
+            content: content,
+          );
+        }
 
         if (success) {
           _scrollToBottom();
         } else {
-          _messageController.text = content;
+          _restoreInputOnFailure(content, imageFile);
         }
       } else {
-        _messageController.text = content;
+        _restoreInputOnFailure(content, imageFile);
         Get.snackbar(
           'Error',
           'Failed to create chat',
@@ -750,7 +1234,7 @@ class _ChatViewState extends State<ChatView> {
         );
       }
     } catch (e) {
-      _messageController.text = content;
+      _restoreInputOnFailure(content, imageFile);
       Get.snackbar(
         'Error',
         'Failed to send message: $e',

@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'dart:io';
+import '../../utils/constants.dart';
 import '../../utils/storage_service.dart';
 
 class ApiProvider {
-  static const String baseUrl = 'http://192.168.201.167:8000';
+  static const String baseUrl = AppConstants.baseUrl;
   late Dio _dio;
 
   ApiProvider(Dio dio) {
@@ -64,10 +65,10 @@ class ApiProvider {
   }
 
   Future<Response> updateProfileWithImage(
-    String userId,
-    Map<String, dynamic> data,
-    File? imageFile,
-  ) async {
+      String userId,
+      Map<String, dynamic> data,
+      File? imageFile,
+      ) async {
     try {
       FormData formData = FormData();
 
@@ -171,7 +172,6 @@ class ApiProvider {
         }
       });
 
-
       if (imageFiles != null && imageFiles.isNotEmpty) {
         for (File imageFile in imageFiles) {
           String fileName = imageFile.path.split('/').last;
@@ -200,7 +200,6 @@ class ApiProvider {
       rethrow;
     }
   }
-
 
   Future<Response> uploadServiceImages(
       String serviceId, List<File> imageFiles) async {
@@ -300,7 +299,6 @@ class ApiProvider {
   Future<Response> sendMessage(Map<String, dynamic> data) async {
     try {
       final response = await _dio.post('/messages/sendmessage', data: data);
-
       return response;
     } on DioException catch (e) {
       rethrow;
@@ -309,42 +307,75 @@ class ApiProvider {
     }
   }
 
-
+  // Updated sendMessageWithImage method
   Future<Response> sendMessageWithImage(
       Map<String, dynamic> data, File? imageFile) async {
     try {
+      if (imageFile == null) {
+        return await sendMessage(data);
+      }
+
+      if (!await imageFile.exists()) {
+        throw Exception('Image file does not exist');
+      }
+
+      // Check file size (max 10MB)
+      final fileSize = await imageFile.length();
+      if (fileSize > 10 * 1024 * 1024) {
+        throw Exception('Image file is too large (max 10MB)');
+      }
+
+
       FormData formData = FormData();
 
-
+      // Add all text data
       data.forEach((key, value) {
         if (value != null) {
           formData.fields.add(MapEntry(key, value.toString()));
         }
       });
 
+      // Add image file
+      String fileName = imageFile.path.split('/').last;
 
-      if (imageFile != null) {
-        String fileName = imageFile.path.split('/').last;
-        formData.files.add(
-          MapEntry(
-            'images',
-            await MultipartFile.fromFile(
-              imageFile.path,
-              filename: fileName,
-            ),
+      formData.files.add(
+        MapEntry(
+          'image', // This matches the backend FileInterceptor field name
+          await MultipartFile.fromFile(
+            imageFile.path,
+            filename: fileName,
           ),
-        );
-      }
+        ),
+      );
 
-      return await _dio.post(
+
+      final response = await _dio.post(
         '/messages/sendmessage',
         data: formData,
         options: Options(
           headers: {
             'Content-Type': 'multipart/form-data',
           },
+          // Add timeout for large files
+          sendTimeout: const Duration(minutes: 2),
+          receiveTimeout: const Duration(minutes: 2),
         ),
       );
+
+
+      return response;
+
+    } on DioException catch (e) {
+
+      if (e.response?.statusCode == 413) {
+        throw Exception('Image file is too large');
+      } else if (e.response?.statusCode == 415) {
+        throw Exception('Image format not supported');
+      } else if (e.response?.statusCode == 500) {
+        throw Exception('Server error - Please try again later');
+      }
+
+      rethrow;
     } catch (e) {
       rethrow;
     }

@@ -25,8 +25,11 @@ class ChatController extends GetxController {
   var isTyping = false.obs;
   var otherUserTyping = false.obs;
 
+  // Enhanced duplicate prevention
   bool _isSendingMessage = false;
+  bool _isSendingImageMessage = false;
   String? _lastSentContent;
+  String? _lastSentImagePath;
   DateTime? _lastSentTime;
 
   @override
@@ -54,7 +57,6 @@ class ChatController extends GetxController {
 
       chats.value = chatList;
 
-
       final chatIds = chatList.map((chat) => chat.id).toList();
       if (chatIds.isNotEmpty && _webSocketService != null) {
         await _webSocketService!.joinRooms(chatIds);
@@ -75,7 +77,6 @@ class ChatController extends GetxController {
       final messageList = await _chatRepository.getChatMessages(chatId);
       messages.value = messageList;
 
-
       if (_webSocketService != null) {
         await _webSocketService!.joinRooms([chatId]);
       }
@@ -94,16 +95,15 @@ class ChatController extends GetxController {
     String? image,
   }) async {
     try {
-
+      // Enhanced duplicate prevention for text messages
       if (_isSendingMessage) {
         return false;
       }
 
-
       final now = DateTime.now();
       if (_lastSentContent == content &&
           _lastSentTime != null &&
-          now.difference(_lastSentTime!).inMilliseconds < 1000) {
+          now.difference(_lastSentTime!).inMilliseconds < 2000) {
         return false;
       }
 
@@ -132,7 +132,7 @@ class ChatController extends GetxController {
 
       final newMessage = await _chatRepository.sendMessage(messageData);
 
-
+      // Enhanced duplicate detection
       final exists = messages.any((m) =>
           m.content == newMessage.content &&
           m.senderId == newMessage.senderId &&
@@ -140,12 +140,11 @@ class ChatController extends GetxController {
           (newMessage.createdAt == null ||
               m.createdAt == null ||
               newMessage.createdAt!.difference(m.createdAt!).inSeconds.abs() <
-                  5));
+                  10));
 
       if (!exists) {
         messages.add(newMessage);
       } else {}
-
 
       if (isTyping.value && _webSocketService != null) {
         _webSocketService!.stopTyping(chatId);
@@ -170,7 +169,7 @@ class ChatController extends GetxController {
 
       return false;
     } finally {
-      Future.delayed(const Duration(milliseconds: 500), () {
+      Future.delayed(const Duration(milliseconds: 1500), () {
         _isSendingMessage = false;
       });
     }
@@ -200,9 +199,6 @@ class ChatController extends GetxController {
     _webSocketService?.disconnect();
   }
 
-
-
-
   Future<UserModel?> getUserById(String userId) async {
     try {
       if (userId.isEmpty || userId == '0' || userId == 'null') {
@@ -216,7 +212,7 @@ class ChatController extends GetxController {
       final user = await _chatRepository.getUserById(userId);
       if (user != null) {
         usersCache[userId] = user;
-      } else {}
+      }
       return user;
     } catch (e) {
       return null;
@@ -313,6 +309,26 @@ class ChatController extends GetxController {
     File? imageFile,
   }) async {
     try {
+      // Enhanced duplicate prevention for image messages
+      if (_isSendingImageMessage) {
+        return false;
+      }
+
+      final now = DateTime.now();
+      final currentImagePath = imageFile?.path;
+
+      // Check for duplicate image based on file path and timing
+      if (currentImagePath != null &&
+          _lastSentImagePath == currentImagePath &&
+          _lastSentTime != null &&
+          now.difference(_lastSentTime!).inMilliseconds < 5000) {
+        return false;
+      }
+
+      _isSendingImageMessage = true;
+      _lastSentImagePath = currentImagePath;
+      _lastSentTime = now;
+
       final newMessage = await _chatRepository.sendMessageWithImage(
         {
           'chatId': chatId,
@@ -323,13 +339,38 @@ class ChatController extends GetxController {
         imageFile,
       );
 
-      messages.add(newMessage);
-      Helpers.showSuccessSnackbar('Message sent successfully');
+      // Enhanced duplicate detection for image messages
+      final exists = messages.any((m) {
+        // Check content match
+        bool contentMatch = (m.content == newMessage.content) ||
+            (m.content?.isEmpty == true && newMessage.content?.isEmpty == true);
+
+        // Check basic fields
+        bool basicMatch =
+            m.senderId == newMessage.senderId && m.chatId == newMessage.chatId;
+
+        // Check timing
+        bool timeMatch = newMessage.createdAt == null ||
+            m.createdAt == null ||
+            newMessage.createdAt!.difference(m.createdAt!).inSeconds.abs() < 15;
+
+        return contentMatch && basicMatch && timeMatch;
+      });
+
+      if (!exists) {
+        messages.add(newMessage);
+        Helpers.showSuccessSnackbar('Image sent successfully');
+      } else {}
+
       return true;
     } catch (e) {
       String errorMessage = _extractErrorMessage(e.toString());
       Helpers.showErrorSnackbar(errorMessage);
       return false;
+    } finally {
+      Future.delayed(const Duration(milliseconds: 2000), () {
+        _isSendingImageMessage = false;
+      });
     }
   }
 

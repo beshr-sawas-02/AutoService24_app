@@ -5,10 +5,11 @@ import 'package:web_socket_channel/status.dart' as status;
 import 'package:get/get.dart';
 import '../controllers/chat_controller.dart';
 import '../data/models/message_model.dart';
+import 'constants.dart';
 import 'storage_service.dart';
 
 class WebSocketService extends GetxService {
-  static const String WS_URL = 'ws://192.168.201.167:3005';
+  static const String WS_URL = AppConstants.wsUrl;
 
   WebSocketChannel? _channel;
   StreamSubscription? _subscription;
