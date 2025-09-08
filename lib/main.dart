@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'app/controllers/Language_Controller.dart';
+import 'app/lang/Translations.dart';
 import 'app/routes/app_routes.dart';
 import 'app/app_module.dart';
 import 'app/utils/storage_service.dart';
@@ -31,9 +32,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final LanguageController languageController = Get.find<LanguageController>();
+
     return GetMaterialApp(
       title: 'CarServiceHub',
       debugShowCheckedModeBanner: false,
+      translations: AppTranslations(),
+      locale: languageController.locale.value,
+      fallbackLocale: const Locale('en'),
       theme: ThemeData(
         // Custom Primary Color Swatch
         primarySwatch: AppColors.createMaterialColor(AppColors.primary),

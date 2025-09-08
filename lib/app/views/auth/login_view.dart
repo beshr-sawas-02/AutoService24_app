@@ -72,6 +72,10 @@ class _LoginViewState extends State<LoginView> {
                   color: AppColors.textSecondary,
                 ),
               ),
+
+              const SizedBox(height: 32),
+
+              _buildLanguageSwitcher(),
               const SizedBox(height: 32),
 
               // Social Login Section
@@ -87,7 +91,8 @@ class _LoginViewState extends State<LoginView> {
               // Divider
               const Row(
                 children: [
-                  Expanded(child: Divider(color: AppColors.border, thickness: 1)),
+                  Expanded(
+                      child: Divider(color: AppColors.border, thickness: 1)),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
@@ -99,7 +104,8 @@ class _LoginViewState extends State<LoginView> {
                       ),
                     ),
                   ),
-                  Expanded(child: Divider(color: AppColors.border, thickness: 1)),
+                  Expanded(
+                      child: Divider(color: AppColors.border, thickness: 1)),
                 ],
               ),
 
@@ -112,8 +118,10 @@ class _LoginViewState extends State<LoginView> {
                 label: 'Email',
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter your email';
-                  if (!GetUtils.isEmail(value)) return 'Please enter a valid email';
+                  if (value == null || value.isEmpty)
+                    return 'Please enter your email';
+                  if (!GetUtils.isEmail(value))
+                    return 'Please enter a valid email';
                   return null;
                 },
               ),
@@ -128,14 +136,18 @@ class _LoginViewState extends State<LoginView> {
                 obscureText: !_isPasswordVisible,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    _isPasswordVisible
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     color: AppColors.textSecondary,
                     size: 22,
                   ),
-                  onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                  onPressed: () =>
+                      setState(() => _isPasswordVisible = !_isPasswordVisible),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter your password';
+                  if (value == null || value.isEmpty)
+                    return 'Please enter your password';
                   return null;
                 },
               ),
@@ -162,32 +174,34 @@ class _LoginViewState extends State<LoginView> {
 
               // Login Button
               Obx(() => SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: authController.isLoading.value ? null : _login,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    elevation: 0,
-                    shadowColor: Colors.transparent,
-                  ),
-                  child: authController.isLoading.value
-                      ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: AppColors.white,
-                      strokeWidth: 2.5,
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: authController.isLoading.value ? null : _login,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16)),
+                        elevation: 0,
+                        shadowColor: Colors.transparent,
+                      ),
+                      child: authController.isLoading.value
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: AppColors.white,
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                          : const Text(
+                              'Login',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
                     ),
-                  )
-                      : const Text(
-                    'Login',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              )),
+                  )),
 
               const SizedBox(height: 40),
 
@@ -197,7 +211,8 @@ class _LoginViewState extends State<LoginView> {
                 children: [
                   const Text(
                     "Don't have an account? ",
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
+                    style:
+                        TextStyle(color: AppColors.textSecondary, fontSize: 15),
                   ),
                   GestureDetector(
                     onTap: () => Get.toNamed(AppRoutes.register),
@@ -220,7 +235,8 @@ class _LoginViewState extends State<LoginView> {
                 child: TextButton(
                   onPressed: () => Get.offAllNamed(AppRoutes.userHome),
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
                   ),
                   child: const Text(
                     'Continue as Guest',
@@ -243,52 +259,83 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget _buildSocialLoginSection() {
-    return Obx(() => Column(
-      children: [
-        // Google Login
-        _buildSocialButton(
-          label: 'Continue with Google',
-          backgroundColor: AppColors.grey100,
-          borderColor: AppColors.grey400,
-          textColor: AppColors.grey800,
-          icon: Icons.account_circle_outlined,
-          iconColor: AppColors.error,
-          onTap: authController.isLoading.value
-              ? null
-              : () => _socialLogin('google'),
-          isGoogle: true,
+  Widget _buildLanguageSwitcher() {
+    return PopupMenuButton<String>(
+      icon: Icon(Icons.language, color: AppColors.textSecondary),
+      onSelected: (String languageCode) {
+        Get.updateLocale(Locale(languageCode));
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'en',
+          child: Row(
+            children: [
+              Text('🇺🇸'),
+              SizedBox(width: 8),
+              Text('english'.tr),
+            ],
+          ),
         ),
-        const SizedBox(height: 16),
-
-        // Facebook Login
-        _buildSocialButton(
-          label: 'Continue with Facebook',
-          backgroundColor: AppColors.info,
-          borderColor: AppColors.info,
-          textColor: AppColors.white,
-          icon: Icons.facebook_rounded,
-          iconColor: AppColors.white,
-          onTap: authController.isLoading.value
-              ? null
-              : () => _socialLogin('facebook'),
-        ),
-
-        // Apple Login
-        const SizedBox(height: 16),
-        _buildSocialButton(
-          label: 'Continue with Apple',
-          backgroundColor: AppColors.textPrimary,
-          borderColor: AppColors.textPrimary,
-          textColor: AppColors.white,
-          icon: Icons.apple_rounded,
-          iconColor: AppColors.white,
-          onTap: authController.isLoading.value
-              ? null
-              : () => _socialLogin('apple'),
+        PopupMenuItem<String>(
+          value: 'de',
+          child: Row(
+            children: [
+              Text('🇩🇪'),
+              SizedBox(width: 8),
+              Text('german'.tr),
+            ],
+          ),
         ),
       ],
-    ));
+    );
+  }
+
+  Widget _buildSocialLoginSection() {
+    return Obx(() => Column(
+          children: [
+            // Google Login
+            _buildSocialButton(
+              label: 'Continue with Google',
+              backgroundColor: AppColors.grey100,
+              borderColor: AppColors.grey400,
+              textColor: AppColors.grey800,
+              icon: Icons.account_circle_outlined,
+              iconColor: AppColors.error,
+              onTap: authController.isLoading.value
+                  ? null
+                  : () => _socialLogin('google'),
+              isGoogle: true,
+            ),
+            const SizedBox(height: 16),
+
+            // Facebook Login
+            _buildSocialButton(
+              label: 'Continue with Facebook',
+              backgroundColor: AppColors.info,
+              borderColor: AppColors.info,
+              textColor: AppColors.white,
+              icon: Icons.facebook_rounded,
+              iconColor: AppColors.white,
+              onTap: authController.isLoading.value
+                  ? null
+                  : () => _socialLogin('facebook'),
+            ),
+
+            // Apple Login
+            const SizedBox(height: 16),
+            _buildSocialButton(
+              label: 'Continue with Apple',
+              backgroundColor: AppColors.textPrimary,
+              borderColor: AppColors.textPrimary,
+              textColor: AppColors.white,
+              icon: Icons.apple_rounded,
+              iconColor: AppColors.white,
+              onTap: authController.isLoading.value
+                  ? null
+                  : () => _socialLogin('apple'),
+            ),
+          ],
+        ));
   }
 
   Widget _buildUserTypeSelection() {
@@ -311,7 +358,8 @@ class _LoginViewState extends State<LoginView> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _buildUserTypeButton('Workshop Owner', Icons.build, 'owner'),
+              child:
+                  _buildUserTypeButton('Workshop Owner', Icons.build, 'owner'),
             ),
           ],
         ),
@@ -413,7 +461,8 @@ class _LoginViewState extends State<LoginView> {
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         errorStyle: const TextStyle(
           color: AppColors.error,
           fontSize: 13,
@@ -466,7 +515,9 @@ class _LoginViewState extends State<LoginView> {
             else
               Icon(
                 icon,
-                color: onTap != null ? (iconColor ?? textColor) : AppColors.textHint,
+                color: onTap != null
+                    ? (iconColor ?? textColor)
+                    : AppColors.textHint,
                 size: 24,
               ),
             const SizedBox(width: 12),
@@ -490,7 +541,8 @@ class _LoginViewState extends State<LoginView> {
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
-      await authController.login(_emailController.text.trim(), _passwordController.text);
+      await authController.login(
+          _emailController.text.trim(), _passwordController.text);
     }
   }
 

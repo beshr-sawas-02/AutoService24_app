@@ -8,7 +8,7 @@ import '../../widgets/guest_banner.dart';
 import '../../config/app_colors.dart';
 
 class UserHomeView extends StatefulWidget {
-   const UserHomeView({super.key});
+  const UserHomeView({super.key});
 
   @override
   _UserHomeViewState createState() => _UserHomeViewState();
@@ -121,6 +121,7 @@ class _UserHomeViewState extends State<UserHomeView> {
         ),
         automaticallyImplyLeading: false,
         actions: [
+          _buildLanguageSwitcher(),
           IconButton(
             icon: const Icon(Icons.message, color: AppColors.textSecondary),
             onPressed: () {
@@ -178,6 +179,54 @@ class _UserHomeViewState extends State<UserHomeView> {
     );
   }
 
+  Widget _buildLanguageSwitcher() {
+    return PopupMenuButton<String>(
+      icon: Icon(Icons.language, color: AppColors.textSecondary),
+      tooltip: 'switch_language'.tr,
+      onSelected: (String languageCode) {
+        Get.updateLocale(Locale(languageCode));
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'en',
+          child: Row(
+            children: [
+              Text('🇺🇸'),
+              SizedBox(width: 8),
+              Text('english'.tr),
+              if (Get.locale?.languageCode == 'en')
+                Spacer()
+              else
+                SizedBox.shrink(),
+              if (Get.locale?.languageCode == 'en')
+                Icon(Icons.check, color: AppColors.primary)
+              else
+                SizedBox.shrink(),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'de',
+          child: Row(
+            children: [
+              Text('🇩🇪'),
+              SizedBox(width: 8),
+              Text('german'.tr),
+              if (Get.locale?.languageCode == 'de')
+                Spacer()
+              else
+                SizedBox.shrink(),
+              if (Get.locale?.languageCode == 'de')
+                Icon(Icons.check, color: AppColors.primary)
+              else
+                SizedBox.shrink(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _getBody() {
     return _buildHomeContent();
   }
@@ -190,7 +239,9 @@ class _UserHomeViewState extends State<UserHomeView> {
 
     return Column(
       children: [
-        Obx(() => authController.isGuest ? const GuestBanner() : const SizedBox.shrink()),
+        Obx(() => authController.isGuest
+            ? const GuestBanner()
+            : const SizedBox.shrink()),
         Expanded(
           child: RefreshIndicator(
             onRefresh: _handleRefresh,
@@ -247,7 +298,8 @@ class _UserHomeViewState extends State<UserHomeView> {
           ),
           filled: true,
           fillColor: AppColors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
         onChanged: (query) {
           setState(() {
@@ -308,8 +360,10 @@ class _UserHomeViewState extends State<UserHomeView> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              (category['color'] as Color).withValues(alpha: 0.8),
-                              (category['color'] as Color).withValues(alpha: 0.6),
+                              (category['color'] as Color)
+                                  .withValues(alpha: 0.8),
+                              (category['color'] as Color)
+                                  .withValues(alpha: 0.6),
                             ],
                           ),
                         ),
@@ -355,44 +409,44 @@ class _UserHomeViewState extends State<UserHomeView> {
     );
   }
 
-  // void _showGuestDialog() {
-  //   Get.dialog(
-  //     AlertDialog(
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.circular(16),
-  //       ),
-  //       title: const Text(
-  //         'Login Required',
-  //         style: TextStyle(fontWeight: FontWeight.bold),
-  //       ),
-  //       content: const Text(
-  //         'Please login or register to access this feature.',
-  //         style: TextStyle(color: Colors.grey),
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Get.back(),
-  //           child: const Text(
-  //             'Cancel',
-  //             style: TextStyle(color: AppColors.textSecondary),
-  //           ),
-  //         ),
-  //         ElevatedButton(
-  //           onPressed: () {
-  //             Get.back();
-  //             Get.toNamed(AppRoutes.login);
-  //           },
-  //           style: ElevatedButton.styleFrom(
-  //             backgroundColor: AppColors.primary,
-  //             foregroundColor: AppColors.white,
-  //             shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.circular(8),
-  //             ),
-  //           ),
-  //           child: const Text('Login'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+// void _showGuestDialog() {
+//   Get.dialog(
+//     AlertDialog(
+//       shape: RoundedRectangleBorder(
+//         borderRadius: BorderRadius.circular(16),
+//       ),
+//       title: const Text(
+//         'Login Required',
+//         style: TextStyle(fontWeight: FontWeight.bold),
+//       ),
+//       content: const Text(
+//         'Please login or register to access this feature.',
+//         style: TextStyle(color: Colors.grey),
+//       ),
+//       actions: [
+//         TextButton(
+//           onPressed: () => Get.back(),
+//           child: const Text(
+//             'Cancel',
+//             style: TextStyle(color: AppColors.textSecondary),
+//           ),
+//         ),
+//         ElevatedButton(
+//           onPressed: () {
+//             Get.back();
+//             Get.toNamed(AppRoutes.login);
+//           },
+//           style: ElevatedButton.styleFrom(
+//             backgroundColor: AppColors.primary,
+//             foregroundColor: AppColors.white,
+//             shape: RoundedRectangleBorder(
+//               borderRadius: BorderRadius.circular(8),
+//             ),
+//           ),
+//           child: const Text('Login'),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 }
