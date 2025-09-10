@@ -7,6 +7,69 @@ import 'constants.dart';
 class LocationService extends GetxService {
   var currentPosition = Rx<Position?>(null);
   var isLoading = false.obs;
+  var hasLocationPermission = false.obs;
+  var isLocationServiceEnabled = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    checkLocationServices();
+  }
+
+  /// Check if location services are enabled and permissions are granted
+  Future<void> checkLocationServices() async {
+    try {
+      isLoading.value = true;
+
+      // Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      isLocationServiceEnabled.value = serviceEnabled;
+
+      if (!serviceEnabled) {
+        Helpers.showErrorSnackbar('Please enable location services');
+        return;
+      }
+
+      // Check location permission
+      bool hasPermission = await checkPermission();
+      hasLocationPermission.value = hasPermission;
+
+      if (hasPermission) {
+        await getCurrentLocation();
+      }
+    } catch (e) {
+      Helpers.showErrorSnackbar('Error checking location services: ${e.toString()}');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Check if location permission is granted
+  Future<bool> checkPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    return permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse;
+  }
+
+  /// Request location permission from user
+  Future<bool> requestLocationPermission() async {
+    try {
+      bool hasPermission = await PermissionService.requestLocationPermission();
+      hasLocationPermission.value = hasPermission;
+
+      if (hasPermission) {
+        await getCurrentLocation();
+        Helpers.showSuccessSnackbar('Location permission granted');
+      } else {
+        Helpers.showErrorSnackbar('Location permission is required');
+      }
+
+      return hasPermission;
+    } catch (e) {
+      Helpers.showErrorSnackbar('Error requesting location permission: ${e.toString()}');
+      return false;
+    }
+  }
 
   // Get current location
   Future<Position?> getCurrentLocation() async {
@@ -14,9 +77,12 @@ class LocationService extends GetxService {
       isLoading.value = true;
 
       // Check and request permissions
-      bool hasPermission = await PermissionService.requestLocationPermission();
+      bool hasPermission = await checkPermission();
       if (!hasPermission) {
-        return null;
+        hasPermission = await requestLocationPermission();
+        if (!hasPermission) {
+          return null;
+        }
       }
 
       // Get current position
@@ -85,7 +151,11 @@ class LocationService extends GetxService {
       return '${distanceInMeters.round()} m';
     } else {
       double kilometers = distanceInMeters / 1000;
-      return '${kilometers.toStringAsFixed(1)} km';
+      if (kilometers < 10) {
+        return '${kilometers.toStringAsFixed(1)} km';
+      } else {
+        return '${kilometers.round()} km';
+      }
     }
   }
 
@@ -99,6 +169,36 @@ class LocationService extends GetxService {
       ) {
     double distance = calculateDistance(centerLat, centerLng, pointLat, pointLng);
     return distance <= radiusInMeters;
+  }
+
+  /// Convert kilometers to meters
+  double kilometersToMeters(double kilometers) {
+    return kilometers * 1000;
+  }
+
+  /// Convert meters to kilometers
+  double metersToKilometers(double meters) {
+    return meters / 1000;
+  }
+
+  /// Check if coordinates are valid
+  bool areValidCoordinates(double latitude, double longitude) {
+    return latitude >= -90.0 &&
+        latitude <= 90.0 &&
+        longitude >= -180.0 &&
+        longitude <= 180.0;
+  }
+
+  /// Check if a point is within a circular area
+  bool isPointInCircle(
+      double pointLat,
+      double pointLng,
+      double centerLat,
+      double centerLng,
+      double radiusMeters,
+      ) {
+    double distance = calculateDistance(pointLat, pointLng, centerLat, centerLng);
+    return distance <= radiusMeters;
   }
 
   // Get address from coordinates (reverse geocoding)
@@ -192,6 +292,62 @@ class LocationService extends GetxService {
   // Open app settings
   Future<void> openAppSettings() async {
     await Geolocator.openAppSettings();
+  }
+
+  /// Methods needed for Mapbox integration
+
+  /// Get current position with error handling for Mapbox
+  static Future<Position> getCurrentPositionStatic() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw Exception('Location services are disabled');
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        throw Exception('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      throw Exception('Location permissions are permanently denied');
+    }
+
+    return await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+      timeLimit: const Duration(seconds: 10),
+    );
+  }
+
+  /// Check permission statically for Mapbox
+  static Future<bool> checkPermissionStatic() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    return permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse;
+  }
+
+  /// Request permission statically for Mapbox
+  static Future<bool> requestPermissionStatic() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return false;
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return false;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return false;
+    }
+
+    return true;
   }
 }
 

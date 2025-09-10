@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import '../../controllers/workshop_controller.dart';
 import '../../controllers/service_controller.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/map_controller.dart';
 import '../../data/models/workshop_model.dart';
 import '../../widgets/service_card.dart';
 import '../../routes/app_routes.dart';
@@ -20,9 +21,10 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
   final WorkshopController workshopController = Get.find<WorkshopController>();
   final ServiceController serviceController = Get.find<ServiceController>();
   final AuthController authController = Get.find<AuthController>();
+  final MapController mapController = Get.find<MapController>();
 
   late WorkshopModel workshop;
-  GoogleMapController? _mapController;
+  MapboxMap? _mapboxMap;
 
   @override
   void initState() {
@@ -220,35 +222,47 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: GoogleMap(
-          onMapCreated: (GoogleMapController controller) {
-            _mapController = controller;
-          },
-          initialCameraPosition: CameraPosition(
-            target: LatLng(workshop.latitude, workshop.longitude),
-            zoom: 15,
-          ),
-          markers: {
-            Marker(
-              markerId: MarkerId(workshop.id),
-              position: LatLng(workshop.latitude, workshop.longitude),
-              infoWindow: InfoWindow(
-                title: workshop.name,
-                snippet: workshop.workingHours,
+        child: MapWidget(
+          key: const ValueKey("workshopDetailsMap"),
+          cameraOptions: CameraOptions(
+            center: Point(
+              coordinates: Position(
+                workshop.longitude,
+                workshop.latitude,
               ),
-              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
             ),
-          },
-          zoomControlsEnabled: false,
-          scrollGesturesEnabled: true,
-          zoomGesturesEnabled: true,
-          onTap: (LatLng location) {
-            // Open full map view
-            Get.toNamed(AppRoutes.map);
-          },
+            zoom: 15.0,
+          ),
+          onMapCreated: _onMapCreated,
+         // onTapListener: _onMapTap,
         ),
       ),
     );
+  }
+
+  void _onMapCreated(MapboxMap mapboxMap) {
+    _mapboxMap = mapboxMap;
+    mapController.setMapboxMap(mapboxMap);
+    _setupMapWithWorkshopMarker();
+  }
+
+  Future<void> _setupMapWithWorkshopMarker() async {
+    if (_mapboxMap != null) {
+      await mapController.setupAnnotationManagers();
+
+      // Add workshop marker
+      await mapController.addMarker(
+        workshop.latitude,
+        workshop.longitude,
+        title: workshop.name,
+        userData: {'workshopId': workshop.id},
+      );
+    }
+  }
+
+  void _onMapTap(ScreenCoordinate coordinate) {
+    // Open full map view when tapped
+    Get.toNamed(AppRoutes.map);
   }
 
   Widget _buildServicesSection() {
@@ -268,7 +282,8 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             ),
             TextButton(
               onPressed: () {
-                // Show all services
+                // Show all services for this workshop
+                _showAllWorkshopServices();
               },
               child: Text('view_all'.tr),
             ),
@@ -293,7 +308,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
           return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: workshopServices.length,
+            itemCount: workshopServices.length > 3 ? 3 : workshopServices.length, // Show max 3 services
             itemBuilder: (context, index) {
               return ServiceCard(
                 service: workshopServices[index],
@@ -345,8 +360,28 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
   }
 
   void _loadWorkshopServices() {
-    // This would typically filter services by workshop ID
+    // Load services for this workshop
     serviceController.loadServices();
+  }
+
+  void _showAllWorkshopServices() {
+    // Filter services by workshop and navigate to filtered view
+    final workshopServices = serviceController.services
+        .where((service) => service.workshopId == workshop.id)
+        .toList();
+
+    if (workshopServices.isNotEmpty) {
+      // You could create a dedicated view for workshop services
+      // or use the existing filtered services view with workshop filter
+      Get.toNamed(
+        AppRoutes.filteredServices,
+        arguments: {
+          'workshopId': workshop.id,
+          'title': '${workshop.name} Services',
+          'isWorkshopFilter': true,
+        },
+      );
+    }
   }
 
   void _startChat() {
@@ -360,19 +395,41 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
     // In a real app, you would:
     // 1. Create or find existing chat
     // 2. Navigate to chat view
-    Get.toNamed(AppRoutes.chatList);
+    Get.toNamed(
+      AppRoutes.chat,
+      arguments: {
+        'receiverId': workshop.userId,
+        'receiverName': workshop.name,
+        'currentUserId': authController.currentUser.value?.id,
+      },
+    );
   }
 
   void _showGuestDialog() {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: Text('login_required'.tr, style: const TextStyle(color: AppColors.textPrimary)),
-        content: Text('login_contact_workshops'.tr, style: const TextStyle(color: AppColors.textSecondary)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          'login_required'.tr,
+          style: const TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          'login_contact_workshops'.tr,
+          style: const TextStyle(color: AppColors.textSecondary),
+        ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('cancel'.tr),
+            child: Text(
+              'cancel'.tr,
+              style: const TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -382,6 +439,9 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             child: Text('login'.tr),
           ),

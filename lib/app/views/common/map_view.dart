@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart' as geo;
 import '../../controllers/workshop_controller.dart';
+import '../../controllers/map_controller.dart';
 import '../../data/models/workshop_model.dart';
 import '../../routes/app_routes.dart';
 import '../../config/app_colors.dart';
@@ -16,49 +17,72 @@ class MapView extends StatefulWidget {
 
 class _MapViewState extends State<MapView> {
   final WorkshopController workshopController = Get.find<WorkshopController>();
-  GoogleMapController? _mapController;
-  Position? _currentPosition;
-  Set<Marker> _markers = {};
+  final MapController mapController = Get.find<MapController>();
+
+  MapboxMap? _mapboxMap;
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
-    _loadWorkshopMarkers();
+    _initializeMap();
+  }
+
+  Future<void> _initializeMap() async {
+    await mapController.checkLocationServices();
+    await _loadWorkshopMarkers();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Workshop Locations'),
+        title: Text('workshop_locations'.tr),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              Get.toNamed(AppRoutes.workshopMapSearch);
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.my_location),
             onPressed: _goToCurrentLocation,
           ),
         ],
       ),
-      body: GoogleMap(
-        onMapCreated: (GoogleMapController controller) {
-          _mapController = controller;
-        },
-        initialCameraPosition: const CameraPosition(
-          target: LatLng(33.5138, 36.2765), // Damascus, Syria default
-          zoom: 12,
-        ),
-        markers: _markers,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: false,
-        onTap: (LatLng location) {
-          // Handle map tap if needed
-        },
-      ),
+      body: Obx(() {
+        final currentPos = mapController.currentPosition.value;
+        return MapWidget(
+          key: const ValueKey("workshopMapWidget"),
+          cameraOptions: CameraOptions(
+            center: Point(
+              coordinates: Position(
+                currentPos?.longitude ?? 36.2765,
+                currentPos?.latitude ?? 33.5138,
+              ),
+            ),
+            zoom: 12.0,
+          ),
+          onMapCreated: _onMapCreated,
+          //onTapListener: _onMapTap,
+        );
+      }),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          FloatingActionButton(
+            heroTag: "search",
+            onPressed: () {
+              Get.toNamed(AppRoutes.workshopMapSearch);
+            },
+            backgroundColor: AppColors.info,
+            foregroundColor: AppColors.white,
+            mini: true,
+            child: const Icon(Icons.search),
+          ),
+          const SizedBox(height: 10),
           FloatingActionButton(
             heroTag: "refresh",
             onPressed: _loadWorkshopMarkers,
@@ -80,87 +104,89 @@ class _MapViewState extends State<MapView> {
     );
   }
 
-  Future<void> _getCurrentLocation() async {
-    try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        Get.snackbar('Error', 'Location services are disabled');
-        return;
-      }
+  void _onMapCreated(MapboxMap mapboxMap) {
+    _mapboxMap = mapboxMap;
+    mapController.setMapboxMap(mapboxMap);
+    _setupAnnotationManagers();
+  }
 
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          Get.snackbar('Error', 'Location permissions are denied');
-          return;
+  Future<void> _setupAnnotationManagers() async {
+    await mapController.setupAnnotationManagers();
+    _loadWorkshopMarkers();
+  }
+
+  // Handle map tap to detect nearby workshops - Updated for new Mapbox version
+  @override
+  void onMapTap(ScreenCoordinate coordinate) {
+    if (_mapboxMap != null) {
+      _mapboxMap!.coordinateForPixel(coordinate).then((point) {
+        // Extract coordinates from Point object with proper type casting
+        final coordinates = point.coordinates;
+        final lat = coordinates.lat.toDouble();
+        final lng = coordinates.lng.toDouble();
+
+        // Find the nearest workshop to the tap location
+        WorkshopModel? nearestWorkshop = _findNearestWorkshop(lat, lng);
+
+        if (nearestWorkshop != null) {
+          _showWorkshopBottomSheet(nearestWorkshop);
         }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        Get.snackbar('Error', 'Location permissions are permanently denied');
-        return;
-      }
-
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-
-      setState(() {
-        _currentPosition = position;
+      }).catchError((error) {
+        // Handle any errors in coordinate conversion
+        print('Error getting coordinates: $error');
       });
-
-      if (_mapController != null) {
-        _mapController!.animateCamera(
-          CameraUpdate.newLatLng(
-            LatLng(position.latitude, position.longitude),
-          ),
-        );
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to get current location: ${e.toString()}');
     }
   }
 
-  void _goToCurrentLocation() {
-    if (_currentPosition != null && _mapController != null) {
-      _mapController!.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-            zoom: 15,
-          ),
-        ),
-      );
-    } else {
-      _getCurrentLocation();
-    }
-  }
-
-  void _loadWorkshopMarkers() {
-    setState(() {
-      _markers.clear();
-    });
+  // Find nearest workshop to tap location
+  WorkshopModel? _findNearestWorkshop(double lat, double lng) {
+    WorkshopModel? nearest;
+    double minDistance = double.infinity;
+    const double maxTapDistance = 1000; // 1km maximum tap distance
 
     for (WorkshopModel workshop in workshopController.workshops) {
       if (workshop.latitude != 0.0 && workshop.longitude != 0.0) {
-        _markers.add(
-          Marker(
-            markerId: MarkerId(workshop.id),
-            position: LatLng(workshop.latitude, workshop.longitude),
-            infoWindow: InfoWindow(
-              title: workshop.name,
-              snippet: workshop.workingHours,
-              onTap: () {
-                _showWorkshopBottomSheet(workshop);
-              },
-            ),
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
-          ),
+        double distance = mapController.calculateDistance(
+            lat, lng,
+            workshop.latitude, workshop.longitude
+        );
+
+        if (distance < minDistance && distance < maxTapDistance) {
+          minDistance = distance;
+          nearest = workshop;
+        }
+      }
+    }
+
+    return nearest;
+  }
+
+  void _goToCurrentLocation() {
+    final currentPos = mapController.currentPosition.value;
+    if (currentPos != null && _mapboxMap != null) {
+      mapController.flyToLocation(
+        currentPos.latitude,
+        currentPos.longitude,
+        zoom: 15.0,
+      );
+    } else {
+      mapController.getCurrentLocation();
+    }
+  }
+
+  Future<void> _loadWorkshopMarkers() async {
+    await mapController.clearMarkers();
+
+    // Add workshop markers (simplified - no userData)
+    for (WorkshopModel workshop in workshopController.workshops) {
+      if (workshop.latitude != 0.0 && workshop.longitude != 0.0) {
+        await mapController.addMarker(
+          workshop.latitude,
+          workshop.longitude,
+          title: workshop.name,
         );
       }
     }
-    setState(() {});
   }
 
   void _showWorkshopBottomSheet(WorkshopModel workshop) {
@@ -275,7 +301,7 @@ class _MapViewState extends State<MapView> {
                         foregroundColor: AppColors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: const Text('View Details'),
+                      child: Text('view_details'.tr),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -289,25 +315,32 @@ class _MapViewState extends State<MapView> {
                         side: const BorderSide(color: AppColors.primary),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: const Text('Directions'),
+                      child: Text('directions'.tr),
                     ),
                   ),
                 ],
               ),
 
-              if (_currentPosition != null) ...[
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    const Icon(Icons.directions_car, size: 16, color: AppColors.textSecondary),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Distance: ${_calculateDistance(workshop).toStringAsFixed(1)} km',
-                      style: const TextStyle(color: AppColors.textSecondary),
+              // Distance info
+              Obx(() {
+                final currentPos = mapController.currentPosition.value;
+                if (currentPos != null) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.directions_car, size: 16, color: AppColors.textSecondary),
+                        const SizedBox(width: 8),
+                        Text(
+                          'distance'.tr + ': ${mapController.formatDistance(_calculateDistance(workshop, currentPos))}',
+                          style: const TextStyle(color: AppColors.textSecondary),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ],
+                  );
+                }
+                return const SizedBox();
+              }),
             ],
           ),
         ),
@@ -315,22 +348,19 @@ class _MapViewState extends State<MapView> {
     );
   }
 
-  double _calculateDistance(WorkshopModel workshop) {
-    if (_currentPosition == null) return 0.0;
-
-    return Geolocator.distanceBetween(
-      _currentPosition!.latitude,
-      _currentPosition!.longitude,
+  double _calculateDistance(WorkshopModel workshop, geo.Position currentPosition) {
+    return mapController.calculateDistance(
+      currentPosition.latitude,
+      currentPosition.longitude,
       workshop.latitude,
       workshop.longitude,
-    ) / 1000; // Convert to kilometers
+    );
   }
 
   void _getDirections(WorkshopModel workshop) {
-    // This would typically open Google Maps or another navigation app
     Get.snackbar(
-      'Directions',
-      'Opening directions to ${workshop.name}',
+      'directions'.tr,
+      'opening_directions_to'.tr + ' ${workshop.name}',
       snackPosition: SnackPosition.BOTTOM,
     );
   }

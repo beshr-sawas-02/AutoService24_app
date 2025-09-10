@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart' as geo;
 import '../../controllers/workshop_controller.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/map_controller.dart';
 import '../../config/app_colors.dart';
 
 class AddWorkshopView extends StatefulWidget {
@@ -15,14 +17,27 @@ class AddWorkshopView extends StatefulWidget {
 class _AddWorkshopViewState extends State<AddWorkshopView> {
   final WorkshopController workshopController = Get.find<WorkshopController>();
   final AuthController authController = Get.find<AuthController>();
+  final MapController mapController = Get.find<MapController>();
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _workingHoursController = TextEditingController();
 
-  LatLng? _selectedLocation;
-  GoogleMapController? _mapController;
+  MapboxMap? _mapboxMap;
+  geo.Position? _currentPosition;
+  Point? _selectedLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeMap();
+  }
+
+  Future<void> _initializeMap() async {
+    await mapController.checkLocationServices();
+    _getCurrentLocation();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,28 +67,10 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
               const SizedBox(height: 24),
 
               // Workshop Name
-              TextFormField(
+              _buildTextField(
                 controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'workshop_name'.tr,
-                  labelStyle: const TextStyle(color: AppColors.textSecondary),
-                  prefixIcon: const Icon(Icons.business, color: AppColors.textSecondary),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.borderFocus),
-                  ),
-                  filled: true,
-                  fillColor: AppColors.white,
-                ),
-                style: const TextStyle(color: AppColors.textPrimary),
+                labelText: 'workshop_name'.tr,
+                icon: Icons.business,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'please_enter_workshop_name'.tr;
@@ -84,29 +81,11 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
               const SizedBox(height: 16),
 
               // Description
-              TextFormField(
+              _buildTextField(
                 controller: _descriptionController,
+                labelText: 'description'.tr,
+                icon: Icons.description,
                 maxLines: 3,
-                decoration: InputDecoration(
-                  labelText: 'description'.tr,
-                  labelStyle: const TextStyle(color: AppColors.textSecondary),
-                  prefixIcon: const Icon(Icons.description, color: AppColors.textSecondary),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.borderFocus),
-                  ),
-                  filled: true,
-                  fillColor: AppColors.white,
-                ),
-                style: const TextStyle(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'please_enter_description'.tr;
@@ -117,28 +96,10 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
               const SizedBox(height: 16),
 
               // Working Hours
-              TextFormField(
+              _buildTextField(
                 controller: _workingHoursController,
-                decoration: InputDecoration(
-                  labelText: 'working_hours_example'.tr,
-                  labelStyle: const TextStyle(color: AppColors.textSecondary),
-                  prefixIcon: const Icon(Icons.access_time, color: AppColors.textSecondary),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.borderFocus),
-                  ),
-                  filled: true,
-                  fillColor: AppColors.white,
-                ),
-                style: const TextStyle(color: AppColors.textPrimary),
+                labelText: 'working_hours_example'.tr,
+                icon: Icons.access_time,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'please_enter_working_hours'.tr;
@@ -167,7 +128,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
               ),
               const SizedBox(height: 12),
 
-              // Map
+              // Mapbox Map
               Container(
                 height: 300,
                 decoration: BoxDecoration(
@@ -176,31 +137,25 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: GoogleMap(
-                    onMapCreated: (GoogleMapController controller) {
-                      _mapController = controller;
-                    },
-                    initialCameraPosition: const CameraPosition(
-                      target: LatLng(33.5138, 36.2765), // Damascus, Syria default
-                      zoom: 12,
-                    ),
-                    onTap: (LatLng location) {
-                      setState(() {
-                        _selectedLocation = location;
-                      });
-                    },
-                    markers: _selectedLocation != null
-                        ? {
-                      Marker(
-                        markerId: const MarkerId('workshop'),
-                        position: _selectedLocation!,
-                        infoWindow: InfoWindow(
-                          title: 'workshop_location'.tr,
+                  child: Obx(() {
+                    final currentPos = mapController.currentPosition.value;
+                    return MapWidget(
+                      key: const ValueKey("mapWidget"),
+                      cameraOptions: CameraOptions(
+                        center: Point(
+                          coordinates: Position(
+                            currentPos?.longitude ?? 36.2765,
+                            currentPos?.latitude ?? 33.5138,
+                          ),
                         ),
+                        zoom: 12.0,
                       ),
-                    }
-                        : {},
-                  ),
+                      onMapCreated: _onMapCreated,
+                      // onTapListener: OnMapTapListener(
+                      //   onMapTap: _onMapTap,
+                      // ),
+                    );
+                  }),
                 ),
               ),
 
@@ -219,7 +174,8 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'location_selected'.tr + ': ${_selectedLocation!.latitude.toStringAsFixed(4)}, ${_selectedLocation!.longitude.toStringAsFixed(4)}',
+                          'location_selected'.tr +
+                              ': ${_selectedLocation!.coordinates.lat.toStringAsFixed(4)}, ${_selectedLocation!.coordinates.lng.toStringAsFixed(4)}',
                           style: const TextStyle(color: AppColors.success),
                         ),
                       ),
@@ -253,6 +209,95 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
     );
   }
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    required IconData icon,
+    int maxLines = 1,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: labelText,
+        labelStyle: const TextStyle(color: AppColors.textSecondary),
+        prefixIcon: Icon(icon, color: AppColors.textSecondary),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.borderFocus),
+        ),
+        filled: true,
+        fillColor: AppColors.white,
+      ),
+      style: const TextStyle(color: AppColors.textPrimary),
+      validator: validator,
+    );
+  }
+
+  void _onMapCreated(MapboxMap mapboxMap) {
+    _mapboxMap = mapboxMap;
+    mapController.setMapboxMap(mapboxMap);
+    _setupAnnotationManagers();
+  }
+
+  Future<void> _setupAnnotationManagers() async {
+    if (_mapboxMap != null) {
+      await mapController.setupAnnotationManagers();
+    }
+  }
+
+  void _onMapTap(ScreenCoordinate coordinate) {
+    if (_mapboxMap != null) {
+      _mapboxMap!.coordinateForPixel(coordinate).then((point) {
+        // Point object is returned directly, no need to convert from Map
+        setState(() {
+          _selectedLocation = point;
+        });
+        _addMarkerToMap(point);
+      }).catchError((error) {
+        print('Error getting coordinates: $error');
+      });
+    }
+  }
+
+  Future<void> _addMarkerToMap(Point point) async {
+    await mapController.clearMarkers();
+    await mapController.addMarker(
+      point.coordinates.lat.toDouble(),
+      point.coordinates.lng.toDouble(),
+      title: "Workshop Location",
+    );
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      final position = await mapController.getCurrentLocation();
+      setState(() {
+        _currentPosition = position;
+      });
+
+      // Move camera to current location
+      if (_mapboxMap != null && position != null) {
+        await mapController.flyToLocation(
+          position.latitude,
+          position.longitude,
+          zoom: 15.0,
+        );
+      }
+    } catch (e) {
+      print('Error getting location: $e');
+    }
+  }
+
   void _createWorkshop() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -277,8 +322,13 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
       'user_id': authController.currentUser.value!.id,
       'name': _nameController.text.trim(),
       'description': _descriptionController.text.trim(),
-      'location_x': _selectedLocation!.latitude.toString(),
-      'location_y': _selectedLocation!.longitude.toString(),
+      'location': {
+        'type': 'Point',
+        'coordinates': [
+          _selectedLocation!.coordinates.lng.toDouble(),
+          _selectedLocation!.coordinates.lat.toDouble(),
+        ],
+      },
       'working_hours': _workingHoursController.text.trim(),
     };
 

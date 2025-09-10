@@ -5,6 +5,7 @@ import '../../utils/storage_service.dart';
 
 class ApiProvider {
   static const String baseUrl = AppConstants.baseUrl;
+  static const String MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiYWxpYWxiYXlhdGk0NjgiLCJhIjoiY21mYTYwam05MWs4azJsczRtMjN2ZDR1aCJ9.o9xLo4WvTnVTmm0xVsKphA";
   late Dio _dio;
 
   ApiProvider(Dio dio) {
@@ -139,6 +140,66 @@ class ApiProvider {
   Future<Response> createWorkshop(Map<String, dynamic> data) async {
     return await _dio.post('/workshop/createworkshop', data: data);
   }
+
+  // Get nearby workshops by service type and location
+  Future<Response> getNearbyWorkshops({
+    required String type,
+    required double longitude,
+    required double latitude,
+    int? radius,
+  }) async {
+    try {
+      String url = '/workshop/nearby-workshops?type=$type&lng=$longitude&lat=$latitude';
+
+      if (radius != null) {
+        url += '&radius=$radius';
+      }
+
+      final response = await _dio.get(url);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+// Alternative method with Map parameters
+  Future<Response> searchNearbyWorkshops(Map<String, dynamic> params) async {
+    try {
+      final response = await _dio.get(
+        '/workshop/nearby-workshops',
+        queryParameters: params,
+      );
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> searchMapboxAddress(String address) async {
+    final dio = Dio(); // إنشاء Dio منفصل للـ Mapbox API
+    return await dio.get(
+      'https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json',
+      queryParameters: {
+        'access_token': "pk.eyJ1IjoiYWxpYWxiYXlhdGk0NjgiLCJhIjoiY21mYTYwam05MWs4azJsczRtMjN2ZDR1aCJ9.o9xLo4WvTnVTmm0xVsKphA",
+        'country': 'SA', // أو البلد اللي بدك ياه
+        'language': 'ar',
+        'limit': 5,
+      },
+    );
+  }
+
+  // Mapbox Reverse Geocoding - Get address from coordinates
+  Future<Response> reverseGeocodeMapbox(double lat, double lng) async {
+    final dio = Dio(); // إنشاء Dio منفصل للـ Mapbox API
+    return await dio.get(
+      'https://api.mapbox.com/geocoding/v5/mapbox.places/$lng,$lat.json',
+      queryParameters: {
+        'access_token': "pk.eyJ1IjoiYWxpYWxiYXlhdGk0NjgiLCJhIjoiY21mYTYwam05MWs4azJsczRtMjN2ZDR1aCJ9.o9xLo4WvTnVTmm0xVsKphA",
+        'language': 'ar',
+      },
+    );
+  }
+
 
   Future<Response> getWorkshops() async {
     return await _dio.get('/workshop/getallworkshop');

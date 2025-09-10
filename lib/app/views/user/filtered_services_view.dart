@@ -23,6 +23,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
   late ServiceType selectedServiceType;
   late String categoryTitle;
   late bool isOwner;
+  bool isLocationBased = false;
 
   @override
   void initState() {
@@ -31,6 +32,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     selectedServiceType = arguments['serviceType'] as ServiceType;
     categoryTitle = arguments['title'] as String;
     isOwner = arguments['isOwner'] ?? false;
+    isLocationBased = arguments['isLocationBased'] ?? false;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadAndFilterServices();
@@ -237,6 +239,21 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           onPressed: () => Get.back(),
         ),
         actions: [
+          // Map Search Button - NEW FEATURE
+          if (!isOwner) ...[
+            IconButton(
+              icon: const Icon(Icons.map, color: AppColors.primary),
+              onPressed: () {
+                Get.toNamed(
+                  AppRoutes.workshopMapSearch,
+                  arguments: {
+                    'serviceType': selectedServiceType,
+                  },
+                );
+              },
+              tooltip: 'search_on_map'.tr,
+            ),
+          ],
           IconButton(
             icon: const Icon(Icons.tune, color: AppColors.textSecondary),
             onPressed: () {
@@ -245,42 +262,141 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           ),
         ],
       ),
-      body: Obx(() {
-        if (serviceController.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primary,
-            ),
-          );
-        }
+      body: Column(
+        children: [
+          // Location-based Search Banner
+          if (!isOwner) _buildSearchBanner(),
 
-        final sourceServices = isOwner
-            ? serviceController.ownerServices
-            : serviceController.services;
+          // Services List
+          Expanded(
+            child: Obx(() {
+              if (serviceController.isLoading.value) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.primary,
+                  ),
+                );
+              }
 
-        final filteredServices = sourceServices
-            .where((service) => service.serviceType == selectedServiceType)
-            .toList();
+              final sourceServices = isOwner
+                  ? serviceController.ownerServices
+                  : serviceController.services;
 
-        if (filteredServices.isEmpty) {
-          return _buildEmptyState();
-        }
+              final filteredServices = sourceServices
+                  .where((service) => service.serviceType == selectedServiceType)
+                  .toList();
 
-        return RefreshIndicator(
-          onRefresh: () async {
-            await _loadAndFilterServices();
-          },
-          color: AppColors.primary,
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: filteredServices.length,
-            itemBuilder: (context, index) {
-              final service = filteredServices[index];
-              return _buildServicePostCard(service);
-            },
+              if (filteredServices.isEmpty) {
+                return _buildEmptyState();
+              }
+
+              return RefreshIndicator(
+                onRefresh: () async {
+                  await _loadAndFilterServices();
+                },
+                color: AppColors.primary,
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: filteredServices.length,
+                  itemBuilder: (context, index) {
+                    final service = filteredServices[index];
+                    return _buildServicePostCard(service);
+                  },
+                ),
+              );
+            }),
           ),
-        );
-      }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchBanner() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary.withValues(alpha: 0.1),
+            AppColors.primary.withValues(alpha: 0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.location_on,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'find_nearby_workshops'.tr,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'search_workshops_by_location'.tr,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Get.toNamed(
+                  AppRoutes.workshopMapSearch,
+                  arguments: {
+                    'serviceType': selectedServiceType,
+                  },
+                );
+              },
+              icon: const Icon(Icons.map, size: 20),
+              label: Text('open_map_search'.tr),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -850,6 +966,25 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               label: Text('add_service'.tr),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.success,
+                foregroundColor: AppColors.white,
+              ),
+            ),
+          ],
+          if (!isOwner) ...[
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              onPressed: () {
+                Get.toNamed(
+                  AppRoutes.workshopMapSearch,
+                  arguments: {
+                    'serviceType': selectedServiceType,
+                  },
+                );
+              },
+              icon: const Icon(Icons.map),
+              label: Text('search_on_map'.tr),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.info,
                 foregroundColor: AppColors.white,
               ),
             ),

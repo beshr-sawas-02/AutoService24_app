@@ -1,3 +1,4 @@
+import 'package:autoservice24/app/controllers/map_controller.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/user_controller.dart';
@@ -17,5 +18,6 @@ class OwnerBinding extends Bindings {
     Get.lazyPut<ChatController>(() => Get.find<ChatController>());
 
     Get.lazyPut<UserController>(() => Get.find<UserController>());
+    Get.lazyPut<MapController>(() => Get.find<MapController>());
   }
 }

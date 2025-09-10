@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../views/common/workshop_map_search_view.dart';
 import '../views/splash_view.dart';
 import '../views/auth/login_view.dart';
 import '../views/auth/register_view.dart';
@@ -39,6 +40,7 @@ class AppRoutes {
   static const String serviceDetails = '/service-details';
   static const String workshopDetails = '/workshop-details';
   static const String map = '/map';
+  static const String workshopMapSearch = '/workshop-map-search'; // NEW ROUTE
   static const String editProfile = '/edit-profile';
   static const String settings = '/settings';
 
@@ -136,6 +138,14 @@ class AppRoutes {
       page: () => const MapView(),
       binding: CommonBinding(),
     ),
+
+    // NEW: Workshop Map Search Route
+    GetPage(
+      name: workshopMapSearch,
+      page: () => const WorkshopMapSearchView(),
+      binding: CommonBinding(),
+    ),
+
     GetPage(
       name: editProfile,
       page: () => const EditProfileView(),

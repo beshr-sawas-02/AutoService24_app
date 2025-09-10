@@ -5,6 +5,7 @@ import 'app/controllers/Language_Controller.dart';
 import 'app/lang/Translations.dart';
 import 'app/routes/app_routes.dart';
 import 'app/app_module.dart';
+import 'app/utils/location_service.dart';
 import 'app/utils/storage_service.dart';
 import 'app/utils/network_service.dart';
 import 'app/config/app_colors.dart';
@@ -20,6 +21,8 @@ void main() async {
 
   // Initialize network service
   Get.put(NetworkService(), permanent: true);
+
+  Get.put(LocationService(), permanent: true);
 
   // Initialize language controller
   Get.put(LanguageController());

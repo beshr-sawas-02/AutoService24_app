@@ -3,8 +3,7 @@ class WorkshopModel {
   final String userId;
   final String name;
   final String description;
-  final String locationX;
-  final String locationY;
+  final LocationModel location;
   final String workingHours;
   final String? profileImage;
 
@@ -13,8 +12,7 @@ class WorkshopModel {
     required this.userId,
     required this.name,
     required this.description,
-    required this.locationX,
-    required this.locationY,
+    required this.location,
     required this.workingHours,
     this.profileImage,
   });
@@ -25,8 +23,7 @@ class WorkshopModel {
       userId: json['user_id'] ?? '',
       name: json['name'] ?? '',
       description: json['description'] ?? '',
-      locationX: json['location_x'] ?? '',
-      locationY: json['location_y'] ?? '',
+      location: LocationModel.fromJson(json['location'] ?? {}),
       workingHours: json['working_hours'] ?? '',
       profileImage: json['profile_image'],
     );
@@ -37,8 +34,7 @@ class WorkshopModel {
       'user_id': userId,
       'name': name,
       'description': description,
-      'location_x': locationX,
-      'location_y': locationY,
+      'location': location.toJson(),
       'working_hours': workingHours,
     };
 
@@ -51,8 +47,7 @@ class WorkshopModel {
     String? userId,
     String? name,
     String? description,
-    String? locationX,
-    String? locationY,
+    LocationModel? location,
     String? workingHours,
     String? profileImage,
   }) {
@@ -61,13 +56,58 @@ class WorkshopModel {
       userId: userId ?? this.userId,
       name: name ?? this.name,
       description: description ?? this.description,
-      locationX: locationX ?? this.locationX,
-      locationY: locationY ?? this.locationY,
+      location: location ?? this.location,
       workingHours: workingHours ?? this.workingHours,
       profileImage: profileImage ?? this.profileImage,
     );
   }
 
-  double get latitude => double.tryParse(locationX) ?? 0.0;
-  double get longitude => double.tryParse(locationY) ?? 0.0;
+  // Helper getters for easy access to coordinates
+  double get latitude => location.coordinates.isNotEmpty ? location.coordinates[1] : 0.0;
+  double get longitude => location.coordinates.isNotEmpty ? location.coordinates[0] : 0.0;
+}
+
+// Separate class for handling GeoJSON location structure
+class LocationModel {
+  final String type;
+  final List<double> coordinates; // [longitude, latitude]
+
+  LocationModel({
+    required this.type,
+    required this.coordinates,
+  });
+
+  factory LocationModel.fromJson(Map<String, dynamic> json) {
+    return LocationModel(
+      type: json['type'] ?? 'Point',
+      coordinates: json['coordinates'] != null
+          ? List<double>.from(json['coordinates'].map((x) => x.toDouble()))
+          : [0.0, 0.0],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type,
+      'coordinates': coordinates,
+    };
+  }
+
+  // Helper constructor for creating location from lat/lng
+  factory LocationModel.fromLatLng(double latitude, double longitude) {
+    return LocationModel(
+      type: 'Point',
+      coordinates: [longitude, latitude], // Note: GeoJSON uses [lng, lat] order
+    );
+  }
+
+  LocationModel copyWith({
+    String? type,
+    List<double>? coordinates,
+  }) {
+    return LocationModel(
+      type: type ?? this.type,
+      coordinates: coordinates ?? this.coordinates,
+    );
+  }
 }

@@ -338,18 +338,28 @@ class _AddServiceViewState extends State<AddServiceView> {
       return;
     }
 
-    List<String> imageUrls = _selectedImages.map((e) => e.path).toList();
-
+    // FIXED: Prepare service data without images first
     final serviceData = {
       'workshop_id': _selectedWorkshopId,
       'title': _titleController.text.trim(),
       'description': _descriptionController.text.trim(),
       'price': double.parse(_priceController.text),
-      'service_type': _selectedServiceType.displayName,
-      'images': imageUrls,
+      'service_type': _selectedServiceType.displayName, // Use .name instead of .displayName
     };
 
-    final success = await serviceController.createService(serviceData);
+    bool success;
+
+    // FIXED: Use the correct method based on whether images are selected
+    if (_selectedImages.isNotEmpty) {
+      // Use createServiceWithImages for services with images
+      success = await serviceController.createServiceWithImages(
+        serviceData,
+        _selectedImages,
+      );
+    } else {
+      // Use regular createService for services without images
+      success = await serviceController.createService(serviceData);
+    }
 
     if (success) {
       Get.snackbar(
@@ -362,6 +372,7 @@ class _AddServiceViewState extends State<AddServiceView> {
         duration: const Duration(seconds: 3),
       );
 
+      // Reset form
       _formKey.currentState!.reset();
       _titleController.clear();
       _descriptionController.clear();
@@ -372,6 +383,8 @@ class _AddServiceViewState extends State<AddServiceView> {
         _selectedImages.clear();
       });
 
+      // Navigate back or refresh services
+      Get.back();
     } else {
       Get.snackbar(
         'error'.tr,
@@ -384,7 +397,6 @@ class _AddServiceViewState extends State<AddServiceView> {
       );
     }
   }
-
   @override
   void dispose() {
     _titleController.dispose();

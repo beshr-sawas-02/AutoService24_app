@@ -13,6 +13,7 @@ class WorkshopController extends GetxController {
   var isLoading = false.obs;
   var workshops = <WorkshopModel>[].obs;
   var ownerWorkshops = <WorkshopModel>[].obs;
+  var nearbyWorkshops = <WorkshopModel>[].obs; // NEW: For backend nearby results
 
   @override
   void onInit() {
@@ -143,7 +144,7 @@ class WorkshopController extends GetxController {
     }
   }
 
-
+  // UPDATED: Client-side distance calculation (for compatibility)
   List<WorkshopModel> getNearbyWorkshops({double? userLat, double? userLng, double radiusKm = 10.0}) {
     if (userLat == null || userLng == null) {
       return workshops.toList();
@@ -158,6 +159,44 @@ class WorkshopController extends GetxController {
     }).toList();
   }
 
+  // NEW: Get nearby workshops by service type using backend (recommended)
+  Future<void> loadNearbyWorkshopsByServiceType({
+    required String serviceType,
+    required double longitude,
+    required double latitude,
+    int radiusMeters = 5000,
+  }) async {
+    try {
+      isLoading.value = true;
+
+      final nearbyList = await _workshopRepository.getNearbyWorkshopsByServiceType(
+        serviceType: serviceType,
+        longitude: longitude,
+        latitude: latitude,
+        radius: radiusMeters,
+      );
+
+      nearbyWorkshops.value = nearbyList;
+    } catch (e) {
+      ErrorHandler.handleAndShowError(e);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // NEW: Search nearby workshops with flexible parameters
+  Future<void> searchNearbyWorkshops(Map<String, dynamic> searchParams) async {
+    try {
+      isLoading.value = true;
+
+      final nearbyList = await _workshopRepository.searchNearbyWorkshops(searchParams);
+      nearbyWorkshops.value = nearbyList;
+    } catch (e) {
+      ErrorHandler.handleAndShowError(e);
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   double _calculateDistance(double lat1, double lng1, double lat2, double lng2) {
     const double earthRadius = 6371;

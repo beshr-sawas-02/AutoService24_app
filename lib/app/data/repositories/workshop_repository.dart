@@ -71,4 +71,38 @@ class WorkshopRepository {
       throw Exception('Failed to search workshops: ${e.toString()}');
     }
   }
+
+  // NEW METHOD: Get nearby workshops by service type using backend endpoint
+  Future<List<WorkshopModel>> getNearbyWorkshopsByServiceType({
+    required String serviceType,
+    required double longitude,
+    required double latitude,
+    int? radius,
+  }) async {
+    try {
+      final response = await _apiProvider.getNearbyWorkshops(
+        type: serviceType,
+        longitude: longitude,
+        latitude: latitude,
+        radius: radius,
+      );
+
+      final List<dynamic> workshopList = response.data;
+      return workshopList.map((json) => WorkshopModel.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Failed to get nearby workshops: ${e.toString()}');
+    }
+  }
+
+  // ALTERNATIVE METHOD: Search nearby workshops with map parameters
+  Future<List<WorkshopModel>> searchNearbyWorkshops(Map<String, dynamic> searchParams) async {
+    try {
+      final response = await _apiProvider.searchNearbyWorkshops(searchParams);
+
+      final List<dynamic> workshopList = response.data;
+      return workshopList.map((json) => WorkshopModel.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Failed to search nearby workshops: ${e.toString()}');
+    }
+  }
 }
