@@ -1,31 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'app/controllers/Language_Controller.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'app/lang/Translations.dart';
 import 'app/routes/app_routes.dart';
-import 'app/app_module.dart';
-import 'app/utils/location_service.dart';
+import 'app/bindings/app_binding.dart';
+import 'app/utils/constants.dart';
 import 'app/utils/storage_service.dart';
-import 'app/utils/network_service.dart';
 import 'app/config/app_colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize storage service
+  MapboxOptions.setAccessToken(AppConstants.mapboxAccessToken);
+
   await StorageService.init();
-
-  // Initialize dependencies
-  AppModule.init();
-
-  // Initialize network service
-  Get.put(NetworkService(), permanent: true);
-
-  Get.put(LocationService(), permanent: true);
-
-  // Initialize language controller
-  Get.put(LanguageController());
 
   runApp(const MyApp());
 }
@@ -35,13 +24,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LanguageController languageController = Get.find<LanguageController>();
-
-    return Obx(() => GetMaterialApp(
+    return GetMaterialApp(
       title: 'CarServiceHub',
       debugShowCheckedModeBanner: false,
+      initialBinding: AppBinding(),
       translations: AppTranslations(),
-      locale: languageController.locale.value,
+      locale: const Locale('en'),
       fallbackLocale: const Locale('en'),
       theme: ThemeData(
         // Custom Primary Color Swatch
@@ -155,7 +143,8 @@ class MyApp extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.borderFocus, width: 2),
+            borderSide:
+                const BorderSide(color: AppColors.borderFocus, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -165,7 +154,8 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: AppColors.error, width: 2),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           hintStyle: const TextStyle(color: AppColors.textHint),
         ),
 
@@ -211,7 +201,6 @@ class MyApp extends StatelessWidget {
           ),
         ),
 
-
         snackBarTheme: SnackBarThemeData(
           backgroundColor: AppColors.grey800,
           contentTextStyle: const TextStyle(color: AppColors.white),
@@ -224,20 +213,31 @@ class MyApp extends StatelessWidget {
 
         // Text Theme
         textTheme: const TextTheme(
-          displayLarge: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-          displayMedium: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-          displaySmall: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-          headlineLarge: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-          headlineMedium: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-          headlineSmall: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-          titleLarge: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-          titleMedium: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w500),
-          titleSmall: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w500),
+          displayLarge: TextStyle(
+              color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+          displayMedium: TextStyle(
+              color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+          displaySmall: TextStyle(
+              color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+          headlineLarge: TextStyle(
+              color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+          headlineMedium: TextStyle(
+              color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+          headlineSmall: TextStyle(
+              color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+          titleLarge: TextStyle(
+              color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+          titleMedium: TextStyle(
+              color: AppColors.textPrimary, fontWeight: FontWeight.w500),
+          titleSmall: TextStyle(
+              color: AppColors.textPrimary, fontWeight: FontWeight.w500),
           bodyLarge: TextStyle(color: AppColors.textPrimary),
           bodyMedium: TextStyle(color: AppColors.textPrimary),
           bodySmall: TextStyle(color: AppColors.textSecondary),
-          labelLarge: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w500),
-          labelMedium: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w500),
+          labelLarge: TextStyle(
+              color: AppColors.textPrimary, fontWeight: FontWeight.w500),
+          labelMedium: TextStyle(
+              color: AppColors.textPrimary, fontWeight: FontWeight.w500),
           labelSmall: TextStyle(color: AppColors.textSecondary),
         ),
 
@@ -253,7 +253,8 @@ class MyApp extends StatelessWidget {
 
         // List Tile Theme
         listTileTheme: ListTileThemeData(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           tileColor: AppColors.white,
           selectedTileColor: AppColors.primaryWithOpacity(0.1),
           iconColor: AppColors.textSecondary,
@@ -263,6 +264,6 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: AppRoutes.splash,
       getPages: AppRoutes.routes,
-    ));
+    );
   }
 }

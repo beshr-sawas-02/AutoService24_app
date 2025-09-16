@@ -12,6 +12,7 @@ enum ServiceType {
   CHANGE_BRAKE_FLUID('Change brake fluid');
 
   const ServiceType(this.displayName);
+
   final String displayName;
 
   static ServiceType? fromString(String value) {
@@ -36,7 +37,6 @@ class ServiceModel {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  // Optional: Store workshop data if needed
   final Map<String, dynamic>? workshopData;
 
   ServiceModel({
@@ -54,7 +54,6 @@ class ServiceModel {
   });
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
-    // Handle workshop_id whether it's a string or an object
     String workshopId;
     Map<String, dynamic>? workshopData;
 
@@ -68,8 +67,8 @@ class ServiceModel {
       workshopId = '';
     }
 
-    // Handle service_type with better error handling
-    ServiceType? parsedServiceType = ServiceType.fromString(json['service_type'] ?? '');
+    ServiceType? parsedServiceType =
+        ServiceType.fromString(json['service_type'] ?? '');
 
     return ServiceModel(
       id: json['_id'] ?? '',
@@ -86,7 +85,6 @@ class ServiceModel {
     );
   }
 
-
   static double _parsePrice(dynamic price) {
     if (price == null) return 0.0;
     if (price is double) return price;
@@ -99,9 +97,39 @@ class ServiceModel {
 
   static List<String> _parseImages(dynamic images) {
     if (images == null) return [];
+
+    const String baseUrl = 'https://www.autoservicely.com';
+
     if (images is List) {
-      return images.map((img) => img.toString()).toList();
+      return images
+          .map((img) {
+            String imagePath = img.toString().trim();
+
+            if (imagePath.isEmpty) return '';
+
+            if (imagePath.startsWith('http://') ||
+                imagePath.startsWith('https://')) {
+              return imagePath;
+            }
+
+            if (imagePath.startsWith('/uploads/')) {
+              return '$baseUrl$imagePath';
+            }
+
+            if (imagePath.startsWith('uploads/')) {
+              return '$baseUrl/$imagePath';
+            }
+
+            if (imagePath.startsWith('/')) {
+              return '$baseUrl$imagePath';
+            } else {
+              return '$baseUrl/$imagePath';
+            }
+          })
+          .where((path) => path.isNotEmpty)
+          .toList();
     }
+
     return [];
   }
 
@@ -160,6 +188,7 @@ class ServiceModel {
   }
 
   String get formattedPrice => '\€${price.toStringAsFixed(2)}';
+
   String get serviceTypeName => serviceType.displayName;
 
   // Helper methods to get workshop info if available

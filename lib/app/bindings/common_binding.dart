@@ -1,21 +1,26 @@
-import 'package:get/get.dart';
-import '../controllers/auth_controller.dart';
-import '../controllers/user_controller.dart';
-import '../controllers/workshop_controller.dart';
-import '../controllers/service_controller.dart';
-import '../controllers/chat_controller.dart';
+// import 'package:get/get.dart';
+// import '../controllers/auth_controller.dart';
+// import '../controllers/user_controller.dart';
+// import '../controllers/map_controller.dart';
+// import '../controllers/service_controller.dart';
+// import '../controllers/chat_controller.dart';
+//
+// class CommonBinding extends Bindings {
+//   @override
+//   void dependencies() {
 
-class CommonBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut<AuthController>(() => Get.find<AuthController>());
+//     _ensureController<AuthController>();
+//     _ensureController<UserController>();
+//
 
-    Get.lazyPut<UserController>(() => Get.find<UserController>());
+//     _ensureController<MapController>();
+//     _ensureController<ServiceController>();
+//     _ensureController<ChatController>();
+//   }
+//
+//   void _ensureController<T>() {
+//     if (!Get.isRegistered<T>()) {
 
-    Get.lazyPut<WorkshopController>(() => Get.find<WorkshopController>());
-
-    Get.lazyPut<ServiceController>(() => Get.find<ServiceController>());
-
-    Get.lazyPut<ChatController>(() => Get.find<ChatController>());
-  }
-}
+//     }
+//   }
+// }

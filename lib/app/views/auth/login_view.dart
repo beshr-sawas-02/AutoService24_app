@@ -119,10 +119,12 @@ class _LoginViewState extends State<LoginView> {
                 label: 'Email',
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return 'Please enter your email';
-                  if (!GetUtils.isEmail(value))
+                  }
+                  if (!GetUtils.isEmail(value)) {
                     return 'Please enter a valid email';
+                  }
                   return null;
                 },
               ),
@@ -147,8 +149,9 @@ class _LoginViewState extends State<LoginView> {
                       setState(() => _isPasswordVisible = !_isPasswordVisible),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return 'Please enter your password';
+                  }
                   return null;
                 },
               ),
@@ -261,12 +264,12 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Widget _buildLanguageSwitcher() {
-    final LanguageController languageController = Get.find<LanguageController>();
+    final LanguageController languageController =
+        Get.find<LanguageController>();
 
     return PopupMenuButton<String>(
-      icon: Icon(Icons.language, color: AppColors.textSecondary),
+      icon: const Icon(Icons.language, color: AppColors.textSecondary),
       onSelected: (String languageCode) {
-        // تحديث اللغة وحفظها
         languageController.changeLocale(languageCode);
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -274,17 +277,17 @@ class _LoginViewState extends State<LoginView> {
           value: 'en',
           child: Row(
             children: [
-              Text('🇺🇸'),
-              SizedBox(width: 8),
+              const Text('🇺🇸'),
+              const SizedBox(width: 8),
               Text('english'.tr),
               if (languageController.locale.value.languageCode == 'en')
-                Spacer()
+                const Spacer()
               else
-                SizedBox.shrink(),
+                const SizedBox.shrink(),
               if (languageController.locale.value.languageCode == 'en')
-                Icon(Icons.check, color: AppColors.primary)
+                const Icon(Icons.check, color: AppColors.primary)
               else
-                SizedBox.shrink(),
+                const SizedBox.shrink(),
             ],
           ),
         ),
@@ -292,17 +295,17 @@ class _LoginViewState extends State<LoginView> {
           value: 'de',
           child: Row(
             children: [
-              Text('🇩🇪'),
-              SizedBox(width: 8),
+              const Text('🇩🇪'),
+              const SizedBox(width: 8),
               Text('german'.tr),
               if (languageController.locale.value.languageCode == 'de')
-                Spacer()
+                const Spacer()
               else
-                SizedBox.shrink(),
+                const SizedBox.shrink(),
               if (languageController.locale.value.languageCode == 'de')
-                Icon(Icons.check, color: AppColors.primary)
+                const Icon(Icons.check, color: AppColors.primary)
               else
-                SizedBox.shrink(),
+                const SizedBox.shrink(),
             ],
           ),
         ),

@@ -66,7 +66,9 @@ class _MapViewState extends State<MapView> {
             zoom: 12.0,
           ),
           onMapCreated: _onMapCreated,
-          //onTapListener: _onMapTap,
+          onTapListener: (MapContentGestureContext context) {
+            _onMapTap(context);
+          },
         );
       }),
       floatingActionButton: Column(
@@ -115,26 +117,17 @@ class _MapViewState extends State<MapView> {
     _loadWorkshopMarkers();
   }
 
-  // Handle map tap to detect nearby workshops - Updated for new Mapbox version
-  @override
-  void onMapTap(ScreenCoordinate coordinate) {
-    if (_mapboxMap != null) {
-      _mapboxMap!.coordinateForPixel(coordinate).then((point) {
-        // Extract coordinates from Point object with proper type casting
-        final coordinates = point.coordinates;
-        final lat = coordinates.lat.toDouble();
-        final lng = coordinates.lng.toDouble();
 
-        // Find the nearest workshop to the tap location
-        WorkshopModel? nearestWorkshop = _findNearestWorkshop(lat, lng);
+  void _onMapTap(MapContentGestureContext context) {
+    final coordinates = context.point.coordinates;
+    final lat = coordinates.lat.toDouble();
+    final lng = coordinates.lng.toDouble();
 
-        if (nearestWorkshop != null) {
-          _showWorkshopBottomSheet(nearestWorkshop);
-        }
-      }).catchError((error) {
-        // Handle any errors in coordinate conversion
-        print('Error getting coordinates: $error');
-      });
+    // Find the nearest workshop to the tap location
+    WorkshopModel? nearestWorkshop = _findNearestWorkshop(lat, lng);
+
+    if (nearestWorkshop != null) {
+      _showWorkshopBottomSheet(nearestWorkshop);
     }
   }
 
@@ -332,7 +325,7 @@ class _MapViewState extends State<MapView> {
                         const Icon(Icons.directions_car, size: 16, color: AppColors.textSecondary),
                         const SizedBox(width: 8),
                         Text(
-                          'distance'.tr + ': ${mapController.formatDistance(_calculateDistance(workshop, currentPos))}',
+                          '${'distance'.tr}: ${mapController.formatDistance(_calculateDistance(workshop, currentPos))}',
                           style: const TextStyle(color: AppColors.textSecondary),
                         ),
                       ],
@@ -360,7 +353,7 @@ class _MapViewState extends State<MapView> {
   void _getDirections(WorkshopModel workshop) {
     Get.snackbar(
       'directions'.tr,
-      'opening_directions_to'.tr + ' ${workshop.name}',
+      '${'opening_directions_to'.tr} ${workshop.name}',
       snackPosition: SnackPosition.BOTTOM,
     );
   }

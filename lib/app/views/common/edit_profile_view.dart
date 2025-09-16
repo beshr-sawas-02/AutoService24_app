@@ -294,7 +294,7 @@ class _EditProfileViewState extends State<EditProfileView> {
     } else if (_currentImageUrl != null && _currentImageUrl!.isNotEmpty) {
       String imageUrl = _currentImageUrl!.startsWith('http')
           ? _currentImageUrl!
-          : '${ApiProvider.baseUrl}${_currentImageUrl}';
+          : '${ApiProvider.baseUrl}$_currentImageUrl';
 
       return Image.network(
         imageUrl,

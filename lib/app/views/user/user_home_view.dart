@@ -27,7 +27,7 @@ class _UserHomeViewState extends State<UserHomeView> {
       'title': 'vehicle_inspection',
       'type': ServiceType.VEHICLE_INSPECTION,
       'color': AppColors.primary,
-      'image': 'assets/images/remove.jpg',
+      'image': 'assets/images/vehicle.jpg',
     },
     {
       'title': 'change_oil',
@@ -51,43 +51,43 @@ class _UserHomeViewState extends State<UserHomeView> {
       'title': 'cleaning',
       'type': ServiceType.CLEANING,
       'color': AppColors.success,
-      'image': 'assets/images/remove.jpg',
+      'image': 'assets/images/cleaning.jpg',
     },
     {
       'title': 'diagnostic_test',
       'type': ServiceType.DIAGNOSTIC_TEST,
       'color': AppColors.error,
-      'image': 'assets/images/remove.jpg',
+      'image': 'assets/images/diagnostic.jpg',
     },
     {
       'title': 'pre_tuv_check',
       'type': ServiceType.PRE_TUV_CHECK,
       'color': Colors.teal,
-      'image': 'assets/images/remove.jpg',
+      'image': 'assets/images/au_tuv.jpg',
     },
     {
       'title': 'balance_tires',
       'type': ServiceType.BALANCE_TIRES,
       'color': Colors.indigo,
-      'image': 'assets/images/remove.jpg',
+      'image': 'assets/images/balance.jpg',
     },
     {
       'title': 'wheel_alignment',
       'type': ServiceType.WHEEL_ALIGNMENT,
       'color': Colors.deepPurple,
-      'image': 'assets/images/remove.jpg',
+      'image': 'assets/images/wheel.jpg',
     },
     {
       'title': 'polish',
       'type': ServiceType.POLISH,
       'color': AppColors.warning,
-      'image': 'assets/images/remove.jpg',
+      'image': 'assets/images/polish.jpg',
     },
     {
       'title': 'change_brake_fluid',
       'type': ServiceType.CHANGE_BRAKE_FLUID,
       'color': Colors.brown,
-      'image': 'assets/images/remove.jpg',
+      'image': 'assets/images/brake_fluid.jpg',
     },
   ];
 
@@ -187,7 +187,6 @@ class _UserHomeViewState extends State<UserHomeView> {
       icon: const Icon(Icons.language, color: AppColors.textSecondary),
       tooltip: 'switch_language'.tr,
       onSelected: (String languageCode) {
-        // استدعاء changeLocale لتحديث اللغة وحفظها
         languageController.changeLocale(languageCode);
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[

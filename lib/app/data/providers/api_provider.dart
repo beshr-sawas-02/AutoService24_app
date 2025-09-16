@@ -5,14 +5,13 @@ import '../../utils/storage_service.dart';
 
 class ApiProvider {
   static const String baseUrl = AppConstants.baseUrl;
-  static const String MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiYWxpYWxiYXlhdGk0NjgiLCJhIjoiY21mYTYwam05MWs4azJsczRtMjN2ZDR1aCJ9.o9xLo4WvTnVTmm0xVsKphA";
   late Dio _dio;
 
   ApiProvider(Dio dio) {
     _dio = dio;
     _dio.options.baseUrl = baseUrl;
-    _dio.options.connectTimeout = const Duration(seconds: 30);
-    _dio.options.receiveTimeout = const Duration(seconds: 30);
+    _dio.options.connectTimeout = const Duration(seconds: 10);
+    _dio.options.receiveTimeout = const Duration(seconds: 10);
 
     // Add interceptors
     _dio.interceptors.add(InterceptorsWrapper(
@@ -66,10 +65,10 @@ class ApiProvider {
   }
 
   Future<Response> updateProfileWithImage(
-      String userId,
-      Map<String, dynamic> data,
-      File? imageFile,
-      ) async {
+    String userId,
+    Map<String, dynamic> data,
+    File? imageFile,
+  ) async {
     try {
       FormData formData = FormData();
 
@@ -149,7 +148,8 @@ class ApiProvider {
     int? radius,
   }) async {
     try {
-      String url = '/workshop/nearby-workshops?type=$type&lng=$longitude&lat=$latitude';
+      String url =
+          '/workshop/nearby-workshops?type=$type&lng=$longitude&lat=$latitude';
 
       if (radius != null) {
         url += '&radius=$radius';
@@ -176,30 +176,28 @@ class ApiProvider {
   }
 
   Future<Response> searchMapboxAddress(String address) async {
-    final dio = Dio(); // إنشاء Dio منفصل للـ Mapbox API
+    final dio = Dio();
     return await dio.get(
       'https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json',
       queryParameters: {
-        'access_token': "pk.eyJ1IjoiYWxpYWxiYXlhdGk0NjgiLCJhIjoiY21mYTYwam05MWs4azJsczRtMjN2ZDR1aCJ9.o9xLo4WvTnVTmm0xVsKphA",
-        'country': 'SA', // أو البلد اللي بدك ياه
+        'access_token': AppConstants.mapboxAccessToken,
+        'country': 'SA',
         'language': 'ar',
         'limit': 5,
       },
     );
   }
 
-  // Mapbox Reverse Geocoding - Get address from coordinates
   Future<Response> reverseGeocodeMapbox(double lat, double lng) async {
-    final dio = Dio(); // إنشاء Dio منفصل للـ Mapbox API
+    final dio = Dio();
     return await dio.get(
       'https://api.mapbox.com/geocoding/v5/mapbox.places/$lng,$lat.json',
       queryParameters: {
-        'access_token': "pk.eyJ1IjoiYWxpYWxiYXlhdGk0NjgiLCJhIjoiY21mYTYwam05MWs4azJsczRtMjN2ZDR1aCJ9.o9xLo4WvTnVTmm0xVsKphA",
+        'access_token': AppConstants.mapboxAccessToken,
         'language': 'ar',
       },
     );
   }
-
 
   Future<Response> getWorkshops() async {
     return await _dio.get('/workshop/getallworkshop');
@@ -386,7 +384,6 @@ class ApiProvider {
         throw Exception('Image file is too large (max 10MB)');
       }
 
-
       FormData formData = FormData();
 
       // Add all text data
@@ -409,7 +406,6 @@ class ApiProvider {
         ),
       );
 
-
       final response = await _dio.post(
         '/messages/sendmessage',
         data: formData,
@@ -423,11 +419,8 @@ class ApiProvider {
         ),
       );
 
-
       return response;
-
     } on DioException catch (e) {
-
       if (e.response?.statusCode == 413) {
         throw Exception('Image file is too large');
       } else if (e.response?.statusCode == 415) {

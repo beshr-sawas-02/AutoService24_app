@@ -40,10 +40,6 @@
             </intent-filter>
         </activity>
 
-        <!-- MAPBOX TOKEN - Add this meta-data -->
-        <meta-data
-            android:name="MAPBOX_ACCESS_TOKEN"
-            android:value="pk.eyJ1IjoiYWxpYWxiYXlhdGk0NjgiLCJhIjoiY21mYTYwam05MWs4azJsczRtMjN2ZDR1aCJ9.o9xLo4WvTnVTmm0xVsKphA" />
 
         <meta-data
             android:name="flutterEmbedding"

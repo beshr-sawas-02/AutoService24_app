@@ -9,6 +9,7 @@ import '../../data/models/workshop_model.dart';
 import '../../widgets/service_card.dart';
 import '../../routes/app_routes.dart';
 import '../../config/app_colors.dart';
+import '../../utils/constants.dart';
 
 class WorkshopDetailsView extends StatefulWidget {
   const WorkshopDetailsView({super.key});
@@ -53,27 +54,27 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               ),
               background: workshop.profileImage != null
                   ? Image.network(
-                workshop.profileImage!,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: AppColors.grey300,
-                    child: const Icon(
-                      Icons.business,
-                      size: 80,
-                      color: AppColors.textSecondary,
-                    ),
-                  );
-                },
-              )
+                      AppConstants.buildImageUrl(workshop.profileImage!),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: AppColors.grey300,
+                          child: const Icon(
+                            Icons.business,
+                            size: 80,
+                            color: AppColors.textSecondary,
+                          ),
+                        );
+                      },
+                    )
                   : Container(
-                color: AppColors.grey300,
-                child: const Icon(
-                  Icons.business,
-                  size: 80,
-                  color: AppColors.textSecondary,
-                ),
-              ),
+                      color: AppColors.grey300,
+                      child: const Icon(
+                        Icons.business,
+                        size: 80,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
             ),
             actions: [
               IconButton(
@@ -112,19 +113,6 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          if (authController.isGuest) {
-            _showGuestDialog();
-          } else {
-            _startChat();
-          }
-        },
-        label: Text('contact_workshop'.tr),
-        icon: const Icon(Icons.message),
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.white,
-      ),
     );
   }
 
@@ -146,8 +134,10 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             ),
             const SizedBox(height: 16),
 
-            _buildInfoRow(Icons.description, 'description'.tr, workshop.description),
-            _buildInfoRow(Icons.access_time, 'working_hours'.tr, workshop.workingHours),
+            _buildInfoRow(
+                Icons.description, 'description'.tr, workshop.description),
+            _buildInfoRow(
+                Icons.access_time, 'working_hours'.tr, workshop.workingHours),
             _buildInfoRow(Icons.location_on, 'location'.tr,
                 'Lat: ${workshop.latitude.toStringAsFixed(4)}, Lng: ${workshop.longitude.toStringAsFixed(4)}'),
 
@@ -203,7 +193,8 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
+                  style: const TextStyle(
+                      fontSize: 16, color: AppColors.textPrimary),
                 ),
               ],
             ),
@@ -234,7 +225,9 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             zoom: 15.0,
           ),
           onMapCreated: _onMapCreated,
-         // onTapListener: _onMapTap,
+          onTapListener: (MapContentGestureContext context) {
+            _onMapTap(context);
+          },
         ),
       ),
     );
@@ -260,7 +253,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
     }
   }
 
-  void _onMapTap(ScreenCoordinate coordinate) {
+  void _onMapTap(MapContentGestureContext context) {
     // Open full map view when tapped
     Get.toNamed(AppRoutes.map);
   }
@@ -290,10 +283,10 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
           ],
         ),
         const SizedBox(height: 16),
-
         Obx(() {
           if (serviceController.isLoading.value) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+            return const Center(
+                child: CircularProgressIndicator(color: AppColors.primary));
           }
 
           // Filter services for this workshop
@@ -308,7 +301,9 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
           return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: workshopServices.length > 3 ? 3 : workshopServices.length, // Show max 3 services
+            itemCount: workshopServices.length > 3
+                ? 3
+                : workshopServices.length, // Show max 3 services
             itemBuilder: (context, index) {
               return ServiceCard(
                 service: workshopServices[index],
@@ -388,7 +383,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
     // Navigate to chat with workshop owner
     Get.snackbar(
       'chat'.tr,
-      'starting_conversation'.tr + ' ${workshop.name}',
+      '${'starting_conversation'.tr} ${workshop.name}',
       snackPosition: SnackPosition.BOTTOM,
     );
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../controllers/Language_Controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/workshop_controller.dart';
 import '../../controllers/service_controller.dart';
@@ -31,8 +32,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
     if (userId != null) {
       await workshopController.loadOwnerWorkshops(userId);
       await serviceController.loadOwnerServices();
-    } else {
-    }
+    } else {}
   }
 
   @override
@@ -52,6 +52,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         ),
         automaticallyImplyLeading: false,
         actions: [
+          _buildLanguageSwitcher(),
           IconButton(
             icon: const Icon(Icons.message, color: AppColors.textSecondary),
             onPressed: () => Get.toNamed(AppRoutes.chatList),
@@ -111,6 +112,57 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
     );
   }
 
+  Widget _buildLanguageSwitcher() {
+    final LanguageController languageController =
+        Get.find<LanguageController>();
+
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.language, color: AppColors.textSecondary),
+      tooltip: 'switch_language'.tr,
+      onSelected: (String languageCode) {
+        languageController.changeLocale(languageCode);
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'en',
+          child: Row(
+            children: [
+              const Text('🇺🇸'),
+              const SizedBox(width: 8),
+              Text('english'.tr),
+              if (languageController.locale.value.languageCode == 'en')
+                const Spacer()
+              else
+                const SizedBox.shrink(),
+              if (languageController.locale.value.languageCode == 'en')
+                const Icon(Icons.check, color: AppColors.primary)
+              else
+                const SizedBox.shrink(),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'de',
+          child: Row(
+            children: [
+              const Text('🇩🇪'),
+              const SizedBox(width: 8),
+              Text('german'.tr),
+              if (languageController.locale.value.languageCode == 'de')
+                const Spacer()
+              else
+                const SizedBox.shrink(),
+              if (languageController.locale.value.languageCode == 'de')
+                const Icon(Icons.check, color: AppColors.primary)
+              else
+                const SizedBox.shrink(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _getBody() {
     return _buildHomeContent();
   }
@@ -167,13 +219,15 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
           const SizedBox(width: 12),
           Expanded(
             child: Obx(() => Text(
-              'hello_user'.tr.replaceAll('{name}', authController.displayName),
-              style: const TextStyle(
-                color: AppColors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            )),
+                  'hello_user'
+                      .tr
+                      .replaceAll('{name}', authController.displayName),
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )),
           ),
         ],
       ),
@@ -186,7 +240,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         'title': 'vehicle_inspection',
         'type': ServiceType.VEHICLE_INSPECTION,
         'color': AppColors.primary,
-        'image': 'assets/images/vehicle_inspection.jpg',
+        'image': 'assets/images/vehicle.jpg',
       },
       {
         'title': 'change_oil',
@@ -210,7 +264,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         'title': 'cleaning',
         'type': ServiceType.CLEANING,
         'color': AppColors.success,
-        'image': 'assets/images/car_cleaning.jpg',
+        'image': 'assets/images/cleaning.jpg',
       },
       {
         'title': 'diagnostic_test',
@@ -222,25 +276,25 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         'title': 'pre_tuv_check',
         'type': ServiceType.PRE_TUV_CHECK,
         'color': Colors.teal,
-        'image': 'assets/images/pre_tuv.jpg',
+        'image': 'assets/images/au_tuv.jpg',
       },
       {
         'title': 'balance_tires',
         'type': ServiceType.BALANCE_TIRES,
         'color': Colors.indigo,
-        'image': 'assets/images/tire_balance.jpg',
+        'image': 'assets/images/balance.jpg',
       },
       {
         'title': 'wheel_alignment',
         'type': ServiceType.WHEEL_ALIGNMENT,
         'color': Colors.deepPurple,
-        'image': 'assets/images/wheel_alignment.jpg',
+        'image': 'assets/images/wheel.jpg',
       },
       {
         'title': 'polish',
         'type': ServiceType.POLISH,
         'color': AppColors.warning,
-        'image': 'assets/images/car_polish.jpg',
+        'image': 'assets/images/polish.jpg',
       },
       {
         'title': 'change_brake_fluid',
@@ -299,8 +353,10 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              (category['color'] as Color).withValues(alpha: 0.8),
-                              (category['color'] as Color).withValues(alpha: 0.6),
+                              (category['color'] as Color)
+                                  .withValues(alpha: 0.8),
+                              (category['color'] as Color)
+                                  .withValues(alpha: 0.6),
                             ],
                           ),
                         ),
@@ -353,8 +409,8 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       actions: [
         TextButton(
             onPressed: () => Get.back(),
-            child: Text('cancel'.tr, style: const TextStyle(color: AppColors.textSecondary))
-        ),
+            child: Text('cancel'.tr,
+                style: const TextStyle(color: AppColors.textSecondary))),
         ElevatedButton(
           onPressed: () {
             Get.back();

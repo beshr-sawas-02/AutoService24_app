@@ -366,7 +366,7 @@ class UserProfileView extends StatelessWidget {
         children: [
            Text(
             'contact_information'.tr,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.black87,

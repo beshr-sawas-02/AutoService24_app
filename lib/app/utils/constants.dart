@@ -2,6 +2,20 @@ class AppConstants {
   // API Configuration
   static const String baseUrl = 'https://www.autoservicely.com';
   static const String wsUrl = 'wss://autoservicely.com/ws';
+  static const String mapboxAccessToken =
+      "pk.eyJ1IjoiYWxpYWxiYXlhdGk0NjgiLCJhIjoiY21mYTYwam05MWs4azJsczRtMjN2ZDR1aCJ9.o9xLo4WvTnVTmm0xVsKphA";
+
+  static String buildImageUrl(String path) {
+    if (path.isEmpty) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    if (path.startsWith('/')) {
+      return '$baseUrl$path';
+    } else {
+      return '$baseUrl/$path';
+    }
+  }
 
   static const int connectionTimeout = 30000;
   static const int receiveTimeout = 30000;

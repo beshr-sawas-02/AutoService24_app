@@ -24,7 +24,6 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
   final _descriptionController = TextEditingController();
   final _workingHoursController = TextEditingController();
 
-  MapboxMap? _mapboxMap;
   geo.Position? _currentPosition;
   Point? _selectedLocation;
 
@@ -118,90 +117,98 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'tap_map_select_location'.tr,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                ),
-              ),
               const SizedBox(height: 12),
 
-              // Mapbox Map
-              Container(
-                height: 300,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Obx(() {
-                    final currentPos = mapController.currentPosition.value;
-                    return MapWidget(
-                      key: const ValueKey("mapWidget"),
-                      cameraOptions: CameraOptions(
-                        center: Point(
-                          coordinates: Position(
-                            currentPos?.longitude ?? 36.2765,
-                            currentPos?.latitude ?? 33.5138,
-                          ),
-                        ),
-                        zoom: 12.0,
-                      ),
-                      onMapCreated: _onMapCreated,
-                      // onTapListener: OnMapTapListener(
-                      //   onMapTap: _onMapTap,
-                      // ),
-                    );
-                  }),
-                ),
-              ),
-
-              if (_selectedLocation != null) ...[
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(12),
+              // Location Selection Button
+              InkWell(
+                onTap: _openLocationPicker,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.success.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: _selectedLocation != null
+                          ? AppColors.success
+                          : AppColors.border,
+                      width: _selectedLocation != null ? 2 : 1,
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.check_circle, color: AppColors.success),
-                      const SizedBox(width: 8),
+                      Icon(
+                        _selectedLocation != null
+                            ? Icons.location_on
+                            : Icons.location_off,
+                        color: _selectedLocation != null
+                            ? AppColors.success
+                            : AppColors.textSecondary,
+                        size: 28,
+                      ),
+                      const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
-                          'location_selected'.tr +
-                              ': ${_selectedLocation!.coordinates.lat.toStringAsFixed(4)}, ${_selectedLocation!.coordinates.lng.toStringAsFixed(4)}',
-                          style: const TextStyle(color: AppColors.success),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _selectedLocation != null
+                                  ? 'location_selected'.tr
+                                  : 'select_workshop_location'.tr,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: _selectedLocation != null
+                                    ? AppColors.success
+                                    : AppColors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _selectedLocation != null
+                                  ? '${'coordinates'.tr}: ${_selectedLocation!.coordinates.lat.toStringAsFixed(4)}, ${_selectedLocation!.coordinates.lng.toStringAsFixed(4)}'
+                                  : 'tap_to_open_map'.tr,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: _selectedLocation != null
+                                    ? AppColors.success.withValues(alpha: 0.8)
+                                    : AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
                         ),
+                      ),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        color: AppColors.textSecondary,
+                        size: 16,
                       ),
                     ],
                   ),
                 ),
-              ],
+              ),
 
               const SizedBox(height: 32),
 
               // Create Button
               Obx(() => ElevatedButton(
-                onPressed: workshopController.isLoading.value ? null : _createWorkshop,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                child: workshopController.isLoading.value
-                    ? const CircularProgressIndicator(color: AppColors.white)
-                    : Text('create_workshop'.tr),
-              )),
+                    onPressed: workshopController.isLoading.value
+                        ? null
+                        : _createWorkshop,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      textStyle: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    child: workshopController.isLoading.value
+                        ? const CircularProgressIndicator(
+                            color: AppColors.white)
+                        : Text('create_workshop'.tr),
+                  )),
             ],
           ),
         ),
@@ -243,39 +250,13 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
     );
   }
 
-  void _onMapCreated(MapboxMap mapboxMap) {
-    _mapboxMap = mapboxMap;
-    mapController.setMapboxMap(mapboxMap);
-    _setupAnnotationManagers();
-  }
-
-  Future<void> _setupAnnotationManagers() async {
-    if (_mapboxMap != null) {
-      await mapController.setupAnnotationManagers();
-    }
-  }
-
-  void _onMapTap(ScreenCoordinate coordinate) {
-    if (_mapboxMap != null) {
-      _mapboxMap!.coordinateForPixel(coordinate).then((point) {
-        // Point object is returned directly, no need to convert from Map
-        setState(() {
-          _selectedLocation = point;
-        });
-        _addMarkerToMap(point);
-      }).catchError((error) {
-        print('Error getting coordinates: $error');
+  Future<void> _openLocationPicker() async {
+    final result = await Get.to(() => const LocationPickerView());
+    if (result != null && result is Point) {
+      setState(() {
+        _selectedLocation = result;
       });
     }
-  }
-
-  Future<void> _addMarkerToMap(Point point) async {
-    await mapController.clearMarkers();
-    await mapController.addMarker(
-      point.coordinates.lat.toDouble(),
-      point.coordinates.lng.toDouble(),
-      title: "Workshop Location",
-    );
   }
 
   Future<void> _getCurrentLocation() async {
@@ -284,15 +265,6 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
       setState(() {
         _currentPosition = position;
       });
-
-      // Move camera to current location
-      if (_mapboxMap != null && position != null) {
-        await mapController.flyToLocation(
-          position.latitude,
-          position.longitude,
-          zoom: 15.0,
-        );
-      }
     } catch (e) {
       print('Error getting location: $e');
     }
@@ -351,5 +323,247 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
     _descriptionController.dispose();
     _workingHoursController.dispose();
     super.dispose();
+  }
+}
+
+class LocationPickerView extends StatefulWidget {
+  const LocationPickerView({super.key});
+
+  @override
+  _LocationPickerViewState createState() => _LocationPickerViewState();
+}
+
+class _LocationPickerViewState extends State<LocationPickerView> {
+  final MapController mapController = Get.find<MapController>();
+  MapboxMap? _mapboxMap;
+  Point? _selectedLocation;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: Text('select_location'.tr),
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
+        actions: [
+          if (_selectedLocation != null)
+            TextButton(
+              onPressed: () {
+                Get.back(result: _selectedLocation);
+              },
+              child: Text(
+                'confirm'.tr,
+                style: const TextStyle(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          // Full Screen Map
+          Obx(() {
+            final currentPos = mapController.currentPosition.value;
+            return MapWidget(
+              key: const ValueKey("locationPickerMap"),
+              cameraOptions: CameraOptions(
+                center: Point(
+                  coordinates: Position(
+                    currentPos?.longitude ?? 36.2765,
+                    currentPos?.latitude ?? 33.5138,
+                  ),
+                ),
+                zoom: 12.0,
+              ),
+              onMapCreated: _onMapCreated,
+              onTapListener: (MapContentGestureContext context) {
+                _onMapTap(context);
+              },
+            );
+          }),
+
+          // Instructions Card
+          Positioned(
+            top: 16,
+            left: 16,
+            right: 16,
+            child: Card(
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.info_outline,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'tap_map_to_select_workshop_location'.tr,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Selected Location Info Card
+          if (_selectedLocation != null)
+            Positioned(
+              bottom: 16,
+              left: 16,
+              right: 16,
+              child: Card(
+                elevation: 4,
+                color: AppColors.success.withValues(alpha: 0.9),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.check_circle,
+                            color: AppColors.white,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'location_selected_successfully'.tr,
+                              style: const TextStyle(
+                                color: AppColors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on,
+                            color: AppColors.white,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${_selectedLocation!.coordinates.lat.toStringAsFixed(6)}, ${_selectedLocation!.coordinates.lng.toStringAsFixed(6)}',
+                            style: const TextStyle(
+                              color: AppColors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Get.back(result: _selectedLocation);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.white,
+                            foregroundColor: AppColors.success,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'confirm_location'.tr,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          // Current Location Button
+          Positioned(
+            bottom: _selectedLocation != null ? 200 : 100,
+            right: 16,
+            child: FloatingActionButton(
+              onPressed: _goToCurrentLocation,
+              backgroundColor: AppColors.white,
+              foregroundColor: AppColors.primary,
+              mini: true,
+              child: const Icon(Icons.my_location),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onMapCreated(MapboxMap mapboxMap) {
+    _mapboxMap = mapboxMap;
+    mapController.setMapboxMap(mapboxMap);
+    _setupAnnotationManagers();
+  }
+
+  Future<void> _setupAnnotationManagers() async {
+    if (_mapboxMap != null) {
+      await mapController.setupAnnotationManagers();
+    }
+  }
+
+  void _onMapTap(MapContentGestureContext context) {
+    setState(() {
+      _selectedLocation = context.point;
+    });
+    _addMarkerToMap(context.point);
+  }
+
+  Future<void> _addMarkerToMap(Point point) async {
+    await mapController.clearMarkers();
+    await mapController.addMarker(
+      point.coordinates.lat.toDouble(),
+      point.coordinates.lng.toDouble(),
+      title: "Workshop Location",
+    );
+  }
+
+  Future<void> _goToCurrentLocation() async {
+    try {
+      final position = await mapController.getCurrentLocation();
+      if (_mapboxMap != null && position != null) {
+        await mapController.flyToLocation(
+          position.latitude,
+          position.longitude,
+          zoom: 15.0,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'error'.tr,
+        'cannot_get_current_location'.tr,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
+      );
+    }
   }
 }

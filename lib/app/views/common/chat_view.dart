@@ -306,41 +306,43 @@ class _ChatViewState extends State<ChatView> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          if (serviceTitle != null) _buildServiceBanner(),
+      body: SafeArea(
+        child: Column(
+          children: [
+            if (serviceTitle != null) _buildServiceBanner(),
 
-          Expanded(
-            child: Obx(() {
-              if (chatController.isLoadingMessages.value) {
-                return const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primary,
-                  ),
+            Expanded(
+              child: Obx(() {
+                if (chatController.isLoadingMessages.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primary,
+                    ),
+                  );
+                }
+
+                if (chatController.messages.isEmpty) {
+                  return _buildEmptyMessages();
+                }
+
+                return ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(16),
+                  reverse: true,
+                  itemCount: chatController.messages.length,
+                  itemBuilder: (context, index) {
+                    final message = chatController
+                        .messages[chatController.messages.length - 1 - index];
+                    final isMe = message.senderId.toString() == currentUserId;
+
+                    return _buildMessageBubble(message, isMe);
+                  },
                 );
-              }
-
-              if (chatController.messages.isEmpty) {
-                return _buildEmptyMessages();
-              }
-
-              return ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(16),
-                reverse: true,
-                itemCount: chatController.messages.length,
-                itemBuilder: (context, index) {
-                  final message = chatController
-                      .messages[chatController.messages.length - 1 - index];
-                  final isMe = message.senderId.toString() == currentUserId;
-
-                  return _buildMessageBubble(message, isMe);
-                },
-              );
-            }),
-          ),
-          _buildMessageInput(),
-        ],
+              }),
+            ),
+            _buildMessageInput(),
+          ],
+        ),
       ),
     );
   }

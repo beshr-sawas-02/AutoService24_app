@@ -62,29 +62,69 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       return _buildErrorContainer('Empty image path');
     }
 
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    String finalImagePath = imagePath;
+
+    if (imagePath.startsWith('/uploads/')) {
+      finalImagePath = 'https://www.autoservicely.com$imagePath';
+    } else if (imagePath.startsWith('uploads/')) {
+      finalImagePath = 'https://www.autoservicely.com/$imagePath';
+    } else if (!imagePath.startsWith('http://') &&
+        !imagePath.startsWith('https://') &&
+        !imagePath.startsWith('/data/') &&
+        !imagePath.startsWith('assets/')) {
+      if (imagePath.startsWith('/')) {
+        finalImagePath = 'https://www.autoservicely.com$imagePath';
+      } else {
+        finalImagePath = 'https://www.autoservicely.com/$imagePath';
+      }
+    }
+
+    if (finalImagePath.startsWith('http://') ||
+        finalImagePath.startsWith('https://')) {
       return Container(
         width: double.infinity,
         height: double.infinity,
-        color: Colors.black,
+        color: AppColors.grey200,
         child: Image.network(
-          imagePath,
-          fit: BoxFit.contain,
+          finalImagePath,
+          fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
-            return _buildErrorContainer('Network error');
+            return Container(
+              color: AppColors.grey200,
+              child: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.broken_image,
+                      size: 48,
+                      color: AppColors.grey400,
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Image not available',
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
           },
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
             return Container(
-              color: Colors.black,
+              color: AppColors.grey200,
               child: Center(
                 child: CircularProgressIndicator(
                   color: AppColors.primary,
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
+                          loadingProgress.expectedTotalBytes!
                       : null,
                 ),
               ),
@@ -92,14 +132,14 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           },
         ),
       );
-    } else if (imagePath.startsWith('/') || imagePath.contains('/data/')) {
+    } else if (finalImagePath.startsWith('/data/')) {
       return Container(
         width: double.infinity,
         height: double.infinity,
-        color: Colors.black,
+        color: AppColors.grey200,
         child: Image.file(
-          File(imagePath),
-          fit: BoxFit.contain,
+          File(finalImagePath),
+          fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
@@ -107,22 +147,24 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           },
         ),
       );
-    } else {
+    } else if (finalImagePath.startsWith('assets/')) {
       return Container(
         width: double.infinity,
         height: double.infinity,
-        color: Colors.black,
+        color: AppColors.grey200,
         child: Image.asset(
-          imagePath,
-          fit: BoxFit.contain,
+          finalImagePath,
+          fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
-            return _buildErrorContainer('Invalid image path');
+            return _buildErrorContainer('Asset not found');
           },
         ),
       );
     }
+
+    return _buildErrorContainer('Invalid path');
   }
 
   Widget _buildErrorContainer(String message) {
@@ -174,7 +216,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       }
 
       final workshop =
-      await workshopController.getWorkshopById(service.workshopId);
+          await workshopController.getWorkshopById(service.workshopId);
 
       if (workshop == null) {
         Get.snackbar(
@@ -283,7 +325,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                   : serviceController.services;
 
               final filteredServices = sourceServices
-                  .where((service) => service.serviceType == selectedServiceType)
+                  .where(
+                      (service) => service.serviceType == selectedServiceType)
                   .toList();
 
               if (filteredServices.isEmpty) {
@@ -541,8 +584,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       width: double.infinity,
       child: service.images.isNotEmpty
           ? ClipRRect(
-        child: _buildImageWidget(service.images.first),
-      )
+              child: _buildImageWidget(service.images.first),
+            )
           : _buildPlaceholderImage(),
     );
   }
@@ -939,8 +982,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           const SizedBox(height: 8),
           Text(
             isOwner
-                ? 'havent_created_services'.tr + ' $categoryTitle'
-                : 'no_services_for_category'.tr + ' $categoryTitle',
+                ? '${'havent_created_services'.tr} $categoryTitle'
+                : '${'no_services_for_category'.tr} $categoryTitle',
             style: const TextStyle(
               fontSize: 14,
               color: AppColors.textHint,

@@ -15,8 +15,11 @@ class MapController extends GetxController {
 
   // Use LocationService's reactive variables
   Rx<geo.Position?> get currentPosition => _locationService.currentPosition;
+
   RxBool get hasLocationPermission => _locationService.hasLocationPermission;
-  RxBool get isLocationServiceEnabled => _locationService.isLocationServiceEnabled;
+
+  RxBool get isLocationServiceEnabled =>
+      _locationService.isLocationServiceEnabled;
 
   @override
   void onInit() {
@@ -47,19 +50,22 @@ class MapController extends GetxController {
   /// Setup annotation managers for markers and circles
   Future<void> setupAnnotationManagers() async {
     if (mapboxMap != null) {
-      pointAnnotationManager = await mapboxMap!.annotations.createPointAnnotationManager();
-      circleAnnotationManager = await mapboxMap!.annotations.createCircleAnnotationManager();
+      pointAnnotationManager =
+          await mapboxMap!.annotations.createPointAnnotationManager();
+      circleAnnotationManager =
+          await mapboxMap!.annotations.createCircleAnnotationManager();
     }
   }
 
   /// Add a marker to the map (updated for new Mapbox version)
   Future<void> addMarker(
-      double latitude,
-      double longitude, {
-        String? title,
-        String? snippet,
-        Map<String, dynamic>? userData, // Keep parameter for compatibility but don't use
-      }) async {
+    double latitude,
+    double longitude, {
+    String? title,
+    String? snippet,
+    Map<String, dynamic>?
+        userData, // Keep parameter for compatibility but don't use
+  }) async {
     if (pointAnnotationManager != null) {
       // Create Point object instead of Map
       final point = Point(coordinates: Position(longitude, latitude));
@@ -92,22 +98,23 @@ class MapController extends GetxController {
     }
   }
 
-  /// Add a circle overlay to the map (updated for new Mapbox version)
+  /// Add a circle overlay to the map - FIXED VERSION
   Future<void> addCircle(
-      double latitude,
-      double longitude,
-      double radiusMeters, {
-        int fillColor = 0x330066FF,
-        int strokeColor = 0xFF0066FF,
-        double strokeWidth = 2.0,
-      }) async {
+    double latitude,
+    double longitude,
+    double radiusMeters, {
+    int fillColor = 0x330066FF,
+    int strokeColor = 0xFF0066FF,
+    double strokeWidth = 2.0,
+  }) async {
     if (circleAnnotationManager != null) {
-      // Create Point object instead of Map
       final point = Point(coordinates: Position(longitude, latitude));
+
+      double pixelRadius = _metersToPixelRadius(radiusMeters);
 
       final options = CircleAnnotationOptions(
         geometry: point,
-        circleRadius: radiusMeters,
+        circleRadius: pixelRadius,
         circleColor: fillColor,
         circleStrokeColor: strokeColor,
         circleStrokeWidth: strokeWidth,
@@ -115,6 +122,33 @@ class MapController extends GetxController {
 
       await circleAnnotationManager!.create(options);
     }
+  }
+
+  double _metersToPixelRadius(double radiusInMeters) {
+    if (radiusInMeters <= 100) return 15.0;
+    if (radiusInMeters <= 500) return 25.0;
+    if (radiusInMeters <= 1000) return 35.0;
+
+    if (radiusInMeters <= 2000) return 50.0;
+    if (radiusInMeters <= 5000) return 75.0;
+    if (radiusInMeters <= 10000) return 100.0;
+
+    if (radiusInMeters <= 15000) return 120.0;
+    if (radiusInMeters <= 25000) return 140.0;
+    if (radiusInMeters <= 50000) return 160.0;
+
+    if (radiusInMeters <= 75000) return 180.0;
+    if (radiusInMeters <= 100000) return 200.0;
+
+    if (radiusInMeters <= 150000) return 220.0;
+    if (radiusInMeters <= 200000) return 240.0;
+    if (radiusInMeters <= 250000) return 260.0;
+
+    if (radiusInMeters <= 300000) return 280.0;
+    if (radiusInMeters <= 400000) return 300.0;
+    if (radiusInMeters <= 500000) return 320.0;
+
+    return 350.0;
   }
 
   /// Clear all annotations (markers and circles)
@@ -143,11 +177,11 @@ class MapController extends GetxController {
 
   /// Fly to a specific location (updated for new Mapbox version)
   Future<void> flyToLocation(
-      double latitude,
-      double longitude, {
-        double zoom = 15.0,
-        int duration = 2000,
-      }) async {
+    double latitude,
+    double longitude, {
+    double zoom = 15.0,
+    int duration = 2000,
+  }) async {
     if (mapboxMap != null) {
       // Create Point object instead of Map
       final center = Point(coordinates: Position(longitude, latitude));
@@ -164,12 +198,13 @@ class MapController extends GetxController {
 
   /// Calculate distance between two points using LocationService
   double calculateDistance(
-      double startLat,
-      double startLng,
-      double endLat,
-      double endLng,
-      ) {
-    return _locationService.calculateDistance(startLat, startLng, endLat, endLng);
+    double startLat,
+    double startLng,
+    double endLat,
+    double endLng,
+  ) {
+    return _locationService.calculateDistance(
+        startLat, startLng, endLat, endLng);
   }
 
   /// Convert distance from meters to kilometers using LocationService
@@ -184,15 +219,14 @@ class MapController extends GetxController {
 
   /// Check if a point is within a radius using LocationService
   bool isWithinRadius(
-      double centerLat,
-      double centerLng,
-      double pointLat,
-      double pointLng,
-      double radiusMeters,
-      ) {
+    double centerLat,
+    double centerLng,
+    double pointLat,
+    double pointLng,
+    double radiusMeters,
+  ) {
     return _locationService.isWithinRadius(
-        centerLat, centerLng, pointLat, pointLng, radiusMeters
-    );
+        centerLat, centerLng, pointLat, pointLng, radiusMeters);
   }
 
   /// Format distance for display using LocationService
