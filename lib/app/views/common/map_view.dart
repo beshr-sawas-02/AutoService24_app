@@ -12,337 +12,523 @@ class MapView extends StatefulWidget {
   const MapView({super.key});
 
   @override
-  _MapViewState createState() => _MapViewState();
+  State<MapView> createState() => _MapViewState();
 }
 
 class _MapViewState extends State<MapView> {
-  final WorkshopController workshopController = Get.find<WorkshopController>();
-  final MapController mapController = Get.find<MapController>();
+  // Controllers
+  final WorkshopController _workshopController = Get.find<WorkshopController>();
+  final MapController _mapController = Get.find<MapController>();
 
+  // Map instance
   MapboxMap? _mapboxMap;
+
+  // Focus on specific workshop variables
+  bool _shouldFocusOnWorkshop = false;
+  String? _targetWorkshopId;
+  double? _targetLatitude;
+  double? _targetLongitude;
+  String? _targetWorkshopName;
+  double _targetZoom = 16.0;
+
+  // Constants
+  static const double _defaultZoom = 12.0;
+  static const double _focusZoom = 16.0;
+  static const double _currentLocationZoom = 15.0;
+  static const double _maxTapDistance = 1000; // 1km maximum tap distance
+  static const double _circleRadius = 500; // Circle radius in meters
 
   @override
   void initState() {
     super.initState();
-    _initializeMap();
+    _parseArguments();
+
+    // تأخير التهيئة
+    Future.delayed(Duration.zero, () {
+      _initializeMap();
+    });
   }
 
+  /// Parse navigation arguments for workshop focus
+  void _parseArguments() {
+    final arguments = Get.arguments;
+    if (arguments is Map<String, dynamic>) {
+      _shouldFocusOnWorkshop = arguments['focusOnWorkshop'] ?? false;
+      _targetWorkshopId = arguments['workshopId'];
+      _targetLatitude = arguments['latitude'];
+      _targetLongitude = arguments['longitude'];
+      _targetWorkshopName = arguments['workshopName'];
+      _targetZoom = arguments['zoom']?.toDouble() ?? _focusZoom;
+    }
+  }
+
+  /// Initialize map and handle focus on specific workshop
   Future<void> _initializeMap() async {
-    await mapController.checkLocationServices();
-    await _loadWorkshopMarkers();
+    try {
+      await _mapController.checkLocationServices();
+      await _loadWorkshopMarkers();
+
+      if (_shouldFocusOnSpecificWorkshop()) {
+        await _focusOnTargetWorkshop();
+      }
+    } catch (e) {
+      _showError('map_initialization_error'.tr, e.toString());
+    }
+  }
+
+  /// Check if should focus on specific workshop
+  bool _shouldFocusOnSpecificWorkshop() {
+    return _shouldFocusOnWorkshop &&
+        _targetLatitude != null &&
+        _targetLongitude != null;
+  }
+
+  /// Focus map on target workshop
+  Future<void> _focusOnTargetWorkshop() async {
+    // Wait for map to load
+    await Future.delayed(const Duration(milliseconds: 1000));
+
+    // Move to workshop location
+    await _mapController.flyToLocation(
+      _targetLatitude!,
+      _targetLongitude!,
+      zoom: _targetZoom,
+    );
+
+    // Show workshop details if ID is provided
+    if (_targetWorkshopId != null) {
+      final workshop = _workshopController.findWorkshopById(_targetWorkshopId!);
+      if (workshop != null) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        _showWorkshopBottomSheet(workshop);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('workshop_locations'.tr),
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              Get.toNamed(AppRoutes.workshopMapSearch);
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.my_location),
-            onPressed: _goToCurrentLocation,
-          ),
-        ],
-      ),
-      body: Obx(() {
-        final currentPos = mapController.currentPosition.value;
-        return MapWidget(
-          key: const ValueKey("workshopMapWidget"),
-          cameraOptions: CameraOptions(
-            center: Point(
-              coordinates: Position(
-                currentPos?.longitude ?? 36.2765,
-                currentPos?.latitude ?? 33.5138,
-              ),
-            ),
-            zoom: 12.0,
-          ),
-          onMapCreated: _onMapCreated,
-          onTapListener: (MapContentGestureContext context) {
-            _onMapTap(context);
-          },
-        );
-      }),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            heroTag: "search",
-            onPressed: () {
-              Get.toNamed(AppRoutes.workshopMapSearch);
-            },
-            backgroundColor: AppColors.info,
-            foregroundColor: AppColors.white,
-            mini: true,
-            child: const Icon(Icons.search),
-          ),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            heroTag: "refresh",
-            onPressed: _loadWorkshopMarkers,
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.white,
-            mini: true,
-            child: const Icon(Icons.refresh),
-          ),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            heroTag: "location",
-            onPressed: _goToCurrentLocation,
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.white,
-            child: const Icon(Icons.my_location),
-          ),
-        ],
-      ),
+      appBar: _buildAppBar(),
+      body: _buildMapBody(),
+      floatingActionButton: _buildFloatingActionButtons(),
     );
   }
 
+  /// Build app bar with dynamic title
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      title: Text(
+        _shouldFocusOnWorkshop && _targetWorkshopName != null
+            ? _targetWorkshopName!
+            : 'workshop_locations'.tr,
+      ),
+      backgroundColor: AppColors.primary,
+      foregroundColor: AppColors.white,
+      actions: _buildAppBarActions(),
+    );
+  }
+
+  /// Build app bar actions
+  List<Widget> _buildAppBarActions() {
+    return [
+      if (!_shouldFocusOnWorkshop)
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () => Get.toNamed(AppRoutes.workshopMapSearch),
+          tooltip: 'search'.tr,
+        ),
+      IconButton(
+        icon: const Icon(Icons.my_location),
+        onPressed: _goToCurrentLocation,
+        tooltip: 'current_location'.tr,
+      ),
+    ];
+  }
+
+  /// Build map widget with reactive positioning
+  Widget _buildMapBody() {
+    return Obx(() {
+      final currentPos = _mapController.currentPosition.value;
+
+      return MapWidget(
+        key: const ValueKey("workshopMapWidget"),
+        cameraOptions: CameraOptions(
+          center: Point(
+            coordinates: Position(
+              _getInitialLongitude(currentPos),
+              _getInitialLatitude(currentPos),
+            ),
+          ),
+          zoom: _shouldFocusOnWorkshop ? _targetZoom : _defaultZoom,
+        ),
+        onMapCreated: _onMapCreated,
+        onTapListener: _onMapTap,
+      );
+    });
+  }
+
+  /// Get initial latitude for map center
+  double _getInitialLatitude(geo.Position? currentPos) {
+    if (_shouldFocusOnWorkshop && _targetLatitude != null) {
+      return _targetLatitude!;
+    }
+    return currentPos?.latitude ?? 33.5138; // Default to Damascus
+  }
+
+  /// Get initial longitude for map center
+  double _getInitialLongitude(geo.Position? currentPos) {
+    if (_shouldFocusOnWorkshop && _targetLongitude != null) {
+      return _targetLongitude!;
+    }
+    return currentPos?.longitude ?? 36.2765; // Default to Damascus
+  }
+
+  /// Build floating action buttons
+  Widget _buildFloatingActionButtons() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (!_shouldFocusOnWorkshop) ...[
+          _buildSearchFAB(),
+          const SizedBox(height: 10),
+        ],
+        _buildRefreshFAB(),
+        const SizedBox(height: 10),
+        _buildLocationFAB(),
+      ],
+    );
+  }
+
+  /// Build search floating action button
+  Widget _buildSearchFAB() {
+    return FloatingActionButton(
+      heroTag: "search_fab",
+      onPressed: () => Get.toNamed(AppRoutes.workshopMapSearch),
+      backgroundColor: AppColors.info,
+      foregroundColor: AppColors.white,
+      mini: true,
+      tooltip: 'search'.tr,
+      child: const Icon(Icons.search),
+    );
+  }
+
+  /// Build refresh floating action button
+  Widget _buildRefreshFAB() {
+    return FloatingActionButton(
+      heroTag: "refresh_fab",
+      onPressed: _loadWorkshopMarkers,
+      backgroundColor: AppColors.primary,
+      foregroundColor: AppColors.white,
+      mini: true,
+      tooltip: 'refresh'.tr,
+      child: const Icon(Icons.refresh),
+    );
+  }
+
+  /// Build location floating action button
+  Widget _buildLocationFAB() {
+    return FloatingActionButton(
+      heroTag: "location_fab",
+      onPressed: _goToCurrentLocation,
+      backgroundColor: AppColors.primary,
+      foregroundColor: AppColors.white,
+      tooltip: 'current_location'.tr,
+      child: const Icon(Icons.my_location),
+    );
+  }
+
+  /// Handle map creation
   void _onMapCreated(MapboxMap mapboxMap) {
     _mapboxMap = mapboxMap;
-    mapController.setMapboxMap(mapboxMap);
-    _setupAnnotationManagers();
+    _mapController.setMapboxMap(mapboxMap);
+
+    // استخدام الوظيفة المُحسنة مع فحص الاتصال
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      _setupAnnotationManagers();
+    });
   }
 
   Future<void> _setupAnnotationManagers() async {
-    await mapController.setupAnnotationManagers();
-    _loadWorkshopMarkers();
+    try {
+      // استخدام الوظيفة المُحسنة
+      await _mapController.setupAnnotationManagersWithHealthCheck();
+
+      // تأخير إضافي قبل تحميل العلامات
+      await Future.delayed(const Duration(milliseconds: 1000));
+      await _loadWorkshopMarkers();
+    } catch (e) {
+      _showError('annotation_setup_error'.tr, e.toString());
+
+      // محاولة fallback بدون annotations
+      print('Setup failed, continuing without annotations');
+    }
   }
 
-
+  /// Handle map tap to show nearby workshop
   void _onMapTap(MapContentGestureContext context) {
     final coordinates = context.point.coordinates;
     final lat = coordinates.lat.toDouble();
     final lng = coordinates.lng.toDouble();
 
-    // Find the nearest workshop to the tap location
-    WorkshopModel? nearestWorkshop = _findNearestWorkshop(lat, lng);
-
+    final nearestWorkshop = _findNearestWorkshop(lat, lng);
     if (nearestWorkshop != null) {
       _showWorkshopBottomSheet(nearestWorkshop);
     }
   }
 
-  // Find nearest workshop to tap location
+  /// Find nearest workshop to tap location
   WorkshopModel? _findNearestWorkshop(double lat, double lng) {
-    WorkshopModel? nearest;
+    WorkshopModel? nearestWorkshop;
     double minDistance = double.infinity;
-    const double maxTapDistance = 1000; // 1km maximum tap distance
 
-    for (WorkshopModel workshop in workshopController.workshops) {
-      if (workshop.latitude != 0.0 && workshop.longitude != 0.0) {
-        double distance = mapController.calculateDistance(
-            lat, lng,
-            workshop.latitude, workshop.longitude
+    for (WorkshopModel workshop in _workshopController.workshops) {
+      if (_isValidWorkshopLocation(workshop)) {
+        double distance = _mapController.calculateDistance(
+          lat, lng,
+          workshop.latitude, workshop.longitude,
         );
 
-        if (distance < minDistance && distance < maxTapDistance) {
+        if (distance < minDistance && distance < _maxTapDistance) {
           minDistance = distance;
-          nearest = workshop;
+          nearestWorkshop = workshop;
         }
       }
     }
 
-    return nearest;
+    return nearestWorkshop;
   }
 
-  void _goToCurrentLocation() {
-    final currentPos = mapController.currentPosition.value;
-    if (currentPos != null && _mapboxMap != null) {
-      mapController.flyToLocation(
-        currentPos.latitude,
-        currentPos.longitude,
-        zoom: 15.0,
-      );
-    } else {
-      mapController.getCurrentLocation();
-    }
-  }
-
-  Future<void> _loadWorkshopMarkers() async {
-    await mapController.clearMarkers();
-
-    // Add workshop markers (simplified - no userData)
-    for (WorkshopModel workshop in workshopController.workshops) {
-      if (workshop.latitude != 0.0 && workshop.longitude != 0.0) {
-        await mapController.addMarker(
-          workshop.latitude,
-          workshop.longitude,
-          title: workshop.name,
-        );
-      }
-    }
-  }
-
+  /// Show workshop details bottom sheet - compact version
   void _showWorkshopBottomSheet(WorkshopModel workshop) {
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true,
       backgroundColor: AppColors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.4,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (context, scrollController) => Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Handle bar
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.grey300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Workshop name
+            Text(
+              workshop.name,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
               ),
-              const SizedBox(height: 20),
+            ),
+            const SizedBox(height: 8),
 
-              // Workshop info
-              Row(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: AppColors.grey200,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: workshop.profileImage != null
-                          ? Image.network(
-                        workshop.profileImage!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(Icons.business, color: AppColors.grey400);
-                        },
-                      )
-                          : const Icon(Icons.business, color: AppColors.grey400),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          workshop.name,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
-                            const SizedBox(width: 4),
-                            Text(
-                              workshop.workingHours,
-                              style: const TextStyle(color: AppColors.textSecondary),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              Text(
-                workshop.description,
-                style: const TextStyle(
-                  fontSize: 16,
+            // Working hours
+            Row(
+              children: [
+                const Icon(
+                  Icons.access_time,
+                  size: 16,
                   color: AppColors.textSecondary,
                 ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Action buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Get.back();
-                        Get.toNamed(
-                          AppRoutes.workshopDetails,
-                          arguments: workshop,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: Text('view_details'.tr),
-                    ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    workshop.workingHours,
+                    style: const TextStyle(color: AppColors.textSecondary),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        _getDirections(workshop);
-                      },
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primary,
-                        side: const BorderSide(color: AppColors.primary),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: Text('directions'.tr),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
 
-              // Distance info
-              Obx(() {
-                final currentPos = mapController.currentPosition.value;
-                if (currentPos != null) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.directions_car, size: 16, color: AppColors.textSecondary),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${'distance'.tr}: ${mapController.formatDistance(_calculateDistance(workshop, currentPos))}',
-                          style: const TextStyle(color: AppColors.textSecondary),
-                        ),
-                      ],
+            // Description - compact
+            Text(
+              workshop.description,
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textSecondary,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 20),
+
+            // Action buttons
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _navigateToWorkshopDetails(workshop),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                  );
-                }
-                return const SizedBox();
-              }),
+                    child: Text('view_details'.tr),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _getDirections(workshop),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      side: const BorderSide(color: AppColors.primary),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: Text('directions'.tr),
+                  ),
+                ),
+              ],
+            ),
+
+            // Distance info
+            Obx(() {
+              final currentPos = _mapController.currentPosition.value;
+              if (currentPos != null) {
+                final distance = _calculateDistance(workshop, currentPos);
+
+                return Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.directions_car,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${'distance'.tr}: ${_mapController.formatDistance(distance)}',
+                        style: const TextStyle(color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return const SizedBox();
+            }),
+
+            // Back button if needed
+            if (_shouldFocusOnWorkshop) ...[
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Get.back(); // Close bottom sheet
+                    Get.back(); // Return to services page
+                  },
+                  icon: const Icon(Icons.arrow_back),
+                  label: Text('back_to_services'.tr),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.textSecondary,
+                    side: const BorderSide(color: AppColors.border),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
   }
 
+  /// Check if workshop has valid location
+  bool _isValidWorkshopLocation(WorkshopModel workshop) {
+    return workshop.latitude != 0.0 && workshop.longitude != 0.0;
+  }
+
+  /// Go to current user location
+  void _goToCurrentLocation() {
+    final currentPos = _mapController.currentPosition.value;
+
+    if (currentPos != null && _mapboxMap != null) {
+      _mapController.flyToLocation(
+        currentPos.latitude,
+        currentPos.longitude,
+        zoom: _currentLocationZoom,
+      );
+    } else {
+      _mapController.getCurrentLocation();
+      _showInfo('getting_location'.tr);
+    }
+  }
+
+  /// Load workshop markers on map with enhanced error handling
+  Future<void> _loadWorkshopMarkers() async {
+    try {
+      // محاولة مسح العلامات الموجودة
+      await _mapController.clearMarkers();
+
+      // Add workshop markers واحدة تلو الأخرى
+      int successCount = 0;
+      int totalWorkshops = _workshopController.workshops.length;
+
+      for (WorkshopModel workshop in _workshopController.workshops) {
+        if (_isValidWorkshopLocation(workshop)) {
+          try {
+            await _mapController.addMarker(
+              workshop.latitude,
+              workshop.longitude,
+              title: workshop.name,
+            );
+            successCount++;
+          } catch (e) {
+            print('Failed to add marker for workshop ${workshop.name}: $e');
+            // استمر في إضافة باقي العلامات
+          }
+        }
+      }
+
+      print('Successfully added $successCount markers out of $totalWorkshops workshops');
+
+      // Add focus circle if needed
+      if (_shouldFocusOnSpecificWorkshop()) {
+        await _addFocusCircle();
+      }
+
+      // إذا لم تنجح أي علامة، أظهر رسالة
+      if (successCount == 0 && totalWorkshops > 0) {
+        _showInfo('markers_load_error'.tr);
+      }
+
+    } catch (e) {
+      _showError('markers_load_error'.tr, e.toString());
+    }
+  }
+
+  /// Add circle around focused workshop
+  Future<void> _addFocusCircle() async {
+    try {
+      await _mapController.addCircle(
+        _targetLatitude!,
+        _targetLongitude!,
+        _circleRadius,
+        fillColor: 0x330066FF,
+        strokeColor: 0xFF0066FF,
+        strokeWidth: 2.0,
+      );
+    } catch (e) {
+      print('Error adding focus circle: $e');
+    }
+  }
+
+  /// Navigate to workshop details
+  void _navigateToWorkshopDetails(WorkshopModel workshop) {
+    Get.back();
+    Get.toNamed(
+      AppRoutes.workshopDetails,
+      arguments: workshop,
+    );
+  }
+
+  /// Calculate distance between workshop and current position
   double _calculateDistance(WorkshopModel workshop, geo.Position currentPosition) {
-    return mapController.calculateDistance(
+    return _mapController.calculateDistance(
       currentPosition.latitude,
       currentPosition.longitude,
       workshop.latitude,
@@ -350,11 +536,273 @@ class _MapViewState extends State<MapView> {
     );
   }
 
-  void _getDirections(WorkshopModel workshop) {
+  /// Get directions using Mapbox Navigation
+  void _getDirections(WorkshopModel workshop) async {
+    try {
+      final currentPos = _mapController.currentPosition.value;
+
+      if (currentPos == null) {
+        _showError('error'.tr, 'current_location_not_found'.tr);
+        return;
+      }
+
+      // Check if map controller is ready
+      if (_mapController.mapboxMap == null) {
+        _showError('error'.tr, 'map_not_ready'.tr);
+        return;
+      }
+
+      // Show loading indicator
+      Get.snackbar(
+        'loading'.tr,
+        'creating_route'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.info,
+        colorText: AppColors.white,
+        duration: const Duration(seconds: 2),
+      );
+
+      // إنشاء route من الموقع الحالي إلى الورشة
+      await _createNavigationRoute(
+        startLat: currentPos.latitude,
+        startLng: currentPos.longitude,
+        endLat: workshop.latitude,
+        endLng: workshop.longitude,
+        workshopName: workshop.name,
+      );
+
+    } catch (e) {
+      _showError('navigation_error'.tr, e.toString());
+    }
+  }
+
+  /// Create navigation route using Mapbox
+  Future<void> _createNavigationRoute({
+    required double startLat,
+    required double startLng,
+    required double endLat,
+    required double endLng,
+    required String workshopName,
+  }) async {
+    try {
+      // إضافة خط المسار على الخريطة
+      await _mapController.addRoute(
+        startLat: startLat,
+        startLng: startLng,
+        endLat: endLat,
+        endLng: endLng,
+      );
+
+      // إضافة marker للوجهة إذا لم يكن موجود
+      await _mapController.addDestinationMarker(
+        endLat,
+        endLng,
+        title: workshopName,
+      );
+
+      // تحريك الكاميرا لإظهار المسار كاملاً
+      await _mapController.fitRoute(
+        startLat: startLat,
+        startLng: startLng,
+        endLat: endLat,
+        endLng: endLng,
+      );
+
+      // إظهار معلومات المسار
+      _showRouteInfo(startLat, startLng, endLat, endLng, workshopName);
+
+    } catch (e) {
+      _showError('route_creation_error'.tr, e.toString());
+    }
+  }
+
+  /// Show route information in bottom sheet
+  void _showRouteInfo(double startLat, double startLng, double endLat, double endLng, String workshopName) {
+    final distance = _mapController.calculateDistance(startLat, startLng, endLat, endLng);
+    final estimatedTime = _calculateEstimatedTime(distance);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Route header
+            Row(
+              children: [
+                const Icon(Icons.navigation, color: AppColors.primary, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '${'navigation_to'.tr} $workshopName',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            // Route info
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                // Distance
+                Column(
+                  children: [
+                    const Icon(Icons.straighten, color: AppColors.textSecondary),
+                    const SizedBox(height: 4),
+                    Text(
+                      _mapController.formatDistance(distance),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      'distance'.tr,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Estimated time
+                Column(
+                  children: [
+                    const Icon(Icons.access_time, color: AppColors.textSecondary),
+                    const SizedBox(height: 4),
+                    Text(
+                      estimatedTime,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      'estimated_time'.tr,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // Action buttons
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Get.back();
+                      _startNavigation(endLat, endLng, workshopName);
+                    },
+                    icon: const Icon(Icons.navigation),
+                    label: Text('start_navigation'.tr),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Get.back();
+                      _clearRoute();
+                    },
+                    icon: const Icon(Icons.clear),
+                    label: Text('clear_route'.tr),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.textSecondary,
+                      side: const BorderSide(color: AppColors.border),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Start turn-by-turn navigation
+  void _startNavigation(double lat, double lng, String workshopName) {
+    // يمكن هنا بدء الملاحة الصوتية أو الانتقال لشاشة ملاحة مخصصة
     Get.snackbar(
-      'directions'.tr,
-      '${'opening_directions_to'.tr} ${workshop.name}',
+      'navigation_started'.tr,
+      '${'navigating_to'.tr} $workshopName',
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: AppColors.success,
+      colorText: AppColors.white,
+      duration: const Duration(seconds: 3),
+    );
+  }
+
+  /// Clear route from map
+  Future<void> _clearRoute() async {
+    await _mapController.clearRoute();
+    _showInfo('route_cleared'.tr);
+  }
+
+  /// Calculate estimated time based on distance
+  String _calculateEstimatedTime(double distanceInMeters) {
+    // افتراض سرعة متوسطة 40 كم/ساعة في المدينة
+    const double averageSpeedKmh = 40.0;
+    const double averageSpeedMs = averageSpeedKmh * 1000 / 3600; // متر/ثانية
+
+    final double timeInSeconds = distanceInMeters / averageSpeedMs;
+    final int minutes = (timeInSeconds / 60).round();
+
+    if (minutes < 60) {
+      return '$minutes min';
+    } else {
+      final int hours = minutes ~/ 60;
+      final int remainingMinutes = minutes % 60;
+      return '${hours}h ${remainingMinutes}m';
+    }
+  }
+
+  /// Show error message
+  void _showError(String title, String message) {
+    Get.snackbar(
+      title,
+      message,
       snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: AppColors.error,
+      colorText: AppColors.white,
+      duration: const Duration(seconds: 3),
+    );
+  }
+
+  /// Show info message
+  void _showInfo(String message) {
+    Get.snackbar(
+      'info'.tr,
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: AppColors.info,
+      colorText: AppColors.white,
+      duration: const Duration(seconds: 2),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../config/app_colors.dart';
 import '../utils/constants.dart';
 
@@ -103,9 +104,9 @@ class NoServicesFound extends StatelessWidget {
   Widget build(BuildContext context) {
     return EmptyStateWidget(
       icon: Icons.build_outlined,
-      title: 'No Services Found',
-      subtitle: 'No automotive services are available at the moment.',
-      buttonText: onRefresh != null ? 'Refresh' : null,
+      title: 'no_services_found'.tr,
+      subtitle: 'no_services_available'.tr,
+      buttonText: onRefresh != null ? 'refresh'.tr : null,
       onButtonPressed: onRefresh,
     );
   }
@@ -120,9 +121,9 @@ class NoWorkshopsFound extends StatelessWidget {
   Widget build(BuildContext context) {
     return EmptyStateWidget(
       icon: Icons.business_outlined,
-      title: 'No Workshops Found',
-      subtitle: 'No workshops are available in your area.',
-      buttonText: onRefresh != null ? 'Refresh' : null,
+      title: 'no_workshops_found'.tr,
+      subtitle: 'no_workshops_available'.tr,
+      buttonText: onRefresh != null ? 'refresh'.tr : null,
       onButtonPressed: onRefresh,
     );
   }
@@ -137,9 +138,9 @@ class NoSavedServices extends StatelessWidget {
   Widget build(BuildContext context) {
     return EmptyStateWidget(
       icon: Icons.bookmark_border,
-      title: 'No Saved Services',
-      subtitle: 'You haven\'t saved any services yet. Browse services to save your favorites.',
-      buttonText: onBrowse != null ? 'Browse Services' : null,
+      title: 'no_saved_services'.tr,
+      subtitle: 'no_saved_services_subtitle'.tr,
+      buttonText: onBrowse != null ? 'browse_services'.tr : null,
       onButtonPressed: onBrowse,
     );
   }
@@ -154,9 +155,9 @@ class NoChatsFound extends StatelessWidget {
   Widget build(BuildContext context) {
     return EmptyStateWidget(
       icon: Icons.chat_bubble_outline,
-      title: 'No Conversations',
-      subtitle: 'You don\'t have any conversations yet. Start chatting with workshop owners.',
-      buttonText: onStartChat != null ? 'Find Workshops' : null,
+      title: 'no_conversations'.tr,
+      subtitle: 'no_conversations_subtitle'.tr,
+      buttonText: onStartChat != null ? 'find_workshops'.tr : null,
       onButtonPressed: onStartChat,
     );
   }
@@ -176,11 +177,11 @@ class SearchNoResults extends StatelessWidget {
   Widget build(BuildContext context) {
     return EmptyStateWidget(
       icon: Icons.search_off,
-      title: 'No Results Found',
+      title: 'no_results_found'.tr,
       subtitle: searchTerm != null
-          ? 'No results found for "$searchTerm". Try different keywords.'
-          : 'No results found. Try different search terms.',
-      buttonText: onClearSearch != null ? 'Clear Search' : null,
+          ? 'no_results_for_search'.tr.replaceAll('{searchTerm}', searchTerm!)
+          : 'no_results_try_different'.tr,
+      buttonText: onClearSearch != null ? 'clear_search'.tr : null,
       onButtonPressed: onClearSearch,
     );
   }

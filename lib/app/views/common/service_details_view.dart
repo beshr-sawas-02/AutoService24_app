@@ -28,50 +28,55 @@ class ServiceDetailsView extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               background: service.images.isNotEmpty
                   ? Stack(
-                      children: [
-                        PageView.builder(
-                          controller: pageController,
-                          itemCount: service.images.length,
-                          itemBuilder: (context, index) {
-                            return SizedBox(
-                              width: double.infinity,
-                              height: double.infinity,
-                              child: _buildImageWidget(service.images[index]),
-                            );
-                          },
+                children: [
+                  PageView.builder(
+                    controller: pageController,
+                    itemCount: service.images.length,
+                    itemBuilder: (context, index) {
+                      return SizedBox(
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: _buildImageWidget(service.images[index]),
+                      );
+                    },
+                  ),
+                  if (service.images.length > 1)
+                    Positioned(
+                      bottom: 20,
+                      left: 0,
+                      right: 0,
+                      child: _buildImageIndicator(service.images.length),
+                    ),
+                  if (service.images.length > 1)
+                    Positioned(
+                      top: 50,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.6),
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        if (service.images.length > 1)
-                          Positioned(
-                            bottom: 20,
-                            left: 0,
-                            right: 0,
-                            child: _buildImageIndicator(service.images.length),
-                          ),
-                        if (service.images.length > 1)
-                          Positioned(
-                            top: 50,
-                            right: 16,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.6),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Obx(() {
-                                return Text(
-                                  '${pageController.hasClients ? (pageController.page?.round() ?? 0) + 1 : 1}/${service.images.length}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                );
-                              }),
+                        child: Obx(() {
+                          final currentPage = pageController.hasClients
+                              ? (pageController.page?.round() ?? 0) + 1
+                              : 1;
+                          return Text(
+                            'image_counter'.tr
+                                .replaceAll('{current}', currentPage.toString())
+                                .replaceAll('{total}', service.images.length.toString()),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                             ),
-                          ),
-                      ],
-                    )
+                          );
+                        }),
+                      ),
+                    ),
+                ],
+              )
                   : _buildPlaceholderImage(),
             ),
             actions: [
@@ -95,7 +100,7 @@ class ServiceDetailsView extends StatelessWidget {
                 }
 
                 final isBookmarked =
-                    serviceController.isServiceSaved(service.id);
+                serviceController.isServiceSaved(service.id);
 
                 return IconButton(
                   icon: Container(
@@ -120,7 +125,7 @@ class ServiceDetailsView extends StatelessWidget {
                     }
                   },
                   tooltip:
-                      isBookmarked ? 'remove_from_saved'.tr : 'save_service'.tr,
+                  isBookmarked ? 'remove_from_saved'.tr : 'save_service'.tr,
                 );
               }),
             ],
@@ -231,7 +236,7 @@ class ServiceDetailsView extends StatelessWidget {
     imagePath = imagePath.trim();
 
     if (imagePath.isEmpty) {
-      return _buildErrorContainer('Empty image path');
+      return _buildErrorContainer('empty_image_path'.tr);
     }
 
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
@@ -245,7 +250,7 @@ class ServiceDetailsView extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
-            return _buildErrorContainer('Network error');
+            return _buildErrorContainer('network_error'.tr);
           },
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
@@ -255,11 +260,11 @@ class ServiceDetailsView extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
+                      loadingProgress.expectedTotalBytes!
                       : null,
                   strokeWidth: 3,
                   valueColor:
-                      const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  const AlwaysStoppedAnimation<Color>(AppColors.primary),
                 ),
               ),
             );
@@ -277,7 +282,7 @@ class ServiceDetailsView extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
-            return _buildErrorContainer('File not found');
+            return _buildErrorContainer('file_not_found'.tr);
           },
         ),
       );
@@ -292,7 +297,7 @@ class ServiceDetailsView extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
-            return _buildErrorContainer('Invalid image path');
+            return _buildErrorContainer('invalid_image_path'.tr);
           },
         ),
       );
@@ -331,7 +336,7 @@ class ServiceDetailsView extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
         imageCount,
-        (index) => Container(
+            (index) => Container(
           margin: const EdgeInsets.symmetric(horizontal: 4),
           width: 8,
           height: 8,

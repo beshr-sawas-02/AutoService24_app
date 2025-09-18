@@ -25,12 +25,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'CarServiceHub',
+      title: 'Auto Service 24',
       debugShowCheckedModeBanner: false,
       initialBinding: AppBinding(),
       translations: AppTranslations(),
-      locale: const Locale('en'),
-      fallbackLocale: const Locale('en'),
+      locale: _getInitialLocale(),
+      fallbackLocale: const Locale('de'),
       theme: ThemeData(
         // Custom Primary Color Swatch
         primarySwatch: AppColors.createMaterialColor(AppColors.primary),
@@ -265,5 +265,13 @@ class MyApp extends StatelessWidget {
       initialRoute: AppRoutes.splash,
       getPages: AppRoutes.routes,
     );
+  }
+
+  Locale _getInitialLocale() {
+    final savedLang = StorageService.getLanguage();
+    if (savedLang != null && savedLang.isNotEmpty) {
+      return Locale(savedLang);
+    }
+    return const Locale('de');
   }
 }

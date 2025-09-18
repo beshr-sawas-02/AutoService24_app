@@ -51,15 +51,15 @@ class _EditProfileViewState extends State<EditProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: Text('edit_profile'.tr),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         actions: [
           TextButton(
             onPressed: _isLoading ? null : _saveProfile,
-            child: const Text(
-              'Save',
-              style: TextStyle(
+            child: Text(
+              'save'.tr,
+              style: const TextStyle(
                 color: AppColors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -92,9 +92,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Personal Information',
-                        style: TextStyle(
+                      Text(
+                        'personal_information'.tr,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary,
@@ -105,7 +105,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                       // Username Field
                       CustomTextField(
                         controller: _usernameController,
-                        labelText: 'Username',
+                        labelText: 'username'.tr,
                         prefixIcon: Icons.person,
                         validator: Validators.validateUsername,
                       ),
@@ -114,7 +114,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                       // Email Field
                       CustomTextField(
                         controller: _emailController,
-                        labelText: 'Email',
+                        labelText: 'email'.tr,
                         prefixIcon: Icons.email,
                         keyboardType: TextInputType.emailAddress,
                         validator: Validators.validateEmail,
@@ -124,7 +124,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                       // Phone Field
                       CustomTextField(
                         controller: _phoneController,
-                        labelText: 'Phone',
+                        labelText: 'phone'.tr,
                         prefixIcon: Icons.phone,
                         keyboardType: TextInputType.phone,
                         validator: Validators.validatePhone,
@@ -155,15 +155,15 @@ class _EditProfileViewState extends State<EditProfileView> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Account Type',
-                            style: TextStyle(
+                          Text(
+                            'account_type'.tr,
+                            style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textSecondary,
                             ),
                           ),
                           Text(
-                            authController.isOwner ? 'Workshop Owner' : 'User',
+                            authController.isOwner ? 'workshop_owner'.tr : 'user'.tr,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -181,7 +181,7 @@ class _EditProfileViewState extends State<EditProfileView> {
 
               // Save Button
               Obx(() => CustomButton(
-                text: 'Save Changes',
+                text: 'save_changes'.tr,
                 onPressed: (authController.isLoading.value || _isLoading) ? null : _saveProfile,
                 isLoading: authController.isLoading.value || _isLoading,
                 width: double.infinity,
@@ -254,9 +254,9 @@ class _EditProfileViewState extends State<EditProfileView> {
           ],
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Tap camera icon to change photo',
-          style: TextStyle(
+        Text(
+          'tap_camera_change_photo'.tr,
+          style: const TextStyle(
             color: AppColors.textSecondary,
             fontSize: 14,
           ),
@@ -269,9 +269,9 @@ class _EditProfileViewState extends State<EditProfileView> {
               color: AppColors.success.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text(
-              'New photo selected',
-              style: TextStyle(
+            child: Text(
+              'new_photo_selected'.tr,
+              style: const TextStyle(
                 color: AppColors.success,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
@@ -331,19 +331,16 @@ class _EditProfileViewState extends State<EditProfileView> {
 
   Future<void> _pickImage() async {
     try {
-
       final image = await ImageService.showImageSourceDialog();
       if (image != null) {
-
         setState(() {
           _selectedImage = image;
         });
 
-        Helpers.showSuccessSnackbar('Image selected successfully');
-      } else {
+        Helpers.showSuccessSnackbar('image_selected_successfully'.tr);
       }
     } catch (e) {
-      Helpers.showErrorSnackbar('Failed to select image');
+      Helpers.showErrorSnackbar('failed_to_select_image'.tr);
     }
   }
 
@@ -354,7 +351,7 @@ class _EditProfileViewState extends State<EditProfileView> {
 
     final user = authController.currentUser.value;
     if (user == null) {
-      Helpers.showErrorSnackbar('User not found');
+      Helpers.showErrorSnackbar('user_not_found'.tr);
       return;
     }
 
@@ -376,17 +373,16 @@ class _EditProfileViewState extends State<EditProfileView> {
       );
 
       if (success) {
-
         setState(() {
           _currentImageUrl = authController.currentUser.value?.profileImage;
           _selectedImage = null;
         });
 
-        Helpers.showSuccessSnackbar('Profile updated successfully');
+        Helpers.showSuccessSnackbar('profile_updated_successfully'.tr);
         Get.back();
       }
     } catch (e) {
-      Helpers.showErrorSnackbar('Failed to update profile: ${e.toString()}');
+      Helpers.showErrorSnackbar('${'failed_to_update_profile'.tr}: ${e.toString()}');
     } finally {
       setState(() {
         _isLoading = false;

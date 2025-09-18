@@ -6,6 +6,7 @@ class WorkshopModel {
   final LocationModel location;
   final String workingHours;
   final String? profileImage;
+  double? distanceFromUser; // حقل جديد للمسافة
 
   WorkshopModel({
     required this.id,
@@ -15,6 +16,7 @@ class WorkshopModel {
     required this.location,
     required this.workingHours,
     this.profileImage,
+    this.distanceFromUser,
   });
 
   factory WorkshopModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class WorkshopModel {
       location: LocationModel.fromJson(json['location'] ?? {}),
       workingHours: json['working_hours'] ?? '',
       profileImage: json['profile_image'],
+      distanceFromUser: json['distance'], // في حال جاءت من الباك إند
     );
   }
 
@@ -39,6 +42,7 @@ class WorkshopModel {
     };
 
     if (profileImage != null) data['profile_image'] = profileImage;
+    // لا نضيف distanceFromUser في toJson لأنها محلية فقط
     return data;
   }
 
@@ -50,6 +54,7 @@ class WorkshopModel {
     LocationModel? location,
     String? workingHours,
     String? profileImage,
+    double? distanceFromUser,
   }) {
     return WorkshopModel(
       id: id ?? this.id,
@@ -59,6 +64,7 @@ class WorkshopModel {
       location: location ?? this.location,
       workingHours: workingHours ?? this.workingHours,
       profileImage: profileImage ?? this.profileImage,
+      distanceFromUser: distanceFromUser ?? this.distanceFromUser,
     );
   }
 

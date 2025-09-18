@@ -25,17 +25,17 @@ class GuestBanner extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.info_outline,
                 color: AppColors.white,
                 size: 24,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
-                'You\'re browsing as a guest',
-                style: TextStyle(
+                'youre_browsing_as_guest'.tr,
+                style: const TextStyle(
                   color: AppColors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -45,7 +45,7 @@ class GuestBanner extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Login or register to save services, chat with workshops, and access more features.',
+            'login_register_for_features'.tr,
             style: TextStyle(
               color: AppColors.whiteWithOpacity(0.9),
               fontSize: 14,
@@ -65,7 +65,7 @@ class GuestBanner extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('Login'),
+                  child: Text('login'.tr),
                 ),
               ),
               const SizedBox(width: 12),
@@ -80,7 +80,7 @@ class GuestBanner extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('Register'),
+                  child: Text('register'.tr),
                 ),
               ),
             ],

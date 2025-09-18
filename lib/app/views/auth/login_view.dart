@@ -39,15 +39,19 @@ class _LoginViewState extends State<LoginView> {
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Login',
-          style: TextStyle(
+        title: Text(
+          'login'.tr,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
         ),
         centerTitle: true,
+        actions: [
+          _buildLanguageSwitcher(),
+          const SizedBox(width: 5),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -57,26 +61,23 @@ class _LoginViewState extends State<LoginView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              const Text(
-                'Welcome Back!',
-                style: TextStyle(
+              Text(
+                'welcome_back'.tr,
+                style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Sign in to your account',
-                style: TextStyle(
+              Text(
+                'sign_in_account'.tr,
+                style: const TextStyle(
                   fontSize: 16,
                   color: AppColors.textSecondary,
                 ),
               ),
 
-              const SizedBox(height: 32),
-
-              _buildLanguageSwitcher(),
               const SizedBox(height: 32),
 
               // Social Login Section
@@ -90,22 +91,22 @@ class _LoginViewState extends State<LoginView> {
               const SizedBox(height: 32),
 
               // Divider
-              const Row(
+              Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                       child: Divider(color: AppColors.border, thickness: 1)),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
-                      'or continue with email',
-                      style: TextStyle(
+                      'or_continue_email'.tr,
+                      style: const TextStyle(
                         color: AppColors.textHint,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                  Expanded(
+                  const Expanded(
                       child: Divider(color: AppColors.border, thickness: 1)),
                 ],
               ),
@@ -116,14 +117,14 @@ class _LoginViewState extends State<LoginView> {
               _buildTextField(
                 controller: _emailController,
                 icon: Icons.email_outlined,
-                label: 'Email',
+                label: 'email'.tr,
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
+                    return 'please_enter_email'.tr;
                   }
                   if (!GetUtils.isEmail(value)) {
-                    return 'Please enter a valid email';
+                    return 'please_enter_valid_email'.tr;
                   }
                   return null;
                 },
@@ -135,7 +136,7 @@ class _LoginViewState extends State<LoginView> {
               _buildTextField(
                 controller: _passwordController,
                 icon: Icons.lock_outlined,
-                label: 'Password',
+                label: 'password'.tr,
                 obscureText: !_isPasswordVisible,
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -150,7 +151,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
+                    return 'please_enter_password'.tr;
                   }
                   return null;
                 },
@@ -163,9 +164,9 @@ class _LoginViewState extends State<LoginView> {
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
                   onTap: () => Get.toNamed(AppRoutes.forgotPassword),
-                  child: const Text(
-                    'Forgot Password?',
-                    style: TextStyle(
+                  child: Text(
+                    'forgot_password'.tr,
+                    style: const TextStyle(
                       color: AppColors.primary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -199,9 +200,9 @@ class _LoginViewState extends State<LoginView> {
                                 strokeWidth: 2.5,
                               ),
                             )
-                          : const Text(
-                              'Login',
-                              style: TextStyle(
+                          : Text(
+                              'login'.tr,
+                              style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600),
                             ),
                     ),
@@ -213,16 +214,16 @@ class _LoginViewState extends State<LoginView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    "Don't have an account? ",
-                    style:
-                        TextStyle(color: AppColors.textSecondary, fontSize: 15),
+                  Text(
+                    'dont_have_account'.tr,
+                    style: const TextStyle(
+                        color: AppColors.textSecondary, fontSize: 15),
                   ),
                   GestureDetector(
                     onTap: () => Get.toNamed(AppRoutes.register),
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(
+                    child: Text(
+                      'sign_up'.tr,
+                      style: const TextStyle(
                         color: AppColors.primary,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -242,9 +243,9 @@ class _LoginViewState extends State<LoginView> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24, vertical: 12),
                   ),
-                  child: const Text(
-                    'Continue as Guest',
-                    style: TextStyle(
+                  child: Text(
+                    'continue_as_guest'.tr,
+                    style: const TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -318,7 +319,7 @@ class _LoginViewState extends State<LoginView> {
           children: [
             // Google Login
             _buildSocialButton(
-              label: 'Continue with Google',
+              label: 'continue_with_google'.tr,
               backgroundColor: AppColors.grey100,
               borderColor: AppColors.grey400,
               textColor: AppColors.grey800,
@@ -333,7 +334,7 @@ class _LoginViewState extends State<LoginView> {
 
             // Facebook Login
             _buildSocialButton(
-              label: 'Continue with Facebook',
+              label: 'continue_with_facebook'.tr,
               backgroundColor: AppColors.info,
               borderColor: AppColors.info,
               textColor: AppColors.white,
@@ -347,7 +348,7 @@ class _LoginViewState extends State<LoginView> {
             // Apple Login
             const SizedBox(height: 16),
             _buildSocialButton(
-              label: 'Continue with Apple',
+              label: 'continue_with_apple'.tr,
               backgroundColor: AppColors.textPrimary,
               borderColor: AppColors.textPrimary,
               textColor: AppColors.white,
@@ -365,9 +366,9 @@ class _LoginViewState extends State<LoginView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Login as:',
-          style: TextStyle(
+        Text(
+          'login_as'.tr,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
@@ -377,12 +378,13 @@ class _LoginViewState extends State<LoginView> {
         Row(
           children: [
             Expanded(
-              child: _buildUserTypeButton('Regular User', Icons.person, 'user'),
+              child:
+                  _buildUserTypeButton('regular_user'.tr, Icons.person, 'user'),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child:
-                  _buildUserTypeButton('Workshop Owner', Icons.build, 'owner'),
+              child: _buildUserTypeButton(
+                  'workshop_owner'.tr, Icons.build, 'owner'),
             ),
           ],
         ),

@@ -34,9 +34,9 @@ class _RegisterViewState extends State<RegisterView> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Create Account',
-          style: TextStyle(
+        title: Text(
+          'create_account'.tr,
+          style: const TextStyle(
             color: Colors.black87,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -52,9 +52,9 @@ class _RegisterViewState extends State<RegisterView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
-              const Text(
-                'Create Account',
-                style: TextStyle(
+              Text(
+                'create_account'.tr,
+                style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -62,7 +62,7 @@ class _RegisterViewState extends State<RegisterView> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Join CarServiceHub community',
+                'join_community'.tr,
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -71,9 +71,9 @@ class _RegisterViewState extends State<RegisterView> {
               const SizedBox(height: 32),
 
               // User Type Selection
-              const Text(
-                'I am a:',
-                style: TextStyle(
+              Text(
+                'i_am_a'.tr,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
@@ -118,7 +118,7 @@ class _RegisterViewState extends State<RegisterView> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Regular User',
+                              'regular_user'.tr,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -129,7 +129,7 @@ class _RegisterViewState extends State<RegisterView> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Looking for services',
+                              'looking_for_services'.tr,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey[600],
@@ -177,7 +177,7 @@ class _RegisterViewState extends State<RegisterView> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Workshop Owner',
+                              'workshop_owner'.tr,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -188,7 +188,7 @@ class _RegisterViewState extends State<RegisterView> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Providing services',
+                              'providing_services'.tr,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey[600],
@@ -208,13 +208,13 @@ class _RegisterViewState extends State<RegisterView> {
               _buildTextField(
                 controller: _usernameController,
                 icon: Icons.person,
-                label: 'Username',
+                label: 'username'.tr,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your username';
+                    return 'please_enter_username'.tr;
                   }
                   if (value.length < 3) {
-                    return 'Username must be at least 3 characters';
+                    return 'username_min_3_chars'.tr;
                   }
                   return null;
                 },
@@ -224,14 +224,14 @@ class _RegisterViewState extends State<RegisterView> {
               _buildTextField(
                 controller: _emailController,
                 icon: Icons.email_outlined,
-                label: 'Email',
+                label: 'email'.tr,
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
+                    return 'please_enter_email'.tr;
                   }
                   if (!GetUtils.isEmail(value)) {
-                    return 'Please enter a valid email';
+                    return 'please_enter_valid_email'.tr;
                   }
                   return null;
                 },
@@ -241,11 +241,11 @@ class _RegisterViewState extends State<RegisterView> {
               _buildTextField(
                 controller: _phoneController,
                 icon: Icons.phone_outlined,
-                label: 'Phone Number',
+                label: 'phone_number'.tr,
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
+                    return 'please_enter_phone'.tr;
                   }
                   return null;
                 },
@@ -255,7 +255,7 @@ class _RegisterViewState extends State<RegisterView> {
               _buildTextField(
                 controller: _passwordController,
                 icon: Icons.lock_outlined,
-                label: 'Password',
+                label: 'password'.tr,
                 obscureText: !_isPasswordVisible,
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -270,10 +270,10 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
+                    return 'please_enter_password'.tr;
                   }
                   if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
+                    return 'password_min_6_chars'.tr;
                   }
                   return null;
                 },
@@ -283,7 +283,7 @@ class _RegisterViewState extends State<RegisterView> {
               _buildTextField(
                 controller: _confirmPasswordController,
                 icon: Icons.lock_outlined,
-                label: 'Confirm Password',
+                label: 'confirm_password'.tr,
                 obscureText: !_isConfirmPasswordVisible,
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -294,15 +294,15 @@ class _RegisterViewState extends State<RegisterView> {
                   ),
                   onPressed: () {
                     setState(() =>
-                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible);
+                    _isConfirmPasswordVisible = !_isConfirmPasswordVisible);
                   },
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
+                    return 'please_confirm_password'.tr;
                   }
                   if (value != _passwordController.text) {
-                    return 'Passwords do not match';
+                    return 'passwords_do_not_match'.tr;
                   }
                   return null;
                 },
@@ -311,38 +311,38 @@ class _RegisterViewState extends State<RegisterView> {
 
               // Create Account Button
               Obx(() => SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed:
-                          authController.isLoading.value ? null : _register,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF8A50),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
-                      ),
-                      child: authController.isLoading.value
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2.5,
-                              ),
-                            )
-                          : const Text(
-                              'Create Account',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed:
+                  authController.isLoading.value ? null : _register,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF8A50),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  )),
+                    elevation: 0,
+                    shadowColor: Colors.transparent,
+                  ),
+                  child: authController.isLoading.value
+                      ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2.5,
+                    ),
+                  )
+                      : Text(
+                    'create_account'.tr,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              )),
               const SizedBox(height: 24),
 
               // Divider with "or continue with"
@@ -353,7 +353,7 @@ class _RegisterViewState extends State<RegisterView> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
-                      'or continue with',
+                      'or_continue_with'.tr,
                       style: TextStyle(
                         color: Colors.grey[500],
                         fontSize: 14,
@@ -374,7 +374,7 @@ class _RegisterViewState extends State<RegisterView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Already have an account? ",
+                    'already_have_account'.tr,
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 15,
@@ -382,9 +382,9 @@ class _RegisterViewState extends State<RegisterView> {
                   ),
                   GestureDetector(
                     onTap: () => Get.offNamed(AppRoutes.login),
-                    child: const Text(
-                      'Sign In',
-                      style: TextStyle(
+                    child: Text(
+                      'sign_in'.tr,
+                      style: const TextStyle(
                         color: Color(0xFFFF8A50),
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -404,7 +404,7 @@ class _RegisterViewState extends State<RegisterView> {
                         horizontal: 24, vertical: 12),
                   ),
                   child: Text(
-                    'Continue as Guest',
+                    'continue_as_guest'.tr,
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
@@ -425,50 +425,50 @@ class _RegisterViewState extends State<RegisterView> {
 
   Widget _buildSocialLoginSection() {
     return Obx(() => Column(
-          children: [
-            // Google Login
-            _buildSocialButton(
-              label: 'Continue with Google',
-              backgroundColor: Colors.grey[100]!,
-              borderColor: Colors.grey[400]!,
-              textColor: Colors.grey[800]!,
-              icon: Icons.account_circle_outlined,
-              iconColor: Colors.red[600],
-              onTap: authController.isLoading.value
-                  ? null
-                  : () => _socialLogin('google'),
-              isGoogle: true,
-            ),
-            const SizedBox(height: 16),
+      children: [
+        // Google Login
+        _buildSocialButton(
+          label: 'continue_with_google'.tr,
+          backgroundColor: Colors.grey[100]!,
+          borderColor: Colors.grey[400]!,
+          textColor: Colors.grey[800]!,
+          icon: Icons.account_circle_outlined,
+          iconColor: Colors.red[600],
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('google'),
+          isGoogle: true,
+        ),
+        const SizedBox(height: 16),
 
-            // Facebook Login
-            _buildSocialButton(
-              label: 'Continue with Facebook',
-              backgroundColor: const Color(0xFF1877F2),
-              borderColor: const Color(0xFF1877F2),
-              textColor: Colors.white,
-              icon: Icons.facebook_rounded,
-              iconColor: Colors.white,
-              onTap: authController.isLoading.value
-                  ? null
-                  : () => _socialLogin('facebook'),
-            ),
+        // Facebook Login
+        _buildSocialButton(
+          label: 'continue_with_facebook'.tr,
+          backgroundColor: const Color(0xFF1877F2),
+          borderColor: const Color(0xFF1877F2),
+          textColor: Colors.white,
+          icon: Icons.facebook_rounded,
+          iconColor: Colors.white,
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('facebook'),
+        ),
 
-            // Apple Login
-            const SizedBox(height: 16),
-            _buildSocialButton(
-              label: 'Continue with Apple',
-              backgroundColor: Colors.black,
-              borderColor: Colors.black,
-              textColor: Colors.white,
-              icon: Icons.apple_rounded,
-              iconColor: Colors.white,
-              onTap: authController.isLoading.value
-                  ? null
-                  : () => _socialLogin('apple'),
-            ),
-          ],
-        ));
+        // Apple Login
+        const SizedBox(height: 16),
+        _buildSocialButton(
+          label: 'continue_with_apple'.tr,
+          backgroundColor: Colors.black,
+          borderColor: Colors.black,
+          textColor: Colors.white,
+          icon: Icons.apple_rounded,
+          iconColor: Colors.white,
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('apple'),
+        ),
+      ],
+    ));
   }
 
   Widget _buildTextField({
@@ -526,7 +526,7 @@ class _RegisterViewState extends State<RegisterView> {
           borderSide: BorderSide(color: Colors.red[400]!, width: 2),
         ),
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         errorStyle: TextStyle(
           color: Colors.red[600],
           fontSize: 13,
@@ -580,7 +580,7 @@ class _RegisterViewState extends State<RegisterView> {
               Icon(
                 icon,
                 color:
-                    onTap != null ? (iconColor ?? textColor) : Colors.grey[500],
+                onTap != null ? (iconColor ?? textColor) : Colors.grey[500],
                 size: 24,
               ),
             const SizedBox(width: 12),
@@ -624,7 +624,7 @@ class _RegisterViewState extends State<RegisterView> {
     switch (provider) {
       case 'google':
         success =
-            await authController.signInWithGoogle(userType: _selectedUserType);
+        await authController.signInWithGoogle(userType: _selectedUserType);
         break;
       case 'facebook':
         success = await authController.signInWithFacebook(
@@ -632,7 +632,7 @@ class _RegisterViewState extends State<RegisterView> {
         break;
       case 'apple':
         success =
-            await authController.signInWithApple(userType: _selectedUserType);
+        await authController.signInWithApple(userType: _selectedUserType);
         break;
     }
 

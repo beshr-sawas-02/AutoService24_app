@@ -27,7 +27,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reset Password'),
+        title: Text('reset_password'.tr),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
       ),
@@ -68,12 +68,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Remember your password? '),
+                  Text('remember_password'.tr),
                   GestureDetector(
                     onTap: () => Get.offNamed(AppRoutes.login),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
+                    child: Text(
+                      'login'.tr,
+                      style: const TextStyle(
                         color: AppColors.primary,
                         fontWeight: FontWeight.bold,
                       ),
@@ -121,18 +121,18 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
     switch (_currentStep) {
       case 0:
-        title = 'Forgot Password?';
-        subtitle = 'Enter your email address to reset your password';
+        title = 'forgot_password'.tr;
+        subtitle = 'enter_email_reset'.tr;
         icon = Icons.email_outlined;
         break;
       case 1:
-        title = 'Set New Password';
-        subtitle = 'Create a new password for your account';
+        title = 'set_new_password'.tr;
+        subtitle = 'create_new_password'.tr;
         icon = Icons.lock_outline;
         break;
       default:
-        title = 'Reset Complete';
-        subtitle = 'Your password has been successfully reset';
+        title = 'reset_complete'.tr;
+        subtitle = 'password_reset_success'.tr;
         icon = Icons.check_circle_outline;
     }
 
@@ -190,8 +190,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       children: [
         CustomTextField(
           controller: _emailController,
-          labelText: 'Email Address',
-          hintText: 'Enter your registered email',
+          labelText: 'email_address'.tr,
+          hintText: 'enter_registered_email'.tr,
           prefixIcon: Icons.email,
           keyboardType: TextInputType.emailAddress,
           validator: Validators.validateEmail,
@@ -204,14 +204,14 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: AppColors.info.withValues(alpha: 0.3)),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.info_outline, color: AppColors.info),
-              SizedBox(width: 12),
+              const Icon(Icons.info_outline, color: AppColors.info),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'We\'ll verify your email and allow you to set a new password.',
-                  style: TextStyle(
+                  'verify_email_info'.tr,
+                  style: const TextStyle(
                     color: AppColors.info,
                     fontSize: 14,
                   ),
@@ -229,8 +229,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       children: [
         CustomTextField(
           controller: _newPasswordController,
-          labelText: 'New Password',
-          hintText: 'Enter your new password',
+          labelText: 'new_password'.tr,
+          hintText: 'enter_new_password'.tr,
           prefixIcon: Icons.lock,
           obscureText: true,
           validator: Validators.validatePassword,
@@ -238,8 +238,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         const SizedBox(height: 16),
         CustomTextField(
           controller: _confirmPasswordController,
-          labelText: 'Confirm New Password',
-          hintText: 'Confirm your new password',
+          labelText: 'confirm_new_password'.tr,
+          hintText: 'confirm_new_password_hint'.tr,
           prefixIcon: Icons.lock_outline,
           obscureText: true,
           validator: (value) => Validators.validateConfirmPassword(
@@ -258,13 +258,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
                 children: [
-                  Icon(Icons.security, color: AppColors.success),
-                  SizedBox(width: 8),
+                  const Icon(Icons.security, color: AppColors.success),
+                  const SizedBox(width: 8),
                   Text(
-                    'Password Requirements:',
-                    style: TextStyle(
+                    'password_requirements'.tr,
+                    style: const TextStyle(
                       color: AppColors.success,
                       fontWeight: FontWeight.bold,
                     ),
@@ -272,9 +272,9 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 ],
               ),
               const SizedBox(height: 8),
-              _buildPasswordRequirement('At least 6 characters'),
-              _buildPasswordRequirement('Contains letters and numbers'),
-              _buildPasswordRequirement('No spaces allowed'),
+              _buildPasswordRequirement('at_least_6_characters'.tr),
+              _buildPasswordRequirement('contains_letters_numbers'.tr),
+              _buildPasswordRequirement('no_spaces_allowed'.tr),
             ],
           ),
         ),
@@ -314,27 +314,27 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             color: AppColors.success.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Column(
+          child: Column(
             children: [
-              Icon(
+              const Icon(
                 Icons.check_circle,
                 color: AppColors.success,
                 size: 60,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
-                'Password Reset Successful!',
-                style: TextStyle(
+                'password_reset_successful'.tr,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.success,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
-                'Your password has been successfully updated. You can now login with your new password.',
-                style: TextStyle(
+                'password_updated_success'.tr,
+                style: const TextStyle(
                   color: AppColors.success,
                   fontSize: 14,
                 ),
@@ -350,11 +350,11 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   String _getButtonText() {
     switch (_currentStep) {
       case 0:
-        return 'Verify Email';
+        return 'verify_email'.tr;
       case 1:
-        return 'Reset Password';
+        return 'reset_password'.tr;
       default:
-        return 'Go to Login';
+        return 'go_to_login'.tr;
     }
   }
 

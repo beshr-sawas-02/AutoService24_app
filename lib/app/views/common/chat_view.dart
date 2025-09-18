@@ -55,8 +55,8 @@ class _ChatViewState extends State<ChatView> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.back();
         Get.snackbar(
-          'Error',
-          'Chat information is missing',
+          'error'.tr,
+          'chat_information_missing'.tr,
           backgroundColor: AppColors.error.withValues(alpha: 0.1),
           colorText: AppColors.error,
         );
@@ -66,7 +66,7 @@ class _ChatViewState extends State<ChatView> {
 
     chatId = arguments['chatId']?.toString();
     receiverId = arguments['receiverId']?.toString() ?? '';
-    receiverName = arguments['receiverName']?.toString() ?? 'Unknown User';
+    receiverName = arguments['receiverName']?.toString() ?? 'unknown_user'.tr;
     currentUserId = arguments['currentUserId']?.toString() ??
         authController.currentUser.value?.id ??
         '';
@@ -78,8 +78,8 @@ class _ChatViewState extends State<ChatView> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.back();
         Get.snackbar(
-          'Error',
-          'Invalid chat information. Missing required data.',
+          'error'.tr,
+          'invalid_chat_information'.tr,
           backgroundColor: AppColors.error.withValues(alpha: 0.1),
           colorText: AppColors.error,
         );
@@ -117,8 +117,8 @@ class _ChatViewState extends State<ChatView> {
       } else {
         Get.back();
         Get.snackbar(
-          'Error',
-          'Failed to create chat',
+          'error'.tr,
+          'failed_create_chat'.tr,
           backgroundColor: AppColors.error.withValues(alpha: 0.1),
           colorText: AppColors.error,
         );
@@ -126,8 +126,8 @@ class _ChatViewState extends State<ChatView> {
     } catch (e) {
       Get.back();
       Get.snackbar(
-        'Error',
-        'Failed to create chat: $e',
+        'error'.tr,
+        '${'failed_create_chat'.tr}: $e',
         backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,
       );
@@ -146,7 +146,7 @@ class _ChatViewState extends State<ChatView> {
         appBar: AppBar(
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.white,
-          title: const Text('Starting Chat...'),
+          title: Text('starting_chat'.tr),
         ),
         body: Center(
           child: Column(
@@ -155,7 +155,7 @@ class _ChatViewState extends State<ChatView> {
               const CircularProgressIndicator(color: AppColors.primary),
               const SizedBox(height: 16),
               Text(
-                'Creating chat with $receiverName...',
+                'creating_chat_with'.tr.replaceAll('{name}', receiverName),
                 style: const TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 16,
@@ -224,7 +224,7 @@ class _ChatViewState extends State<ChatView> {
                   ),
                   if (serviceTitle != null)
                     Text(
-                      'About: $serviceTitle',
+                      '${'discussing_service'.tr} $serviceTitle',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.whiteWithOpacity(0.7),
@@ -237,8 +237,8 @@ class _ChatViewState extends State<ChatView> {
                       final webSocketService = Get.find<WebSocketService>();
                       return Text(
                         webSocketService.isConnected.value
-                            ? 'Online'
-                            : 'Offline',
+                            ? 'online'.tr
+                            : 'offline'.tr,
                         style: TextStyle(
                             fontSize: 12,
                             color: AppColors.whiteWithOpacity(0.7)),
@@ -259,7 +259,7 @@ class _ChatViewState extends State<ChatView> {
               switch (result) {
                 case 'view_service':
                   if (serviceId != null) {
-                    Get.snackbar('Info', 'Service: $serviceTitle');
+                    Get.snackbar('info'.tr, '${'service'.tr}: $serviceTitle');
                   }
                   break;
                 case 'block_user':
@@ -272,33 +272,33 @@ class _ChatViewState extends State<ChatView> {
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               if (serviceTitle != null)
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'view_service',
                   child: Row(
                     children: [
-                      Icon(Icons.build, size: 20),
-                      SizedBox(width: 8),
-                      Text('View Service'),
+                      const Icon(Icons.build, size: 20),
+                      const SizedBox(width: 8),
+                      Text('view_service'.tr),
                     ],
                   ),
                 ),
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
                 value: 'block_user',
                 child: Row(
                   children: [
-                    Icon(Icons.block, size: 20),
-                    SizedBox(width: 8),
-                    Text('Block User'),
+                    const Icon(Icons.block, size: 20),
+                    const SizedBox(width: 8),
+                    Text('block_user'.tr),
                   ],
                 ),
               ),
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
                 value: 'report',
                 child: Row(
                   children: [
-                    Icon(Icons.report, size: 20),
-                    SizedBox(width: 8),
-                    Text('Report'),
+                    const Icon(Icons.report, size: 20),
+                    const SizedBox(width: 8),
+                    Text('report'.tr),
                   ],
                 ),
               ),
@@ -370,7 +370,7 @@ class _ChatViewState extends State<ChatView> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Discussing: $serviceTitle',
+              '${'discussing_service'.tr} $serviceTitle',
               style: const TextStyle(
                 color: AppColors.primary,
                 fontSize: 14,
@@ -396,9 +396,9 @@ class _ChatViewState extends State<ChatView> {
             color: AppColors.textSecondary,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Start the conversation',
-            style: TextStyle(
+          Text(
+            'start_conversation'.tr,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: AppColors.textSecondary,
@@ -407,8 +407,8 @@ class _ChatViewState extends State<ChatView> {
           const SizedBox(height: 8),
           Text(
             serviceTitle != null
-                ? 'Ask about "$serviceTitle"'
-                : 'Send a message to begin chatting',
+                ? 'ask_about_service'.tr.replaceAll('{service}', serviceTitle!)
+                : 'send_message_begin'.tr,
             style: const TextStyle(
               color: AppColors.textHint,
             ),
@@ -521,12 +521,12 @@ class _ChatViewState extends State<ChatView> {
       width: 200,
       height: 150,
       color: AppColors.grey300,
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error, color: AppColors.textSecondary),
-            Text('Failed to load image', style: TextStyle(fontSize: 12)),
+            const Icon(Icons.error, color: AppColors.textSecondary),
+            Text('failed_load_image'.tr, style: const TextStyle(fontSize: 12)),
           ],
         ),
       ),
@@ -580,9 +580,9 @@ class _ChatViewState extends State<ChatView> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const Text(
-                          'Ready to send',
-                          style: TextStyle(
+                        Text(
+                          'ready_to_send'.tr,
+                          style: const TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 12,
                           ),
@@ -619,7 +619,7 @@ class _ChatViewState extends State<ChatView> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '$receiverName is typing',
+                            '$receiverName ${'is_typing'.tr}',
                             style: const TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 12,
@@ -697,10 +697,10 @@ class _ChatViewState extends State<ChatView> {
                       color: AppColors.primaryWithOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
@@ -708,10 +708,10 @@ class _ChatViewState extends State<ChatView> {
                             color: AppColors.primary,
                           ),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
-                          'Uploading image...',
-                          style: TextStyle(
+                          'uploading_image'.tr,
+                          style: const TextStyle(
                             color: AppColors.primary,
                             fontSize: 12,
                           ),
@@ -735,8 +735,8 @@ class _ChatViewState extends State<ChatView> {
                   controller: _messageController,
                   decoration: InputDecoration(
                     hintText: _selectedImage != null
-                        ? 'Add a caption...'
-                        : 'Type a message...',
+                        ? 'add_caption'.tr
+                        : 'type_message'.tr,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(25),
                       borderSide: BorderSide.none,
@@ -793,9 +793,9 @@ class _ChatViewState extends State<ChatView> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Select Attachment',
-              style: TextStyle(
+            Text(
+              'select_attachment'.tr,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -807,7 +807,7 @@ class _ChatViewState extends State<ChatView> {
               children: [
                 _buildAttachmentOption(
                   icon: Icons.camera_alt,
-                  label: 'Camera',
+                  label: 'camera'.tr,
                   onTap: () {
                     Get.back();
                     _pickImageFromCamera();
@@ -815,7 +815,7 @@ class _ChatViewState extends State<ChatView> {
                 ),
                 _buildAttachmentOption(
                   icon: Icons.photo_library,
-                  label: 'Gallery',
+                  label: 'gallery'.tr,
                   onTap: () {
                     Get.back();
                     _pickImageFromGallery();
@@ -823,12 +823,12 @@ class _ChatViewState extends State<ChatView> {
                 ),
                 _buildAttachmentOption(
                   icon: Icons.insert_drive_file,
-                  label: 'File',
+                  label: 'file'.tr,
                   onTap: () {
                     Get.back();
                     Get.snackbar(
-                      'Feature Coming Soon',
-                      'File attachment will be available soon',
+                      'feature_coming_soon'.tr,
+                      'file_attachment_soon'.tr,
                       backgroundColor: AppColors.primaryWithOpacity(0.1),
                       colorText: AppColors.primary,
                     );
@@ -896,8 +896,8 @@ class _ChatViewState extends State<ChatView> {
       }
     } catch (e) {
       Get.snackbar(
-        'Camera Error',
-        'Unable to access camera. Please enable camera permission in device settings.',
+        'camera_error'.tr,
+        'camera_permission_error'.tr,
         backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,
         duration: const Duration(seconds: 4),
@@ -921,8 +921,8 @@ class _ChatViewState extends State<ChatView> {
       }
     } catch (e) {
       Get.snackbar(
-        'Gallery Error',
-        'Unable to access gallery. Please enable storage permission in device settings.',
+        'gallery_error'.tr,
+        'gallery_permission_error'.tr,
         backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,
         duration: const Duration(seconds: 4),
@@ -969,15 +969,15 @@ class _ChatViewState extends State<ChatView> {
           bytes,
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error, color: Colors.white, size: 50),
-                  SizedBox(height: 16),
+                  const Icon(Icons.error, color: Colors.white, size: 50),
+                  const SizedBox(height: 16),
                   Text(
-                    'Failed to load image',
-                    style: TextStyle(color: Colors.white),
+                    'failed_load_image'.tr,
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ],
               ),
@@ -985,15 +985,15 @@ class _ChatViewState extends State<ChatView> {
           },
         );
       } catch (e) {
-        return const Center(
+        return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error, color: Colors.white, size: 50),
-              SizedBox(height: 16),
+              const Icon(Icons.error, color: Colors.white, size: 50),
+              const SizedBox(height: 16),
               Text(
-                'Failed to load image',
-                style: TextStyle(color: Colors.white),
+                'failed_load_image'.tr,
+                style: const TextStyle(color: Colors.white),
               ),
             ],
           ),
@@ -1009,15 +1009,15 @@ class _ChatViewState extends State<ChatView> {
         imageUrl,
         fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
-          return const Center(
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.error, color: Colors.white, size: 50),
-                SizedBox(height: 16),
+                const Icon(Icons.error, color: Colors.white, size: 50),
+                const SizedBox(height: 16),
                 Text(
-                  'Failed to load image',
-                  style: TextStyle(color: Colors.white),
+                  'failed_load_image'.tr,
+                  style: const TextStyle(color: Colors.white),
                 ),
               ],
             ),
@@ -1025,15 +1025,15 @@ class _ChatViewState extends State<ChatView> {
         },
       );
     } else {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error, color: Colors.white, size: 50),
-            SizedBox(height: 16),
+            const Icon(Icons.error, color: Colors.white, size: 50),
+            const SizedBox(height: 16),
             Text(
-              'Failed to load image',
-              style: TextStyle(color: Colors.white),
+              'failed_load_image'.tr,
+              style: const TextStyle(color: Colors.white),
             ),
           ],
         ),
@@ -1168,8 +1168,8 @@ class _ChatViewState extends State<ChatView> {
     }
 
     Get.snackbar(
-      'Error',
-      'Failed to send message',
+      'error'.tr,
+      'failed_send_message'.tr,
       backgroundColor: AppColors.error.withValues(alpha: 0.1),
       colorText: AppColors.error,
     );
@@ -1218,8 +1218,8 @@ class _ChatViewState extends State<ChatView> {
       } else {
         _restoreInputOnFailure(content, imageFile);
         Get.snackbar(
-          'Error',
-          'Failed to create chat',
+          'error'.tr,
+          'failed_create_chat'.tr,
           backgroundColor: AppColors.error.withValues(alpha: 0.1),
           colorText: AppColors.error,
         );
@@ -1227,8 +1227,8 @@ class _ChatViewState extends State<ChatView> {
     } catch (e) {
       _restoreInputOnFailure(content, imageFile);
       Get.snackbar(
-        'Error',
-        'Failed to send message: $e',
+        'error'.tr,
+        '${'failed_send_message'.tr}: $e',
         backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,
       );
@@ -1251,20 +1251,20 @@ class _ChatViewState extends State<ChatView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: const Text('Block User'),
-        content: Text('Are you sure you want to block $receiverName?'),
+        title: Text('block_user'.tr),
+        content: Text('are_you_sure_block'.tr.replaceAll('{user}', receiverName)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back();
-              Get.snackbar('Info', 'User blocking feature coming soon');
+              Get.snackbar('info'.tr, 'user_blocking_soon'.tr);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Block'),
+            child: Text('block'.tr),
           ),
         ],
       ),
@@ -1275,20 +1275,20 @@ class _ChatViewState extends State<ChatView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        title: const Text('Report User'),
-        content: Text('Report $receiverName for inappropriate behavior?'),
+        title: Text('report_user'.tr),
+        content: Text('report_inappropriate'.tr.replaceAll('{name}', receiverName)),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back();
-              Get.snackbar('Info', 'User reporting feature coming soon');
+              Get.snackbar('info'.tr, 'user_reporting_soon'.tr);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Report'),
+            child: Text('report'.tr),
           ),
         ],
       ),
@@ -1302,13 +1302,13 @@ class _ChatViewState extends State<ChatView> {
     final difference = now.difference(dateTime);
 
     if (difference.inDays > 0) {
-      return '${difference.inDays}d ago';
+      return 'days_ago'.tr.replaceAll('{days}', difference.inDays.toString());
     } else if (difference.inHours > 0) {
-      return '${difference.inHours}h ago';
+      return 'hours_ago'.tr.replaceAll('{hours}', difference.inHours.toString());
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m ago';
+      return 'minutes_ago'.tr.replaceAll('{minutes}', difference.inMinutes.toString());
     } else {
-      return 'Just now';
+      return 'just_now'.tr;
     }
   }
 

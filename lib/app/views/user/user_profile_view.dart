@@ -6,7 +6,7 @@ import '../../routes/app_routes.dart';
 class UserProfileView extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
 
-   UserProfileView({super.key});
+  UserProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +90,7 @@ class UserProfileView extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'guest_user'.tr, // Guest User
+                    'guest_user'.tr,
                     style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w300,
@@ -100,7 +100,7 @@ class UserProfileView extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'browsing_as_guest'.tr, // You're browsing as a guest
+                    'browsing_as_guest'.tr,
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white.withValues(alpha: 0.9),
@@ -114,7 +114,7 @@ class UserProfileView extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () => Get.toNamed(AppRoutes.login),
                       icon: const Icon(Icons.login),
-                      label: Text('login_to_account'.tr), // Login to Your Account
+                      label: Text('login_to_account'.tr),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.orange,
@@ -133,7 +133,7 @@ class UserProfileView extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: () => Get.toNamed(AppRoutes.register),
                       icon: const Icon(Icons.person_add),
-                      label: Text('create_new_account'.tr), // Create New Account
+                      label: Text('create_new_account'.tr),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
                         side: const BorderSide(color: Colors.white),
@@ -364,7 +364,7 @@ class UserProfileView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           Text(
+          Text(
             'contact_information'.tr,
             style: const TextStyle(
               fontSize: 20,
@@ -460,26 +460,26 @@ class UserProfileView extends StatelessWidget {
         _buildProfileOption(
           icon: Icons.edit_outlined,
           title: 'edit_profile'.tr,
-          subtitle: 'Update your personal information',
+          subtitle: 'update_personal_information'.tr,
           onTap: () => Get.toNamed(AppRoutes.editProfile),
           iconColor: Colors.orange,
         ),
         if (user.isOwner) ...[
           _buildProfileOption(
             icon: Icons.business_outlined,
-            title: 'My Workshop',
-            subtitle: 'Manage your workshop',
+            title: 'my_workshop'.tr,
+            subtitle: 'manage_workshop'.tr,
             onTap: () {
-              Get.snackbar('Info', 'Workshop management coming soon');
+              Get.snackbar('info'.tr, 'workshop_management_soon'.tr);
             },
             iconColor: Colors.blue,
           ),
           _buildProfileOption(
             icon: Icons.build_outlined,
-            title: 'My Services',
-            subtitle: 'Manage your services',
+            title: 'my_services'.tr,
+            subtitle: 'manage_services'.tr,
             onTap: () {
-              Get.snackbar('Info', 'Service management coming soon');
+              Get.snackbar('info'.tr, 'service_management_soon'.tr);
             },
             iconColor: Colors.green,
           ),
@@ -594,7 +594,7 @@ class UserProfileView extends StatelessWidget {
       child: ElevatedButton.icon(
         onPressed: _showLogoutDialog,
         icon: const Icon(Icons.logout),
-        label: const Text('Sign Out'),
+        label: Text('sign_out'.tr),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red,
           foregroundColor: Colors.white,
@@ -614,7 +614,7 @@ class UserProfileView extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: _showDeleteAccountDialog,
         icon: const Icon(Icons.delete_forever),
-        label: const Text('Delete Account'),
+        label: Text('delete_account'.tr),
         style: OutlinedButton.styleFrom(
           foregroundColor: Colors.red[700],
           side: BorderSide(color: Colors.red[700]!),
@@ -644,17 +644,17 @@ class UserProfileView extends StatelessWidget {
               child: const Icon(Icons.logout, color: Colors.red),
             ),
             const SizedBox(width: 12),
-            const Text('Sign Out'),
+            Text('sign_out'.tr),
           ],
         ),
-        content: const Text('Are you sure you want to sign out of your account?'),
+        content: Text('are_you_sure_sign_out_account'.tr),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
             style: TextButton.styleFrom(
               foregroundColor: Colors.grey[600],
             ),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -668,7 +668,7 @@ class UserProfileView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Sign Out'),
+            child: Text('sign_out'.tr),
           ),
         ],
       ),
@@ -692,7 +692,7 @@ class UserProfileView extends StatelessWidget {
               child: const Icon(Icons.warning, color: Colors.red),
             ),
             const SizedBox(width: 12),
-            const Text('Delete Account'),
+            Text('delete_account'.tr),
           ],
         ),
         content: Container(
@@ -701,14 +701,14 @@ class UserProfileView extends StatelessWidget {
             color: Colors.red.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.warning, color: Colors.red, size: 16),
-              SizedBox(width: 8),
+              const Icon(Icons.warning, color: Colors.red, size: 16),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'This will permanently delete your account and all data. This action cannot be undone.',
-                  style: TextStyle(
+                  'permanently_delete_account'.tr,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.red,
                   ),
@@ -723,14 +723,14 @@ class UserProfileView extends StatelessWidget {
             style: TextButton.styleFrom(
               foregroundColor: Colors.grey[600],
             ),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () async {
               Get.back();
               final success = await authController.deleteAccount();
               if (!success) {
-                Get.snackbar('Error', 'Failed to delete account. Please try again.');
+                Get.snackbar('error'.tr, 'failed_delete_account'.tr);
               }
             },
             style: ElevatedButton.styleFrom(
@@ -740,7 +740,7 @@ class UserProfileView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Delete'),
+            child: Text('delete'.tr),
           ),
         ],
       ),

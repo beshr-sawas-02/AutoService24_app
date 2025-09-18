@@ -22,15 +22,23 @@ class ServiceController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadServices();
-    loadSavedServices();
+    // لا تحمل البيانات هنا
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    Future.delayed(Duration.zero, () {
+      loadServices();
+      loadSavedServices();
+    });
   }
 
   Future<void> loadServices({String? serviceType}) async {
     try {
       isLoading.value = true;
       final serviceList =
-          await _serviceRepository.getAllServices(serviceType: serviceType);
+      await _serviceRepository.getAllServices(serviceType: serviceType);
       services.value = serviceList;
       _applyFilters();
     } catch (e) {
@@ -119,7 +127,7 @@ class ServiceController extends GetxController {
 
   String? getSavedServiceId(String serviceId) {
     final saved =
-        savedServices.firstWhereOrNull((s) => s.serviceId == serviceId);
+    savedServices.firstWhereOrNull((s) => s.serviceId == serviceId);
     return saved?.id;
   }
 
@@ -134,7 +142,6 @@ class ServiceController extends GetxController {
         'user_id': userId,
         'service_id': serviceId,
       });
-
 
       savedServices.add(savedService);
       Helpers.showSuccessSnackbar('Service saved successfully');
@@ -189,7 +196,6 @@ class ServiceController extends GetxController {
     selectedType.value = null;
   }
 
-
   Future<bool> createService(Map<String, dynamic> serviceData) async {
     try {
       isLoading.value = true;
@@ -206,7 +212,6 @@ class ServiceController extends GetxController {
       isLoading.value = false;
     }
   }
-
 
   Future<bool> createServiceWithImages(
       Map<String, dynamic> serviceData, List<File>? imageFiles) async {
@@ -228,15 +233,13 @@ class ServiceController extends GetxController {
     }
   }
 
-
   Future<bool> uploadServiceImages(
       String serviceId, List<File> imageFiles) async {
     try {
       isLoading.value = true;
 
       final response =
-          await _serviceRepository.uploadServiceImages(serviceId, imageFiles);
-
+      await _serviceRepository.uploadServiceImages(serviceId, imageFiles);
 
       final index = ownerServices.indexWhere((s) => s.id == serviceId);
       if (index != -1 && response.containsKey('service')) {
@@ -260,7 +263,7 @@ class ServiceController extends GetxController {
       isLoading.value = true;
 
       final updatedService =
-          await _serviceRepository.updateService(id, serviceData);
+      await _serviceRepository.updateService(id, serviceData);
       final index = ownerServices.indexWhere((s) => s.id == id);
       if (index != -1) {
         ownerServices[index] = updatedService;
@@ -293,12 +296,10 @@ class ServiceController extends GetxController {
     }
   }
 
-
   Future<void> debugSavedServices() async {
     try {
 
       await StorageService.debugPrintStoredData();
-
 
       final debugData = await _serviceRepository.debugGetSavedServicesRaw();
 
@@ -307,7 +308,6 @@ class ServiceController extends GetxController {
 
         for (int i = 0; i < rawList.length; i++) {
           final item = rawList[i];
-
 
           final possibleUserFields = [
             'user_id',

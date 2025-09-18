@@ -55,11 +55,185 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         service.workshopData?['user_id'] == currentUserId;
   }
 
+  /// الانتقال إلى صفحة الخريطة مع التركيز على الورشة المحددة
+  /// الانتقال إلى صفحة الخريطة مع التركيز على الورشة المحددة
+  Future<void> _navigateToWorkshopOnMap(ServiceModel service) async {
+    try {
+      double? latitude;
+      double? longitude;
+
+      // طريقة 1: قراءة الإحداثيات من location.coordinates (النظام الجديد)
+      if (service.workshopData?['location'] != null &&
+          service.workshopData!['location']['coordinates'] != null) {
+        final coordinates = service.workshopData!['location']['coordinates'];
+        if (coordinates is List && coordinates.length >= 2) {
+          longitude = double.tryParse(coordinates[0].toString());
+          latitude = double.tryParse(coordinates[1].toString());
+        }
+      }
+
+      // طريقة 2: قراءة الإحداثيات من location_x و location_y (النظام القديم)
+      if (latitude == null || longitude == null) {
+        final locationX = service.workshopData?['location_x'];
+        final locationY = service.workshopData?['location_y'];
+
+        if (locationX != null && locationY != null) {
+          try {
+            latitude = double.parse(locationY.toString());
+            longitude = double.parse(locationX.toString());
+          } catch (e) {
+            print("Error parsing coordinates: $e");
+          }
+        }
+      }
+
+      // التحقق من وجود الإحداثيات
+      if (latitude == null || longitude == null) {
+        Get.snackbar(
+          'error'.tr,
+          'workshop_location_not_available'.tr,
+          backgroundColor: AppColors.error.withValues(alpha: 0.1),
+          colorText: AppColors.error,
+        );
+        return;
+      }
+
+      // التحقق من صحة الإحداثيات
+      if (latitude == 0.0 || longitude == 0.0) {
+        Get.snackbar(
+          'error'.tr,
+          'workshop_location_not_set'.tr,
+          backgroundColor: AppColors.error.withValues(alpha: 0.1),
+          colorText: AppColors.error,
+        );
+        return;
+      }
+
+      print("Navigating to workshop location: lat=$latitude, lng=$longitude");
+
+      // الانتقال إلى صفحة الخريطة مع بيانات الورشة
+      Get.toNamed(
+        AppRoutes.map, // تأكد من أن هذا هو المسار الصحيح لصفحة الخريطة
+        arguments: {
+          'focusOnWorkshop': true,
+          'workshopId': service.workshopId,
+          'latitude': latitude,
+          'longitude': longitude,
+          'workshopName': service.workshopData?['name'] ?? service.workshopName,
+          'zoom': 16.0,
+        },
+      );
+    } catch (e) {
+      print("Error in _navigateToWorkshopOnMap: $e");
+      Get.snackbar(
+        'error'.tr,
+        'failed_to_open_workshop_location'.tr,
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+        colorText: AppColors.error,
+      );
+    }
+  }
+  Widget _buildLocationButton(ServiceModel service) {
+    // التحقق من وجود الإحداثيات في الهيكل الجديد
+    bool hasLocation = false;
+    double? latitude;
+    double? longitude;
+
+    // طريقة 1: التحقق من location.coordinates
+    if (service.workshopData?['location'] != null &&
+        service.workshopData!['location']['coordinates'] != null) {
+      final coordinates = service.workshopData!['location']['coordinates'];
+      if (coordinates is List && coordinates.length >= 2) {
+        longitude = double.tryParse(coordinates[0].toString());
+        latitude = double.tryParse(coordinates[1].toString());
+
+        if (longitude != null && latitude != null &&
+            longitude != 0.0 && latitude != 0.0) {
+          hasLocation = true;
+        }
+      }
+    }
+
+    // طريقة 2: التحقق من location_x و location_y (النظام القديم)
+    if (!hasLocation) {
+      final locationX = service.workshopData?['location_x'];
+      final locationY = service.workshopData?['location_y'];
+
+      if (locationX != null && locationY != null) {
+        longitude = double.tryParse(locationX.toString());
+        latitude = double.tryParse(locationY.toString());
+
+        if (longitude != null && latitude != null &&
+            longitude != 0.0 && latitude != 0.0) {
+          hasLocation = true;
+        }
+      }
+    }
+
+    if (!hasLocation) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: AppColors.grey200,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.location_off,
+              color: AppColors.grey400,
+              size: 14,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              'no_location'.tr,
+              style: const TextStyle(
+                fontSize: 10,
+                color: AppColors.grey400,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return OutlinedButton.icon(
+      onPressed: () => _navigateToWorkshopOnMap(service),
+      icon: const Icon(
+        Icons.location_on,
+        color: AppColors.primary,
+        size: 16,
+      ),
+      label: Text(
+        'workshop_location'.tr,
+        style: const TextStyle(
+          fontSize: 12,
+          color: AppColors.primary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      style: OutlinedButton.styleFrom(
+        side: const BorderSide(
+          color: AppColors.primary,
+          width: 1,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        padding: const EdgeInsets.symmetric(
+          vertical: 8,
+          horizontal: 12,
+        ),
+        minimumSize: const Size(0, 36),
+      ),
+    );
+  }
   Widget _buildImageWidget(String imagePath) {
     imagePath = imagePath.trim();
 
     if (imagePath.isEmpty) {
-      return _buildErrorContainer('Empty image path');
+      return _buildErrorContainer('empty_image_path'.tr);
     }
 
     String finalImagePath = imagePath;
@@ -93,19 +267,19 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           errorBuilder: (context, error, stackTrace) {
             return Container(
               color: AppColors.grey200,
-              child: const Center(
+              child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.broken_image,
                       size: 48,
                       color: AppColors.grey400,
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      'Image not available',
-                      style: TextStyle(
+                      'image_not_available'.tr,
+                      style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
                       ),
@@ -124,7 +298,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                   color: AppColors.primary,
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
+                      loadingProgress.expectedTotalBytes!
                       : null,
                 ),
               ),
@@ -143,7 +317,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
-            return _buildErrorContainer('File not found');
+            return _buildErrorContainer('file_not_found'.tr);
           },
         ),
       );
@@ -158,13 +332,13 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
-            return _buildErrorContainer('Asset not found');
+            return _buildErrorContainer('asset_not_found'.tr);
           },
         ),
       );
     }
 
-    return _buildErrorContainer('Invalid path');
+    return _buildErrorContainer('invalid_path'.tr);
   }
 
   Widget _buildErrorContainer(String message) {
@@ -187,7 +361,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                 fontSize: 16,
               ),
             ),
-            if (message != 'Service Image')
+            if (message != 'service_image'.tr)
               Text(
                 message,
                 style: const TextStyle(
@@ -216,7 +390,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       }
 
       final workshop =
-          await workshopController.getWorkshopById(service.workshopId);
+      await workshopController.getWorkshopById(service.workshopId);
 
       if (workshop == null) {
         Get.snackbar(
@@ -584,8 +758,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       width: double.infinity,
       child: service.images.isNotEmpty
           ? ClipRRect(
-              child: _buildImageWidget(service.images.first),
-            )
+        child: _buildImageWidget(service.images.first),
+      )
           : _buildPlaceholderImage(),
     );
   }
@@ -652,29 +826,11 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                   color: AppColors.success,
                 ),
               ),
-              const Spacer(),
-              if (service.workshopData?['location_x'] != null &&
-                  service.workshopData?['location_y'] != null)
-                GestureDetector(
-                  onTap: () {},
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on,
-                        color: AppColors.textSecondary,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'view_location'.tr,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              const SizedBox(width: 12),
+              // زر الموقع الجديد
+              Expanded(
+                child: _buildLocationButton(service),
+              ),
             ],
           ),
         ],

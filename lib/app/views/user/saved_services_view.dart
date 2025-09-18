@@ -37,7 +37,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
     imagePath = imagePath.trim();
 
     if (imagePath.isEmpty) {
-      return _buildErrorContainer('Empty image path');
+      return _buildErrorContainer();
     }
 
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
@@ -45,14 +45,14 @@ class _SavedServicesViewState extends State<SavedServicesView> {
         imagePath,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return const Icon(Icons.image_not_supported, color: AppColors.grey400);
+          return _buildErrorContainer();
         },
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
           return Center(
             child: CircularProgressIndicator(
               color: AppColors.primary,
-              strokeWidth: 1,
+              strokeWidth: 2,
               value: loadingProgress.expectedTotalBytes != null
                   ? loadingProgress.cumulativeBytesLoaded /
                   loadingProgress.expectedTotalBytes!
@@ -67,7 +67,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
         File(imagePath),
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return const Icon(Icons.image_not_supported, color: AppColors.grey400);
+          return _buildErrorContainer();
         },
       );
     }
@@ -76,14 +76,21 @@ class _SavedServicesViewState extends State<SavedServicesView> {
         imagePath,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return const Icon(Icons.image_not_supported, color: AppColors.grey400);
+          return _buildErrorContainer();
         },
       );
     }
   }
 
-  Widget _buildErrorContainer(String message) {
-    return const Icon(Icons.image_not_supported, color: AppColors.grey400);
+  Widget _buildErrorContainer() {
+    return Container(
+      color: AppColors.grey100,
+      child: const Icon(
+        Icons.image_not_supported,
+        color: AppColors.grey400,
+        size: 24,
+      ),
+    );
   }
 
   @override
@@ -103,17 +110,18 @@ class _SavedServicesViewState extends State<SavedServicesView> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       backgroundColor: AppColors.white,
-      elevation: 0,
+      elevation: 1,
+      shadowColor: AppColors.shadowLight,
       title: Text(
         'saved_services'.tr,
         style: const TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
         ),
       ),
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: AppColors.textSecondary),
+        icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
         onPressed: () => Get.back(),
       ),
       actions: [
@@ -122,7 +130,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
             return const SizedBox.shrink();
           }
           return IconButton(
-            icon: const Icon(Icons.refresh, color: AppColors.textSecondary),
+            icon: const Icon(Icons.refresh, color: AppColors.primary),
             onPressed: () => serviceController.loadSavedServices(),
             tooltip: 'refresh'.tr,
           );
@@ -133,7 +141,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
 
   Widget _buildGuestContent() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       child: Column(
         children: [
           const SizedBox(height: 40),
@@ -146,15 +154,15 @@ class _SavedServicesViewState extends State<SavedServicesView> {
   Widget _buildGuestCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: AppColors.shadowLight,
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -162,15 +170,40 @@ class _SavedServicesViewState extends State<SavedServicesView> {
         children: [
           _buildGuestIcon(),
           const SizedBox(height: 24),
-          _buildGuestTitle(),
+          Text(
+            'save_favorite_services'.tr,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 12),
-          _buildGuestDescription(),
+          Text(
+            'create_account_save'.tr,
+            style: const TextStyle(
+              fontSize: 16,
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 32),
           _buildFeaturesList(),
           const SizedBox(height: 32),
           _buildAuthButtons(),
           const SizedBox(height: 20),
-          _buildBrowseButton(),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              'explore_services_instead'.tr,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -185,50 +218,26 @@ class _SavedServicesViewState extends State<SavedServicesView> {
         shape: BoxShape.circle,
       ),
       child: const Icon(
-        Icons.favorite,
-        size: 36,
+        Icons.bookmark,
+        size: 40,
         color: AppColors.white,
       ),
     );
   }
 
-  Widget _buildGuestTitle() {
-    return Text(
-      'save_favorite_services'.tr,
-      style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
-      textAlign: TextAlign.center,
-    );
-  }
-
-  Widget _buildGuestDescription() {
-    return Text(
-      'create_account_save'.tr,
-      style: const TextStyle(
-        fontSize: 16,
-        color: AppColors.textSecondary,
-        height: 1.4,
-      ),
-      textAlign: TextAlign.center,
-    );
-  }
-
   Widget _buildFeaturesList() {
     final features = [
-      {'icon': Icons.bookmark, 'text': 'save_unlimited_services'.tr},
-      {'icon': Icons.sync, 'text': 'sync_all_devices'.tr},
-      {'icon': Icons.history, 'text': 'track_service_history'.tr},
-      {'icon': Icons.chat, 'text': 'direct_chat_providers'.tr},
+      'save_unlimited_services'.tr,
+      'sync_all_devices'.tr,
+      'track_service_history'.tr,
+      'direct_chat_providers'.tr,
     ];
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.primaryWithOpacity(0.05),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.primaryWithOpacity(0.1)),
       ),
       child: Column(
@@ -243,94 +252,84 @@ class _SavedServicesViewState extends State<SavedServicesView> {
             ),
           ),
           const SizedBox(height: 16),
-          ...features.map((feature) => _buildFeatureRow(
-            feature['icon'] as IconData,
-            feature['text'] as String,
+          ...features.map((feature) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    feature,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           )),
         ],
       ),
     );
   }
 
-  Widget _buildFeatureRow(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: AppColors.primaryWithOpacity(0.15),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 16, color: AppColors.primary),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildAuthButtons() {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: () => Get.toNamed(AppRoutes.login),
-            icon: const Icon(Icons.login, size: 18),
-            label: Text('sign_in'.tr),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.primary,
-              side: const BorderSide(color: AppColors.primary, width: 1.5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: ElevatedButton.icon(
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
             onPressed: () => Get.toNamed(AppRoutes.register),
-            icon: const Icon(Icons.person_add, size: 18),
-            label: Text('register'.tr),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               elevation: 2,
+            ),
+            child: Text(
+              'create_account'.tr,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton(
+            onPressed: () => Get.toNamed(AppRoutes.login),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.primary,
+              side: const BorderSide(color: AppColors.primary, width: 1.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            child: Text(
+              'sign_in'.tr,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildBrowseButton() {
-    return TextButton.icon(
-      onPressed: () => Get.back(),
-      icon: const Icon(Icons.explore, color: AppColors.textSecondary, size: 18),
-      label: Text(
-        'explore_services_instead'.tr,
-        style: const TextStyle(
-          color: AppColors.textSecondary,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
     );
   }
 
@@ -372,10 +371,10 @@ class _SavedServicesViewState extends State<SavedServicesView> {
 
   Widget _buildEmptyState() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          const SizedBox(height: 60),
+          const SizedBox(height: 80),
           Container(
             width: 120,
             height: 120,
@@ -385,7 +384,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
             ),
             child: const Icon(
               Icons.bookmark_border,
-              size: 48,
+              size: 50,
               color: AppColors.grey400,
             ),
           ),
@@ -393,7 +392,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
           Text(
             'no_saved_services'.tr,
             style: const TextStyle(
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
@@ -435,7 +434,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: serviceController.savedServices.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 8),
+        separatorBuilder: (context, index) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final savedService = serviceController.savedServices[index];
           return _buildSavedServiceItem(savedService);
@@ -464,146 +463,132 @@ class _SavedServicesViewState extends State<SavedServicesView> {
 
   Widget _buildSavedServiceCard(ServiceModel service, savedService) {
     return Card(
-      elevation: 3,
+      elevation: 2,
       shadowColor: AppColors.shadowLight,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
       ),
-      color: AppColors.cardBackground,
+      color: AppColors.white,
       child: InkWell(
         onTap: () => Get.toNamed(AppRoutes.serviceDetails, arguments: service),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildServiceHeader(service, savedService),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          service.title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryWithOpacity(0.1),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            service.serviceTypeName,
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => _showUnsaveConfirmation(savedService),
+                    icon: const Icon(Icons.bookmark, color: AppColors.primary),
+                    tooltip: 'remove_from_saved'.tr,
+                  ),
+                ],
+              ),
               const SizedBox(height: 12),
-              _buildServiceDescription(service),
+              Text(
+                service.description,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                  height: 1.4,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
               if (service.images.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                _buildServiceImages(service),
-              ],
-              const SizedBox(height: 12),
-              _buildServiceFooter(service, savedService),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildServiceHeader(ServiceModel service, savedService) {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                service.title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryWithOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  service.serviceTypeName,
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                SizedBox(
+                  height: 70,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: service.images.length > 3 ? 3 : service.images.length,
+                    separatorBuilder: (context, index) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) {
+                      return Container(
+                        width: 70,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.grey200,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: _buildImageWidget(service.images[index]),
+                        ),
+                      );
+                    },
                   ),
                 ),
+              ],
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    service.formattedPrice,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  Text(
+                    _formatSavedDate(savedService.savedAt),
+                    style: const TextStyle(
+                      color: AppColors.textHint,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
-        IconButton(
-          onPressed: () => _showUnsaveConfirmation(savedService),
-          icon: const Icon(Icons.bookmark, color: AppColors.primary),
-          tooltip: 'remove_from_saved'.tr,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildServiceDescription(ServiceModel service) {
-    return Text(
-      service.description,
-      style: const TextStyle(
-        color: AppColors.textSecondary,
-        fontSize: 14,
-        height: 1.4,
       ),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-    );
-  }
-
-  Widget _buildServiceImages(ServiceModel service) {
-    return SizedBox(
-      height: 80,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: service.images.length > 3 ? 3 : service.images.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          return Container(
-            width: 80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: AppColors.grey200,
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: _buildImageWidget(service.images[index]),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildServiceFooter(ServiceModel service, savedService) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          service.formattedPrice,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
-          ),
-        ),
-        Text(
-          'saved_date'.tr.replaceAll('{date}', _formatSavedDate(savedService.savedAt)),
-          style: const TextStyle(
-            color: AppColors.textHint,
-            fontSize: 12,
-          ),
-        ),
-      ],
     );
   }
 
   Widget _buildLoadingCard() {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: AppColors.cardBackground,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: AppColors.white,
       child: const SizedBox(
-        height: 140,
+        height: 120,
         child: Center(
           child: CircularProgressIndicator(color: AppColors.primary, strokeWidth: 2),
         ),
@@ -614,8 +599,8 @@ class _SavedServicesViewState extends State<SavedServicesView> {
   Widget _buildErrorCard(savedService) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: AppColors.cardBackground,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: AppColors.white,
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
@@ -625,8 +610,8 @@ class _SavedServicesViewState extends State<SavedServicesView> {
           ),
           child: const Icon(Icons.error_outline, color: AppColors.error),
         ),
-        title: Text('service_unavailable'.tr, style: const TextStyle(color: AppColors.textPrimary)),
-        subtitle: Text('service_removed_unavailable'.tr, style: const TextStyle(color: AppColors.textSecondary)),
+        title: Text('service_unavailable'.tr),
+        subtitle: Text('service_removed_unavailable'.tr),
         trailing: IconButton(
           icon: const Icon(Icons.delete_outline, color: AppColors.error),
           onPressed: () => _unsaveService(savedService),
@@ -655,23 +640,12 @@ class _SavedServicesViewState extends State<SavedServicesView> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            const Icon(Icons.bookmark_remove, color: AppColors.primary),
-            const SizedBox(width: 12),
-            Text('remove_service'.tr, style: const TextStyle(color: AppColors.textPrimary)),
-          ],
-        ),
-        content: Text(
-            'remove_service_confirmation'.tr,
-            style: const TextStyle(color: AppColors.textSecondary)
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: Text('remove_service'.tr),
+        content: Text('remove_service_confirmation'.tr),
         actions: [
           TextButton(
-            onPressed: () {
-              Get.back();
-            },
+            onPressed: () => Get.back(),
             child: Text(
               'cancel'.tr,
               style: const TextStyle(color: AppColors.textSecondary),
@@ -718,7 +692,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
   Future<void> _unsaveService(savedService) async {
     final success = await serviceController.unsaveService(savedService.id);
     if (success) {
-
+      // Success handled by controller
     }
   }
 
@@ -727,7 +701,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
     final difference = now.difference(savedDate);
 
     if (difference.inDays > 7) {
-      return Helpers.formatDate(savedDate);
+      return 'saved_date'.tr.replaceAll('{date}', Helpers.formatDate(savedDate));
     } else if (difference.inDays > 0) {
       return 'days_ago'.tr.replaceAll('{days}', '${difference.inDays}');
     } else if (difference.inHours > 0) {

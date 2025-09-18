@@ -31,7 +31,11 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
   void initState() {
     super.initState();
     workshop = Get.arguments as WorkshopModel;
-    _loadWorkshopServices();
+
+    // تأخير تحميل الخدمات
+    Future.delayed(Duration.zero, () {
+      _loadWorkshopServices();
+    });
   }
 
   @override
@@ -54,27 +58,27 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               ),
               background: workshop.profileImage != null
                   ? Image.network(
-                      AppConstants.buildImageUrl(workshop.profileImage!),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: AppColors.grey300,
-                          child: const Icon(
-                            Icons.business,
-                            size: 80,
-                            color: AppColors.textSecondary,
-                          ),
-                        );
-                      },
-                    )
-                  : Container(
-                      color: AppColors.grey300,
-                      child: const Icon(
-                        Icons.business,
-                        size: 80,
-                        color: AppColors.textSecondary,
-                      ),
+                AppConstants.buildImageUrl(workshop.profileImage!),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: AppColors.grey300,
+                    child: const Icon(
+                      Icons.business,
+                      size: 80,
+                      color: AppColors.textSecondary,
                     ),
+                  );
+                },
+              )
+                  : Container(
+                color: AppColors.grey300,
+                child: const Icon(
+                  Icons.business,
+                  size: 80,
+                  color: AppColors.textSecondary,
+                ),
+              ),
             ),
             actions: [
               IconButton(
@@ -133,38 +137,10 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               ),
             ),
             const SizedBox(height: 16),
-
             _buildInfoRow(
                 Icons.description, 'description'.tr, workshop.description),
             _buildInfoRow(
                 Icons.access_time, 'working_hours'.tr, workshop.workingHours),
-            _buildInfoRow(Icons.location_on, 'location'.tr,
-                'Lat: ${workshop.latitude.toStringAsFixed(4)}, Lng: ${workshop.longitude.toStringAsFixed(4)}'),
-
-            const SizedBox(height: 16),
-
-            // Rating and Reviews (placeholder)
-            Row(
-              children: [
-                const Icon(Icons.star, color: AppColors.warning),
-                const SizedBox(width: 8),
-                Text(
-                  'rating_reviews'.tr,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const Spacer(),
-                TextButton(
-                  onPressed: () {
-                    // Show reviews
-                  },
-                  child: Text('view_reviews'.tr),
-                ),
-              ],
-            ),
           ],
         ),
       ),
@@ -236,20 +212,35 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
   void _onMapCreated(MapboxMap mapboxMap) {
     _mapboxMap = mapboxMap;
     mapController.setMapboxMap(mapboxMap);
-    _setupMapWithWorkshopMarker();
+
+    // استخدام الوظيفة المُحسنة مع فحص الاتصال
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      _setupMapWithWorkshopMarker();
+    });
   }
 
   Future<void> _setupMapWithWorkshopMarker() async {
     if (_mapboxMap != null) {
-      await mapController.setupAnnotationManagers();
+      try {
+        // استخدام الوظيفة المُحسنة
+        await mapController.setupAnnotationManagersWithHealthCheck();
 
-      // Add workshop marker
-      await mapController.addMarker(
-        workshop.latitude,
-        workshop.longitude,
-        title: workshop.name,
-        userData: {'workshopId': workshop.id},
-      );
+        // تأخير إضافي قبل إضافة العلامة
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Add workshop marker
+        await mapController.addMarker(
+          workshop.latitude,
+          workshop.longitude,
+          title: workshop.name,
+          userData: {'workshopId': workshop.id},
+        );
+
+        print('Workshop marker added successfully');
+      } catch (e) {
+        print('Error setting up workshop marker: $e');
+        // لا تُظهر خطأ للمستخدم، فقط سجل في console
+      }
     }
   }
 
@@ -360,25 +351,36 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
   }
 
   void _showAllWorkshopServices() {
-    // Filter services by workshop and navigate to filtered view
     final workshopServices = serviceController.services
         .where((service) => service.workshopId == workshop.id)
         .toList();
 
     if (workshopServices.isNotEmpty) {
-      // You could create a dedicated view for workshop services
-      // or use the existing filtered services view with workshop filter
-      Get.toNamed(
-        AppRoutes.filteredServices,
-        arguments: {
-          'workshopId': workshop.id,
-          'title': '${workshop.name} Services',
-          'isWorkshopFilter': true,
-        },
-      );
+
+      Get.to(() => Scaffold(
+        appBar: AppBar(
+          title: Text('${workshop.name} ${'services'.tr}'),
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.white,
+        ),
+        body: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: workshopServices.length,
+          itemBuilder: (context, index) {
+            return ServiceCard(
+              service: workshopServices[index],
+              onTap: () {
+                Get.toNamed(
+                  AppRoutes.serviceDetails,
+                  arguments: workshopServices[index],
+                );
+              },
+            );
+          },
+        ),
+      ));
     }
   }
-
   void _startChat() {
     // Navigate to chat with workshop owner
     Get.snackbar(
