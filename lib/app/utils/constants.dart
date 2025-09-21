@@ -1,10 +1,9 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 class AppConstants {
   // API Configuration
-  static final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-  static final String wsUrl = dotenv.env['WS_URL'] ?? '';
-  static final String mapboxAccessToken = dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '';
+  static const String baseUrl = 'https://www.autoservicely.com';
+  static const String wsUrl = 'wss://autoservicely.com/ws';
+  static const String mapboxAccessToken =
+      "pk.eyJ1IjoiYWxpYWxiYXlhdGk0NjgiLCJhIjoiY21mYTYwam05MWs4azJsczRtMjN2ZDR1aCJ9.o9xLo4WvTnVTmm0xVsKphA";
 
   static String buildImageUrl(String path) {
     if (path.isEmpty) return '';

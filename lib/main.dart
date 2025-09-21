@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'app/lang/Translations.dart';
@@ -12,8 +11,6 @@ import 'app/config/app_colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await dotenv.load(fileName: ".env");
 
   MapboxOptions.setAccessToken(AppConstants.mapboxAccessToken);
 

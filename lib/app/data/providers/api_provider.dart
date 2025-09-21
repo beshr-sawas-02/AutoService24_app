@@ -4,7 +4,7 @@ import '../../utils/constants.dart';
 import '../../utils/storage_service.dart';
 
 class ApiProvider {
-  static String baseUrl = AppConstants.baseUrl;
+  static const String baseUrl = AppConstants.baseUrl;
   late Dio _dio;
 
   ApiProvider(Dio dio) {

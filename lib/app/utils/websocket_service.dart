@@ -9,7 +9,7 @@ import 'constants.dart';
 import 'storage_service.dart';
 
 class WebSocketService extends GetxService {
-  static  String WS_URL = AppConstants.wsUrl;
+  static const String WS_URL = AppConstants.wsUrl;
 
   WebSocketChannel? _channel;
   StreamSubscription? _subscription;
