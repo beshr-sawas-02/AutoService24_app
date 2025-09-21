@@ -8,7 +8,6 @@ import '../../controllers/chat_controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../config/app_colors.dart';
 import '../../utils/constants.dart';
-import '../../utils/websocket_service.dart';
 
 class ChatView extends StatefulWidget {
   const ChatView({super.key});
@@ -107,7 +106,7 @@ class _ChatViewState extends State<ChatView> {
       });
 
       final existingChat =
-      await chatController.createChat(currentUserId, receiverId);
+          await chatController.createChat(currentUserId, receiverId);
 
       if (existingChat != null) {
         chatId = existingChat.id;
@@ -174,7 +173,8 @@ class _ChatViewState extends State<ChatView> {
             Obx(() {
               final receiverUser = chatController.usersCache[receiverId];
 
-              if (receiverUser?.fullProfileImage != null && receiverUser!.fullProfileImage!.isNotEmpty) {
+              if (receiverUser?.fullProfileImage != null &&
+                  receiverUser!.fullProfileImage!.isNotEmpty) {
                 return CircleAvatar(
                   backgroundColor: AppColors.whiteWithOpacity(0.2),
                   radius: 20,
@@ -186,7 +186,9 @@ class _ChatViewState extends State<ChatView> {
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Text(
-                          receiverName.isNotEmpty ? receiverName[0].toUpperCase() : 'U',
+                          receiverName.isNotEmpty
+                              ? receiverName[0].toUpperCase()
+                              : 'U',
                           style: const TextStyle(
                             color: AppColors.white,
                             fontWeight: FontWeight.bold,
@@ -201,7 +203,9 @@ class _ChatViewState extends State<ChatView> {
                   backgroundColor: AppColors.whiteWithOpacity(0.2),
                   radius: 20,
                   child: Text(
-                    receiverName.isNotEmpty ? receiverName[0].toUpperCase() : 'U',
+                    receiverName.isNotEmpty
+                        ? receiverName[0].toUpperCase()
+                        : 'U',
                     style: const TextStyle(
                       color: AppColors.white,
                       fontWeight: FontWeight.bold,
@@ -232,18 +236,6 @@ class _ChatViewState extends State<ChatView> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     )
-                  else
-                    Obx(() {
-                      final webSocketService = Get.find<WebSocketService>();
-                      return Text(
-                        webSocketService.isConnected.value
-                            ? 'online'.tr
-                            : 'offline'.tr,
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.whiteWithOpacity(0.7)),
-                      );
-                    }),
                 ],
               ),
             ),
@@ -252,65 +244,11 @@ class _ChatViewState extends State<ChatView> {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         elevation: 1,
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (String result) {
-              switch (result) {
-                case 'view_service':
-                  if (serviceId != null) {
-                    Get.snackbar('info'.tr, '${'service'.tr}: $serviceTitle');
-                  }
-                  break;
-                case 'block_user':
-                  _showBlockUserDialog();
-                  break;
-                case 'report':
-                  _showReportDialog();
-                  break;
-              }
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              if (serviceTitle != null)
-                PopupMenuItem<String>(
-                  value: 'view_service',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.build, size: 20),
-                      const SizedBox(width: 8),
-                      Text('view_service'.tr),
-                    ],
-                  ),
-                ),
-              PopupMenuItem<String>(
-                value: 'block_user',
-                child: Row(
-                  children: [
-                    const Icon(Icons.block, size: 20),
-                    const SizedBox(width: 8),
-                    Text('block_user'.tr),
-                  ],
-                ),
-              ),
-              PopupMenuItem<String>(
-                value: 'report',
-                child: Row(
-                  children: [
-                    const Icon(Icons.report, size: 20),
-                    const SizedBox(width: 8),
-                    Text('report'.tr),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
       body: SafeArea(
         child: Column(
           children: [
             if (serviceTitle != null) _buildServiceBanner(),
-
             Expanded(
               child: Obx(() {
                 if (chatController.isLoadingMessages.value) {
@@ -435,9 +373,9 @@ class _ChatViewState extends State<ChatView> {
             topLeft: const Radius.circular(18),
             topRight: const Radius.circular(18),
             bottomLeft:
-            isMe ? const Radius.circular(18) : const Radius.circular(4),
+                isMe ? const Radius.circular(18) : const Radius.circular(4),
             bottomRight:
-            isMe ? const Radius.circular(4) : const Radius.circular(18),
+                isMe ? const Radius.circular(4) : const Radius.circular(18),
           ),
         ),
         child: Column(
@@ -483,36 +421,36 @@ class _ChatViewState extends State<ChatView> {
         final base64Data = imageData.split(',')[1];
         final bytes = base64Decode(base64Data);
 
-        return Image.memory(
-          bytes,
-          width: 200,
-          height: 150,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return _buildImageErrorWidget();
-          },
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.6,
+            maxHeight: MediaQuery.of(context).size.height * 0.4,
+          ),
+          child: Image.memory(
+            bytes,
+            fit: BoxFit.contain,
+          ),
         );
       } catch (e) {
         return _buildImageErrorWidget();
       }
-    }
-    else if (imageData.startsWith('http') || imageData.startsWith('/uploads/')) {
-      String imageUrl = imageData;
-      if (imageData.startsWith('/uploads/')) {
-        imageUrl = '${AppConstants.baseUrl}$imageData';      }
+    } else {
+      String imageUrl = imageData.startsWith('/uploads/')
+          ? '${AppConstants.baseUrl}$imageData'
+          : imageData;
 
-      return Image.network(
-        imageUrl,
-        width: 200,
-        height: 150,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildImageErrorWidget();
-        },
+      return ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.6,
+          maxHeight: MediaQuery.of(context).size.height * 0.4,
+        ),
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) =>
+              _buildImageErrorWidget(),
+        ),
       );
-    }
-    else {
-      return _buildImageErrorWidget();
     }
   }
 
@@ -601,7 +539,6 @@ class _ChatViewState extends State<ChatView> {
                 ],
               ),
             ),
-
           Obx(() {
             if (chatController.otherUserTyping.value) {
               return Container(
@@ -644,55 +581,14 @@ class _ChatViewState extends State<ChatView> {
             }
             return const SizedBox.shrink();
           }),
-
-          Obx(() {
-            final webSocketService = Get.find<WebSocketService>();
-            if (!webSocketService.isConnected.value) {
-              return Container(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.error.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.wifi_off,
-                            size: 12,
-                            color: AppColors.error,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            webSocketService.connectionStatus.value,
-                            style: const TextStyle(
-                              color: AppColors.error,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          }),
-
           if (_isUploadingImage)
             Container(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: AppColors.primaryWithOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -722,7 +618,6 @@ class _ChatViewState extends State<ChatView> {
                 ],
               ),
             ),
-
           Row(
             children: [
               IconButton(
@@ -819,19 +714,6 @@ class _ChatViewState extends State<ChatView> {
                   onTap: () {
                     Get.back();
                     _pickImageFromGallery();
-                  },
-                ),
-                _buildAttachmentOption(
-                  icon: Icons.insert_drive_file,
-                  label: 'file'.tr,
-                  onTap: () {
-                    Get.back();
-                    Get.snackbar(
-                      'feature_coming_soon'.tr,
-                      'file_attachment_soon'.tr,
-                      backgroundColor: AppColors.primaryWithOpacity(0.1),
-                      colorText: AppColors.primary,
-                    );
                   },
                 ),
               ],
@@ -964,81 +846,37 @@ class _ChatViewState extends State<ChatView> {
       try {
         final base64Data = imageData.split(',')[1];
         final bytes = base64Decode(base64Data);
-
-        return Image.memory(
-          bytes,
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error, color: Colors.white, size: 50),
-                  const SizedBox(height: 16),
-                  Text(
-                    'failed_load_image'.tr,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
+        return Image.memory(bytes, fit: BoxFit.contain);
       } catch (e) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error, color: Colors.white, size: 50),
-              const SizedBox(height: 16),
-              Text(
-                'failed_load_image'.tr,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-        );
+        return _buildFullImageError();
       }
-    } else if (imageData.startsWith('http') || imageData.startsWith('/uploads/')) {
-      String imageUrl = imageData;
-      if (imageData.startsWith('/uploads/')) {
-        imageUrl = 'http://192.168.201.167:8000$imageData';
-      }
-
-      return Image.network(
-        imageUrl,
-        fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error, color: Colors.white, size: 50),
-                const SizedBox(height: 16),
-                Text(
-                  'failed_load_image'.tr,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ],
-            ),
-          );
-        },
-      );
+    } else if (imageData.startsWith('http')) {
+      return Image.network(imageData,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => _buildFullImageError());
     } else {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error, color: Colors.white, size: 50),
-            const SizedBox(height: 16),
-            Text(
-              'failed_load_image'.tr,
-              style: const TextStyle(color: Colors.white),
-            ),
-          ],
-        ),
-      );
+
+      final imageUrl = '${AppConstants.baseUrl}$imageData';
+      return Image.network(imageUrl,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => _buildFullImageError());
     }
+  }
+
+  Widget _buildFullImageError() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error, color: Colors.white, size: 50),
+          SizedBox(height: 16),
+          Text(
+            'Failed to load image',
+            style: TextStyle(color: Colors.white),
+          ),
+        ],
+      ),
+    );
   }
 
   void _onTextChanged(String text) {
@@ -1175,9 +1013,11 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 
-  Future<void> _createChatAndSendMessage(String content, XFile? imageFile) async {
+  Future<void> _createChatAndSendMessage(
+      String content, XFile? imageFile) async {
     try {
-      final newChat = await chatController.createChat(currentUserId, receiverId);
+      final newChat =
+          await chatController.createChat(currentUserId, receiverId);
 
       if (newChat != null) {
         chatId = newChat.id;
@@ -1247,53 +1087,55 @@ class _ChatViewState extends State<ChatView> {
     });
   }
 
-  void _showBlockUserDialog() {
-    Get.dialog(
-      AlertDialog(
-        backgroundColor: AppColors.white,
-        title: Text('block_user'.tr),
-        content: Text('are_you_sure_block'.tr.replaceAll('{user}', receiverName)),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('cancel'.tr),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-              Get.snackbar('info'.tr, 'user_blocking_soon'.tr);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: Text('block'.tr),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showBlockUserDialog() {
+  //   Get.dialog(
+  //     AlertDialog(
+  //       backgroundColor: AppColors.white,
+  //       title: Text('block_user'.tr),
+  //       content:
+  //           Text('are_you_sure_block'.tr.replaceAll('{user}', receiverName)),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Get.back(),
+  //           child: Text('cancel'.tr),
+  //         ),
+  //         ElevatedButton(
+  //           onPressed: () {
+  //             Get.back();
+  //             Get.snackbar('info'.tr, 'user_blocking_soon'.tr);
+  //           },
+  //           style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+  //           child: Text('block'.tr),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  void _showReportDialog() {
-    Get.dialog(
-      AlertDialog(
-        backgroundColor: AppColors.white,
-        title: Text('report_user'.tr),
-        content: Text('report_inappropriate'.tr.replaceAll('{name}', receiverName)),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('cancel'.tr),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-              Get.snackbar('info'.tr, 'user_reporting_soon'.tr);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: Text('report'.tr),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showReportDialog() {
+  //   Get.dialog(
+  //     AlertDialog(
+  //       backgroundColor: AppColors.white,
+  //       title: Text('report_user'.tr),
+  //       content:
+  //           Text('report_inappropriate'.tr.replaceAll('{name}', receiverName)),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Get.back(),
+  //           child: Text('cancel'.tr),
+  //         ),
+  //         ElevatedButton(
+  //           onPressed: () {
+  //             Get.back();
+  //             Get.snackbar('info'.tr, 'user_reporting_soon'.tr);
+  //           },
+  //           style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+  //           child: Text('report'.tr),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   String _formatTime(DateTime? dateTime) {
     if (dateTime == null) return '';
@@ -1304,9 +1146,13 @@ class _ChatViewState extends State<ChatView> {
     if (difference.inDays > 0) {
       return 'days_ago'.tr.replaceAll('{days}', difference.inDays.toString());
     } else if (difference.inHours > 0) {
-      return 'hours_ago'.tr.replaceAll('{hours}', difference.inHours.toString());
+      return 'hours_ago'
+          .tr
+          .replaceAll('{hours}', difference.inHours.toString());
     } else if (difference.inMinutes > 0) {
-      return 'minutes_ago'.tr.replaceAll('{minutes}', difference.inMinutes.toString());
+      return 'minutes_ago'
+          .tr
+          .replaceAll('{minutes}', difference.inMinutes.toString());
     } else {
       return 'just_now'.tr;
     }

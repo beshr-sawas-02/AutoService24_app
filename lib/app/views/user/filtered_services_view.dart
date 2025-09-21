@@ -55,14 +55,11 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         service.workshopData?['user_id'] == currentUserId;
   }
 
-  /// الانتقال إلى صفحة الخريطة مع التركيز على الورشة المحددة
-  /// الانتقال إلى صفحة الخريطة مع التركيز على الورشة المحددة
   Future<void> _navigateToWorkshopOnMap(ServiceModel service) async {
     try {
       double? latitude;
       double? longitude;
 
-      // طريقة 1: قراءة الإحداثيات من location.coordinates (النظام الجديد)
       if (service.workshopData?['location'] != null &&
           service.workshopData!['location']['coordinates'] != null) {
         final coordinates = service.workshopData!['location']['coordinates'];
@@ -72,7 +69,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         }
       }
 
-      // طريقة 2: قراءة الإحداثيات من location_x و location_y (النظام القديم)
       if (latitude == null || longitude == null) {
         final locationX = service.workshopData?['location_x'];
         final locationY = service.workshopData?['location_y'];
@@ -81,13 +77,10 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           try {
             latitude = double.parse(locationY.toString());
             longitude = double.parse(locationX.toString());
-          } catch (e) {
-            print("Error parsing coordinates: $e");
-          }
+          } catch (e) {}
         }
       }
 
-      // التحقق من وجود الإحداثيات
       if (latitude == null || longitude == null) {
         Get.snackbar(
           'error'.tr,
@@ -98,7 +91,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         return;
       }
 
-      // التحقق من صحة الإحداثيات
       if (latitude == 0.0 || longitude == 0.0) {
         Get.snackbar(
           'error'.tr,
@@ -109,11 +101,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         return;
       }
 
-      print("Navigating to workshop location: lat=$latitude, lng=$longitude");
-
-      // الانتقال إلى صفحة الخريطة مع بيانات الورشة
       Get.toNamed(
-        AppRoutes.map, // تأكد من أن هذا هو المسار الصحيح لصفحة الخريطة
+        AppRoutes.map,
         arguments: {
           'focusOnWorkshop': true,
           'workshopId': service.workshopId,
@@ -124,7 +113,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         },
       );
     } catch (e) {
-      print("Error in _navigateToWorkshopOnMap: $e");
       Get.snackbar(
         'error'.tr,
         'failed_to_open_workshop_location'.tr,
@@ -133,13 +121,12 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       );
     }
   }
+
   Widget _buildLocationButton(ServiceModel service) {
-    // التحقق من وجود الإحداثيات في الهيكل الجديد
     bool hasLocation = false;
     double? latitude;
     double? longitude;
 
-    // طريقة 1: التحقق من location.coordinates
     if (service.workshopData?['location'] != null &&
         service.workshopData!['location']['coordinates'] != null) {
       final coordinates = service.workshopData!['location']['coordinates'];
@@ -147,14 +134,15 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         longitude = double.tryParse(coordinates[0].toString());
         latitude = double.tryParse(coordinates[1].toString());
 
-        if (longitude != null && latitude != null &&
-            longitude != 0.0 && latitude != 0.0) {
+        if (longitude != null &&
+            latitude != null &&
+            longitude != 0.0 &&
+            latitude != 0.0) {
           hasLocation = true;
         }
       }
     }
 
-    // طريقة 2: التحقق من location_x و location_y (النظام القديم)
     if (!hasLocation) {
       final locationX = service.workshopData?['location_x'];
       final locationY = service.workshopData?['location_y'];
@@ -163,8 +151,10 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         longitude = double.tryParse(locationX.toString());
         latitude = double.tryParse(locationY.toString());
 
-        if (longitude != null && latitude != null &&
-            longitude != 0.0 && latitude != 0.0) {
+        if (longitude != null &&
+            latitude != null &&
+            longitude != 0.0 &&
+            latitude != 0.0) {
           hasLocation = true;
         }
       }
@@ -199,7 +189,13 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     }
 
     return OutlinedButton.icon(
-      onPressed: () => _navigateToWorkshopOnMap(service),
+      onPressed: () {
+        if (authController.isGuest) {
+          _showGuestDialog();
+          return;
+        }
+        _navigateToWorkshopOnMap(service);
+      },
       icon: const Icon(
         Icons.location_on,
         color: AppColors.primary,
@@ -229,6 +225,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       ),
     );
   }
+
   Widget _buildImageWidget(String imagePath) {
     imagePath = imagePath.trim();
 
@@ -454,83 +451,53 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Get.back(),
         ),
-        actions: [
-          // Map Search Button - NEW FEATURE
-          if (!isOwner) ...[
-            IconButton(
-              icon: const Icon(Icons.map, color: AppColors.primary),
-              onPressed: () {
-                Get.toNamed(
-                  AppRoutes.workshopMapSearch,
-                  arguments: {
-                    'serviceType': selectedServiceType,
-                  },
-                );
-              },
-              tooltip: 'search_on_map'.tr,
+      ),
+      body: Obx(() {
+        if (serviceController.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: AppColors.primary,
             ),
-          ],
-          IconButton(
-            icon: const Icon(Icons.tune, color: AppColors.textSecondary),
-            onPressed: () {
-              _showFilterBottomSheet();
+          );
+        }
+
+        final sourceServices = isOwner
+            ? serviceController.ownerServices
+            : serviceController.services;
+
+        final filteredServices = sourceServices
+            .where((service) => service.serviceType == selectedServiceType)
+            .toList();
+
+        if (filteredServices.isEmpty) {
+          return _buildEmptyState();
+        }
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            await _loadAndFilterServices();
+          },
+          color: AppColors.primary,
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: filteredServices.length + (isOwner ? 0 : 1), // +1 للـ banner
+            itemBuilder: (context, index) {
+              if (!isOwner && index == 0) {
+                return _buildSearchBanner();
+              }
+
+              final service = filteredServices[!isOwner ? index - 1 : index];
+              return _buildServicePostCard(service);
             },
           ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Location-based Search Banner
-          if (!isOwner) _buildSearchBanner(),
-
-          // Services List
-          Expanded(
-            child: Obx(() {
-              if (serviceController.isLoading.value) {
-                return const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primary,
-                  ),
-                );
-              }
-
-              final sourceServices = isOwner
-                  ? serviceController.ownerServices
-                  : serviceController.services;
-
-              final filteredServices = sourceServices
-                  .where(
-                      (service) => service.serviceType == selectedServiceType)
-                  .toList();
-
-              if (filteredServices.isEmpty) {
-                return _buildEmptyState();
-              }
-
-              return RefreshIndicator(
-                onRefresh: () async {
-                  await _loadAndFilterServices();
-                },
-                color: AppColors.primary,
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: filteredServices.length,
-                  itemBuilder: (context, index) {
-                    final service = filteredServices[index];
-                    return _buildServicePostCard(service);
-                  },
-                ),
-              );
-            }),
-          ),
-        ],
-      ),
+        );
+      }),
     );
   }
 
   Widget _buildSearchBanner() {
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -593,6 +560,11 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
+                if (authController.isGuest) {
+                  _showGuestDialog();
+                  return;
+                }
+
                 Get.toNamed(
                   AppRoutes.workshopMapSearch,
                   arguments: {
@@ -616,6 +588,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       ),
     );
   }
+
 
   Widget _buildServicePostCard(ServiceModel service) {
     return Container(
@@ -758,8 +731,8 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       width: double.infinity,
       child: service.images.isNotEmpty
           ? ClipRRect(
-        child: _buildImageWidget(service.images.first),
-      )
+              child: _buildImageWidget(service.images.first),
+            )
           : _buildPlaceholderImage(),
     );
   }
@@ -827,7 +800,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                 ),
               ),
               const SizedBox(width: 12),
-              // زر الموقع الجديد
               Expanded(
                 child: _buildLocationButton(service),
               ),
@@ -1169,31 +1141,10 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               ),
             ),
           ],
-          if (!isOwner) ...[
-            const SizedBox(height: 12),
-            ElevatedButton.icon(
-              onPressed: () {
-                Get.toNamed(
-                  AppRoutes.workshopMapSearch,
-                  arguments: {
-                    'serviceType': selectedServiceType,
-                  },
-                );
-              },
-              icon: const Icon(Icons.map),
-              label: Text('search_on_map'.tr),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.info,
-                foregroundColor: AppColors.white,
-              ),
-            ),
-          ],
         ],
       ),
     );
   }
-
-  void _showFilterBottomSheet() {}
 
   void _showGuestDialog() {
     Get.dialog(
@@ -1237,3 +1188,11 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     );
   }
 }
+
+
+
+
+
+
+
+////

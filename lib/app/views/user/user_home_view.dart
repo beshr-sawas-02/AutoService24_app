@@ -131,11 +131,9 @@ class _UserHomeViewState extends State<UserHomeView> {
           ),
           Obx(() {
             if (authController.isGuest) return const SizedBox.shrink();
-            return IconButton(
+            return           IconButton(
               icon: const Icon(Icons.logout, color: AppColors.textSecondary),
-              onPressed: () async {
-                await authController.logout();
-              },
+              onPressed: () => _showLogoutDialog(),
             );
           }),
         ],
@@ -411,6 +409,29 @@ class _UserHomeViewState extends State<UserHomeView> {
         );
       },
     );
+  }
+  void _showLogoutDialog() {
+    Get.dialog(AlertDialog(
+      title: Text('logout'.tr),
+      content: Text('are_you_sure_logout'.tr),
+      actions: [
+        TextButton(
+            onPressed: () => Get.back(),
+            child: Text('cancel'.tr,
+                style: const TextStyle(color: AppColors.textSecondary))),
+        ElevatedButton(
+          onPressed: () {
+            Get.back();
+            authController.logout();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.error,
+            foregroundColor: AppColors.white,
+          ),
+          child: Text('logout'.tr),
+        ),
+      ],
+    ));
   }
 
 // void _showGuestDialog() {

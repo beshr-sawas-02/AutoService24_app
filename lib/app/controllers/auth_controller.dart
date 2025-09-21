@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -28,8 +29,7 @@ class AuthController extends GetxController {
         'profile'
       ],
 
-      clientId:
-          '1073993043012-but35ubclk4kel50nri6ih64i3965i1i.apps.googleusercontent.com');
+    clientId: dotenv.env['GOOGLE_CLIENT_ID'],);
 
   @override
   void onInit() {

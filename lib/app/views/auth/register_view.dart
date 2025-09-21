@@ -25,6 +25,13 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
+    // الحصول على أبعاد الشاشة
+    final screenSize = MediaQuery.of(context).size;
+    final screenWidth = screenSize.width;
+    final screenHeight = screenSize.height;
+    final isTablet = screenWidth > 600;
+    final topPadding = MediaQuery.of(context).padding.top;
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -36,394 +43,390 @@ class _RegisterViewState extends State<RegisterView> {
         ),
         title: Text(
           'create_account'.tr,
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.black87,
-            fontSize: 18,
+            fontSize: isTablet ? 20 : 18,
             fontWeight: FontWeight.w600,
           ),
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Text(
-                'create_account'.tr,
-                style: const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: isTablet ? 500 : double.infinity,
+            ),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                horizontal: isTablet ? 32 : 24,
+                vertical: 20,
               ),
-              const SizedBox(height: 8),
-              Text(
-                'join_community'.tr,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // User Type Selection
-              Text(
-                'i_am_a'.tr,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedUserType = 'user'),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: _selectedUserType == 'user'
-                                ? const Color(0xFFFF8A50)
-                                : Colors.grey[300]!,
-                            width: 2,
-                          ),
-                          color: _selectedUserType == 'user'
-                              ? const Color(0xFFFF8A50).withValues(alpha: 0.1)
-                              : Colors.white,
-                        ),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: _selectedUserType == 'user'
-                                    ? const Color(0xFFFF8A50)
-                                    : Colors.grey[400],
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.person,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'regular_user'.tr,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: _selectedUserType == 'user'
-                                    ? const Color(0xFFFF8A50)
-                                    : Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'looking_for_services'.tr,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedUserType = 'owner'),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: _selectedUserType == 'owner'
-                                ? const Color(0xFFFF8A50)
-                                : Colors.grey[300]!,
-                            width: 2,
-                          ),
-                          color: _selectedUserType == 'owner'
-                              ? const Color(0xFFFF8A50).withValues(alpha: 0.1)
-                              : Colors.white,
-                        ),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: _selectedUserType == 'owner'
-                                    ? const Color(0xFFFF8A50)
-                                    : Colors.grey[400],
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.build,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'workshop_owner'.tr,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: _selectedUserType == 'owner'
-                                    ? const Color(0xFFFF8A50)
-                                    : Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'providing_services'.tr,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-
-              // Form Fields
-              _buildTextField(
-                controller: _usernameController,
-                icon: Icons.person,
-                label: 'username'.tr,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'please_enter_username'.tr;
-                  }
-                  if (value.length < 3) {
-                    return 'username_min_3_chars'.tr;
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _emailController,
-                icon: Icons.email_outlined,
-                label: 'email'.tr,
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'please_enter_email'.tr;
-                  }
-                  if (!GetUtils.isEmail(value)) {
-                    return 'please_enter_valid_email'.tr;
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _phoneController,
-                icon: Icons.phone_outlined,
-                label: 'phone_number'.tr,
-                keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'please_enter_phone'.tr;
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _passwordController,
-                icon: Icons.lock_outlined,
-                label: 'password'.tr,
-                obscureText: !_isPasswordVisible,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isPasswordVisible
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    color: Colors.grey[600],
-                  ),
-                  onPressed: () {
-                    setState(() => _isPasswordVisible = !_isPasswordVisible);
-                  },
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'please_enter_password'.tr;
-                  }
-                  if (value.length < 6) {
-                    return 'password_min_6_chars'.tr;
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _confirmPasswordController,
-                icon: Icons.lock_outlined,
-                label: 'confirm_password'.tr,
-                obscureText: !_isConfirmPasswordVisible,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isConfirmPasswordVisible
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    color: Colors.grey[600],
-                  ),
-                  onPressed: () {
-                    setState(() =>
-                    _isConfirmPasswordVisible = !_isConfirmPasswordVisible);
-                  },
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'please_confirm_password'.tr;
-                  }
-                  if (value != _passwordController.text) {
-                    return 'passwords_do_not_match'.tr;
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 32),
-
-              // Create Account Button
-              Obx(() => SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed:
-                  authController.isLoading.value ? null : _register,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF8A50),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                    shadowColor: Colors.transparent,
-                  ),
-                  child: authController.isLoading.value
-                      ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2.5,
-                    ),
-                  )
-                      : Text(
-                    'create_account'.tr,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              )),
-              const SizedBox(height: 24),
-
-              // Divider with "or continue with"
-              Row(
-                children: [
-                  Expanded(
-                      child: Divider(color: Colors.grey[300], thickness: 1)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      'or_continue_with'.tr,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Text(
+                      'create_account'.tr,
                       style: TextStyle(
-                        color: Colors.grey[500],
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                        fontSize: isTablet ? 28 : 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
-                  ),
-                  Expanded(
-                      child: Divider(color: Colors.grey[300], thickness: 1)),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              _buildSocialLoginSection(),
-              const SizedBox(height: 32),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'already_have_account'.tr,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 15,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => Get.offNamed(AppRoutes.login),
-                    child: Text(
-                      'sign_in'.tr,
-                      style: const TextStyle(
-                        color: Color(0xFFFF8A50),
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
+                    SizedBox(height: isTablet ? 6 : 8),
+                    Text(
+                      'join_community'.tr,
+                      style: TextStyle(
+                        fontSize: isTablet ? 14 : 16,
+                        color: Colors.grey[600],
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
+                    SizedBox(height: isTablet ? 24 : 32),
 
-              // Continue as Guest
-              Center(
-                child: TextButton(
-                  onPressed: () => Get.offAllNamed(AppRoutes.userHome),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
-                  ),
-                  child: Text(
-                    'continue_as_guest'.tr,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.grey[600],
+                    // User Type Selection
+                    Text(
+                      'i_am_a'.tr,
+                      style: TextStyle(
+                        fontSize: isTablet ? 16 : 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
+                    SizedBox(height: isTablet ? 12 : 16),
+
+                    // User Type Cards - محسن للشاشات المختلفة
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildUserTypeCard(
+                            type: 'user',
+                            icon: Icons.person,
+                            title: 'regular_user'.tr,
+                            subtitle: 'looking_for_services'.tr,
+                            isSelected: _selectedUserType == 'user',
+                            isTablet: isTablet,
+                          ),
+                        ),
+                        SizedBox(width: isTablet ? 12 : 16),
+                        Expanded(
+                          child: _buildUserTypeCard(
+                            type: 'owner',
+                            icon: Icons.build,
+                            title: 'workshop_owner'.tr,
+                            subtitle: 'providing_services'.tr,
+                            isSelected: _selectedUserType == 'owner',
+                            isTablet: isTablet,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: isTablet ? 24 : 32),
+
+                    // Form Fields - محسن للشاشات المختلفة
+                    _buildTextField(
+                      controller: _usernameController,
+                      icon: Icons.person,
+                      label: 'username'.tr,
+                      isTablet: isTablet,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'please_enter_username'.tr;
+                        }
+                        if (value.length < 3) {
+                          return 'username_min_3_chars'.tr;
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: isTablet ? 12 : 16),
+
+                    _buildTextField(
+                      controller: _emailController,
+                      icon: Icons.email_outlined,
+                      label: 'email'.tr,
+                      keyboardType: TextInputType.emailAddress,
+                      isTablet: isTablet,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'please_enter_email'.tr;
+                        }
+                        if (!GetUtils.isEmail(value)) {
+                          return 'please_enter_valid_email'.tr;
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: isTablet ? 12 : 16),
+
+                    _buildTextField(
+                      controller: _phoneController,
+                      icon: Icons.phone_outlined,
+                      label: 'phone_number'.tr,
+                      keyboardType: TextInputType.phone,
+                      isTablet: isTablet,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'please_enter_phone'.tr;
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: isTablet ? 12 : 16),
+
+                    _buildTextField(
+                      controller: _passwordController,
+                      icon: Icons.lock_outlined,
+                      label: 'password'.tr,
+                      obscureText: !_isPasswordVisible,
+                      isTablet: isTablet,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          color: Colors.grey[600],
+                          size: isTablet ? 20 : 22,
+                        ),
+                        onPressed: () {
+                          setState(() => _isPasswordVisible = !_isPasswordVisible);
+                        },
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'please_enter_password'.tr;
+                        }
+                        if (value.length < 6) {
+                          return 'password_min_6_chars'.tr;
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: isTablet ? 12 : 16),
+
+                    _buildTextField(
+                      controller: _confirmPasswordController,
+                      icon: Icons.lock_outlined,
+                      label: 'confirm_password'.tr,
+                      obscureText: !_isConfirmPasswordVisible,
+                      isTablet: isTablet,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isConfirmPasswordVisible
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          color: Colors.grey[600],
+                          size: isTablet ? 20 : 22,
+                        ),
+                        onPressed: () {
+                          setState(() =>
+                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible);
+                        },
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'please_confirm_password'.tr;
+                        }
+                        if (value != _passwordController.text) {
+                          return 'passwords_do_not_match'.tr;
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: isTablet ? 24 : 32),
+
+                    // Create Account Button
+                    Obx(() => SizedBox(
+                      width: double.infinity,
+                      height: isTablet ? 52 : 56,
+                      child: ElevatedButton(
+                        onPressed:
+                        authController.isLoading.value ? null : _register,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF8A50),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(isTablet ? 14 : 16),
+                          ),
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                        ),
+                        child: authController.isLoading.value
+                            ? SizedBox(
+                          width: isTablet ? 20 : 24,
+                          height: isTablet ? 20 : 24,
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                            : Text(
+                          'create_account'.tr,
+                          style: TextStyle(
+                            fontSize: isTablet ? 14 : 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    )),
+                    SizedBox(height: isTablet ? 20 : 24),
+
+                    // Divider with "or continue with"
+                    Row(
+                      children: [
+                        Expanded(
+                            child: Divider(color: Colors.grey[300], thickness: 1)),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: isTablet ? 16 : 20),
+                          child: Text(
+                            'or_continue_with'.tr,
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: isTablet ? 12 : 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                            child: Divider(color: Colors.grey[300], thickness: 1)),
+                      ],
+                    ),
+                    SizedBox(height: isTablet ? 20 : 24),
+
+                    _buildSocialLoginSection(isTablet),
+                    SizedBox(height: isTablet ? 24 : 32),
+
+                    // Already have account
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'already_have_account'.tr,
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: isTablet ? 13 : 15,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => Get.offNamed(AppRoutes.login),
+                          child: Text(
+                            'sign_in'.tr,
+                            style: TextStyle(
+                              color: const Color(0xFFFF8A50),
+                              fontSize: isTablet ? 13 : 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: isTablet ? 20 : 24),
+
+                    // Continue as Guest
+                    Center(
+                      child: TextButton(
+                        onPressed: () => Get.offAllNamed(AppRoutes.userHome),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: isTablet ? 20 : 24,
+                              vertical: isTablet ? 10 : 12),
+                        ),
+                        child: Text(
+                          'continue_as_guest'.tr,
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: isTablet ? 12 : 14,
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: isTablet ? 16 : 20),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildSocialLoginSection() {
+  Widget _buildUserTypeCard({
+    required String type,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool isSelected,
+    required bool isTablet,
+  }) {
+    return GestureDetector(
+      onTap: () => setState(() => _selectedUserType = type),
+      child: Container(
+        padding: EdgeInsets.all(isTablet ? 12 : 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(isTablet ? 14 : 16),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFFFF8A50)
+                : Colors.grey[300]!,
+            width: 2,
+          ),
+          color: isSelected
+              ? const Color(0xFFFF8A50).withValues(alpha: 0.1)
+              : Colors.white,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(isTablet ? 10 : 12),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? const Color(0xFFFF8A50)
+                    : Colors.grey[400],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: isTablet ? 20 : 24,
+              ),
+            ),
+            SizedBox(height: isTablet ? 8 : 12),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: isTablet ? 13 : 16,
+                fontWeight: FontWeight.bold,
+                color: isSelected
+                    ? const Color(0xFFFF8A50)
+                    : Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: isTablet ? 2 : 4),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: isTablet ? 10 : 12,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSocialLoginSection(bool isTablet) {
     return Obx(() => Column(
       children: [
         // Google Login
@@ -438,8 +441,9 @@ class _RegisterViewState extends State<RegisterView> {
               ? null
               : () => _socialLogin('google'),
           isGoogle: true,
+          isTablet: isTablet,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: isTablet ? 12 : 16),
 
         // Facebook Login
         _buildSocialButton(
@@ -452,10 +456,11 @@ class _RegisterViewState extends State<RegisterView> {
           onTap: authController.isLoading.value
               ? null
               : () => _socialLogin('facebook'),
+          isTablet: isTablet,
         ),
 
         // Apple Login
-        const SizedBox(height: 16),
+        SizedBox(height: isTablet ? 12 : 16),
         _buildSocialButton(
           label: 'continue_with_apple'.tr,
           backgroundColor: Colors.black,
@@ -466,6 +471,7 @@ class _RegisterViewState extends State<RegisterView> {
           onTap: authController.isLoading.value
               ? null
               : () => _socialLogin('apple'),
+          isTablet: isTablet,
         ),
       ],
     ));
@@ -479,6 +485,7 @@ class _RegisterViewState extends State<RegisterView> {
     TextInputType? keyboardType,
     String? Function(String?)? validator,
     Widget? suffixIcon,
+    required bool isTablet,
   }) {
     return TextFormField(
       controller: controller,
@@ -486,7 +493,7 @@ class _RegisterViewState extends State<RegisterView> {
       keyboardType: keyboardType,
       validator: validator,
       style: TextStyle(
-        fontSize: 16,
+        fontSize: isTablet ? 14 : 16,
         fontWeight: FontWeight.w500,
         color: Colors.grey[800],
       ),
@@ -494,42 +501,44 @@ class _RegisterViewState extends State<RegisterView> {
         labelText: label,
         labelStyle: TextStyle(
           color: Colors.grey[600],
-          fontSize: 16,
+          fontSize: isTablet ? 14 : 16,
           fontWeight: FontWeight.w500,
         ),
         prefixIcon: Icon(
           icon,
           color: Colors.grey[600],
-          size: 22,
+          size: isTablet ? 20 : 22,
         ),
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(isTablet ? 14 : 16),
           borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(isTablet ? 14 : 16),
           borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(isTablet ? 14 : 16),
           borderSide: const BorderSide(color: Color(0xFFFF8A50), width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(isTablet ? 14 : 16),
           borderSide: BorderSide(color: Colors.red[400]!, width: 2),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(isTablet ? 14 : 16),
           borderSide: BorderSide(color: Colors.red[400]!, width: 2),
         ),
-        contentPadding:
-        const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: isTablet ? 14 : 16,
+          vertical: isTablet ? 16 : 18,
+        ),
         errorStyle: TextStyle(
           color: Colors.red[600],
-          fontSize: 13,
+          fontSize: isTablet ? 11 : 13,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -545,15 +554,16 @@ class _RegisterViewState extends State<RegisterView> {
     Color? iconColor,
     required VoidCallback? onTap,
     bool isGoogle = false,
+    required bool isTablet,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        height: 56,
+        height: isTablet ? 48 : 56,
         decoration: BoxDecoration(
           color: onTap != null ? backgroundColor : Colors.grey[200],
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(isTablet ? 14 : 16),
           border: Border.all(
             color: onTap != null ? borderColor : Colors.grey[300]!,
             width: 1.5,
@@ -571,25 +581,32 @@ class _RegisterViewState extends State<RegisterView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (isGoogle)
-              Image.asset(
-                'assets/icons/google_icon.png',
-                width: 34,
-                height: 34,
+              Container(
+                width: isTablet ? 24 : 28,
+                height: isTablet ? 24 : 28,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Icon(
+                  Icons.g_mobiledata,
+                  color: Colors.red[600],
+                  size: isTablet ? 20 : 24,
+                ),
               )
             else
               Icon(
                 icon,
-                color:
-                onTap != null ? (iconColor ?? textColor) : Colors.grey[500],
-                size: 24,
+                color: onTap != null ? (iconColor ?? textColor) : Colors.grey[500],
+                size: isTablet ? 20 : 24,
               ),
-            const SizedBox(width: 12),
+            SizedBox(width: isTablet ? 8 : 12),
             Flexible(
               child: Text(
                 label,
                 style: TextStyle(
                   color: onTap != null ? textColor : Colors.grey[500],
-                  fontSize: 15,
+                  fontSize: isTablet ? 13 : 15,
                   fontWeight: FontWeight.w600,
                 ),
                 overflow: TextOverflow.ellipsis,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../controllers/chat_controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../data/models/chat_model.dart';
@@ -51,12 +52,64 @@ class _ChatListViewState extends State<ChatListView> {
         if (authController.isGuest || !authController.isLoggedIn.value) {
           return _buildGuestChatContent();
         } else {
-          return _buildUserChatContent();
+          return RefreshIndicator(
+            onRefresh: () async {
+              await chatController.loadChats();
+            },
+            color: AppColors.primary,
+            child: chatController.chats.isEmpty && chatController.isLoading.value
+                ? _buildShimmerList()
+                : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: chatController.chats.isEmpty
+                  ? 1
+                  : chatController.chats.length,
+              itemBuilder: (context, index) {
+                if (chatController.chats.isEmpty) {
+                  return _buildEmptyState();
+                } else {
+                  final chat = chatController.chats[index];
+                  return _buildChatItem(chat);
+                }
+              },
+            ),
+          );
         }
       }),
     );
   }
-
+  Widget _buildShimmerList() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: 6,
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              leading: CircleAvatar(radius: 25, backgroundColor: Colors.white),
+              title: Container(
+                height: 16,
+                color: Colors.white,
+                margin: const EdgeInsets.symmetric(vertical: 4),
+              ),
+              subtitle: Container(
+                height: 14,
+                color: Colors.white,
+                margin: const EdgeInsets.symmetric(vertical: 2),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
   Widget _buildGuestChatContent() {
     return Center(
       child: Padding(
