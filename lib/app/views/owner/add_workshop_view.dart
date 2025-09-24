@@ -191,24 +191,24 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
 
               // Create Button
               Obx(() => ElevatedButton(
-                    onPressed: workshopController.isLoading.value
-                        ? null
-                        : _createWorkshop,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      textStyle: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    child: workshopController.isLoading.value
-                        ? const CircularProgressIndicator(
-                            color: AppColors.white)
-                        : Text('create_workshop'.tr),
-                  )),
+                onPressed: workshopController.isLoading.value
+                    ? null
+                    : _createWorkshop,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  textStyle: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                child: workshopController.isLoading.value
+                    ? const CircularProgressIndicator(
+                    color: AppColors.white)
+                    : Text('create_workshop'.tr),
+              )),
             ],
           ),
         ),
@@ -326,6 +326,7 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
   }
 }
 
+// ===== LocationPickerView مترجم بالكامل =====
 class LocationPickerView extends StatefulWidget {
   const LocationPickerView({super.key});
 
@@ -339,11 +340,6 @@ class _LocationPickerViewState extends State<LocationPickerView> {
   Point? _selectedLocation;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -353,23 +349,17 @@ class _LocationPickerViewState extends State<LocationPickerView> {
         foregroundColor: AppColors.white,
         actions: [
           if (_selectedLocation != null)
-            TextButton(
+            IconButton(
               onPressed: () {
                 Get.back(result: _selectedLocation);
               },
-              child: Text(
-                'confirm'.tr,
-                style: const TextStyle(
-                  color: AppColors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              icon: const Icon(Icons.check, color: AppColors.white, size: 28),
             ),
         ],
       ),
       body: Stack(
         children: [
-          // Full Screen Map
+          // خريطة ملء الشاشة
           Obx(() {
             final currentPos = mapController.currentPosition.value;
             return MapWidget(
@@ -390,110 +380,59 @@ class _LocationPickerViewState extends State<LocationPickerView> {
             );
           }),
 
-          // Instructions Card
+          // بطاقة التعليمات المترجمة
           Positioned(
             top: 16,
             left: 16,
             right: 16,
-            child: Card(
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.info_outline,
-                      color: AppColors.primary,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'tap_map_to_select_workshop_location'.tr,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Selected Location Info Card
-          if (_selectedLocation != null)
-            Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
               child: Card(
                 elevation: 4,
-                color: AppColors.success.withValues(alpha: 0.9),
+                color: _selectedLocation != null ? Colors.green.shade50 : Colors.blue.shade50,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: _selectedLocation != null ? Colors.green : Colors.blue,
+                    width: 2,
+                  ),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                  child: Row(
                     children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.check_circle,
-                            color: AppColors.white,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'location_selected_successfully'.tr,
-                              style: const TextStyle(
-                                color: AppColors.white,
+                      Icon(
+                        _selectedLocation != null ? Icons.check_circle : Icons.info_outline,
+                        color: _selectedLocation != null ? Colors.green : Colors.blue,
+                        size: 28,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              _selectedLocation != null
+                                  ? 'location_selected'.tr
+                                  : 'tap_map_to_select_workshop_location'.tr,
+                              style: TextStyle(
+                                color: _selectedLocation != null ? Colors.green.shade800 : Colors.blue.shade800,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on,
-                            color: AppColors.white,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${_selectedLocation!.coordinates.lat.toStringAsFixed(6)}, ${_selectedLocation!.coordinates.lng.toStringAsFixed(6)}',
-                            style: const TextStyle(
-                              color: AppColors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Get.back(result: _selectedLocation);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.white,
-                            foregroundColor: AppColors.success,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text(
-                            'confirm_location'.tr,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                            if (_selectedLocation != null) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                'tap_confirm_or_select_another'.tr,
+                                style: TextStyle(
+                                  color: Colors.green.shade600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                     ],
@@ -501,17 +440,45 @@ class _LocationPickerViewState extends State<LocationPickerView> {
                 ),
               ),
             ),
+          ),
 
-          // Current Location Button
+          // بطاقة معلومات الموقع المحدد مترجمة
+          if (_selectedLocation != null) _buildLocationPreview(),
+
+          // الأزرار العائمة
           Positioned(
-            bottom: _selectedLocation != null ? 200 : 100,
+            bottom: _selectedLocation != null ? 220 : 120,
             right: 16,
-            child: FloatingActionButton(
-              onPressed: _goToCurrentLocation,
-              backgroundColor: AppColors.white,
-              foregroundColor: AppColors.primary,
-              mini: true,
-              child: const Icon(Icons.my_location),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // زر الموقع الحالي
+                FloatingActionButton(
+                  onPressed: _goToCurrentLocation,
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppColors.primary,
+                  heroTag: "currentLocation",
+                  child: const Icon(Icons.my_location, size: 24),
+                ),
+
+                // زر مسح التحديد
+                if (_selectedLocation != null) ...[
+                  const SizedBox(height: 8),
+                  FloatingActionButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedLocation = null;
+                      });
+                      mapController.clearAnnotations();
+                    },
+                    backgroundColor: Colors.red.shade100,
+                    foregroundColor: Colors.red,
+                    mini: true,
+                    heroTag: "clearSelection",
+                    child: const Icon(Icons.clear, size: 20),
+                  ),
+                ],
+              ],
             ),
           ),
         ],
@@ -523,6 +490,11 @@ class _LocationPickerViewState extends State<LocationPickerView> {
     _mapboxMap = mapboxMap;
     mapController.setMapboxMap(mapboxMap);
     _setupAnnotationManagers();
+
+    // إضافة debug info
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      mapController.debugAnnotationManagers();
+    });
   }
 
   Future<void> _setupAnnotationManagers() async {
@@ -531,19 +503,34 @@ class _LocationPickerViewState extends State<LocationPickerView> {
     }
   }
 
+  // التصحيح الرئيسي هنا - استخدام الدالة الصحيحة
   void _onMapTap(MapContentGestureContext context) {
+    print('Map tapped at: ${context.point.coordinates.lat}, ${context.point.coordinates.lng}');
     setState(() {
       _selectedLocation = context.point;
     });
-    _addMarkerToMap(context.point);
+    // استخدام الدالة الصحيحة للـ workshop pin
+    _highlightSelectedLocation(context.point);
   }
 
-  Future<void> _addMarkerToMap(Point point) async {
-    await mapController.clearMarkers();
-    await mapController.addMarker(
+  Future<void> _highlightSelectedLocation(Point point) async {
+    print('Highlighting selected location: ${point.coordinates.lat}, ${point.coordinates.lng}');
+
+    // تنظيف المؤشرات السابقة
+    await mapController.clearAnnotations();
+
+    // استخدام الدالة الجديدة المحسنة مع debug للـ workshop pin
+    await mapController.addWorkshopLocationMarker(
       point.coordinates.lat.toDouble(),
       point.coordinates.lng.toDouble(),
-      title: "Workshop Location",
+    );
+
+    // تحريك الكاميرا للموقع المحدد
+    await mapController.flyToLocation(
+      point.coordinates.lat.toDouble(),
+      point.coordinates.lng.toDouble(),
+      zoom: 16.0,
+      duration: 1000,
     );
   }
 
@@ -565,5 +552,131 @@ class _LocationPickerViewState extends State<LocationPickerView> {
         colorText: AppColors.white,
       );
     }
+  }
+
+  Widget _buildLocationPreview() {
+    return Positioned(
+      bottom: 16,
+      left: 16,
+      right: 16,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: Card(
+          elevation: 8,
+          color: Colors.red.shade50,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: Colors.red, width: 2),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // رأس البطاقة مع أيقونة الدبوس
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.location_pin,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // معلومات الموقع مترجمة
+                Text(
+                  'workshop_location_selected'.tr,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade100,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${'coordinates'.tr}: ${_selectedLocation!.coordinates.lat.toStringAsFixed(6)}, ${_selectedLocation!.coordinates.lng.toStringAsFixed(6)}',
+                    style: TextStyle(
+                      color: Colors.red.shade800,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // أزرار العمليات مترجمة
+                Row(
+                  children: [
+                    // زر الموافقة
+                    Expanded(
+                      flex: 3,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Get.back(result: _selectedLocation);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 4,
+                        ),
+                        icon: const Icon(Icons.check_circle, size: 24),
+                        label: Text(
+                          'confirm_location'.tr,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    // زر إعادة التحديد
+                    Expanded(
+                      flex: 1,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          setState(() {
+                            _selectedLocation = null;
+                          });
+                          mapController.clearAnnotations();
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                          side: const BorderSide(color: Colors.red, width: 2),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Icon(Icons.refresh, size: 20),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

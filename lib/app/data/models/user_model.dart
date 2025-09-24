@@ -10,6 +10,8 @@ class UserModel {
   final String? profileImage;
   final String provider;
   final String? providerId;
+  final bool verified;
+  final String? verificationToken;
 
   UserModel({
     required this.id,
@@ -21,8 +23,9 @@ class UserModel {
     this.profileImage,
     this.provider = 'local',
     this.providerId,
+    this.verified = false, // default
+    this.verificationToken,
   });
-
 
   String? get fullProfileImage {
     if (profileImage != null && profileImage!.isNotEmpty) {
@@ -32,16 +35,9 @@ class UserModel {
     return null;
   }
 
-
   bool get isOwner => userType == 'owner';
-
-
   bool get isUser => userType == 'user';
-
-
   bool get isLocalUser => provider == 'local';
-
-
   bool get isSocialUser => provider != 'local';
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -60,6 +56,8 @@ class UserModel {
       profileImage: json['profile_image']?.toString(),
       provider: json['provider']?.toString() ?? 'local',
       providerId: json['providerId']?.toString(),
+      verified: json['verified'] == true, // جديد
+      verificationToken: json['verificationToken']?.toString(), // جديد
     );
   }
 
@@ -69,12 +67,16 @@ class UserModel {
       'username': username,
       'user_type': userType,
       'provider': provider,
+      'verified': verified, // جديد
     };
 
     if (password != null) data['password'] = password;
     if (phone != null) data['phone'] = phone;
     if (profileImage != null) data['profile_image'] = profileImage;
     if (providerId != null) data['providerId'] = providerId;
+    if (verificationToken != null) {
+      data['verificationToken'] = verificationToken;
+    }
 
     return data;
   }
@@ -89,6 +91,8 @@ class UserModel {
     String? profileImage,
     String? provider,
     String? providerId,
+    bool? verified,
+    String? verificationToken,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -100,6 +104,8 @@ class UserModel {
       profileImage: profileImage ?? this.profileImage,
       provider: provider ?? this.provider,
       providerId: providerId ?? this.providerId,
+      verified: verified ?? this.verified,
+      verificationToken: verificationToken ?? this.verificationToken,
     );
   }
 }

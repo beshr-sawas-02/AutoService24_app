@@ -161,6 +161,63 @@ class AuthRepository {
     }
   }
 
+  // Add these methods to your existing AuthRepository class
+
+  Future<void> sendForgotPasswordCode(String email) async {
+    try {
+      final response = await _apiProvider.sendForgotPasswordCode({
+        'email': email,
+      });
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Failed to send verification code with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
+        if (e.toString().contains('404')) {
+          throw Exception('Email not found');
+        } else if (e.toString().contains('400')) {
+          throw Exception('Invalid email format');
+        } else if (e.toString().contains('429')) {
+          throw Exception('Too many requests - Please try again later');
+        } else if (e.toString().contains('500')) {
+          throw Exception('Server error - Please try again later');
+        } else {
+          throw Exception('Network error - Check your connection');
+        }
+      }
+
+      throw Exception('Failed to send verification code: ${e.toString()}');
+    }
+  }
+
+  Future<void> verifyResetCode(String email, String code) async {
+    try {
+      final response = await _apiProvider.verifyResetCode({
+        'email': email,
+        'code': code,
+      });
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Code verification failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
+        if (e.toString().contains('400')) {
+          throw Exception('Invalid or expired verification code');
+        } else if (e.toString().contains('404')) {
+          throw Exception('Verification code not found');
+        } else if (e.toString().contains('500')) {
+          throw Exception('Server error - Please try again later');
+        } else {
+          throw Exception('Network error - Check your connection');
+        }
+      }
+
+      throw Exception('Code verification failed: ${e.toString()}');
+    }
+  }
+
   Future<void> deleteAccount(String userId) async {
     try {
       final response = await _apiProvider.deleteUser(userId);
@@ -183,4 +240,5 @@ class AuthRepository {
       throw Exception('Account deletion failed: ${e.toString()}');
     }
   }
+
 }

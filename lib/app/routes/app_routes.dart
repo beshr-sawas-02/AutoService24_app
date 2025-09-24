@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../views/auth/email_verification_view.dart';
 import '../views/common/workshop_map_search_view.dart';
 import '../views/splash_view.dart';
 import '../views/auth/login_view.dart';
@@ -40,6 +41,7 @@ class AppRoutes {
   static const String map = '/map';
   static const String workshopMapSearch = '/workshop-map-search';
   static const String editProfile = '/edit-profile';
+  static const emailVerification = '/email-verification';
 //  static const String settings = '/settings';
 
   static List<GetPage> routes = [
@@ -58,6 +60,10 @@ class AppRoutes {
     GetPage(
       name: forgotPassword,
       page: () => const ForgotPasswordView(),
+    ),
+    GetPage(
+      name: AppRoutes.emailVerification,
+      page: () => EmailVerificationView(),
     ),
     GetPage(
       name: userHome,

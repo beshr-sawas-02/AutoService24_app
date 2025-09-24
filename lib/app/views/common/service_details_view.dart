@@ -222,12 +222,40 @@ class ServiceDetailsView extends StatelessWidget {
                     _buildImageGallery(service.images),
                   ],
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 100), // مساحة للزر
                 ],
               ),
             ),
           ),
         ],
+      ),
+
+      // زر الاتصال بأسفل الشاشة
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ElevatedButton.icon(
+            onPressed: () {
+              // لسه ما في وظيفة، فقط منظر
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: const Icon(Icons.phone, size: 22),
+            label: Text(
+              'Contact Workshop Owner',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

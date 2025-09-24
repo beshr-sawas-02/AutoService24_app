@@ -431,6 +431,7 @@ class AuthController extends GetxController {
 
       final response = await _authRepository.register(userData);
 
+      // Case 1: User is immediately verified and logged in
       if (response.containsKey('token') && response.containsKey('user')) {
         await StorageService.saveToken(response['token']);
         await StorageService.saveUserData(response['user']);
@@ -441,10 +442,9 @@ class AuthController extends GetxController {
         isUserDataLoaded.value = true;
 
         await _clearServiceData();
-
         await _updateWebSocketUser(currentUser.value?.id);
 
-        Helpers.showSuccessSnackbar('Account created successfully');
+        Helpers.showSuccessSnackbar('account_created_and_verified'.tr);
 
         if (currentUser.value?.userType == 'owner') {
           Get.offAllNamed(AppRoutes.ownerHome);
@@ -453,23 +453,56 @@ class AuthController extends GetxController {
         }
 
         await _reloadUserSpecificData();
-
         return true;
-      } else if (response.containsKey('status') &&
-          response.containsKey('user')) {
+      }
+      // Case 2: Account created but needs email verification
+      else if (response.containsKey('status') && response.containsKey('user')) {
         if (response['status'] == true) {
+          // Save user data temporarily (without token)
           await StorageService.saveUserData(response['user']);
+
+          // Show success message
           Helpers.showSuccessSnackbar(
-              response['message'] ?? 'Account created successfully');
-          Get.offAllNamed(AppRoutes.login);
+            response['message'] ?? 'account_created_verify_email'.tr,
+          );
+
+          // Navigate to email verification with user's email
+          String userEmail = response['user']['email'] ?? userData['email'] ?? '';
+          Get.offAllNamed(
+            AppRoutes.emailVerification,
+            arguments: userEmail,
+          );
+
           return true;
         } else {
+          // Registration failed
           Helpers.showErrorSnackbar(
-              response['message'] ?? 'Registration failed');
+            response['message'] ?? 'registration_failed'.tr,
+          );
           return false;
         }
-      } else {
-        Helpers.showErrorSnackbar('Invalid server response');
+      }
+      // Case 3: Account created, email verification required (alternative response format)
+      else if (response.containsKey('message') &&
+          response.containsKey('email_verification_required') &&
+          response['email_verification_required'] == true) {
+
+        Helpers.showSuccessSnackbar(
+          response['message'] ?? 'account_created_verify_email'.tr,
+        );
+
+        // Navigate to email verification
+        String userEmail = userData['email'] ?? '';
+        Get.offAllNamed(
+          AppRoutes.emailVerification,
+          arguments: userEmail,
+        );
+
+        return true;
+      }
+      // Case 4: Invalid response
+      else {
+        Helpers.showErrorSnackbar('invalid_server_response'.tr);
         return false;
       }
     } catch (e) {
@@ -576,6 +609,42 @@ class AuthController extends GetxController {
 
       await _authRepository.forgotPassword(email, newPassword);
       Helpers.showSuccessSnackbar('Password updated successfully');
+      return true;
+    } catch (e) {
+      String errorMessage = _extractErrorMessage(e.toString());
+      Helpers.showErrorSnackbar(errorMessage);
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Add these methods to your existing AuthController class
+
+// Send forgot password verification code
+  Future<bool> sendForgotPasswordCode(String email) async {
+    try {
+      isLoading.value = true;
+
+      await _authRepository.sendForgotPasswordCode(email);
+      Helpers.showSuccessSnackbar('verification_code_sent_successfully'.tr);
+      return true;
+    } catch (e) {
+      String errorMessage = _extractErrorMessage(e.toString());
+      Helpers.showErrorSnackbar(errorMessage);
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+// Verify reset code
+  Future<bool> verifyResetCode(String email, String code) async {
+    try {
+      isLoading.value = true;
+
+      await _authRepository.verifyResetCode(email, code);
+      Helpers.showSuccessSnackbar('code_verified_successfully'.tr);
       return true;
     } catch (e) {
       String errorMessage = _extractErrorMessage(e.toString());

@@ -114,6 +114,219 @@ class MapController extends GetxController {
     }
   }
 
+  /// Add workshop location marker with debug - النسخة المحدثة والموثوقة
+  Future<void> addWorkshopLocationMarker(double latitude, double longitude) async {
+    print('=== Starting workshop marker creation ===');
+    print('Latitude: $latitude, Longitude: $longitude');
+
+    // تحقق من صحة الإحداثيات
+    if (!areValidCoordinates(latitude, longitude)) {
+      print('Invalid coordinates provided');
+      return;
+    }
+
+    // تحقق من حالة المديرين
+    print('Point manager available: ${pointAnnotationManager != null}');
+    print('Circle manager available: ${circleAnnotationManager != null}');
+    print('MapboxMap available: ${mapboxMap != null}');
+
+    // تنظيف المؤشرات السابقة
+    print('Clearing previous annotations...');
+    await clearAnnotations();
+
+    // محاولة إنشاء المديرين إذا لم يكونوا متوفرين
+    if (circleAnnotationManager == null || pointAnnotationManager == null) {
+      print('Recreating annotation managers...');
+      await setupAnnotationManagers();
+
+      // انتظار إضافي للتأكد من الجاهزية
+      await Future.delayed(const Duration(milliseconds: 1000));
+    }
+
+    // تحقق مرة أخرى بعد الإعداد
+    print('After setup - Circle manager: ${circleAnnotationManager != null}');
+    print('After setup - Point manager: ${pointAnnotationManager != null}');
+
+    bool success = false;
+
+    // الطريقة الأولى: دوائر متعددة
+    if (circleAnnotationManager != null) {
+      print('Attempting multiple circles method...');
+      success = await _tryMultipleCirclesPin(latitude, longitude);
+      if (success) {
+        print('Multiple circles pin created successfully');
+        await _tryAddWorkshopText(latitude, longitude);
+        return;
+      }
+    }
+
+    // الطريقة الثانية: دائرة واحدة بسيطة
+    if (circleAnnotationManager != null && !success) {
+      print('Attempting single circle method...');
+      success = await _trySingleCirclePin(latitude, longitude);
+      if (success) {
+        print('Single circle pin created successfully');
+        await _tryAddWorkshopText(latitude, longitude);
+        return;
+      }
+    }
+
+    // الطريقة الثالثة: نص فقط
+    if (pointAnnotationManager != null && !success) {
+      print('Attempting text-only method...');
+      success = await _tryTextOnlyMarker(latitude, longitude);
+      if (success) {
+        print('Text-only marker created successfully');
+        return;
+      }
+    }
+
+    print('=== All marker creation methods failed ===');
+
+    // إظهار رسالة للمستخدم
+    Get.snackbar(
+      'Map Notice',
+      'Location selected but marker display may be limited',
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  /// محاولة إنشاء pin بدوائر متعددة
+  Future<bool> _tryMultipleCirclesPin(double latitude, double longitude) async {
+    if (circleAnnotationManager == null) return false;
+
+    try {
+      final point = Point(coordinates: Position(longitude, latitude));
+
+      // الدائرة الخارجية
+      final outerCircle = CircleAnnotationOptions(
+        geometry: point,
+        circleRadius: 18.0,
+        circleColor: 0xFFFF0000,
+        circleStrokeColor: 0xFFFFFFFF,
+        circleStrokeWidth: 2.0,
+      );
+
+      await circleAnnotationManager!.create(outerCircle);
+      print('Outer circle created');
+
+      // الدائرة الداخلية
+      final innerCircle = CircleAnnotationOptions(
+        geometry: point,
+        circleRadius: 8.0,
+        circleColor: 0xFFFFFFFF,
+      );
+
+      await circleAnnotationManager!.create(innerCircle);
+      print('Inner circle created');
+
+      return true;
+    } catch (e) {
+      print('Multiple circles method failed: $e');
+      return false;
+    }
+  }
+
+  /// محاولة إنشاء pin بدائرة واحدة
+  Future<bool> _trySingleCirclePin(double latitude, double longitude) async {
+    if (circleAnnotationManager == null) return false;
+
+    try {
+      final point = Point(coordinates: Position(longitude, latitude));
+
+      final circle = CircleAnnotationOptions(
+        geometry: point,
+        circleRadius: 15.0,
+        circleColor: 0xFFFF0000,
+        circleStrokeColor: 0xFFFFFFFF,
+        circleStrokeWidth: 3.0,
+      );
+
+      await circleAnnotationManager!.create(circle);
+      print('Single circle created');
+      return true;
+    } catch (e) {
+      print('Single circle method failed: $e');
+      return false;
+    }
+  }
+
+  /// محاولة إنشاء marker نصي فقط
+  Future<bool> _tryTextOnlyMarker(double latitude, double longitude) async {
+    if (pointAnnotationManager == null) return false;
+
+    try {
+      final point = Point(coordinates: Position(longitude, latitude));
+
+      final textOptions = PointAnnotationOptions(
+        geometry: point,
+        textField: "WORKSHOP HERE",
+        textSize: 14.0,
+        textColor: 0xFFFF0000,
+        textHaloColor: 0xFFFFFFFF,
+        textHaloWidth: 2.0,
+        textAnchor: TextAnchor.CENTER,
+      );
+
+      await pointAnnotationManager!.create(textOptions);
+      print('Text marker created');
+      return true;
+    } catch (e) {
+      print('Text-only method failed: $e');
+      return false;
+    }
+  }
+
+  /// محاولة إضافة نص تحت الدبوس
+  Future<void> _tryAddWorkshopText(double latitude, double longitude) async {
+    if (pointAnnotationManager == null) {
+      print('Cannot add text - point manager not available');
+      return;
+    }
+
+    try {
+      final textPoint = Point(
+          coordinates: Position(longitude, latitude - 0.0002)
+      );
+
+      final textOptions = PointAnnotationOptions(
+        geometry: textPoint,
+        textField: "Workshop",
+        textSize: 12.0,
+        textColor: 0xFFFF0000,
+        textHaloColor: 0xFFFFFFFF,
+        textHaloWidth: 2.0,
+        textAnchor: TextAnchor.CENTER,
+      );
+
+      await pointAnnotationManager!.create(textOptions);
+      print('Workshop text added successfully');
+    } catch (e) {
+      print('Could not add workshop text: $e');
+    }
+  }
+
+  /// دالة مساعدة للتحقق من صحة setup المديرين
+  Future<void> debugAnnotationManagers() async {
+    print('=== Annotation Managers Debug Info ===');
+    print('MapboxMap: ${mapboxMap != null ? "Available" : "NULL"}');
+    print('PointAnnotationManager: ${pointAnnotationManager != null ? "Available" : "NULL"}');
+    print('CircleAnnotationManager: ${circleAnnotationManager != null ? "Available" : "NULL"}');
+    print('PolylineAnnotationManager: ${polylineAnnotationManager != null ? "Available" : "NULL"}');
+
+    if (mapboxMap != null) {
+      try {
+        final cameraState = await mapboxMap!.getCameraState();
+        print('Camera Center: ${cameraState.center}');
+        print('Camera Zoom: ${cameraState.zoom}');
+      } catch (e) {
+        print('Could not get camera state: $e');
+      }
+    }
+    print('=== End Debug Info ===');
+  }
+
   /// Add a marker to the map with retry mechanism
   Future<void> addMarker(
       double latitude,
@@ -139,7 +352,7 @@ class MapController extends GetxController {
           textField: title ?? "Marker",
           textOffset: [0.0, -2.0],
           textColor: 0xFF000000,
-          iconSize: 1.2,
+          textSize: 12.0,
         );
 
         await pointAnnotationManager!.create(options);
@@ -171,8 +384,7 @@ class MapController extends GetxController {
           textField: title,
           textOffset: [0.0, -2.0],
           textColor: 0xFFFF0000,
-          iconSize: 1.5,
-          iconColor: 0xFFFF0000,
+          textSize: 14.0,
         );
 
         await pointAnnotationManager!.create(options);
@@ -775,8 +987,6 @@ class MapController extends GetxController {
       duration: const Duration(seconds: 2),
     );
   }
-
-
 
   /// Calculate distance between two points using LocationService
   double calculateDistance(

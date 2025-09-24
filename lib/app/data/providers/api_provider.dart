@@ -109,6 +109,14 @@ class ApiProvider {
     }
   }
 
+  Future<Response> sendForgotPasswordCode(Map<String, dynamic> data) async {
+    return await _dio.post('/auth/sendforgotPassword', data: data);
+  }
+
+  Future<Response> verifyResetCode(Map<String, dynamic> data) async {
+    return await _dio.post('/auth/verify-reset', data: data);
+  }
+
   // User endpoints
   Future<Response> getUsers() async {
     return await _dio.get('/user');
