@@ -5,7 +5,7 @@ enum ServiceType {
   REMOVE_INSTALL_TIRES('Remove & install tires'),
   CLEANING('Cleaning'),
   DIAGNOSTIC_TEST('Test with diagnostic'),
-  PRE_TUV_CHECK('Pre-TÜV check'),
+  AU_TUV('AU & TÜV'),
   BALANCE_TIRES('Balance tires'),
   WHEEL_ALIGNMENT('Adjust wheel alignment'),
   POLISH('Polish'),

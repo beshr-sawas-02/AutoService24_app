@@ -25,6 +25,9 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
   late bool isOwner;
   bool isLocationBased = false;
 
+  // Map to track current page for each service's image carousel
+  final Map<String, int> _currentImagePages = {};
+
   @override
   void initState() {
     super.initState();
@@ -480,7 +483,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           color: AppColors.primary,
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: filteredServices.length + (isOwner ? 0 : 1), // +1 للـ banner
+            itemCount: filteredServices.length + (isOwner ? 0 : 1),
             itemBuilder: (context, index) {
               if (!isOwner && index == 0) {
                 return _buildSearchBanner();
@@ -589,7 +592,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     );
   }
 
-
   Widget _buildServicePostCard(ServiceModel service) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -608,7 +610,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildPostHeader(service),
-          _buildServiceImage(service),
+          _buildServiceImageCarousel(service),
           _buildServiceContent(service),
           _buildActionButtons(service),
         ],
@@ -725,15 +727,88 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     );
   }
 
-  Widget _buildServiceImage(ServiceModel service) {
+  Widget _buildServiceImageCarousel(ServiceModel service) {
+    if (service.images.isEmpty) {
+      return SizedBox(
+        height: 250,
+        width: double.infinity,
+        child: _buildPlaceholderImage(),
+      );
+    }
+
+    // Initialize current page for this service if not exists
+    if (!_currentImagePages.containsKey(service.id)) {
+      _currentImagePages[service.id] = 0;
+    }
+
     return SizedBox(
       height: 250,
       width: double.infinity,
-      child: service.images.isNotEmpty
-          ? ClipRRect(
-              child: _buildImageWidget(service.images.first),
-            )
-          : _buildPlaceholderImage(),
+      child: Stack(
+        children: [
+          PageView.builder(
+            itemCount: service.images.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentImagePages[service.id] = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return ClipRRect(
+                child: _buildImageWidget(service.images[index]),
+              );
+            },
+          ),
+          // Image counter (like Instagram)
+          if (service.images.length > 1)
+            Positioned(
+              top: 12,
+              right: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${_currentImagePages[service.id]! + 1}/${service.images.length}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          // Page indicators (dots)
+          if (service.images.length > 1)
+            Positioned(
+              bottom: 12,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  service.images.length,
+                      (index) => Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentImagePages[service.id] == index
+                          ? Colors.white
+                          : Colors.white.withValues(alpha: 0.4),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -1188,11 +1263,3 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     );
   }
 }
-
-
-
-
-
-
-
-////

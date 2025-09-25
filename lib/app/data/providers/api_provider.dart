@@ -458,4 +458,13 @@ class ApiProvider {
   Future<Response> deleteMessage(String id) async {
     return await _dio.delete('/messages/$id');
   }
+
+  Future<Response> getWorkshopOwnerPhone(String serviceId) async {
+    try {
+      final response = await _dio.get('/services/$serviceId/owner-phone');
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

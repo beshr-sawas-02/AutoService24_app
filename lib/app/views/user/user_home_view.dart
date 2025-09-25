@@ -60,8 +60,8 @@ class _UserHomeViewState extends State<UserHomeView> {
       'image': 'assets/images/diagnostic.jpg',
     },
     {
-      'title': 'pre_tuv_check',
-      'type': ServiceType.PRE_TUV_CHECK,
+      'title': 'AU & TÜV',
+      'type': ServiceType.AU_TUV,
       'color': Colors.teal,
       'image': 'assets/images/au_tuv.jpg',
     },
@@ -123,19 +123,6 @@ class _UserHomeViewState extends State<UserHomeView> {
         automaticallyImplyLeading: false,
         actions: [
           _buildLanguageSwitcher(),
-          IconButton(
-            icon: const Icon(Icons.message, color: AppColors.textSecondary),
-            onPressed: () {
-              Get.toNamed(AppRoutes.chatList);
-            },
-          ),
-          Obx(() {
-            if (authController.isGuest) return const SizedBox.shrink();
-            return           IconButton(
-              icon: const Icon(Icons.logout, color: AppColors.textSecondary),
-              onPressed: () => _showLogoutDialog(),
-            );
-          }),
         ],
       ),
       body: _getBody(),
@@ -146,13 +133,16 @@ class _UserHomeViewState extends State<UserHomeView> {
         backgroundColor: AppColors.white,
         elevation: 8,
         onTap: (index) {
-          if (index == 2) {
-            Get.toNamed(AppRoutes.userProfile);
-            return;
-          }
-
           if (index == 1) {
             Get.toNamed(AppRoutes.savedServices);
+            return;
+          }
+          if (index == 2) {
+            Get.toNamed(AppRoutes.chatList);
+            return;
+          }
+          if (index == 3) {
+            Get.toNamed(AppRoutes.userProfile);
             return;
           }
 
@@ -168,6 +158,10 @@ class _UserHomeViewState extends State<UserHomeView> {
           BottomNavigationBarItem(
             icon: const Icon(Icons.bookmark),
             label: 'saved'.tr,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.message),
+            label: 'chat'.tr,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.person),
@@ -227,7 +221,6 @@ class _UserHomeViewState extends State<UserHomeView> {
       ],
     );
   }
-
 
   Widget _getBody() {
     return _buildHomeContent();
@@ -410,68 +403,5 @@ class _UserHomeViewState extends State<UserHomeView> {
       },
     );
   }
-  void _showLogoutDialog() {
-    Get.dialog(AlertDialog(
-      title: Text('logout'.tr),
-      content: Text('are_you_sure_logout'.tr),
-      actions: [
-        TextButton(
-            onPressed: () => Get.back(),
-            child: Text('cancel'.tr,
-                style: const TextStyle(color: AppColors.textSecondary))),
-        ElevatedButton(
-          onPressed: () {
-            Get.back();
-            authController.logout();
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.error,
-            foregroundColor: AppColors.white,
-          ),
-          child: Text('logout'.tr),
-        ),
-      ],
-    ));
-  }
 
-// void _showGuestDialog() {
-//   Get.dialog(
-//     AlertDialog(
-//       shape: RoundedRectangleBorder(
-//         borderRadius: BorderRadius.circular(16),
-//       ),
-//       title: Text(
-//         'login_required'.tr,
-//         style: const TextStyle(fontWeight: FontWeight.bold),
-//       ),
-//       content: Text(
-//         'login_register_access'.tr,
-//         style: const TextStyle(color: Colors.grey),
-//       ),
-//       actions: [
-//         TextButton(
-//           onPressed: () => Get.back(),
-//           child: Text(
-//             'cancel'.tr,
-//             style: const TextStyle(color: AppColors.textSecondary),
-//           ),
-//         ),
-//         ElevatedButton(
-//           onPressed: () {
-//             Get.back();
-//             Get.toNamed(AppRoutes.login);
-//           },
-//           style: ElevatedButton.styleFrom(
-//             backgroundColor: AppColors.primary,
-//             foregroundColor: AppColors.white,
-//             shape: RoundedRectangleBorder(
-//               borderRadius: BorderRadius.circular(8),
-//             ),
-//           ),
-//           child: Text('login'.tr),
-//         ),
-//       ],
-//     ),
-//   );
-// }
 }

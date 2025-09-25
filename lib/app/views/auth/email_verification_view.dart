@@ -5,6 +5,8 @@ import '../../routes/app_routes.dart';
 import '../../config/app_colors.dart';
 
 class EmailVerificationView extends StatefulWidget {
+  const EmailVerificationView({super.key});
+
   @override
   _EmailVerificationViewState createState() => _EmailVerificationViewState();
 }
@@ -23,7 +25,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
     email = Get.arguments ?? '';
 
     _animationController = AnimationController(
-      duration: Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
@@ -36,7 +38,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
     ));
 
     _slideAnimation = Tween<Offset>(
-      begin: Offset(0, 0.3),
+      begin: const Offset(0, 0.3),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animationController,
@@ -65,7 +67,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
               children: [
                 // Custom App Bar
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   child: Row(
                     children: [
                       GestureDetector(
@@ -77,7 +79,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                             color: AppColors.textSecondary.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.arrow_back_ios_new_rounded,
                             color: AppColors.textPrimary,
                             size: 20,
@@ -88,28 +90,28 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                         child: Text(
                           'email_verification'.tr,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                      SizedBox(width: 40), // For balance
+                      const SizedBox(width: 40), // For balance
                     ],
                   ),
                 ),
 
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
                       children: [
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
 
                         // Animated Email Icon
                         TweenAnimationBuilder(
-                          duration: Duration(milliseconds: 800),
+                          duration: const Duration(milliseconds: 800),
                           tween: Tween<double>(begin: 0, end: 1),
                           builder: (context, double value, child) {
                             return Transform.scale(
@@ -131,11 +133,11 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                                     BoxShadow(
                                       color: AppColors.primary.withOpacity(0.2),
                                       blurRadius: 20,
-                                      offset: Offset(0, 8),
+                                      offset: const Offset(0, 8),
                                     ),
                                   ],
                                 ),
-                                child: Icon(
+                                child: const Icon(
                                   Icons.mark_email_unread_rounded,
                                   size: 70,
                                   color: AppColors.primary,
@@ -145,12 +147,12 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                           },
                         ),
 
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
 
                         // Main Title
                         Text(
                           'check_your_email'.tr,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
@@ -159,11 +161,11 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                           textAlign: TextAlign.center,
                         ),
 
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
                         // Email Display
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withOpacity(0.08),
                             borderRadius: BorderRadius.circular(25),
@@ -175,15 +177,15 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.email_rounded,
                                 color: AppColors.primary,
                                 size: 18,
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Text(
                                 email,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.primary,
@@ -193,12 +195,12 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                           ),
                         ),
 
-                        SizedBox(height: 32),
+                        const SizedBox(height: 32),
 
                         // Description
                         Text(
                           'verification_sent_description'.tr,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             color: AppColors.textSecondary,
                             height: 1.6,
@@ -206,11 +208,11 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                           textAlign: TextAlign.center,
                         ),
 
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
 
                         // Steps Container
                         Container(
-                          padding: EdgeInsets.all(24),
+                          padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
@@ -218,7 +220,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.06),
                                 blurRadius: 20,
-                                offset: Offset(0, 4),
+                                offset: const Offset(0, 4),
                               ),
                             ],
                           ),
@@ -227,15 +229,15 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                             children: [
                               Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.checklist_rounded,
                                     color: AppColors.primary,
                                     size: 24,
                                   ),
-                                  SizedBox(width: 12),
+                                  const SizedBox(width: 12),
                                   Text(
                                     'next_steps'.tr,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.textPrimary,
@@ -243,7 +245,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
 
                               _buildStep(1, 'open_gmail_app'.tr, Icons.email_rounded),
                               _buildStep(2, 'find_verification_email'.tr, Icons.search_rounded),
@@ -253,11 +255,11 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                           ),
                         ),
 
-                        SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
                         // Spam Folder Notice
                         Container(
-                          padding: EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: Colors.amber.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
@@ -272,7 +274,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                                 color: Colors.amber[700],
                                 size: 20,
                               ),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   'check_spam_folder'.tr,
@@ -287,7 +289,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                           ),
                         ),
 
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
 
                         // Action Buttons
                         Column(
@@ -298,14 +300,14 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                               height: 56,
                               child: ElevatedButton.icon(
                                 onPressed: () => Get.offAllNamed(AppRoutes.login),
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.login_rounded,
                                   color: Colors.white,
                                   size: 22,
                                 ),
                                 label: Text(
                                   'back_to_login'.tr,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -321,19 +323,19 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                               ),
                             ),
 
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
 
                             // Create Different Account
                             TextButton.icon(
                               onPressed: () => Get.offAllNamed(AppRoutes.register),
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.person_add_alt_1_rounded,
                                 color: AppColors.textSecondary,
                                 size: 20,
                               ),
                               label: Text(
                                 'create_different_account'.tr,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w500,
@@ -343,7 +345,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                           ],
                         ),
 
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                       ],
                     ),
                   ),
@@ -358,20 +360,20 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
 
   Widget _buildStep(int number, String text, IconData icon) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         children: [
           Container(
             width: 32,
             height: 32,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.primary,
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Text(
                 number.toString(),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -379,17 +381,17 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
               ),
             ),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Icon(
             icon,
             color: AppColors.textSecondary,
             size: 20,
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w500,

@@ -13,6 +13,7 @@ class ServiceController extends GetxController {
   ServiceController(this._serviceRepository);
 
   var isLoading = false.obs;
+  var isLoadingPhone = false.obs; // إضافة هذا المتغير
   var services = <ServiceModel>[].obs;
   var ownerServices = <ServiceModel>[].obs;
   var savedServices = <SavedServiceModel>[].obs;
@@ -327,6 +328,36 @@ class ServiceController extends GetxController {
         final saved = savedServices[i];
       }
     } catch (e) {}
+  }
+
+  Future<void> loadServicesByWorkshopId(String workshopId) async {
+    try {
+      isLoading.value = true;
+
+      final serviceList = await _serviceRepository.getServicesByWorkshopId(workshopId);
+      ownerServices.value = serviceList;
+
+    } catch (e) {
+      ErrorHandler.handleAndShowError(e);
+      ownerServices.clear();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // إضافة وظيفة جلب رقم هاتف صاحب الورشة
+  Future<String?> getWorkshopOwnerPhone(String serviceId) async {
+    try {
+      isLoadingPhone.value = true;
+
+      final phoneNumber = await _serviceRepository.getWorkshopOwnerPhone(serviceId);
+      return phoneNumber;
+    } catch (e) {
+      ErrorHandler.handleAndShowError(e);
+      return null;
+    } finally {
+      isLoadingPhone.value = false;
+    }
   }
 
   String _extractErrorMessage(String error) {

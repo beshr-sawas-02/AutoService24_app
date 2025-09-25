@@ -32,7 +32,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
     if (userId != null) {
       await workshopController.loadOwnerWorkshops(userId);
       await serviceController.loadOwnerServices();
-    } else {}
+    }
   }
 
   @override
@@ -43,7 +43,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         backgroundColor: AppColors.white,
         elevation: 0,
         title: Text(
-          'carservicehub_owner'.tr,
+          'auto_services'.tr,
           style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 22,
@@ -53,14 +53,6 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         automaticallyImplyLeading: false,
         actions: [
           _buildLanguageSwitcher(),
-          IconButton(
-            icon: const Icon(Icons.message, color: AppColors.textSecondary),
-            onPressed: () => Get.toNamed(AppRoutes.chatList),
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout, color: AppColors.textSecondary),
-            onPressed: () => _showLogoutDialog(),
-          ),
         ],
       ),
       body: RefreshIndicator(
@@ -76,11 +68,15 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         elevation: 8,
         onTap: (index) {
           if (index == 1) {
-            Get.toNamed(AppRoutes.ownerProfile);
+            Get.toNamed(AppRoutes.addWorkshop);
             return;
           }
           if (index == 2) {
-            Get.toNamed(AppRoutes.addWorkshop);
+            Get.toNamed(AppRoutes.chatList);
+            return;
+          }
+          if (index == 3) {
+            Get.toNamed(AppRoutes.ownerProfile);
             return;
           }
           setState(() {
@@ -93,12 +89,16 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
             label: 'home'.tr,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
-            label: 'profile'.tr,
-          ),
-          BottomNavigationBarItem(
             icon: const Icon(Icons.add_business),
             label: 'add_workshop'.tr,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.message),
+            label: 'chat'.tr,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person),
+            label: 'profile'.tr,
           ),
         ],
       ),
@@ -114,7 +114,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
 
   Widget _buildLanguageSwitcher() {
     final LanguageController languageController =
-        Get.find<LanguageController>();
+    Get.find<LanguageController>();
 
     return PopupMenuButton<String>(
       icon: const Icon(Icons.language, color: AppColors.textSecondary),
@@ -219,15 +219,15 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
           const SizedBox(width: 12),
           Expanded(
             child: Obx(() => Text(
-                  'hello_user'
-                      .tr
-                      .replaceAll('{name}', authController.displayName),
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )),
+              'hello_user'
+                  .tr
+                  .replaceAll('{name}', authController.displayName),
+              style: const TextStyle(
+                color: AppColors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            )),
           ),
         ],
       ),
@@ -273,8 +273,8 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         'image': 'assets/images/diagnostic.jpg',
       },
       {
-        'title': 'pre_tuv_check',
-        'type': ServiceType.PRE_TUV_CHECK,
+        'title': 'AU & TÜV',
+        'type': ServiceType.AU_TUV,
         'color': Colors.teal,
         'image': 'assets/images/au_tuv.jpg',
       },
@@ -400,29 +400,5 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         );
       },
     );
-  }
-
-  void _showLogoutDialog() {
-    Get.dialog(AlertDialog(
-      title: Text('logout'.tr),
-      content: Text('are_you_sure_logout'.tr),
-      actions: [
-        TextButton(
-            onPressed: () => Get.back(),
-            child: Text('cancel'.tr,
-                style: const TextStyle(color: AppColors.textSecondary))),
-        ElevatedButton(
-          onPressed: () {
-            Get.back();
-            authController.logout();
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.error,
-            foregroundColor: AppColors.white,
-          ),
-          child: Text('logout'.tr),
-        ),
-      ],
-    ));
   }
 }

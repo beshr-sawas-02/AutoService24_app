@@ -1,18 +1,26 @@
 import 'package:autoservice24/app/config/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/service_controller.dart';
 import '../../data/models/service_model.dart';
 import '../../routes/app_routes.dart';
 
-class ServiceDetailsView extends StatelessWidget {
+class ServiceDetailsView extends StatefulWidget {
+  const ServiceDetailsView({super.key});
+
+  @override
+  _ServiceDetailsViewState createState() => _ServiceDetailsViewState();
+}
+
+class _ServiceDetailsViewState extends State<ServiceDetailsView> {
   final AuthController authController = Get.find<AuthController>();
   final ServiceController serviceController = Get.find<ServiceController>();
   final PageController pageController = PageController();
 
-  ServiceDetailsView({super.key});
+  int currentImageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +40,11 @@ class ServiceDetailsView extends StatelessWidget {
                   PageView.builder(
                     controller: pageController,
                     itemCount: service.images.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        currentImageIndex = index;
+                      });
+                    },
                     itemBuilder: (context, index) {
                       return SizedBox(
                         width: double.infinity,
@@ -40,13 +53,7 @@ class ServiceDetailsView extends StatelessWidget {
                       );
                     },
                   ),
-                  if (service.images.length > 1)
-                    Positioned(
-                      bottom: 20,
-                      left: 0,
-                      right: 0,
-                      child: _buildImageIndicator(service.images.length),
-                    ),
+                  // Image counter overlay
                   if (service.images.length > 1)
                     Positioned(
                       top: 50,
@@ -58,23 +65,101 @@ class ServiceDetailsView extends StatelessWidget {
                           color: Colors.black.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Obx(() {
-                          final currentPage = pageController.hasClients
-                              ? (pageController.page?.round() ?? 0) + 1
-                              : 1;
-                          return Text(
-                            'image_counter'.tr
-                                .replaceAll('{current}', currentPage.toString())
-                                .replaceAll('{total}', service.images.length.toString()),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          );
-                        }),
+                        child: Text(
+                          '${currentImageIndex + 1}/${service.images.length}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ),
+                  // Page indicators
+                  if (service.images.length > 1)
+                    Positioned(
+                      bottom: 20,
+                      left: 0,
+                      right: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          service.images.length,
+                              (index) => Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 3),
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: currentImageIndex == index
+                                  ? Colors.white
+                                  : Colors.white.withValues(alpha: 0.4),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  // Navigation arrows for easy swiping
+                  if (service.images.length > 1) ...[
+                    // Left arrow
+                    if (currentImageIndex > 0)
+                      Positioned(
+                        left: 16,
+                        top: 0,
+                        bottom: 0,
+                        child: Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              pageController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.5),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back_ios,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    // Right arrow
+                    if (currentImageIndex < service.images.length - 1)
+                      Positioned(
+                        right: 16,
+                        top: 0,
+                        bottom: 0,
+                        child: Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              pageController.nextPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.5),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ],
               )
                   : _buildPlaceholderImage(),
@@ -222,7 +307,7 @@ class ServiceDetailsView extends StatelessWidget {
                     _buildImageGallery(service.images),
                   ],
 
-                  const SizedBox(height: 100), // مساحة للزر
+                  const SizedBox(height: 100), // Space for the button
                 ],
               ),
             ),
@@ -230,14 +315,14 @@ class ServiceDetailsView extends StatelessWidget {
         ],
       ),
 
-      // زر الاتصال بأسفل الشاشة
+      // Contact button at the bottom
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: ElevatedButton.icon(
-            onPressed: () {
-              // لسه ما في وظيفة، فقط منظر
-            },
+          child: Obx(() => ElevatedButton.icon(
+            onPressed: serviceController.isLoadingPhone.value
+                ? null
+                : () => _contactWorkshopOwner(service.id),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
@@ -246,16 +331,109 @@ class ServiceDetailsView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            icon: const Icon(Icons.phone, size: 22),
+            icon: serviceController.isLoadingPhone.value
+                ? const SizedBox(
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+                : const Icon(Icons.phone, size: 22),
             label: Text(
-              'Contact Workshop Owner',
+              serviceController.isLoadingPhone.value
+                  ? 'getting_phone_number'.tr
+                  : 'contact_workshop_owner'.tr,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-          ),
+          )),
         ),
+      ),
+    );
+  }
+
+  // Contact workshop owner function
+  Future<void> _contactWorkshopOwner(String serviceId) async {
+    try {
+      // Check if user is logged in first
+      if (authController.isGuest) {
+        _showGuestDialog();
+        return;
+      }
+
+      // Get phone number from ServiceController
+      final phoneNumber = await serviceController.getWorkshopOwnerPhone(serviceId);
+
+      if (phoneNumber != null && phoneNumber.isNotEmpty) {
+        // Clean phone number from unwanted characters
+        final cleanPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+
+        // Create call link
+        final Uri phoneUri = Uri(scheme: 'tel', path: cleanPhoneNumber);
+
+        // Try to open phone app
+        if (await canLaunchUrl(phoneUri)) {
+          await launchUrl(phoneUri);
+        } else {
+          // If can't open phone app
+          _showErrorDialog('cannot_open_phone_app'.tr);
+        }
+      } else {
+        // If no phone number available
+        _showErrorDialog('phone_number_not_available'.tr);
+      }
+    } catch (e) {
+      // If error occurred
+      _showErrorDialog('error_getting_phone_number'.tr);
+      print('Error contacting workshop owner: $e');
+    }
+  }
+
+  // Show error dialog
+  void _showErrorDialog(String message) {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            const Icon(
+              Icons.error_outline,
+              color: Colors.red,
+              size: 24,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'error'.tr,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Get.back(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text('ok'.tr),
+          ),
+        ],
       ),
     );
   }
@@ -359,24 +537,6 @@ class ServiceDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildImageIndicator(int imageCount) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        imageCount,
-            (index) => Container(
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withValues(alpha: 0.7),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildImageGallery(List<String> images) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -398,12 +558,14 @@ class ServiceDetailsView extends StatelessWidget {
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
+                  // Navigate to specific image in main carousel
                   pageController.animateToPage(
                     index,
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                   );
 
+                  // Scroll to top to show the main image
                   Scrollable.ensureVisible(
                     context,
                     duration: const Duration(milliseconds: 500),
@@ -416,8 +578,10 @@ class ServiceDetailsView extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppColors.border,
-                      width: 2,
+                      color: currentImageIndex == index
+                          ? AppColors.primary
+                          : AppColors.border,
+                      width: currentImageIndex == index ? 3 : 1,
                     ),
                   ),
                   child: ClipRRect(
