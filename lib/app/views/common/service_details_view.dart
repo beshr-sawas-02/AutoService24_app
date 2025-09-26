@@ -59,8 +59,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                       top: 50,
                       right: 16,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(20),
@@ -99,9 +99,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                         ),
                       ),
                     ),
-                  // Navigation arrows for easy swiping
+                  // Navigation arrows
                   if (service.images.length > 1) ...[
-                    // Left arrow
                     if (currentImageIndex > 0)
                       Positioned(
                         left: 16,
@@ -130,7 +129,6 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                           ),
                         ),
                       ),
-                    // Right arrow
                     if (currentImageIndex < service.images.length - 1)
                       Positioned(
                         right: 16,
@@ -166,6 +164,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
             ),
             actions: [
               Obx(() {
+                // Guest
                 if (authController.isGuest) {
                   return IconButton(
                     icon: Container(
@@ -184,8 +183,13 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                   );
                 }
 
-                final isBookmarked =
-                serviceController.isServiceSaved(service.id);
+                // Owner → لا يظهر الزر
+                if (authController.currentUser.value?.isOwner ?? false) {
+                  return const SizedBox.shrink();
+                }
+
+                // User عادي
+                final isBookmarked = serviceController.isServiceSaved(service.id);
 
                 return IconButton(
                   icon: Container(
@@ -205,8 +209,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                   onPressed: () async {
                     final userId = authController.currentUser.value?.id;
                     if (userId != null) {
-                      await serviceController.toggleSaveService(
-                          service.id, userId);
+                      await serviceController.toggleSaveService(service.id, userId);
                     }
                   },
                   tooltip:
@@ -294,13 +297,23 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                     'workshop_information'.tr,
                     [
                       _buildInfoRow(
-                          Icons.business, 'workshop_id'.tr, service.workshopId),
-                      _buildInfoRow(Icons.access_time, 'service_duration'.tr,
-                          '1_2_hours'.tr),
+                        Icons.business,
+                        'workshop_name'.tr,
+                        service.workshopName ,
+                      ),
                       _buildInfoRow(
-                          Icons.check_circle, 'warranty'.tr, '30_days'.tr),
+                        Icons.description,
+                        'description'.tr,
+                        service.workshopDescription,
+                      ),
+                      _buildInfoRow(
+                        Icons.access_time,
+                        'working_hours'.tr,
+                        service.workshopWorkingHours,
+                      ),
                     ],
                   ),
+
 
                   if (service.images.length > 1) ...[
                     const SizedBox(height: 24),

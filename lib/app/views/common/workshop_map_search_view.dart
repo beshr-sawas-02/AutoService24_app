@@ -31,7 +31,6 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
   bool _isDisposed = false;
   bool _showSearchOptions = false;
 
-
   bool shouldFocusOnWorkshop = false;
   String? targetWorkshopId;
   double? targetLatitude;
@@ -43,7 +42,6 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
   void initState() {
     super.initState();
     final arguments = Get.arguments as Map<String, dynamic>?;
-
 
     shouldFocusOnWorkshop = arguments?['focusOnWorkshop'] ?? false;
     targetWorkshopId = arguments?['workshopId'];
@@ -60,18 +58,16 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
     if (_isDisposed) return;
     await mapController.checkLocationServices();
 
-
-    if (shouldFocusOnWorkshop && targetLatitude != null && targetLongitude != null) {
-
+    if (shouldFocusOnWorkshop &&
+        targetLatitude != null &&
+        targetLongitude != null) {
       setState(() {
         _searchCenter = Point(
           coordinates: Position(targetLongitude!, targetLatitude!),
         );
       });
 
-
       await Future.delayed(const Duration(milliseconds: 1000));
-
 
       await mapController.flyToLocation(
         targetLatitude!,
@@ -79,14 +75,11 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
         zoom: targetZoom ?? 16.0,
       );
 
-
       await _updateSearchCircle();
-
 
       if (targetWorkshopId != null) {
         final workshop = workshopController.findWorkshopById(targetWorkshopId!);
         if (workshop != null) {
-
           await Future.delayed(const Duration(milliseconds: 500));
           _showWorkshopBottomSheet(workshop);
         }
@@ -141,14 +134,12 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
             child: _buildTopSearchBar(isTablet),
           ),
 
-
           if (!shouldFocusOnWorkshop)
             Positioned(
               left: isTablet ? 24 : 16,
               top: topPadding + (isTablet ? 100 : 120),
               child: _buildRadiusSlider(isTablet),
             ),
-
 
           Positioned(
             right: isTablet ? 24 : 16,
@@ -197,7 +188,6 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
             ),
           ),
 
-
           if (_showSearchOptions && !shouldFocusOnWorkshop)
             Positioned(
               top: topPadding + (isTablet ? 70 : 80),
@@ -206,7 +196,6 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
               child: _buildSearchOptionsPanel(isTablet),
             ),
 
-
           Positioned(
             bottom: 0,
             left: 0,
@@ -214,10 +203,11 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
             child: _buildBottomResultsPanel(isTablet),
           ),
 
-
           if (!shouldFocusOnWorkshop)
             Positioned(
-              bottom: _nearbyWorkshops.isEmpty ? (isTablet ? 100 : 120) : (isTablet ? 160 : 200),
+              bottom: _nearbyWorkshops.isEmpty
+                  ? (isTablet ? 100 : 120)
+                  : (isTablet ? 160 : 200),
               right: isTablet ? 24 : 16,
               child: _buildSearchFAB(isTablet),
             ),
@@ -252,23 +242,29 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
           ),
           Expanded(
             child: GestureDetector(
-              onTap: shouldFocusOnWorkshop ? null : () {
-                setState(() {
-                  _showSearchOptions = !_showSearchOptions;
-                });
-              },
+              onTap: shouldFocusOnWorkshop
+                  ? null
+                  : () {
+                      setState(() {
+                        _showSearchOptions = !_showSearchOptions;
+                      });
+                    },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: isTablet ? 10 : 12),
                 child: Text(
                   shouldFocusOnWorkshop && targetWorkshopName != null
                       ? targetWorkshopName!
-                      : _selectedServiceType?.displayName ?? 'select_service_type'.tr,
+                      : _selectedServiceType?.displayName ??
+                          'select_service_type'.tr,
                   style: TextStyle(
                     fontSize: isTablet ? 14 : 16,
-                    color: (_selectedServiceType != null || shouldFocusOnWorkshop)
-                        ? Colors.black87
-                        : Colors.grey[600],
-                    fontWeight: shouldFocusOnWorkshop ? FontWeight.bold : FontWeight.normal,
+                    color:
+                        (_selectedServiceType != null || shouldFocusOnWorkshop)
+                            ? Colors.black87
+                            : Colors.grey[600],
+                    fontWeight: shouldFocusOnWorkshop
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -355,9 +351,9 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                       serviceType.displayName,
                       style: TextStyle(
                         color:
-                        isSelected ? AppColors.primary : Colors.grey[700],
+                            isSelected ? AppColors.primary : Colors.grey[700],
                         fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
+                            isSelected ? FontWeight.bold : FontWeight.normal,
                         fontSize: isTablet ? 10 : 12,
                       ),
                       textAlign: TextAlign.center,
@@ -417,17 +413,16 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
             ),
           ),
 
-
           Expanded(
             child: RotatedBox(
               quarterTurns: -1,
               child: SliderTheme(
                 data: SliderTheme.of(context).copyWith(
                   trackHeight: isTablet ? 3 : 4,
-                  thumbShape:
-                  RoundSliderThumbShape(enabledThumbRadius: isTablet ? 6 : 8),
-                  overlayShape:
-                  RoundSliderOverlayShape(overlayRadius: isTablet ? 12 : 16),
+                  thumbShape: RoundSliderThumbShape(
+                      enabledThumbRadius: isTablet ? 6 : 8),
+                  overlayShape: RoundSliderOverlayShape(
+                      overlayRadius: isTablet ? 12 : 16),
                 ),
                 child: Slider(
                   value: _radiusKm,
@@ -488,7 +483,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
   }
 
   Widget _buildBottomResultsPanel(bool isTablet) {
-    final panelHeight = MediaQuery.of(context).size.height * (isTablet ? 0.35 : 0.4);
+    final panelHeight =
+        MediaQuery.of(context).size.height * (isTablet ? 0.35 : 0.4);
 
     if (_nearbyWorkshops.isEmpty && !shouldFocusOnWorkshop) {
       return Container(
@@ -553,7 +549,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.primary,
                       side: const BorderSide(color: AppColors.primary),
-                      padding: EdgeInsets.symmetric(vertical: isTablet ? 10 : 12),
+                      padding:
+                          EdgeInsets.symmetric(vertical: isTablet ? 10 : 12),
                     ),
                   ),
                 ),
@@ -628,7 +625,6 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
               },
             ),
           ),
-
 
           if (shouldFocusOnWorkshop)
             Padding(
@@ -774,9 +770,9 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                 child: Text(
                   workshop.distanceFromUser != null
                       ? mapController
-                      .formatDistance(workshop.distanceFromUser! * 1000)
+                          .formatDistance(workshop.distanceFromUser! * 1000)
                       : mapController
-                      .formatDistance(_calculateDistance(workshop) * 1000),
+                          .formatDistance(_calculateDistance(workshop) * 1000),
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: isTablet ? 10 : 12,
@@ -990,33 +986,41 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: isTablet ? 0.35 : 0.4,
         minChildSize: isTablet ? 0.25 : 0.3,
         maxChildSize: isTablet ? 0.7 : 0.8,
         builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
           padding: EdgeInsets.all(isTablet ? 16 : 20),
           child: SingleChildScrollView(
             controller: scrollController,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Container(
-                    width: isTablet ? 35 : 40,
-                    height: isTablet ? 3 : 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+                // Handle bar
+                Container(
+                  width: isTablet ? 35 : 40,
+                  height: isTablet ? 3 : 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
                 SizedBox(height: isTablet ? 16 : 20),
+
+                // Workshop info row
                 Row(
                   children: [
                     CircleAvatar(
@@ -1047,46 +1051,35 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          SizedBox(height: isTablet ? 2 : 4),
+                          SizedBox(height: isTablet ? 4 : 6),
                           Row(
                             children: [
-                              Icon(
-                                Icons.access_time,
-                                size: isTablet ? 14 : 16,
-                                color: Colors.grey,
-                              ),
-                              SizedBox(width: isTablet ? 2 : 4),
-                              Expanded(
-                                child: Text(
-                                  workshop.workingHours,
-                                  style: TextStyle(
+                              Icon(Icons.access_time,
+                                  size: isTablet ? 14 : 16, color: Colors.grey),
+                              SizedBox(width: 4),
+                              Text(
+                                workshop.workingHours,
+                                style: TextStyle(
                                     color: Colors.grey,
-                                    fontSize: isTablet ? 12 : 14,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                    fontSize: isTablet ? 12 : 14),
                               ),
                             ],
                           ),
                           SizedBox(height: isTablet ? 2 : 4),
                           Row(
                             children: [
-                              Icon(
-                                Icons.location_on,
-                                size: isTablet ? 14 : 16,
-                                color: Colors.grey,
-                              ),
-                              SizedBox(width: isTablet ? 2 : 4),
+                              Icon(Icons.location_on,
+                                  size: isTablet ? 14 : 16, color: Colors.grey),
+                              SizedBox(width: 4),
                               Text(
                                 workshop.distanceFromUser != null
                                     ? mapController.formatDistance(
-                                    workshop.distanceFromUser! * 1000)
+                                        workshop.distanceFromUser! * 1000)
                                     : mapController.formatDistance(
-                                    _calculateDistance(workshop) * 1000),
+                                        _calculateDistance(workshop) * 1000),
                                 style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: isTablet ? 12 : 14,
-                                ),
+                                    color: Colors.grey,
+                                    fontSize: isTablet ? 12 : 14),
                               ),
                             ],
                           ),
@@ -1095,40 +1088,42 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                     ),
                   ],
                 ),
+
                 SizedBox(height: isTablet ? 12 : 16),
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: isTablet ? 50 : 60),
+
+                // Description
+                Container(
+                  width: double.infinity,
+                  constraints: BoxConstraints(maxHeight: isTablet ? 100 : 120),
                   child: SingleChildScrollView(
                     child: Text(
                       workshop.description,
                       style: TextStyle(
-                        fontSize: isTablet ? 14 : 16,
-                        color: Colors.grey,
-                      ),
+                          fontSize: isTablet ? 14 : 16,
+                          color: Colors.grey[800]),
                     ),
                   ),
                 ),
+
                 SizedBox(height: isTablet ? 16 : 20),
+
+                // Buttons row
                 Row(
                   children: [
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
                           Get.back();
-                          Get.toNamed(
-                            AppRoutes.workshopDetails,
-                            arguments: workshop,
-                          );
+                          Get.toNamed(AppRoutes.workshopDetails,
+                              arguments: workshop);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(vertical: isTablet ? 10 : 12),
+                          padding: EdgeInsets.symmetric(
+                              vertical: isTablet ? 10 : 12),
                         ),
-                        child: Text(
-                          'view_details'.tr,
-                          style: TextStyle(fontSize: isTablet ? 13 : 15),
-                        ),
+                        child: Text('view_details'.tr,
+                            style: TextStyle(fontSize: isTablet ? 13 : 15)),
                       ),
                     ),
                     SizedBox(width: isTablet ? 8 : 12),
@@ -1141,44 +1136,15 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.primary,
                           side: const BorderSide(color: AppColors.primary),
-                          padding: EdgeInsets.symmetric(vertical: isTablet ? 10 : 12),
+                          padding: EdgeInsets.symmetric(
+                              vertical: isTablet ? 10 : 12),
                         ),
-                        child: Text(
-                          'directions'.tr,
-                          style: TextStyle(fontSize: isTablet ? 13 : 15),
-                        ),
+                        child: Text('directions'.tr,
+                            style: TextStyle(fontSize: isTablet ? 13 : 15)),
                       ),
                     ),
                   ],
                 ),
-
-
-                if (shouldFocusOnWorkshop) ...[
-                  SizedBox(height: isTablet ? 12 : 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        Get.back();
-                        Get.back();
-                      },
-                      icon: Icon(
-                        Icons.arrow_back,
-                        size: isTablet ? 16 : 18,
-                      ),
-                      label: Text(
-                        'back_to_services'.tr,
-                        style: TextStyle(fontSize: isTablet ? 13 : 15),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.textSecondary,
-                        side: const BorderSide(color: AppColors.border),
-                        padding: EdgeInsets.symmetric(vertical: isTablet ? 10 : 12),
-                      ),
-                    ),
-                  ),
-                ],
-
 
                 SizedBox(height: isTablet ? 16 : 20),
               ],
@@ -1202,11 +1168,268 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
     );
   }
 
-  void _getDirections(WorkshopModel workshop) {
+  void _getDirections(WorkshopModel workshop) async {
+    try {
+      final currentPos = mapController.currentPosition.value;
+
+      if (currentPos == null) {
+        _showError('error'.tr, 'current_location_not_found'.tr);
+        return;
+      }
+
+      // Check if map controller is ready
+      if (mapController.mapboxMap == null) {
+        _showError('error'.tr, 'map_not_ready'.tr);
+        return;
+      }
+
+      // Show loading indicator
+      Get.snackbar(
+        'loading'.tr,
+        'creating_route'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.info,
+        colorText: AppColors.white,
+        duration: const Duration(seconds: 2),
+      );
+
+      // إنشاء route من الموقع الحالي إلى الورشة
+      await _createNavigationRoute(
+        startLat: currentPos.latitude,
+        startLng: currentPos.longitude,
+        endLat: workshop.latitude,
+        endLng: workshop.longitude,
+        workshopName: workshop.name,
+      );
+    } catch (e) {
+      _showError('navigation_error'.tr, e.toString());
+    }
+  }
+
+  void _showError(String title, String message) {
     Get.snackbar(
-      'directions'.tr,
-      '${'opening_directions_to'.tr} ${workshop.name}',
+      title,
+      message,
       snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: AppColors.error,
+      colorText: AppColors.white,
+      duration: const Duration(seconds: 3),
+    );
+  }
+
+  Future<void> _createNavigationRoute({
+    required double startLat,
+    required double startLng,
+    required double endLat,
+    required double endLng,
+    required String workshopName,
+  }) async {
+    try {
+      // إضافة خط المسار على الخريطة
+      await mapController.addRoute(
+        startLat: startLat,
+        startLng: startLng,
+        endLat: endLat,
+        endLng: endLng,
+      );
+
+      // إضافة marker للوجهة إذا لم يكن موجود
+      await mapController.addDestinationMarker(
+        endLat,
+        endLng,
+        title: workshopName,
+      );
+
+      // تحريك الكاميرا لإظهار المسار كاملاً
+      await mapController.fitRoute(
+        startLat: startLat,
+        startLng: startLng,
+        endLat: endLat,
+        endLng: endLng,
+      );
+
+      // إظهار معلومات المسار
+      _showRouteInfo(startLat, startLng, endLat, endLng, workshopName);
+    } catch (e) {
+      _showError('route_creation_error'.tr, e.toString());
+    }
+  }
+
+  void _showRouteInfo(double startLat, double startLng, double endLat,
+      double endLng, String workshopName) {
+    final distance =
+        mapController.calculateDistance(startLat, startLng, endLat, endLng);
+    final estimatedTime = _calculateEstimatedTime(distance);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Route header
+            Row(
+              children: [
+                const Icon(Icons.navigation,
+                    color: AppColors.primary, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '${'navigation_to'.tr} $workshopName',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            // Route info
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                // Distance
+                Column(
+                  children: [
+                    const Icon(Icons.straighten,
+                        color: AppColors.textSecondary),
+                    const SizedBox(height: 4),
+                    Text(
+                      mapController.formatDistance(distance),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      'distance'.tr,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Estimated time
+                Column(
+                  children: [
+                    const Icon(Icons.access_time,
+                        color: AppColors.textSecondary),
+                    const SizedBox(height: 4),
+                    Text(
+                      estimatedTime,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      'estimated_time'.tr,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // Action buttons
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Get.back();
+                      _startNavigation(endLat, endLng, workshopName);
+                    },
+                    icon: const Icon(Icons.navigation),
+                    label: Text('start_navigation'.tr),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Get.back();
+                      _clearRoute();
+                    },
+                    icon: const Icon(Icons.clear),
+                    label: Text('clear_route'.tr),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.textSecondary,
+                      side: const BorderSide(color: AppColors.border),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _calculateEstimatedTime(double distanceInMeters) {
+    // افتراض سرعة متوسطة 40 كم/ساعة في المدينة
+    const double averageSpeedKmh = 40.0;
+    const double averageSpeedMs = averageSpeedKmh * 1000 / 3600; // متر/ثانية
+
+    final double timeInSeconds = distanceInMeters / averageSpeedMs;
+    final int minutes = (timeInSeconds / 60).round();
+
+    if (minutes < 60) {
+      return '$minutes min';
+    } else {
+      final int hours = minutes ~/ 60;
+      final int remainingMinutes = minutes % 60;
+      return '${hours}h ${remainingMinutes}m';
+    }
+  }
+
+  void _startNavigation(double lat, double lng, String workshopName) {
+    // يمكن هنا بدء الملاحة الصوتية أو الانتقال لشاشة ملاحة مخصصة
+    Get.snackbar(
+      'navigation_started'.tr,
+      '${'navigating_to'.tr} $workshopName',
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: AppColors.success,
+      colorText: AppColors.white,
+      duration: const Duration(seconds: 3),
+    );
+  }
+
+  Future<void> _clearRoute() async {
+    await mapController.clearRoute();
+    _showInfo('route_cleared'.tr);
+  }
+
+  void _showInfo(String message) {
+    Get.snackbar(
+      'info'.tr,
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: AppColors.info,
+      colorText: AppColors.white,
+      duration: const Duration(seconds: 2),
     );
   }
 

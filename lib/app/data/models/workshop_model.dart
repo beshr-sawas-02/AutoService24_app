@@ -6,7 +6,7 @@ class WorkshopModel {
   final LocationModel location;
   final String workingHours;
   final String? profileImage;
-  double? distanceFromUser; // حقل جديد للمسافة
+  double? distanceFromUser;
 
   WorkshopModel({
     required this.id,
@@ -28,7 +28,7 @@ class WorkshopModel {
       location: LocationModel.fromJson(json['location'] ?? {}),
       workingHours: json['working_hours'] ?? '',
       profileImage: json['profile_image'],
-      distanceFromUser: json['distance'], // في حال جاءت من الباك إند
+      distanceFromUser: json['distance'],
     );
   }
 
@@ -42,7 +42,6 @@ class WorkshopModel {
     };
 
     if (profileImage != null) data['profile_image'] = profileImage;
-    // لا نضيف distanceFromUser في toJson لأنها محلية فقط
     return data;
   }
 

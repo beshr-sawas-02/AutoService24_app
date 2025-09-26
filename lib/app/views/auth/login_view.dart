@@ -80,39 +80,6 @@ class _LoginViewState extends State<LoginView> {
 
               const SizedBox(height: 32),
 
-              // Social Login Section
-              _buildSocialLoginSection(),
-
-              const SizedBox(height: 16),
-
-              // User Type Selection
-              _buildUserTypeSelection(),
-
-              const SizedBox(height: 32),
-
-              // Divider
-              Row(
-                children: [
-                  const Expanded(
-                      child: Divider(color: AppColors.border, thickness: 1)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text(
-                      'or_continue_email'.tr,
-                      style: const TextStyle(
-                        color: AppColors.textHint,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const Expanded(
-                      child: Divider(color: AppColors.border, thickness: 1)),
-                ],
-              ),
-
-              const SizedBox(height: 32),
-
               // Email Field
               _buildTextField(
                 controller: _emailController,
@@ -179,34 +146,67 @@ class _LoginViewState extends State<LoginView> {
 
               // Login Button
               Obx(() => SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: authController.isLoading.value ? null : _login,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.white,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16)),
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
-                      ),
-                      child: authController.isLoading.value
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: AppColors.white,
-                                strokeWidth: 2.5,
-                              ),
-                            )
-                          : Text(
-                              'login'.tr,
-                              style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600),
-                            ),
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: authController.isLoading.value ? null : _login,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                    elevation: 0,
+                    shadowColor: Colors.transparent,
+                  ),
+                  child: authController.isLoading.value
+                      ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: AppColors.white,
+                      strokeWidth: 2.5,
                     ),
-                  )),
+                  )
+                      : Text(
+                    'login'.tr,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              )),
+
+              const SizedBox(height: 32),
+
+              // Divider
+              Row(
+                children: [
+                  const Expanded(
+                      child: Divider(color: AppColors.border, thickness: 1)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      'or_continue_with'.tr,
+                      style: const TextStyle(
+                        color: AppColors.textHint,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const Expanded(
+                      child: Divider(color: AppColors.border, thickness: 1)),
+                ],
+              ),
+
+              const SizedBox(height: 32),
+
+              // Social Login Section
+              _buildSocialLoginSection(),
+
+              const SizedBox(height: 32),
+
+              // User Type Selection
+              _buildUserTypeSelection(),
 
               const SizedBox(height: 40),
 
@@ -266,7 +266,7 @@ class _LoginViewState extends State<LoginView> {
 
   Widget _buildLanguageSwitcher() {
     final LanguageController languageController =
-        Get.find<LanguageController>();
+    Get.find<LanguageController>();
 
     return PopupMenuButton<String>(
       icon: const Icon(Icons.language, color: AppColors.textSecondary),
@@ -316,50 +316,50 @@ class _LoginViewState extends State<LoginView> {
 
   Widget _buildSocialLoginSection() {
     return Obx(() => Column(
-          children: [
-            // Google Login
-            _buildSocialButton(
-              label: 'continue_with_google'.tr,
-              backgroundColor: AppColors.grey100,
-              borderColor: AppColors.grey400,
-              textColor: AppColors.grey800,
-              icon: Icons.account_circle_outlined,
-              iconColor: AppColors.error,
-              onTap: authController.isLoading.value
-                  ? null
-                  : () => _socialLogin('google'),
-              isGoogle: true,
-            ),
-            const SizedBox(height: 16),
+      children: [
+        // Google Login
+        _buildSocialButton(
+          label: 'continue_with_google'.tr,
+          backgroundColor: AppColors.grey100,
+          borderColor: AppColors.grey400,
+          textColor: AppColors.grey800,
+          icon: Icons.account_circle_outlined,
+          iconColor: AppColors.error,
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('google'),
+          isGoogle: true,
+        ),
+        const SizedBox(height: 16),
 
-            // Facebook Login
-            _buildSocialButton(
-              label: 'continue_with_facebook'.tr,
-              backgroundColor: AppColors.info,
-              borderColor: AppColors.info,
-              textColor: AppColors.white,
-              icon: Icons.facebook_rounded,
-              iconColor: AppColors.white,
-              onTap: authController.isLoading.value
-                  ? null
-                  : () => _socialLogin('facebook'),
-            ),
+        // Facebook Login
+        _buildSocialButton(
+          label: 'continue_with_facebook'.tr,
+          backgroundColor: AppColors.info,
+          borderColor: AppColors.info,
+          textColor: AppColors.white,
+          icon: Icons.facebook_rounded,
+          iconColor: AppColors.white,
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('facebook'),
+        ),
 
-            // Apple Login
-            const SizedBox(height: 16),
-            _buildSocialButton(
-              label: 'continue_with_apple'.tr,
-              backgroundColor: AppColors.textPrimary,
-              borderColor: AppColors.textPrimary,
-              textColor: AppColors.white,
-              icon: Icons.apple_rounded,
-              iconColor: AppColors.white,
-              onTap: authController.isLoading.value
-                  ? null
-                  : () => _socialLogin('apple'),
-            ),
-          ],
-        ));
+        // Apple Login
+        const SizedBox(height: 16),
+        _buildSocialButton(
+          label: 'continue_with_apple'.tr,
+          backgroundColor: AppColors.textPrimary,
+          borderColor: AppColors.textPrimary,
+          textColor: AppColors.white,
+          icon: Icons.apple_rounded,
+          iconColor: AppColors.white,
+          onTap: authController.isLoading.value
+              ? null
+              : () => _socialLogin('apple'),
+        ),
+      ],
+    ));
   }
 
   Widget _buildUserTypeSelection() {
@@ -379,7 +379,7 @@ class _LoginViewState extends State<LoginView> {
           children: [
             Expanded(
               child:
-                  _buildUserTypeButton('regular_user'.tr, Icons.person, 'user'),
+              _buildUserTypeButton('regular_user'.tr, Icons.person, 'user'),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -487,7 +487,7 @@ class _LoginViewState extends State<LoginView> {
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         errorStyle: const TextStyle(
           color: AppColors.error,
           fontSize: 13,

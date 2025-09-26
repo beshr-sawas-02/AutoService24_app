@@ -24,7 +24,7 @@ class MapController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // لا تستدعي checkLocationServices هنا
+
   }
 
   @override
@@ -59,131 +59,105 @@ class MapController extends GetxController {
   Future<void> setupAnnotationManagers() async {
     if (mapboxMap == null) return;
 
-    // محاولات متعددة مع تأخير متزايد
+
     for (int attempt = 1; attempt <= 3; attempt++) {
       try {
-        print('Attempting to create annotation managers (attempt $attempt)');
 
-        // تأخير متزايد
+
         await Future.delayed(Duration(milliseconds: 1000 * attempt));
 
-        // محاولة إنشاء point annotation manager
+
         if (pointAnnotationManager == null) {
           try {
             pointAnnotationManager = await mapboxMap!.annotations.createPointAnnotationManager();
-            print('Point annotation manager created successfully');
           } catch (e) {
-            print('Error creating point annotation manager (attempt $attempt): $e');
             if (attempt == 3) pointAnnotationManager = null;
           }
         }
 
-        // محاولة إنشاء circle annotation manager
+
         if (circleAnnotationManager == null) {
           try {
             circleAnnotationManager = await mapboxMap!.annotations.createCircleAnnotationManager();
-            print('Circle annotation manager created successfully');
           } catch (e) {
-            print('Error creating circle annotation manager (attempt $attempt): $e');
             if (attempt == 3) circleAnnotationManager = null;
           }
         }
 
-        // محاولة إنشاء polyline annotation manager
+
         if (polylineAnnotationManager == null) {
           try {
             polylineAnnotationManager = await mapboxMap!.annotations.createPolylineAnnotationManager();
-            print('Polyline annotation manager created successfully');
           } catch (e) {
-            print('Error creating polyline annotation manager (attempt $attempt): $e');
             if (attempt == 3) polylineAnnotationManager = null;
           }
         }
 
-        // إذا تم إنشاء واحد على الأقل، اخرج من التكرار
+
         if (pointAnnotationManager != null || circleAnnotationManager != null) {
           break;
         }
 
       } catch (e) {
-        print('Error in setup attempt $attempt: $e');
         if (attempt == 3) {
-          print('Failed to setup annotation managers after 3 attempts');
         }
       }
     }
   }
 
-  /// Add workshop location marker with debug - النسخة المحدثة والموثوقة
-  Future<void> addWorkshopLocationMarker(double latitude, double longitude) async {
-    print('=== Starting workshop marker creation ===');
-    print('Latitude: $latitude, Longitude: $longitude');
 
-    // تحقق من صحة الإحداثيات
+  Future<void> addWorkshopLocationMarker(double latitude, double longitude) async {
+
+
     if (!areValidCoordinates(latitude, longitude)) {
-      print('Invalid coordinates provided');
       return;
     }
 
-    // تحقق من حالة المديرين
-    print('Point manager available: ${pointAnnotationManager != null}');
-    print('Circle manager available: ${circleAnnotationManager != null}');
-    print('MapboxMap available: ${mapboxMap != null}');
 
-    // تنظيف المؤشرات السابقة
-    print('Clearing previous annotations...');
+
+
     await clearAnnotations();
 
-    // محاولة إنشاء المديرين إذا لم يكونوا متوفرين
+
     if (circleAnnotationManager == null || pointAnnotationManager == null) {
-      print('Recreating annotation managers...');
       await setupAnnotationManagers();
 
-      // انتظار إضافي للتأكد من الجاهزية
+
       await Future.delayed(const Duration(milliseconds: 1000));
     }
 
-    // تحقق مرة أخرى بعد الإعداد
-    print('After setup - Circle manager: ${circleAnnotationManager != null}');
-    print('After setup - Point manager: ${pointAnnotationManager != null}');
+
 
     bool success = false;
 
-    // الطريقة الأولى: دوائر متعددة
+
     if (circleAnnotationManager != null) {
-      print('Attempting multiple circles method...');
       success = await _tryMultipleCirclesPin(latitude, longitude);
       if (success) {
-        print('Multiple circles pin created successfully');
         await _tryAddWorkshopText(latitude, longitude);
         return;
       }
     }
 
-    // الطريقة الثانية: دائرة واحدة بسيطة
+
     if (circleAnnotationManager != null && !success) {
-      print('Attempting single circle method...');
       success = await _trySingleCirclePin(latitude, longitude);
       if (success) {
-        print('Single circle pin created successfully');
         await _tryAddWorkshopText(latitude, longitude);
         return;
       }
     }
 
-    // الطريقة الثالثة: نص فقط
+
     if (pointAnnotationManager != null && !success) {
-      print('Attempting text-only method...');
       success = await _tryTextOnlyMarker(latitude, longitude);
       if (success) {
-        print('Text-only marker created successfully');
         return;
       }
     }
 
-    print('=== All marker creation methods failed ===');
 
-    // إظهار رسالة للمستخدم
+
     Get.snackbar(
       'Map Notice',
       'Location selected but marker display may be limited',
@@ -192,14 +166,13 @@ class MapController extends GetxController {
     );
   }
 
-  /// محاولة إنشاء pin بدوائر متعددة
   Future<bool> _tryMultipleCirclesPin(double latitude, double longitude) async {
     if (circleAnnotationManager == null) return false;
 
     try {
       final point = Point(coordinates: Position(longitude, latitude));
 
-      // الدائرة الخارجية
+
       final outerCircle = CircleAnnotationOptions(
         geometry: point,
         circleRadius: 18.0,
@@ -209,9 +182,8 @@ class MapController extends GetxController {
       );
 
       await circleAnnotationManager!.create(outerCircle);
-      print('Outer circle created');
 
-      // الدائرة الداخلية
+
       final innerCircle = CircleAnnotationOptions(
         geometry: point,
         circleRadius: 8.0,
@@ -219,16 +191,14 @@ class MapController extends GetxController {
       );
 
       await circleAnnotationManager!.create(innerCircle);
-      print('Inner circle created');
 
       return true;
     } catch (e) {
-      print('Multiple circles method failed: $e');
       return false;
     }
   }
 
-  /// محاولة إنشاء pin بدائرة واحدة
+
   Future<bool> _trySingleCirclePin(double latitude, double longitude) async {
     if (circleAnnotationManager == null) return false;
 
@@ -244,15 +214,13 @@ class MapController extends GetxController {
       );
 
       await circleAnnotationManager!.create(circle);
-      print('Single circle created');
       return true;
     } catch (e) {
-      print('Single circle method failed: $e');
       return false;
     }
   }
 
-  /// محاولة إنشاء marker نصي فقط
+
   Future<bool> _tryTextOnlyMarker(double latitude, double longitude) async {
     if (pointAnnotationManager == null) return false;
 
@@ -270,18 +238,15 @@ class MapController extends GetxController {
       );
 
       await pointAnnotationManager!.create(textOptions);
-      print('Text marker created');
       return true;
     } catch (e) {
-      print('Text-only method failed: $e');
       return false;
     }
   }
 
-  /// محاولة إضافة نص تحت الدبوس
+
   Future<void> _tryAddWorkshopText(double latitude, double longitude) async {
     if (pointAnnotationManager == null) {
-      print('Cannot add text - point manager not available');
       return;
     }
 
@@ -301,30 +266,19 @@ class MapController extends GetxController {
       );
 
       await pointAnnotationManager!.create(textOptions);
-      print('Workshop text added successfully');
     } catch (e) {
-      print('Could not add workshop text: $e');
     }
   }
 
-  /// دالة مساعدة للتحقق من صحة setup المديرين
+
   Future<void> debugAnnotationManagers() async {
-    print('=== Annotation Managers Debug Info ===');
-    print('MapboxMap: ${mapboxMap != null ? "Available" : "NULL"}');
-    print('PointAnnotationManager: ${pointAnnotationManager != null ? "Available" : "NULL"}');
-    print('CircleAnnotationManager: ${circleAnnotationManager != null ? "Available" : "NULL"}');
-    print('PolylineAnnotationManager: ${polylineAnnotationManager != null ? "Available" : "NULL"}');
 
     if (mapboxMap != null) {
       try {
         final cameraState = await mapboxMap!.getCameraState();
-        print('Camera Center: ${cameraState.center}');
-        print('Camera Zoom: ${cameraState.zoom}');
       } catch (e) {
-        print('Could not get camera state: $e');
       }
     }
-    print('=== End Debug Info ===');
   }
 
   /// Add a marker to the map with retry mechanism
@@ -336,13 +290,12 @@ class MapController extends GetxController {
         Map<String, dynamic>? userData,
       }) async {
 
-    // التحقق من توفر المدير
+
     if (pointAnnotationManager == null) {
-      print('Point annotation manager not available, skipping marker addition');
       return;
     }
 
-    // محاولات متعددة
+
     for (int attempt = 1; attempt <= 2; attempt++) {
       try {
         final point = Point(coordinates: Position(longitude, latitude));
@@ -356,12 +309,10 @@ class MapController extends GetxController {
         );
 
         await pointAnnotationManager!.create(options);
-        print('Marker added successfully');
         return;
       } catch (e) {
-        print('Error adding marker (attempt $attempt): $e');
         if (attempt == 1) {
-          // محاولة إعادة إنشاء المدير في المحاولة الأولى
+
           await _recreatePointAnnotationManager();
         }
       }
@@ -371,7 +322,6 @@ class MapController extends GetxController {
   /// Add destination marker with retry mechanism
   Future<void> addDestinationMarker(double lat, double lng, {required String title}) async {
     if (pointAnnotationManager == null) {
-      print('Point annotation manager not available, skipping destination marker');
       return;
     }
 
@@ -388,10 +338,8 @@ class MapController extends GetxController {
         );
 
         await pointAnnotationManager!.create(options);
-        print('Destination marker added successfully');
         return;
       } catch (e) {
-        print('Error adding destination marker (attempt $attempt): $e');
         if (attempt == 1) {
           await _recreatePointAnnotationManager();
         }
@@ -407,25 +355,22 @@ class MapController extends GetxController {
     required double endLng,
   }) async {
     try {
-      // التحقق من جاهزية المكونات
+
       if (mapboxMap == null) {
-        print('MapboxMap not initialized');
         _showRouteError('Map not ready. Please try again.');
         return;
       }
 
       isLoading.value = true;
 
-      // Clear existing routes first (بدون رمي أخطاء)
+
       await clearRoute();
 
-      // التحقق من polylineAnnotationManager أو محاولة إنشائه
+
       if (polylineAnnotationManager == null) {
-        print('PolylineAnnotationManager not available, trying to recreate...');
         await _recreatePolylineAnnotationManager();
 
         if (polylineAnnotationManager == null) {
-          print('Failed to create PolylineAnnotationManager, using fallback');
           await _showStraightLineFallback(startLat, startLng, endLat, endLng);
           return;
         }
@@ -440,7 +385,7 @@ class MapController extends GetxController {
       );
 
       if (routeCoordinates.isNotEmpty) {
-        // محاولة رسم الخط
+
         bool routeDrawn = false;
         for (int attempt = 1; attempt <= 2; attempt++) {
           try {
@@ -454,11 +399,9 @@ class MapController extends GetxController {
             );
 
             await polylineAnnotationManager!.create(options);
-            print('Route created successfully');
             routeDrawn = true;
             break;
           } catch (e) {
-            print('Error creating route (attempt $attempt): $e');
             if (attempt == 1) {
               await _recreatePolylineAnnotationManager();
             }
@@ -466,15 +409,14 @@ class MapController extends GetxController {
         }
 
         if (!routeDrawn) {
-          // Fallback إلى خط مستقيم
+
           await _showStraightLineFallback(startLat, startLng, endLat, endLng);
         }
       } else {
-        // إذا لم نحصل على coordinates من API
+
         await _showStraightLineFallback(startLat, startLng, endLat, endLng);
       }
     } catch (e) {
-      print('Error adding route: $e');
       await _showStraightLineFallback(startLat, startLng, endLat, endLng);
     } finally {
       isLoading.value = false;
@@ -494,10 +436,10 @@ class MapController extends GetxController {
   /// Show straight line when polyline fails
   Future<void> _showStraightLineFallback(double startLat, double startLng, double endLat, double endLng) async {
     try {
-      // استخدام نقاط بدلاً من خط إذا فشل polyline
+
       await addMarker(endLat, endLng, title: "Destination");
 
-      // إظهار رسالة للمستخدم
+
       Get.snackbar(
         'Route Info',
         'Showing destination marker. Route line unavailable.',
@@ -505,7 +447,6 @@ class MapController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     } catch (e) {
-      print('Error in fallback: $e');
     }
   }
 
@@ -537,10 +478,8 @@ class MapController extends GetxController {
           ).toList();
         }
       } else {
-        print('Mapbox API Error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print('Error calling Mapbox Directions API: $e');
     }
 
     // Fallback to straight line if API call fails
@@ -577,7 +516,6 @@ class MapController extends GetxController {
         }
       }
     } catch (e) {
-      print('Error calling Mapbox Directions API: $e');
     }
 
     return _getStraightLineCoordinates(startLat, startLng, endLat, endLng);
@@ -614,7 +552,6 @@ class MapController extends GetxController {
         }
       }
     } catch (e) {
-      print('Error getting route info: $e');
     }
 
     return null;
@@ -637,7 +574,6 @@ class MapController extends GetxController {
         await polylineAnnotationManager!.create(options);
       }
     } catch (e) {
-      print('Error in straight line route: $e');
     }
   }
 
@@ -666,7 +602,6 @@ class MapController extends GetxController {
 
         await polylineAnnotationManager!.create(options);
       } catch (e) {
-        print('Error adding route with waypoints: $e');
       }
     }
   }
@@ -679,7 +614,6 @@ class MapController extends GetxController {
     required double endLng,
   }) async {
     if (mapboxMap == null) {
-      print('MapboxMap not available for fitRoute operation');
       return;
     }
 
@@ -719,48 +653,41 @@ class MapController extends GetxController {
           ),
           MapAnimationOptions(duration: 2000, startDelay: 0),
         );
-        print('Camera fitted to route successfully');
         return;
       } catch (e) {
-        print('Error fitting route (attempt $attempt): $e');
         if (attempt == 1) {
           await Future.delayed(const Duration(milliseconds: 500));
         }
       }
     }
 
-    // Fallback: محاولة بسيطة للتحرك إلى نقطة الوسط
+
     try {
       final double centerLat = (startLat + endLat) / 2;
       final double centerLng = (startLng + endLng) / 2;
       await flyToLocation(centerLat, centerLng, zoom: 12.0);
     } catch (e) {
-      print('Fallback flyTo also failed: $e');
     }
   }
 
   /// Clear route from map with safe error handling
   Future<void> clearRoute() async {
     if (polylineAnnotationManager == null) {
-      print('Polyline annotation manager not available');
       return;
     }
 
     for (int attempt = 1; attempt <= 2; attempt++) {
       try {
         await polylineAnnotationManager!.deleteAll();
-        print('Route cleared successfully');
         return;
       } catch (e) {
-        print('Error clearing route (attempt $attempt): $e');
 
         if (attempt == 1) {
-          // محاولة إعادة إنشاء المدير
+
           await _recreatePolylineAnnotationManager();
         } else {
-          // في المحاولة الأخيرة، اجعل المدير null
+
           polylineAnnotationManager = null;
-          print('Polyline manager set to null after failed attempts');
         }
       }
     }
@@ -771,12 +698,9 @@ class MapController extends GetxController {
     if (mapboxMap == null) return;
 
     try {
-      print('Attempting to recreate point annotation manager');
       await Future.delayed(const Duration(milliseconds: 500));
       pointAnnotationManager = await mapboxMap!.annotations.createPointAnnotationManager();
-      print('Point annotation manager recreated successfully');
     } catch (e) {
-      print('Failed to recreate point annotation manager: $e');
       pointAnnotationManager = null;
     }
   }
@@ -786,12 +710,9 @@ class MapController extends GetxController {
     if (mapboxMap == null) return;
 
     try {
-      print('Attempting to recreate polyline annotation manager');
       await Future.delayed(const Duration(milliseconds: 500));
       polylineAnnotationManager = await mapboxMap!.annotations.createPolylineAnnotationManager();
-      print('Polyline annotation manager recreated successfully');
     } catch (e) {
-      print('Failed to recreate polyline annotation manager: $e');
       polylineAnnotationManager = null;
     }
   }
@@ -811,7 +732,6 @@ class MapController extends GetxController {
           );
         }
       } catch (e) {
-        print('Error adding markers: $e');
       }
     }
   }
@@ -841,7 +761,6 @@ class MapController extends GetxController {
 
         await circleAnnotationManager!.create(options);
       } catch (e) {
-        print('Error adding circle: $e');
       }
     }
   }
@@ -874,10 +793,8 @@ class MapController extends GetxController {
       for (int attempt = 1; attempt <= 2; attempt++) {
         try {
           await pointAnnotationManager!.deleteAll();
-          print('Point annotations cleared successfully');
           break;
         } catch (e) {
-          print('Error clearing point annotations (attempt $attempt): $e');
           if (attempt == 1) {
             await _recreatePointAnnotationManager();
           } else {
@@ -892,10 +809,8 @@ class MapController extends GetxController {
       for (int attempt = 1; attempt <= 2; attempt++) {
         try {
           await circleAnnotationManager!.deleteAll();
-          print('Circle annotations cleared successfully');
           break;
         } catch (e) {
-          print('Error clearing circle annotations (attempt $attempt): $e');
           if (attempt == 2) {
             circleAnnotationManager = null;
           }
@@ -913,10 +828,8 @@ class MapController extends GetxController {
       for (int attempt = 1; attempt <= 2; attempt++) {
         try {
           await pointAnnotationManager!.deleteAll();
-          print('Markers cleared successfully');
           return;
         } catch (e) {
-          print('Error clearing markers (attempt $attempt): $e');
           if (attempt == 1) {
             await _recreatePointAnnotationManager();
           } else {
@@ -933,10 +846,8 @@ class MapController extends GetxController {
       for (int attempt = 1; attempt <= 2; attempt++) {
         try {
           await circleAnnotationManager!.deleteAll();
-          print('Circles cleared successfully');
           return;
         } catch (e) {
-          print('Error clearing circles (attempt $attempt): $e');
           if (attempt == 2) {
             circleAnnotationManager = null;
           }
@@ -953,7 +864,6 @@ class MapController extends GetxController {
         int duration = 2000,
       }) async {
     if (mapboxMap == null) {
-      print('MapboxMap not available for flyTo operation');
       return;
     }
 
@@ -968,18 +878,16 @@ class MapController extends GetxController {
           ),
           MapAnimationOptions(duration: duration, startDelay: 0),
         );
-        print('Camera flew to location successfully');
         return;
       } catch (e) {
-        print('Error flying to location (attempt $attempt): $e');
         if (attempt == 1) {
-          // تأخير بسيط قبل المحاولة الثانية
+
           await Future.delayed(const Duration(milliseconds: 500));
         }
       }
     }
 
-    // إذا فشلت المحاولات، أعلم المستخدم
+
     Get.snackbar(
       'Navigation Warning',
       'Unable to move camera to location. Map may not be fully loaded.',
@@ -1053,14 +961,13 @@ class MapController extends GetxController {
 
   /// Reset all annotation managers in case of complete failure
   Future<void> resetAllManagers() async {
-    print('Resetting all annotation managers...');
 
     pointAnnotationManager = null;
     circleAnnotationManager = null;
     polylineAnnotationManager = null;
 
     if (mapboxMap != null) {
-      // تأخير كبير قبل إعادة المحاولة
+
       await Future.delayed(const Duration(milliseconds: 3000));
       await setupAnnotationManagers();
     }
@@ -1068,7 +975,6 @@ class MapController extends GetxController {
 
   /// Emergency fallback when all platform calls fail
   void enableEmergencyMode() {
-    print('Enabling emergency mode - disabling all map annotations');
 
     pointAnnotationManager = null;
     circleAnnotationManager = null;
@@ -1093,14 +999,12 @@ class MapController extends GetxController {
   Future<void> setupAnnotationManagersWithHealthCheck() async {
     if (mapboxMap == null) return;
 
-    // التحقق من صحة الاتصال أولاً
+
     bool isHealthy = await _isPlatformConnectionHealthy();
     if (!isHealthy) {
-      print('Platform connection is not healthy, delaying setup');
       await Future.delayed(const Duration(milliseconds: 2000));
       isHealthy = await _isPlatformConnectionHealthy();
       if (!isHealthy) {
-        print('Platform connection still unhealthy after delay');
         return;
       }
     }
@@ -1113,25 +1017,23 @@ class MapController extends GetxController {
     if (mapboxMap == null) return false;
 
     try {
-      // محاولة عملية بسيطة للتحقق من الاتصال
+
       final cameraState = await mapboxMap!.getCameraState();
       return true;
     } catch (e) {
-      print('Platform connection check failed: $e');
       return false;
     }
   }
 
   @override
   void onClose() {
-    // تنظيف آمن للموارد
+
     try {
       pointAnnotationManager = null;
       circleAnnotationManager = null;
       polylineAnnotationManager = null;
       mapboxMap = null;
     } catch (e) {
-      print('Error during cleanup: $e');
     }
     super.onClose();
   }

@@ -127,44 +127,63 @@ class AuthController extends GetxController {
 
       final response = await _authRepository.login(email, password);
 
-      if (response.containsKey('token') && response.containsKey('user')) {
+      // إذا السيرفر رجع user + token، تسجيل الدخول ناجح
+      if (response.containsKey('user') && response.containsKey('token')) {
+        final user = response['user'];
+
+        // تحقق من حالة verified لو السيرفر فعلاً رجعها
+        if (user['verified'] == false) {
+          Helpers.showErrorSnackbar(
+            'Please verify your account first. Check your email.',
+          );
+          return false;
+        }
+
+        // تسجيل الدخول ناجح
         await StorageService.saveToken(response['token']);
-        await StorageService.saveUserData(response['user']);
+        await StorageService.saveUserData(user);
 
-        currentUser.value = UserModel.fromJson(response['user']);
-
+        currentUser.value = UserModel.fromJson(user);
         isLoggedIn.value = true;
         isUserDataLoaded.value = true;
 
         await _clearServiceData();
-
-
         await _updateWebSocketUser(currentUser.value?.id);
 
         Helpers.showSuccessSnackbar('Login successful');
 
-        if (currentUser.value?.userType == 'owner') {
-          Get.offAllNamed(AppRoutes.ownerHome);
-        } else {
-          Get.offAllNamed(AppRoutes.userHome);
-        }
+        Get.offAllNamed(
+          currentUser.value?.userType == 'owner'
+              ? AppRoutes.ownerHome
+              : AppRoutes.userHome,
+        );
 
         await _reloadUserSpecificData();
-
         return true;
+
       } else {
-        Helpers.showErrorSnackbar('Invalid server response');
+        // السيرفر لم يرجع user/token، نفترض Unauthorized أو خطأ عام
+        Helpers.showErrorSnackbar(
+          'Unable to login. Please check your email and password, or verify your account.',
+        );
         return false;
       }
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      String errorMessage = e.toString().toLowerCase();
+
+      if (errorMessage.contains('unauthorized') || errorMessage.contains('invalid credentials')) {
+        Helpers.showErrorSnackbar(
+          'Unable to login. Please check your email and password, or verify your account.',
+        );
+      } else {
+        Helpers.showErrorSnackbar('An error occurred - Please try again.');
+      }
+
       return false;
     } finally {
       isLoading.value = false;
     }
   }
-
 
   Future<bool> updateProfileWithImage(
       String userId, Map<String, dynamic> data, File? imageFile) async {
@@ -676,15 +695,17 @@ class AuthController extends GetxController {
   }
 
   String _extractErrorMessage(String error) {
-    if (error.contains('Exception:')) {
-      return error.split('Exception: ').last;
-    } else if (error.contains('Invalid email or password')) {
+    error = error.toLowerCase();
+
+    if (error.contains('verify') || error.contains('not verified')) {
+      return 'Please verify your account first. Check your email.';
+    } else if (error.contains('invalid email or password') || error.contains('unauthorized')) {
       return 'Invalid email or password';
-    } else if (error.contains('Email already exists')) {
+    } else if (error.contains('email already exists')) {
       return 'This email is already registered';
-    } else if (error.contains('Network error')) {
+    } else if (error.contains('network error')) {
       return 'Network error - Check your internet connection';
-    } else if (error.contains('Server error')) {
+    } else if (error.contains('server error')) {
       return 'Server error - Please try again later';
     } else {
       return 'An error occurred - Please try again';

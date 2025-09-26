@@ -581,18 +581,10 @@ class _RegisterViewState extends State<RegisterView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (isGoogle)
-              Container(
-                width: isTablet ? 24 : 28,
-                height: isTablet ? 24 : 28,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Icon(
-                  Icons.g_mobiledata,
-                  color: Colors.red[600],
-                  size: isTablet ? 20 : 24,
-                ),
+              Image.asset(
+                'assets/icons/google_icon.png',
+                width: isTablet ? 28 : 34,
+                height: isTablet ? 28 : 34,
               )
             else
               Icon(
