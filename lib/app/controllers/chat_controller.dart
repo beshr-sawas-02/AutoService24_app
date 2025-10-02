@@ -20,12 +20,13 @@ class ChatController extends GetxController {
   var isLoadingMessages = false.obs;
   var usersCache = <String, UserModel>{}.obs;
   var isLoadingUsers = false.obs;
+  var unreadChats = <String>[].obs;
 
   WebSocketService? _webSocketService;
   var isTyping = false.obs;
   var otherUserTyping = false.obs;
+  var lastMessages = <String, MessageModel>{}.obs; // chatId -> lastMessage
 
-  // Enhanced duplicate prevention
   bool _isSendingMessage = false;
   bool _isSendingImageMessage = false;
   String? _lastSentContent;
@@ -36,6 +37,24 @@ class ChatController extends GetxController {
   void onInit() {
     super.onInit();
     _initializeWebSocket();
+  }
+
+  // Public method to sort chats by last message time
+  void sortChatsByLastMessage() {
+    chats.sort((a, b) {
+      final messageA = lastMessages[a.id];
+      final messageB = lastMessages[b.id];
+
+      if (messageA == null && messageB == null) return 0;
+      if (messageA == null) return 1;
+      if (messageB == null) return -1;
+
+      final timeA = messageA.createdAt ?? DateTime(2000);
+      final timeB = messageB.createdAt ?? DateTime(2000);
+
+      return timeB.compareTo(timeA); // Descending order (newest first)
+    });
+    chats.refresh(); // Trigger UI update
   }
 
   Future<void> _initializeWebSocket() async {
@@ -54,13 +73,22 @@ class ChatController extends GetxController {
       isLoading.value = true;
 
       final chatList = await _chatRepository.getAllChats();
-
       chats.value = chatList;
 
       final chatIds = chatList.map((chat) => chat.id).toList();
       if (chatIds.isNotEmpty && _webSocketService != null) {
         await _webSocketService!.joinRooms(chatIds);
       }
+
+      for (var chat in chatList) {
+        final allMessages = await _chatRepository.getChatMessages(chat.id);
+        if (allMessages.isNotEmpty) {
+          lastMessages[chat.id] = allMessages.last;
+        }
+      }
+
+      // Sort chats after loading last messages
+      sortChatsByLastMessage();
 
       _loadUsersInBackground(chatList);
     } catch (e) {
@@ -95,7 +123,6 @@ class ChatController extends GetxController {
     String? image,
   }) async {
     try {
-      // Enhanced duplicate prevention for text messages
       if (_isSendingMessage) {
         return false;
       }
@@ -134,7 +161,7 @@ class ChatController extends GetxController {
 
       // Enhanced duplicate detection
       final exists = messages.any((m) =>
-          m.content == newMessage.content &&
+      m.content == newMessage.content &&
           m.senderId == newMessage.senderId &&
           m.chatId == newMessage.chatId &&
           (newMessage.createdAt == null ||
@@ -144,7 +171,11 @@ class ChatController extends GetxController {
 
       if (!exists) {
         messages.add(newMessage);
-      } else {}
+        // Update last message immediately for chat list
+        lastMessages[chatId] = newMessage;
+        // Sort chats to move this chat to the top
+        sortChatsByLastMessage();
+      }
 
       if (isTyping.value && _webSocketService != null) {
         _webSocketService!.stopTyping(chatId);
@@ -196,7 +227,11 @@ class ChatController extends GetxController {
   }
 
   void disconnectWebSocket() {
-    _webSocketService?.disconnect();
+    try {
+      _webSocketService?.disconnect();
+    } catch (e) {
+      // Ignore errors during disconnect
+    }
   }
 
   Future<UserModel?> getUserById(String userId) async {
@@ -283,7 +318,7 @@ class ChatController extends GetxController {
   Future<ChatModel?> createChat(String user1Id, String user2Id) async {
     try {
       final existingChat =
-          await _chatRepository.findChatBetweenUsers(user1Id, user2Id);
+      await _chatRepository.findChatBetweenUsers(user1Id, user2Id);
       if (existingChat != null) {
         return existingChat;
       }
@@ -293,7 +328,8 @@ class ChatController extends GetxController {
         'user2Id': user2Id,
       });
 
-      chats.add(newChat);
+      chats.insert(0, newChat);
+      // Sort will happen automatically when first message is sent
       return newChat;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
@@ -309,7 +345,7 @@ class ChatController extends GetxController {
     File? imageFile,
   }) async {
     try {
-      // Enhanced duplicate prevention for image messages
+
       if (_isSendingImageMessage) {
         return false;
       }
@@ -317,7 +353,6 @@ class ChatController extends GetxController {
       final now = DateTime.now();
       final currentImagePath = imageFile?.path;
 
-      // Check for duplicate image based on file path and timing
       if (currentImagePath != null &&
           _lastSentImagePath == currentImagePath &&
           _lastSentTime != null &&
@@ -360,7 +395,11 @@ class ChatController extends GetxController {
       if (!exists) {
         messages.add(newMessage);
         Helpers.showSuccessSnackbar('Image sent successfully');
-      } else {}
+        // Update last message immediately for chat list
+        lastMessages[chatId] = newMessage;
+        // Sort chats to move this chat to the top
+        sortChatsByLastMessage();
+      }
 
       return true;
     } catch (e) {
@@ -390,6 +429,7 @@ class ChatController extends GetxController {
     try {
       await _chatRepository.deleteChat(chatId);
       chats.removeWhere((chat) => chat.id == chatId);
+      unreadChats.remove(chatId);
       Helpers.showSuccessSnackbar('Chat deleted');
       return true;
     } catch (e) {
@@ -398,11 +438,12 @@ class ChatController extends GetxController {
     }
   }
 
+
   Future<bool> updateMessage(
       String messageId, Map<String, dynamic> data) async {
     try {
       final updatedMessage =
-          await _chatRepository.updateMessage(messageId, data);
+      await _chatRepository.updateMessage(messageId, data);
 
       final index = messages.indexWhere((m) => m.id == messageId);
       if (index != -1) {
@@ -430,7 +471,11 @@ class ChatController extends GetxController {
 
   @override
   void onClose() {
-    disconnectWebSocket();
+    try {
+      disconnectWebSocket();
+    } catch (e) {
+      // Ignore any errors during cleanup
+    }
     super.onClose();
   }
 }

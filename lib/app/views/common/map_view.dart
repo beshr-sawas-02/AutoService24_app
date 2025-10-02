@@ -137,11 +137,6 @@ class _MapViewState extends State<MapView> {
           onPressed: () => Get.toNamed(AppRoutes.workshopMapSearch),
           tooltip: 'search'.tr,
         ),
-      IconButton(
-        icon: const Icon(Icons.my_location),
-        onPressed: _goToCurrentLocation,
-        tooltip: 'current_location'.tr,
-      ),
     ];
   }
 
@@ -334,7 +329,7 @@ class _MapViewState extends State<MapView> {
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    workshop.workingHours,
+                    workshop.workingHours ?? '',
                     style: const TextStyle(color: AppColors.textSecondary),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -345,7 +340,7 @@ class _MapViewState extends State<MapView> {
 
             // Description - compact
             Text(
-              workshop.description,
+              workshop.description ?? '',
               style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
@@ -355,12 +350,15 @@ class _MapViewState extends State<MapView> {
             ),
             const SizedBox(height: 20),
 
-            // Action buttons
+            // Action buttons: View Details & Directions
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () => _navigateToWorkshopDetails(workshop),
+                    onPressed: () {
+                      Navigator.of(context).pop(); // إغلاق الـ BottomSheet الحالي
+                      _navigateToWorkshopDetails(workshop);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.white,
@@ -372,7 +370,10 @@ class _MapViewState extends State<MapView> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => _getDirections(workshop),
+                    onPressed: () {
+                      Navigator.of(context).pop(); // إغلاق الـ BottomSheet الحالي
+                      _getDirections(workshop);
+                    },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.primary,
                       side: const BorderSide(color: AppColors.primary),
@@ -389,7 +390,6 @@ class _MapViewState extends State<MapView> {
               final currentPos = _mapController.currentPosition.value;
               if (currentPos != null) {
                 final distance = _calculateDistance(workshop, currentPos);
-
                 return Padding(
                   padding: const EdgeInsets.only(top: 16),
                   child: Row(
@@ -411,15 +411,15 @@ class _MapViewState extends State<MapView> {
               return const SizedBox();
             }),
 
-            // Back button if needed
+            // Back button if focused on specific workshop
             if (_shouldFocusOnWorkshop) ...[
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    Get.back(); // Close bottom sheet
-                    Get.back(); // Return to services page
+                    Navigator.of(context).pop(); // إغلاق الـ BottomSheet الحالي
+                    Get.back(); // العودة للصفحة السابقة
                   },
                   icon: const Icon(Icons.arrow_back),
                   label: Text('back_to_services'.tr),
@@ -617,8 +617,11 @@ class _MapViewState extends State<MapView> {
   }
 
   /// Show route information in bottom sheet
-  void _showRouteInfo(double startLat, double startLng, double endLat, double endLng, String workshopName) {
-    final distance = _mapController.calculateDistance(startLat, startLng, endLat, endLng);
+  /// Show route information in bottom sheet
+  void _showRouteInfo(
+      double startLat, double startLng, double endLat, double endLng, String workshopName) {
+    final distance =
+    _mapController.calculateDistance(startLat, startLng, endLat, endLng);
     final estimatedTime = _calculateEstimatedTime(distance);
 
     showModalBottomSheet(
@@ -706,10 +709,14 @@ class _MapViewState extends State<MapView> {
             // Action buttons
             Row(
               children: [
+                // Start Navigation Button
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Get.back();
+                      // سكر الـ bottomSheet الحالي فقط
+                      Navigator.of(context).pop();
+
+                      // بدء الملاحة
                       _startNavigation(endLat, endLng, workshopName);
                     },
                     icon: const Icon(Icons.navigation),
@@ -722,10 +729,15 @@ class _MapViewState extends State<MapView> {
                   ),
                 ),
                 const SizedBox(width: 12),
+
+                // Clear Route Button
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      Get.back();
+                      // سكر الـ bottomSheet الحالي فقط
+                      Navigator.of(context).pop();
+
+                      // مسح المسار
                       _clearRoute();
                     },
                     icon: const Icon(Icons.clear),
@@ -747,7 +759,7 @@ class _MapViewState extends State<MapView> {
 
   /// Start turn-by-turn navigation
   void _startNavigation(double lat, double lng, String workshopName) {
-    // يمكن هنا بدء الملاحة الصوتية أو الانتقال لشاشة ملاحة مخصصة
+
     Get.snackbar(
       'navigation_started'.tr,
       '${'navigating_to'.tr} $workshopName',

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/privacy_policy_controller.dart';
 import '../../routes/app_routes.dart';
+import '../privacy_policy_screen.dart';
 
 class UserProfileView extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
+  final PrivacyPolicyController privacyController = Get.put(PrivacyPolicyController());
 
   UserProfileView({super.key});
 
@@ -144,6 +147,20 @@ class UserProfileView extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 20),
+                  // Privacy Policy link for guests
+                  TextButton.icon(
+                    onPressed: () => _showPrivacyPolicy(),
+                    icon: const Icon(Icons.privacy_tip_outlined, color: Colors.white),
+                    label: Text(
+                      'privacy_policy'.tr,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.white.withValues(alpha: 0.9),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -168,6 +185,8 @@ class UserProfileView extends StatelessWidget {
                 _buildContactInformationCard(user),
                 const SizedBox(height: 20),
                 _buildProfileOptions(),
+                const SizedBox(height: 20),
+                _buildPrivacySection(),
                 const SizedBox(height: 24),
                 _buildLogoutButton(),
                 const SizedBox(height: 12),
@@ -488,6 +507,21 @@ class UserProfileView extends StatelessWidget {
     );
   }
 
+  Widget _buildPrivacySection() {
+    return _buildSectionCard(
+      title: 'privacy_security'.tr,
+      children: [
+        _buildProfileOption(
+          icon: Icons.privacy_tip_outlined,
+          title: 'privacy_policy'.tr,
+          subtitle: 'view_privacy_policy'.tr,
+          onTap: () => _showPrivacyPolicy(),
+          iconColor: Colors.indigo,
+        ),
+      ],
+    );
+  }
+
   Widget _buildSectionCard({required String title, required List<Widget> children}) {
     return Container(
       width: double.infinity,
@@ -627,6 +661,28 @@ class UserProfileView extends StatelessWidget {
     );
   }
 
+  void _showPrivacyPolicy() {
+    Get.to(
+          () => PrivacyPolicyView(
+        showAcceptButton: false,
+        isFromRegistration: false,
+      ),
+      transition: Transition.cupertino,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
+
+  void _showPrivacyPolicyWithAccept() {
+    Get.to(
+          () => PrivacyPolicyView(
+        showAcceptButton: true,
+        isFromRegistration: false,
+      ),
+      transition: Transition.cupertino,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
+
   void _showLogoutDialog() {
     Get.dialog(
       AlertDialog(
@@ -745,5 +801,4 @@ class UserProfileView extends StatelessWidget {
         ],
       ),
     );
-  }
-}
+  }}

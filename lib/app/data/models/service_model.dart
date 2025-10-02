@@ -5,7 +5,7 @@ enum ServiceType {
   REMOVE_INSTALL_TIRES('Remove & install tires'),
   CLEANING('Cleaning'),
   DIAGNOSTIC_TEST('Test with diagnostic'),
-  AU_TUV('AU & TÜV'),
+  AU_TUV('AU & TÜV '),
   BALANCE_TIRES('Balance tires'),
   WHEEL_ALIGNMENT('Adjust wheel alignment'),
   POLISH('Polish'),
@@ -191,7 +191,7 @@ class ServiceModel {
 
   String get serviceTypeName => serviceType.displayName;
 
-  // Helper methods to get workshop info if available
+
   String get workshopName {
     return workshopData?['name'] ?? 'Unknown Workshop';
   }
@@ -204,7 +204,6 @@ class ServiceModel {
     return workshopData?['working_hours'] ?? '';
   }
 
-  // Get workshop location coordinates
   double? get workshopLocationX {
     final locationX = workshopData?['location_x'];
     if (locationX is String) {

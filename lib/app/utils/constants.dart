@@ -64,7 +64,7 @@ class AppConstants {
     'Remove & install tires',
     'Cleaning',
     'Test with diagnostic',
-    'Pre-TÜV check',
+    'AU & TÜV ',
     'Balance tires',
     'Adjust wheel alignment',
     'Polish',

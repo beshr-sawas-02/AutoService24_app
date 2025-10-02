@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';
 import '../controllers/auth_controller.dart';
+import '../controllers/privacy_policy_controller.dart';
 import '../controllers/user_controller.dart';
 import '../controllers/workshop_controller.dart';
 import '../controllers/service_controller.dart';
@@ -100,5 +101,8 @@ class AppBinding extends Bindings {
     Get.lazyPut<ChatController>(
         () => ChatController(Get.find<ChatRepository>()),
         fenix: true);
+
+    Get.lazyPut(() => PrivacyPolicyController(), fenix: true);
+
   }
 }

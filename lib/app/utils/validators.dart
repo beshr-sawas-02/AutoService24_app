@@ -51,9 +51,9 @@ class Validators {
       return 'Username must be at least ${AppConstants.minUsernameLength} characters';
     }
 
-    final usernameRegex = RegExp(r'^[a-zA-Z0-9_]+$');
+    final usernameRegex = RegExp(r'^[a-zA-Z0-9_\u0600-\u06FF ]+$');
     if (!usernameRegex.hasMatch(value)) {
-      return 'Username can only contain letters, numbers, and underscores';
+      return 'Username can only contain letters, numbers, underscores, and spaces';
     }
 
     return null;

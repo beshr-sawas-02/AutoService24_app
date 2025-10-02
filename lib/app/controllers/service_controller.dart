@@ -13,7 +13,7 @@ class ServiceController extends GetxController {
   ServiceController(this._serviceRepository);
 
   var isLoading = false.obs;
-  var isLoadingPhone = false.obs; // إضافة هذا المتغير
+  var isLoadingPhone = false.obs;
   var services = <ServiceModel>[].obs;
   var ownerServices = <ServiceModel>[].obs;
   var savedServices = <SavedServiceModel>[].obs;
@@ -23,7 +23,6 @@ class ServiceController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // لا تحمل البيانات هنا
   }
 
   @override
@@ -35,11 +34,24 @@ class ServiceController extends GetxController {
     });
   }
 
+  // Helper method to sort services by creation date (newest first)
+  void _sortServicesByDate(List<ServiceModel> serviceList) {
+    serviceList.sort((a, b) {
+      final dateA = a.createdAt ?? DateTime(2000);
+      final dateB = b.createdAt ?? DateTime(2000);
+      return dateB.compareTo(dateA); // Descending order (newest first)
+    });
+  }
+
   Future<void> loadServices({String? serviceType}) async {
     try {
       isLoading.value = true;
       final serviceList =
       await _serviceRepository.getAllServices(serviceType: serviceType);
+
+      // Sort services by creation date
+      _sortServicesByDate(serviceList);
+
       services.value = serviceList;
       _applyFilters();
     } catch (e) {
@@ -67,6 +79,10 @@ class ServiceController extends GetxController {
       isLoading.value = true;
 
       final serviceList = await _serviceRepository.getAllServices();
+
+      // Sort services by creation date
+      _sortServicesByDate(serviceList);
+
       ownerServices.value = serviceList;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
@@ -104,6 +120,10 @@ class ServiceController extends GetxController {
         query,
         serviceType: selectedType.value,
       );
+
+      // Sort search results by creation date
+      _sortServicesByDate(searchResults);
+
       services.value = searchResults;
       _applyFilters();
     } catch (e) {
@@ -202,7 +222,10 @@ class ServiceController extends GetxController {
       isLoading.value = true;
 
       final newService = await _serviceRepository.createService(serviceData);
-      ownerServices.add(newService);
+
+      // Add new service at the beginning (top)
+      ownerServices.insert(0, newService);
+      services.insert(0, newService);
 
       Helpers.showSuccessSnackbar('Service created successfully');
       return true;
@@ -221,7 +244,10 @@ class ServiceController extends GetxController {
 
       final newService = await _serviceRepository.createServiceWithImages(
           serviceData, imageFiles);
-      ownerServices.add(newService);
+
+      // Add new service at the beginning (top)
+      ownerServices.insert(0, newService);
+      services.insert(0, newService);
 
       Helpers.showSuccessSnackbar('Service created successfully');
       return true;
@@ -287,6 +313,8 @@ class ServiceController extends GetxController {
       await _serviceRepository.deleteService(id);
 
       ownerServices.removeWhere((service) => service.id == id);
+      services.removeWhere((service) => service.id == id);
+
       Helpers.showSuccessSnackbar('Service deleted successfully');
       return true;
     } catch (e) {
@@ -335,6 +363,10 @@ class ServiceController extends GetxController {
       isLoading.value = true;
 
       final serviceList = await _serviceRepository.getServicesByWorkshopId(workshopId);
+
+      // Sort services by creation date
+      _sortServicesByDate(serviceList);
+
       ownerServices.value = serviceList;
 
     } catch (e) {
@@ -345,7 +377,6 @@ class ServiceController extends GetxController {
     }
   }
 
-  // إضافة وظيفة جلب رقم هاتف صاحب الورشة
   Future<String?> getWorkshopOwnerPhone(String serviceId) async {
     try {
       isLoadingPhone.value = true;

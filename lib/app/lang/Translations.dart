@@ -467,7 +467,8 @@ class AppTranslations extends Translations {
           'search_on_map': 'Search on Map',
           'workshop_location_not_available': 'Workshop location not available',
           'workshop_location_not_set': 'Workshop location not set',
-          'failed_to_open_workshop_location': 'Failed to open workshop location',
+          'failed_to_open_workshop_location':
+              'Failed to open workshop location',
           'no_location': 'No Location',
           'image_not_available': 'Image not available',
           'asset_not_found': 'Asset not found',
@@ -477,19 +478,25 @@ class AppTranslations extends Translations {
           'open_map_search': 'Open Map Search',
           'edit': 'Edit',
           'save_service_title': 'Save Service',
-          'save_service_description': 'Create an account to save your favorite services and access them anytime.',
+          'save_service_description':
+              'Create an account to save your favorite services and access them anytime.',
           'no_workshops_found': 'No Workshops Found',
           'no_workshops_available': 'No workshops are available in your area.',
           'no_conversations': 'No Conversations',
-          'no_conversations_subtitle': 'You don\'t have any conversations yet. Start chatting with workshop owners.',
+          'no_conversations_subtitle':
+              'You don\'t have any conversations yet. Start chatting with workshop owners.',
           'find_workshops': 'Find Workshops',
           'no_results_found': 'No Results Found',
-          'no_results_for_search': 'No results found for "{searchTerm}". Try different keywords.',
-          'no_results_try_different': 'No results found. Try different search terms.',
+          'no_results_for_search':
+              'No results found for "{searchTerm}". Try different keywords.',
+          'no_results_try_different':
+              'No results found. Try different search terms.',
           'clear_search': 'Clear Search',
-          'no_saved_services_subtitle': 'You haven\'t saved any services yet. Browse services to save your favorites.',
+          'no_saved_services_subtitle':
+              'You haven\'t saved any services yet. Browse services to save your favorites.',
           'youre_browsing_as_guest': 'You\'re browsing as a guest',
-          'login_register_for_features': 'Login or register to save services, chat with workshops, and access more features.',
+          'login_register_for_features':
+              'Login or register to save services, chat with workshops, and access more features.',
           'select_service_type': 'Select Service Type',
           'tap_search_to_find_workshops': 'Tap search to find workshops',
           'select_service_type_first': 'Select service type first',
@@ -510,11 +517,13 @@ class AppTranslations extends Translations {
           'national': 'National',
           'select_location': 'Select Location',
           'confirm': 'Confirm',
-          'tap_map_to_select_workshop_location': 'Tap on the map to select workshop location',
+          'tap_map_to_select_workshop_location':
+              'Tap on the map to select workshop location',
           'location_selected_successfully': 'Location Selected Successfully',
           'coordinates': 'Coordinates',
           'confirm_location': 'Confirm Location',
-          'tap_confirm_or_select_another': 'Tap confirm or select another location',
+          'tap_confirm_or_select_another':
+              'Tap confirm or select another location',
           'workshop_location_selected': 'Workshop Location Selected',
           'tap_to_open_map': 'Tap to open map',
           'select_workshop_location': 'Select Workshop Location',
@@ -527,7 +536,8 @@ class AppTranslations extends Translations {
           'verify_code': 'Verify Code',
           'resend_code': 'Resend Code',
           'verification_code_sent': 'Verification code sent successfully',
-          'verification_code_sent_successfully': 'Verification code sent to your email',
+          'verification_code_sent_successfully':
+              'Verification code sent to your email',
           'code_verified_successfully': 'Code verified successfully',
           'verification_code_required': 'Verification code is required',
           'code_must_be_6_digits': 'Code must be 6 digits',
@@ -539,25 +549,571 @@ class AppTranslations extends Translations {
           'error_getting_phone_number': 'Error getting phone number',
           'email_verification': 'Email Verification',
           'check_your_email': 'Check Your Email',
-          'verification_sent_description': 'A verification link has been sent to your email address. Please click on the link to activate your account.',
+          'verification_sent_description':
+              'A verification link has been sent to your email address. Please click on the link to activate your account.',
           'next_steps': 'Next Steps',
           'open_gmail_app': 'Open Gmail app or your email client',
-          'find_verification_email': 'Find verification email from AutoService24',
+          'find_verification_email':
+              'Find verification email from AutoService24',
           'click_verify_button': 'Click on "Verify Email" button',
           'return_to_login': 'Return to login screen',
-          'check_spam_folder': 'If you don\'t see the email, please check your spam folder',
+          'check_spam_folder':
+              'If you don\'t see the email, please check your spam folder',
           'back_to_login': 'Back to Login',
           'create_different_account': 'Create Different Account',
+          'app_name': 'Auto Service 24',
+          'last_updated': 'Last Updated',
+          'accept_privacy_policy': 'Accept Privacy Policy',
+
+          // Introduction Section
+          'privacy_intro_title': 'Introduction',
+          'privacy_intro_content':
+              'Welcome to Auto Service 24. We are committed to protecting your privacy and personal data. This privacy policy explains how we collect, use, and protect your personal information when using our app.\n\nBy using Auto Service 24, you agree to the information collection and use practices described in this policy.',
+
+          // Data Collection Section
+          'privacy_data_collection_title': 'Data We Collect',
+          'privacy_data_collection_content':
+              'We collect the following types of data to provide our services:',
+          'privacy_data_personal_info':
+              'Personal information: name, email address, phone number',
+          'privacy_data_account_info':
+              'Account information: username and encrypted password',
+          'privacy_data_location': 'Geographic location data (with consent)',
+          'privacy_data_files': 'Images and files you upload',
+          'privacy_data_messages': 'Messages and conversations within the app',
+          'privacy_data_device_info':
+              'Device information and operating system type',
+          'privacy_data_usage': 'App usage data and saved services',
+
+          // Data Usage Section
+          'privacy_data_usage_title': 'How We Use Your Data',
+          'privacy_data_usage_content':
+              'We use the collected data for the following purposes:',
+          'privacy_usage_provide_services': 'Provide and operate app services',
+          'privacy_usage_manage_accounts': 'Create and manage your accounts',
+          'privacy_usage_find_workshops': 'Find workshops near your location',
+          'privacy_usage_communication':
+              'Facilitate communication between users and workshop owners',
+          'privacy_usage_improve_app': 'Improve app quality and performance',
+          'privacy_usage_notifications':
+              'Send important service-related notifications',
+          'privacy_usage_security':
+              'Ensure security and prevent unauthorized use',
+
+          // Data Sharing Section
+          'privacy_data_sharing_title': 'Data Sharing',
+          'privacy_data_sharing_content':
+              'We do not sell or rent your personal data to third parties. We may share your information only in the following cases:',
+          'privacy_sharing_workshops':
+              'With workshop owners to facilitate communication and service',
+          'privacy_sharing_legal': 'When required to comply with local laws',
+          'privacy_sharing_rights': 'To protect our rights and users\' rights',
+          'privacy_sharing_emergency':
+              'In emergency situations to ensure safety',
+
+          // Location Data Section
+          'privacy_location_title': 'Geographic Location Data',
+          'privacy_location_content':
+              'We use Mapbox services to provide mapping and location services. Location data is collected only with permission and is used for:',
+          'privacy_location_find_nearby':
+              'Finding nearby workshops and services',
+          'privacy_location_distance':
+              'Determining distances and estimated arrival times',
+          'privacy_location_maps': 'Displaying maps and directions',
+          'privacy_location_search_accuracy':
+              'Improving search result accuracy',
+          'privacy_location_disable_info':
+              'You can disable location sharing at any time from app or device settings',
+
+          // Security Section
+          'privacy_security_title': 'Data Security',
+          'privacy_security_content':
+              'We implement comprehensive security measures to protect your data:',
+          'privacy_security_encryption': 'Encrypt passwords and sensitive data',
+          'privacy_security_https':
+              'Use HTTPS protocols for secure communications',
+          'privacy_security_servers': 'Store data on protected servers',
+          'privacy_security_monitoring':
+              'Continuous monitoring for suspicious activities',
+          'privacy_security_updates': 'Regular security system updates',
+          'privacy_security_training': 'Train staff on security best practices',
+
+          // User Rights Section
+          'privacy_rights_title': 'Your Rights',
+          'privacy_rights_content':
+              'You have the following rights regarding your personal data:',
+          'privacy_rights_access': 'Access your stored data',
+          'privacy_rights_correct': 'Correct or update incorrect information',
+          'privacy_rights_delete': 'Delete your account and data permanently',
+          'privacy_rights_withdraw': 'Withdraw consent for data processing',
+          'privacy_rights_restrict':
+              'Restrict or object to the use of your data',
+          'privacy_rights_copy': 'Obtain a copy of your data',
+
+          // Storage Section
+          'privacy_storage_title': 'Local Storage',
+          'privacy_storage_content':
+              'The app uses local storage on your device to save:',
+          'privacy_storage_settings': 'App settings and selected language',
+          'privacy_storage_login': 'Login information (encrypted)',
+          'privacy_storage_cache': 'Temporary data to improve performance',
+          'privacy_storage_favorites': 'Services saved in favorites',
+
+          // Third Party Section
+          'privacy_third_party_title': 'External Services',
+          'privacy_third_party_content':
+              'The app integrates with the following external services:',
+          'privacy_third_party_mapbox_desc': 'For maps and geographic location',
+          'privacy_third_party_note':
+              'These services are subject to their own privacy policies. We recommend reviewing their policies for detailed information.',
+
+          // Data Retention Section
+          'privacy_retention_title': 'Data Retention',
+          'privacy_retention_content':
+              'We retain your personal data for the time necessary to provide our services or as required by law:',
+          'privacy_retention_account':
+              'Account data: throughout the account\'s active period',
+          'privacy_retention_messages':
+              'Messages and conversations: until deleted by you',
+          'privacy_retention_location':
+              'Location data: stored temporarily only for service',
+          'privacy_retention_activity': 'Activity logs: maximum one year',
+
+          // Minors Section
+          'privacy_minors_title': 'Protection of Minors',
+          'privacy_minors_content':
+              'The app is intended for users aged 18 and above. We do not knowingly collect personal information from children under 18 years of age. If we learn that we have collected personal information from a minor, we will take immediate steps to delete that information.',
+
+          // Policy Changes Section
+          'privacy_changes_title': 'Policy Updates',
+          'privacy_changes_content':
+              'We may update this privacy policy from time to time. We will notify you of any important changes through:',
+          'privacy_changes_notification': 'In-app notification',
+          'privacy_changes_email': 'Email message (if you have an account)',
+          'privacy_changes_date':
+              'Updating the "Last Updated" date at the top of this page',
+          'privacy_changes_notice':
+              'Continued use of the app after updates means you agree to the new policy.',
+
+          // Contact Section
+          'privacy_contact_title': 'Contact Us',
+          'privacy_contact_content':
+              'If you have any questions or concerns about this privacy policy or our data practices, please contact us via:',
+          'privacy_contact_email': 'Email',
+          'privacy_contact_phone': 'Phone',
+          'privacy_contact_address': 'Address',
+          'privacy_contact_address_value': 'Kingdom of Saudi Arabia',
+          'i_agree_to': 'I agree to the ',
+          'privacy_terms_agreement':
+              'You must agree to the Privacy Policy and Terms of Use to continue',
+          'agree_to': 'I agree to ',
+          'and': ' and ',
+          'terms_of_use': 'Terms of Use',
+          'terms_page_coming_soon': 'Terms of Use page will be available soon',
+          'privacy_policy_subtitle': 'See how your data is protected',
+          'by_continuing_you_agree': 'By continuing, you agree to',
+          'privacy_policy_accepted_successfully':
+              'Privacy policy accepted successfully',
+          'failed_to_accept_privacy_policy': 'Failed to accept privacy policy',
+          'privacy_consent_revoked': 'Privacy consent has been revoked',
+          'failed_to_revoke_consent': 'Failed to revoke consent',
+          'privacy_not_accepted': 'Privacy policy not accepted',
+          'privacy_needs_update': 'Privacy policy needs update',
+          'privacy_accepted': 'Privacy policy accepted',
+          'not_accepted': 'Not accepted',
+          'privacy_required_for_operation':
+              'You must accept the privacy policy to use this feature',
+
+          // Privacy Policy View Headers
+          'privacy_policy_title': 'Privacy Policy & Terms',
+          'privacy_policy_header': 'Privacy & Terms of Service',
+          'privacy_commitment':
+              'We are committed to protecting your privacy and ensuring the security of your personal information while you use Auto Service 24.',
+          'important_notice': 'Important Notice',
+          'privacy_introduction':
+              'This privacy policy explains how Auto Service 24 collects, uses, and protects your information when you use our automotive service platform. By using our services, you agree to the collection and use of information in accordance with this policy.',
+
+          // Main Content Sections
+          'information_we_collect_title': 'Information We Collect',
+          'information_we_collect_content':
+              '''We collect the following types of information:
+
+• Personal Information: Name, email address, phone number, and profile photo when you create an account
+• Location Data: Your current location to find nearby workshops and calculate distances (with your permission)
+• Service Requests: Details about automotive services you request, including vehicle information and service history
+• Communication Data: Messages exchanged between you and workshop owners through our chat system
+• Device Information: Device type, operating system, and app version for technical support
+• Usage Analytics: How you interact with our app to improve user experience
+
+We only collect information that is necessary to provide our services effectively.''',
+
+          'how_we_use_title': 'How We Use Your Information',
+          'how_we_use_content': '''Your information is used to:
+
+• Connect you with qualified automotive service providers in your area
+• Process and manage your service requests
+• Enable secure communication between customers and workshop owners
+• Send important notifications about your service requests
+• Improve our app functionality and user experience
+• Provide customer support when needed
+• Ensure platform security and prevent fraud
+• Comply with legal obligations
+
+We never use your personal information for advertising to third parties.''',
+
+          'location_services_title': 'Location Services',
+          'location_services_content':
+              '''Location information is essential for our core services:
+
+• Finding nearby workshops and service providers
+• Calculating accurate distances and estimated arrival times
+• Providing location-based service recommendations
+• Enabling workshop owners to locate customers when needed
+
+You can control location permissions in your device settings. However, disabling location services may limit some app functionality. We only access your location when you're actively using the app or have a pending service request.''',
+
+          'data_sharing_title': 'Information Sharing',
+          'data_sharing_content':
+              '''We share your information only when necessary:
+
+With Workshop Owners:
+• Your name and contact information when you request services
+• Your location (with permission) for service delivery
+• Service history relevant to your current request
+
+With Service Providers:
+• Maps and navigation services for location features
+• Cloud storage providers for data backup
+• Analytics tools for app performance monitoring
+
+Legal Requirements:
+• When required by law enforcement or legal proceedings
+• To protect our rights, property, or safety of users
+
+We never sell your personal information to third parties for marketing purposes.''',
+
+          'data_security_title': 'Data Security',
+          'data_security_content': '''We implement multiple security measures:
+
+• End-to-end encryption for sensitive communications
+• Secure servers with regular security updates
+• Multi-factor authentication options
+• Regular security audits and vulnerability assessments
+• Data backup and recovery systems
+
+While we use industry-standard security measures, no system is 100% secure. We encourage users to use strong passwords and keep their devices updated.''',
+
+          'your_rights_title': 'Your Rights and Choices',
+          'your_rights_content': '''You have the right to:
+
+• Access and review your personal information
+• Update or correct your account details at any time
+• Delete your account and associated data
+• Download your data in a portable format
+• Opt out of non-essential communications
+• Control location sharing permissions
+• Request information about how your data is used
+
+To exercise these rights, contact us at privacy@autoservice24.com or use the account settings in the app.''',
+
+          'third_party_title': 'Third-Party Services',
+          'third_party_content':
+              '''Our app integrates with trusted third-party services:
+
+
+• Mapbox: For mapping and location services
+• Analytics Tools: For app performance monitoring
+
+These services have their own privacy policies. We recommend reviewing them:
+• Mapbox Privacy Policy: mapbox.com/legal/privacy
+• We only share the minimum necessary information with these services.''',
+
+          'children_privacy_title': 'Children\'s Privacy',
+          'children_privacy_content':
+              '''Auto Service 24 is intended for users 18 years and older. We do not knowingly collect personal information from children under 18. If we discover that a child has provided us with personal information, we will delete it immediately. If you believe a child has provided us with information, please contact us at privacy@autoservice24.com.''',
+
+          'terms_of_service_title': 'Terms of Service',
+          'terms_of_service_content': '''By using Auto Service 24, you agree to:
+
+Acceptable Use:
+• Use the service only for legitimate automotive service needs
+• Provide accurate information in your profile and service requests
+• Treat workshop owners and other users with respect
+• Not use the platform for illegal activities or fraud
+
+Service Availability:
+• Services are provided "as is" without warranties
+• We may temporarily suspend service for maintenance
+• Workshop owners set their own service details and availability
+
+Communication:
+• Direct communication between users and workshop owners
+• Messages are stored securely and can be deleted by users
+• Users are responsible for their own service arrangements
+
+Limitation of Liability:
+• Auto Service 24 connects customers with service providers but is not responsible for the quality of services performed
+• We are not liable for damages arising from service interactions
+• Users arrange services directly with workshop owners
+• Our liability is limited to the maximum extent permitted by law
+
+Termination:
+• You may delete your account at any time
+• We may suspend accounts that violate these terms
+• Deleted accounts and data are permanently removed within 30 days''',
+
+          'contact_us_title': 'Contact Us',
+          'contact_privacy_text':
+              'If you have questions about this privacy policy, your data rights, or our data practices, please contact our privacy team. We respond to all inquiries within 48 hours.',
+
+          'last_updated_title': 'Last Updated',
+          'version_label': 'Version',
+          'current_label': 'Current',
+
+          // Action Buttons
+          'accept_privacy_policy_button': 'Accept Privacy Policy & Terms',
+          'privacy_policy_accepted_status': 'Privacy Policy Accepted',
+
+          // Register Form
+          'privacy_policy_accepted_short': 'Privacy policy accepted',
+
+          // Profile
+          'privacy_security': 'Privacy & Security',
+          'view_privacy_policy': 'View privacy policy and terms',
+          'accept': 'Accept',
+
+          // Additional translations
+          'your_reliable_auto_service_partner':
+              'Your reliable auto service partner',
+          'version_1_0': 'Version 1.0',
+          'account_created_and_verified':
+              'Account created and verified successfully',
+          'account_created_verify_email':
+              'Account created! Please verify your email',
+          'invalid_server_response': 'Invalid server response',
+          'registration_failed': 'Registration failed',
+          'login_to_manage_privacy': 'Login to manage privacy settings',
+          "delete_chat": "Delete Chat",
+          "are_you_sure_delete_chat": "Are you sure you want to delete this chat?",
+          "show_results":"Show Results",
+          'tap_to_view_conversation':'Tap to view conversation',
         },
         'de': {
+          'tap_to_view_conversation':'Tippen, um die Unterhaltung anzuzeigen',
+          "show_results":"Ergebnisse anzeigen",
+          "delete_chat": "Chat löschen",
+          "are_you_sure_delete_chat": "Möchten Sie diesen Chat wirklich löschen?",
+          'login_to_manage_privacy':
+              'Anmelden, um Datenschutzeinstellungen zu verwalten',
+          'privacy_policy_accepted_successfully':
+              'Datenschutzrichtlinie erfolgreich akzeptiert',
+          'failed_to_accept_privacy_policy':
+              'Fehler beim Akzeptieren der Datenschutzrichtlinie',
+          'privacy_consent_revoked':
+              'Datenschutz-Einwilligung wurde widerrufen',
+          'failed_to_revoke_consent': 'Fehler beim Widerrufen der Einwilligung',
+          'privacy_not_accepted': 'Datenschutzrichtlinie nicht akzeptiert',
+          'privacy_needs_update': 'Datenschutzrichtlinie benötigt Update',
+          'privacy_accepted': 'Datenschutzrichtlinie akzeptiert',
+          'not_accepted': 'Nicht akzeptiert',
+          'privacy_required_for_operation':
+              'Sie müssen die Datenschutzrichtlinie akzeptieren, um diese Funktion zu nutzen',
+
+          // Privacy Policy View Headers
+          'privacy_policy_title': 'Datenschutzrichtlinie & AGB',
+          'privacy_policy_header': 'Datenschutz & Nutzungsbedingungen',
+          'privacy_commitment':
+              'Wir verpflichten uns, Ihre Privatsphäre zu schützen und die Sicherheit Ihrer persönlichen Daten während der Nutzung von Auto Service 24 zu gewährleisten.',
+          'important_notice': 'Wichtiger Hinweis',
+          'privacy_introduction':
+              'Diese Datenschutzrichtlinie erklärt, wie Auto Service 24 Ihre Informationen sammelt, verwendet und schützt, wenn Sie unsere Automotive-Service-Plattform nutzen. Durch die Nutzung unserer Services stimmen Sie der Sammlung und Verwendung von Informationen gemäß dieser Richtlinie zu.',
+
+          // Main Content Sections
+          'information_we_collect_title': 'Informationen, die wir sammeln',
+          'information_we_collect_content':
+              '''Wir sammeln folgende Arten von Informationen:
+
+• Persönliche Daten: Name, E-Mail-Adresse, Telefonnummer und Profilbild bei der Kontoerstellung
+• Standortdaten: Ihr aktueller Standort, um nahegelegene Werkstätten zu finden und Entfernungen zu berechnen (mit Ihrer Erlaubnis)
+• Service-Anfragen: Details zu angeforderten Automotive-Services, einschließlich Fahrzeuginformationen und Service-Historie
+• Kommunikationsdaten: Nachrichten zwischen Ihnen und Werkstattbesitzern über unser Chat-System
+• Geräteinformationen: Gerätetyp, Betriebssystem und App-Version für technischen Support
+• Nutzungsanalytik: Wie Sie mit unserer App interagieren, um die Benutzererfahrung zu verbessern
+
+Wir sammeln nur Informationen, die notwendig sind, um unsere Services effektiv bereitzustellen.''',
+
+          'how_we_use_title': 'Wie wir Ihre Informationen nutzen',
+          'how_we_use_content': '''Ihre Informationen werden verwendet, um:
+
+• Sie mit qualifizierten Automotive-Service-Anbietern in Ihrer Nähe zu verbinden
+• Ihre Service-Anfragen zu verarbeiten und zu verwalten
+• Sichere Kommunikation zwischen Kunden und Werkstattbesitzern zu ermöglichen
+• Wichtige Benachrichtigungen über Ihre Service-Anfragen zu senden
+• Unsere App-Funktionalität und Benutzererfahrung zu verbessern
+• Kundensupport bei Bedarf bereitzustellen
+• Plattform-Sicherheit zu gewährleisten und Betrug zu verhindern
+• Rechtlichen Verpflichtungen nachzukommen
+
+Wir verwenden Ihre persönlichen Daten niemals für Werbung bei Dritten.''',
+
+          'location_services_title': 'Standortdienste',
+          'location_services_content':
+              '''Standortinformationen sind wesentlich für unsere Hauptservices:
+
+• Finden nahegelegener Werkstätten und Service-Anbieter
+• Berechnung genauer Entfernungen und geschätzter Ankunftszeiten
+• Bereitstellung standortbasierter Service-Empfehlungen
+• Ermöglichung für Werkstattbesitzer, Kunden bei Bedarf zu lokalisieren
+
+Sie können Standortberechtigungen in Ihren Geräteeinstellungen kontrollieren. Das Deaktivieren von Standortdiensten kann jedoch einige App-Funktionen einschränken. Wir greifen nur auf Ihren Standort zu, wenn Sie die App aktiv nutzen oder eine ausstehende Service-Anfrage haben.''',
+
+          'data_sharing_title': 'Informationsfreigabe',
+          'data_sharing_content':
+              '''Wir teilen Ihre Informationen nur bei Bedarf:
+
+Mit Werkstattbesitzern:
+• Ihr Name und Kontaktdaten bei Service-Anfragen
+• Ihr Standort (mit Erlaubnis) für Service-Lieferung
+• Service-Historie relevant für Ihre aktuelle Anfrage
+
+Mit Service-Anbietern:
+• Karten- und Navigationsdienste für Standortfunktionen
+• Cloud-Speicher-Anbieter für Datensicherung
+• Analytics-Tools für App-Leistungsüberwachung
+
+Rechtliche Anforderungen:
+• Bei Anforderung durch Strafverfolgung oder Gerichtsverfahren
+• Zum Schutz unserer Rechte, Eigentum oder Sicherheit der Nutzer
+
+Wir verkaufen Ihre persönlichen Daten niemals an Dritte für Marketingzwecke.''',
+
+          'data_security_title': 'Datensicherheit',
+          'data_security_content':
+              '''Wir implementieren mehrere Sicherheitsmaßnahmen:
+
+• End-zu-End-Verschlüsselung für sensible Kommunikation
+• Sichere Server mit regelmäßigen Sicherheitsupdates
+• Multi-Faktor-Authentifizierungsoptionen
+• Regelmäßige Sicherheitsaudits und Schwachstellenbewertungen
+• Datensicherung und Wiederherstellungssysteme
+
+Während wir branchenübliche Sicherheitsmaßnahmen verwenden, ist kein System zu 100% sicher. Wir ermutigen Nutzer, starke Passwörter zu verwenden und ihre Geräte aktuell zu halten.''',
+
+          'your_rights_title': 'Ihre Rechte und Wahlmöglichkeiten',
+          'your_rights_content': '''Sie haben das Recht auf:
+
+• Zugriff und Überprüfung Ihrer persönlichen Daten
+• Aktualisierung oder Korrektur Ihrer Kontodaten jederzeit
+• Löschung Ihres Kontos und zugehöriger Daten
+• Download Ihrer Daten in einem portablen Format
+• Abmeldung von nicht-essentiellen Kommunikationen
+• Kontrolle über Standortfreigabe-Berechtigungen
+• Anfrage von Informationen über die Nutzung Ihrer Daten
+
+Um diese Rechte auszuüben, kontaktieren Sie uns unter privacy@autoservice24.com oder nutzen Sie die Kontoeinstellungen in der App.''',
+
+          'third_party_title': 'Drittanbieter-Services',
+          'third_party_content':
+              '''Unsere App integriert vertrauenswürdige Drittanbieter-Services:
+
+• Mapbox: Für Karten und Standortdienste
+• Analytics-Tools: Für App-Leistungsüberwachung
+
+Diese Services haben ihre eigenen Datenschutzrichtlinien. Wir empfehlen deren Überprüfung:
+• Mapbox Datenschutzrichtlinie: mapbox.com/legal/privacy
+• Wir teilen nur die minimal notwendigen Informationen mit diesen Services.''',
+
+          'children_privacy_title': 'Datenschutz für Kinder',
+          'children_privacy_content':
+              '''Auto Service 24 ist für Nutzer ab 18 Jahren bestimmt. Wir sammeln wissentlich keine persönlichen Daten von Kindern unter 18 Jahren. Wenn wir entdecken, dass ein Kind uns persönliche Daten zur Verfügung gestellt hat, werden wir diese sofort löschen. Wenn Sie glauben, dass ein Kind uns Informationen gegeben hat, kontaktieren Sie uns bitte unter privacy@autoservice24.com.''',
+
+          'terms_of_service_title': 'Nutzungsbedingungen',
+          'terms_of_service_content':
+              '''Durch die Nutzung von Auto Service 24 stimmen Sie zu:
+
+Akzeptable Nutzung:
+• Den Service nur für legitime Automotive-Service-Bedürfnisse nutzen
+• Genaue Informationen in Ihrem Profil und Service-Anfragen bereitstellen
+• Werkstattbesitzer und andere Nutzer respektvoll behandeln
+• Die Plattform nicht für illegale Aktivitäten oder Betrug nutzen
+
+Service-Verfügbarkeit:
+• Services werden "wie besehen" ohne Garantien bereitgestellt
+• Wir können den Service temporär für Wartung aussetzen
+• Werkstattbesitzer legen ihre eigenen Service-Details und Verfügbarkeit fest
+
+Kommunikation:
+• Direkte Kommunikation zwischen Nutzern und Werkstattbesitzern
+• Nachrichten werden sicher gespeichert und können von Nutzern gelöscht werden
+• Nutzer sind für ihre eigenen Service-Vereinbarungen verantwortlich
+
+Haftungsbeschränkung:
+• Auto Service 24 verbindet Kunden mit Service-Anbietern, ist aber nicht verantwortlich für die Qualität der durchgeführten Services
+• Wir haften nicht für Schäden aus Service-Interaktionen
+• Nutzer vereinbaren Services direkt mit Werkstattbesitzern
+• Unsere Haftung ist auf das gesetzlich maximal zulässige Maß beschränkt
+
+Kündigung:
+• Sie können Ihr Konto jederzeit löschen
+• Wir können Konten aussetzen, die gegen diese Bedingungen verstoßen
+• Gelöschte Konten und Daten werden innerhalb von 30 Tagen dauerhaft entfernt''',
+
+          'contact_us_title': 'Kontaktieren Sie uns',
+          'contact_privacy_text':
+              'Bei Fragen zu dieser Datenschutzrichtlinie, Ihren Datenrechten oder unseren Datenpraktiken kontaktieren Sie bitte unser Datenschutz-Team. Wir antworten auf alle Anfragen innerhalb von 48 Stunden.',
+
+          'last_updated_title': 'Zuletzt aktualisiert',
+          'version_label': 'Version',
+          'current_label': 'Aktuell',
+
+          // Action Buttons
+          'accept_privacy_policy_button':
+              'Datenschutzrichtlinie & AGB akzeptieren',
+          'privacy_policy_accepted_status': 'Datenschutzrichtlinie akzeptiert',
+
+          // Register Form
+          'privacy_policy_accepted_short': 'Datenschutzrichtlinie akzeptiert',
+
+          // Profile
+          'privacy_security': 'Datenschutz & Sicherheit',
+          'view_privacy_policy':
+              'Datenschutzrichtlinie und Bedingungen anzeigen',
+          'accept': 'Akzeptieren',
+
+          // Additional translations
+          'your_reliable_auto_service_partner':
+              'Ihr zuverlässiger Auto-Service-Partner',
+          'version_1_0': 'Version 1.0',
+          'account_created_and_verified':
+              'Konto erfolgreich erstellt und verifiziert',
+          'account_created_verify_email':
+              'Konto erstellt! Bitte verifizieren Sie Ihre E-Mail',
+          'invalid_server_response': 'Ungültige Server-Antwort',
+          'registration_failed': 'Registrierung fehlgeschlagen',
+          'by_continuing_you_agree': 'Indem Sie fortfahren, stimmen Sie zu',
+          'privacy_policy_subtitle':
+              'Erfahren Sie, wie Ihre Daten geschützt werden',
+          'agree_to': 'Ich stimme ',
+          'privacy_policy': 'Datenschutzrichtlinie',
+          'and': ' und ',
+          'terms_of_use': 'Nutzungsbedingungen',
+          'info': 'Info',
+          'terms_page_coming_soon':
+              'Die Seite mit den Nutzungsbedingungen wird bald verfügbar sein',
+          'privacy_terms_agreement':
+              'Sie müssen der Datenschutzrichtlinie und den Nutzungsbedingungen zustimmen, um fortzufahren',
+          'i_agree_to': 'Ich stimme der ',
           'select_service_type': 'Service-Typ auswählen',
-          'tap_search_to_find_workshops': 'Tippen Sie auf Suchen, um Werkstätten zu finden',
-          'select_service_type_first': 'Wählen Sie zuerst einen Service-Typ aus',
+          'tap_search_to_find_workshops':
+              'Tippen Sie auf Suchen, um Werkstätten zu finden',
+          'select_service_type_first':
+              'Wählen Sie zuerst einen Service-Typ aus',
           'nearby_workshops': 'Werkstätten in der Nähe',
           'select_location_and_service': 'Standort und Service-Typ auswählen',
           'search_complete': 'Suche abgeschlossen',
           'found_workshops': '{count} Werkstätten gefunden',
-          'no_workshops_found_in_area': 'Keine Werkstätten in diesem Bereich gefunden',
+          'no_workshops_found_in_area':
+              'Keine Werkstätten in diesem Bereich gefunden',
           'search_failed': 'Suche fehlgeschlagen',
           'opening_directions_to': 'Wegbeschreibung wird geöffnet zu',
           'view_location_on_map': 'Standort auf Karte anzeigen',
@@ -569,11 +1125,14 @@ class AppTranslations extends Translations {
           'region': 'Region',
           'national': 'National',
           'youre_browsing_as_guest': 'Sie surfen als Gast',
-          'login_register_for_features': 'Melden Sie sich an oder registrieren Sie sich, um Services zu speichern, mit Werkstätten zu chatten und auf weitere Funktionen zuzugreifen.',
+          'login_register_for_features':
+              'Melden Sie sich an oder registrieren Sie sich, um Services zu speichern, mit Werkstätten zu chatten und auf weitere Funktionen zuzugreifen.',
           'search_on_map': 'Auf Karte suchen',
-          'workshop_location_not_available': 'Werkstatt-Standort nicht verfügbar',
+          'workshop_location_not_available':
+              'Werkstatt-Standort nicht verfügbar',
           'workshop_location_not_set': 'Werkstatt-Standort nicht festgelegt',
-          'failed_to_open_workshop_location': 'Werkstatt-Standort konnte nicht geöffnet werden',
+          'failed_to_open_workshop_location':
+              'Werkstatt-Standort konnte nicht geöffnet werden',
           'no_location': 'Kein Standort',
           'workshop_location': 'Werkstatt-Standort',
           'image_not_available': 'Bild nicht verfügbar',
@@ -681,7 +1240,6 @@ class AppTranslations extends Translations {
               'Aktualisieren Sie Ihre persönlichen Informationen',
           'service_image': 'Service-Bild',
           'user_not_logged_in': 'Benutzer nicht angemeldet',
-          'info': 'Info',
           'view_location': 'Standort anzeigen',
           'delete_service': 'Service löschen',
           'unknown_workshop': 'Unbekannte Werkstatt',
@@ -856,7 +1414,6 @@ class AppTranslations extends Translations {
           'app_version_info': 'App-Version und Informationen',
           'help_support': 'Hilfe & Support',
           'get_help_support': 'Hilfe erhalten und Support kontaktieren',
-          'privacy_policy': 'Datenschutzrichtlinie',
           'read_privacy_policy': 'Unsere Datenschutzrichtlinie lesen',
           'terms_of_service': 'Nutzungsbedingungen',
           'read_terms': 'Unsere Nutzungsbedingungen lesen',
@@ -1040,7 +1597,7 @@ class AppTranslations extends Translations {
           'recently': 'kürzlich',
 
           // User Home translations
-          'auto_services': 'Auto Services',
+          'auto_services': 'Auto-Dienstleistungen',
           'categories': 'Kategorien',
           'search_categories': 'Kategorien suchen...',
           'failed_refresh_services':
@@ -1065,37 +1622,48 @@ class AppTranslations extends Translations {
               'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
           'edit': 'Bearbeiten',
           'save_service_title': 'Service speichern',
-          'save_service_description': 'Erstellen Sie ein Konto, um Ihre Lieblings-Services zu speichern und jederzeit darauf zuzugreifen.',
+          'save_service_description':
+              'Erstellen Sie ein Konto, um Ihre Lieblings-Services zu speichern und jederzeit darauf zuzugreifen.',
           'no_workshops_found': 'Keine Werkstätten gefunden',
-          'no_workshops_available': 'In Ihrer Nähe sind keine Werkstätten verfügbar.',
+          'no_workshops_available':
+              'In Ihrer Nähe sind keine Werkstätten verfügbar.',
           'no_conversations': 'Keine Unterhaltungen',
-          'no_conversations_subtitle': 'Sie haben noch keine Unterhaltungen. Beginnen Sie ein Gespräch mit Werkstattbesitzern.',
+          'no_conversations_subtitle':
+              'Sie haben noch keine Unterhaltungen. Beginnen Sie ein Gespräch mit Werkstattbesitzern.',
           'find_workshops': 'Werkstätten finden',
           'no_results_found': 'Keine Ergebnisse gefunden',
-          'no_results_for_search': 'Keine Ergebnisse für "{searchTerm}" gefunden. Versuchen Sie andere Suchbegriffe.',
-          'no_results_try_different': 'Keine Ergebnisse gefunden. Versuchen Sie andere Suchbegriffe.',
+          'no_results_for_search':
+              'Keine Ergebnisse für "{searchTerm}" gefunden. Versuchen Sie andere Suchbegriffe.',
+          'no_results_try_different':
+              'Keine Ergebnisse gefunden. Versuchen Sie andere Suchbegriffe.',
           'clear_search': 'Suche löschen',
-          'no_saved_services_subtitle': 'Sie haben noch keine Services gespeichert. Durchsuchen Sie Services, um Ihre Favoriten zu speichern.',
+          'no_saved_services_subtitle':
+              'Sie haben noch keine Services gespeichert. Durchsuchen Sie Services, um Ihre Favoriten zu speichern.',
           'select_location': 'Standort auswählen',
           'confirm': 'Bestätigen',
-          'tap_map_to_select_workshop_location': 'Tippen Sie auf die Karte, um den Werkstattstandort auszuwählen',
+          'tap_map_to_select_workshop_location':
+              'Tippen Sie auf die Karte, um den Werkstattstandort auszuwählen',
           'location_selected_successfully': 'Standort erfolgreich ausgewählt',
           'coordinates': 'Koordinaten',
           'confirm_location': 'Standort bestätigen',
-          'tap_confirm_or_select_another': 'Tippen Sie bestätigen oder wählen Sie einen anderen Standort',
+          'tap_confirm_or_select_another':
+              'Tippen Sie bestätigen oder wählen Sie einen anderen Standort',
           'workshop_location_selected': 'Werkstattstandort ausgewählt',
           'tap_to_open_map': 'Tippen Sie, um die Karte zu öffnen',
           'select_workshop_location': 'Werkstattstandort auswählen',
-          'cannot_get_current_location': 'Aktueller Standort kann nicht abgerufen werden',
+          'cannot_get_current_location':
+              'Aktueller Standort kann nicht abgerufen werden',
           'enter_verification_code': 'Bestätigungscode eingeben',
-          'code_sent_to_email': 'Wir haben einen 6-stelligen Code an Ihre E-Mail-Adresse gesendet',
+          'code_sent_to_email':
+              'Wir haben einen 6-stelligen Code an Ihre E-Mail-Adresse gesendet',
           'verification_code': 'Bestätigungscode',
           'enter_6_digit_code': 'Geben Sie den 6-stelligen Code ein',
           'send_verification_code': 'Bestätigungscode senden',
           'verify_code': 'Code bestätigen',
           'resend_code': 'Code erneut senden',
           'verification_code_sent': 'Bestätigungscode erfolgreich gesendet',
-          'verification_code_sent_successfully': 'Bestätigungscode an Ihre E-Mail gesendet',
+          'verification_code_sent_successfully':
+              'Bestätigungscode an Ihre E-Mail gesendet',
           'code_verified_successfully': 'Code erfolgreich bestätigt',
           'verification_code_required': 'Bestätigungscode ist erforderlich',
           'code_must_be_6_digits': 'Code muss 6 Ziffern haben',
@@ -1107,15 +1675,177 @@ class AppTranslations extends Translations {
           'error_getting_phone_number': 'Fehler beim Abrufen der Telefonnummer',
           'email_verification': 'E-Mail-Verifizierung',
           'check_your_email': 'Überprüfen Sie Ihre E-Mail',
-          'verification_sent_description': 'Ein Bestätigungslink wurde an Ihre E-Mail-Adresse gesendet. Bitte klicken Sie auf den Link, um Ihr Konto zu aktivieren.',
+          'verification_sent_description':
+              'Ein Bestätigungslink wurde an Ihre E-Mail-Adresse gesendet. Bitte klicken Sie auf den Link, um Ihr Konto zu aktivieren.',
           'next_steps': 'Nächste Schritte',
           'open_gmail_app': 'Öffnen Sie Gmail oder Ihren E-Mail-Client',
-          'find_verification_email': 'Finden Sie die Bestätigungs-E-Mail von AutoService24',
+          'find_verification_email':
+              'Finden Sie die Bestätigungs-E-Mail von AutoService24',
           'click_verify_button': 'Klicken Sie auf "E-Mail bestätigen"',
           'return_to_login': 'Zur Anmeldeseite zurückkehren',
-          'check_spam_folder': 'Wenn Sie die E-Mail nicht sehen, überprüfen Sie Ihren Spam-Ordner',
+          'check_spam_folder':
+              'Wenn Sie die E-Mail nicht sehen, überprüfen Sie Ihren Spam-Ordner',
           'back_to_login': 'Zurück zur Anmeldung',
           'create_different_account': 'Anderes Konto erstellen',
+          'app_name': 'Auto Service 24',
+          'last_updated': 'Zuletzt aktualisiert',
+          'accept_privacy_policy': 'Datenschutzrichtlinie akzeptieren',
+
+          // Introduction Section
+          'privacy_intro_title': 'Einleitung',
+          'privacy_intro_content':
+              'Willkommen bei Auto Service 24. Wir verpflichten uns, Ihre Privatsphäre und persönlichen Daten zu schützen. Diese Datenschutzrichtlinie erklärt, wie wir Ihre persönlichen Informationen sammeln, verwenden und schützen, wenn Sie unsere App nutzen.\n\nDurch die Nutzung von Auto Service 24 stimmen Sie den in dieser Richtlinie beschriebenen Praktiken zur Datensammlung und -nutzung zu.',
+
+          // Data Collection Section
+          'privacy_data_collection_title': 'Daten, die wir sammeln',
+          'privacy_data_collection_content':
+              'Wir sammeln die folgenden Datentypen, um unsere Dienste bereitzustellen:',
+          'privacy_data_personal_info':
+              'Persönliche Informationen: Name, E-Mail-Adresse, Telefonnummer',
+          'privacy_data_account_info':
+              'Kontoinformationen: Benutzername und verschlüsseltes Passwort',
+          'privacy_data_location':
+              'Geografische Standortdaten (mit Zustimmung)',
+          'privacy_data_files': 'Bilder und Dateien, die Sie hochladen',
+          'privacy_data_messages':
+              'Nachrichten und Gespräche innerhalb der App',
+          'privacy_data_device_info':
+              'Geräteinformationen und Betriebssystemtyp',
+          'privacy_data_usage': 'App-Nutzungsdaten und gespeicherte Services',
+
+          // Data Usage Section
+          'privacy_data_usage_title': 'Wie wir Ihre Daten verwenden',
+          'privacy_data_usage_content':
+              'Wir verwenden die gesammelten Daten für folgende Zwecke:',
+          'privacy_usage_provide_services':
+              'Bereitstellung und Betrieb von App-Services',
+          'privacy_usage_manage_accounts':
+              'Erstellen und Verwalten Ihrer Konten',
+          'privacy_usage_find_workshops':
+              'Finden von Werkstätten in Ihrer Nähe',
+          'privacy_usage_communication':
+              'Kommunikation zwischen Nutzern und Werkstattbesitzern erleichtern',
+          'privacy_usage_improve_app': 'App-Qualität und -Leistung verbessern',
+          'privacy_usage_notifications':
+              'Wichtige servicebezogene Benachrichtigungen senden',
+          'privacy_usage_security':
+              'Sicherheit gewährleisten und unbefugte Nutzung verhindern',
+
+          // Data Sharing Section
+          'privacy_data_sharing_title': 'Datenaustausch',
+          'privacy_data_sharing_content':
+              'Wir verkaufen oder vermieten Ihre persönlichen Daten nicht an Dritte. Wir können Ihre Informationen nur in folgenden Fällen teilen:',
+          'privacy_sharing_workshops':
+              'Mit Werkstattbesitzern zur Erleichterung der Kommunikation und des Services',
+          'privacy_sharing_legal':
+              'Wenn erforderlich, um lokalen Gesetzen zu entsprechen',
+          'privacy_sharing_rights':
+              'Zum Schutz unserer Rechte und der Rechte der Nutzer',
+          'privacy_sharing_emergency':
+              'In Notfallsituationen zur Gewährleistung der Sicherheit',
+
+          // Location Data Section
+          'privacy_location_title': 'Geografische Standortdaten',
+          'privacy_location_content':
+              'Wir nutzen Mapbox-Services für Karten- und Standortdienste. Standortdaten werden nur mit Erlaubnis gesammelt und verwendet für:',
+          'privacy_location_find_nearby':
+              'Finden nahegelegener Werkstätten und Services',
+          'privacy_location_distance':
+              'Bestimmung von Entfernungen und geschätzten Ankunftszeiten',
+          'privacy_location_maps': 'Anzeige von Karten und Wegbeschreibungen',
+          'privacy_location_search_accuracy':
+              'Verbesserung der Suchgenauigkeit',
+          'privacy_location_disable_info':
+              'Sie können die Standortfreigabe jederzeit in den App- oder Geräteeinstellungen deaktivieren',
+
+          // Security Section
+          'privacy_security_title': 'Datensicherheit',
+          'privacy_security_content':
+              'Wir implementieren umfassende Sicherheitsmaßnahmen zum Schutz Ihrer Daten:',
+          'privacy_security_encryption':
+              'Verschlüsselung von Passwörtern und sensiblen Daten',
+          'privacy_security_https':
+              'Verwendung von HTTPS-Protokollen für sichere Kommunikation',
+          'privacy_security_servers':
+              'Speicherung von Daten auf geschützten Servern',
+          'privacy_security_monitoring':
+              'Kontinuierliche Überwachung verdächtiger Aktivitäten',
+          'privacy_security_updates': 'Regelmäßige Sicherheitssystem-Updates',
+          'privacy_security_training':
+              'Schulung der Mitarbeiter in Sicherheits-Best-Practices',
+
+          // User Rights Section
+          'privacy_rights_title': 'Ihre Rechte',
+          'privacy_rights_content':
+              'Sie haben folgende Rechte bezüglich Ihrer persönlichen Daten:',
+          'privacy_rights_access': 'Zugriff auf Ihre gespeicherten Daten',
+          'privacy_rights_correct':
+              'Korrektur oder Aktualisierung falscher Informationen',
+          'privacy_rights_delete':
+              'Dauerhaftes Löschen Ihres Kontos und Ihrer Daten',
+          'privacy_rights_withdraw':
+              'Widerruf der Einwilligung zur Datenverarbeitung',
+          'privacy_rights_restrict':
+              'Einschränkung oder Widerspruch gegen die Nutzung Ihrer Daten',
+          'privacy_rights_copy': 'Erhalt einer Kopie Ihrer Daten',
+
+          // Storage Section
+          'privacy_storage_title': 'Lokale Speicherung',
+          'privacy_storage_content':
+              'Die App verwendet lokale Speicherung auf Ihrem Gerät zum Speichern von:',
+          'privacy_storage_settings':
+              'App-Einstellungen und ausgewählte Sprache',
+          'privacy_storage_login': 'Login-Informationen (verschlüsselt)',
+          'privacy_storage_cache': 'Temporäre Daten zur Leistungsverbesserung',
+          'privacy_storage_favorites': 'In Favoriten gespeicherte Services',
+
+          // Third Party Section
+          'privacy_third_party_title': 'Externe Services',
+          'privacy_third_party_content':
+              'Die App integriert sich mit folgenden externen Services:',
+          'privacy_third_party_mapbox_desc':
+              'Für Karten und geografische Standortbestimmung',
+          'privacy_third_party_note':
+              'Diese Services unterliegen ihren eigenen Datenschutzrichtlinien. Wir empfehlen, deren Richtlinien für detaillierte Informationen zu überprüfen.',
+
+          // Data Retention Section
+          'privacy_retention_title': 'Datenspeicherung',
+          'privacy_retention_content':
+              'Wir speichern Ihre persönlichen Daten für die Zeit, die zur Bereitstellung unserer Services erforderlich ist, oder wie gesetzlich vorgeschrieben:',
+          'privacy_retention_account':
+              'Kontodaten: während der aktiven Kontoperiode',
+          'privacy_retention_messages':
+              'Nachrichten und Gespräche: bis zur Löschung durch Sie',
+          'privacy_retention_location':
+              'Standortdaten: nur temporär für den Service gespeichert',
+          'privacy_retention_activity':
+              'Aktivitätsprotokolle: maximal ein Jahr',
+
+          // Minors Section
+          'privacy_minors_title': 'Schutz Minderjähriger',
+          'privacy_minors_content':
+              'Die App ist für Nutzer ab 18 Jahren bestimmt. Wir sammeln wissentlich keine persönlichen Informationen von Kindern unter 18 Jahren. Wenn wir erfahren, dass wir persönliche Informationen von einem Minderjährigen gesammelt haben, werden wir sofort Schritte unternehmen, um diese Informationen zu löschen.',
+
+          // Policy Changes Section
+          'privacy_changes_title': 'Richtlinien-Updates',
+          'privacy_changes_content':
+              'Wir können diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Wir werden Sie über wichtige Änderungen informieren durch:',
+          'privacy_changes_notification': 'In-App-Benachrichtigung',
+          'privacy_changes_email':
+              'E-Mail-Nachricht (wenn Sie ein Konto haben)',
+          'privacy_changes_date':
+              'Aktualisierung des "Zuletzt aktualisiert"-Datums oben auf dieser Seite',
+          'privacy_changes_notice':
+              'Die fortgesetzte Nutzung der App nach Updates bedeutet, dass Sie der neuen Richtlinie zustimmen.',
+
+          // Contact Section
+          'privacy_contact_title': 'Kontaktieren Sie uns',
+          'privacy_contact_content':
+              'Wenn Sie Fragen oder Bedenken zu dieser Datenschutzrichtlinie oder unseren Datenpraktiken haben, kontaktieren Sie uns bitte über:',
+          'privacy_contact_email': 'E-Mail',
+          'privacy_contact_phone': 'Telefon',
+          'privacy_contact_address': 'Adresse',
+          'privacy_contact_address_value': 'Königreich Saudi-Arabien',
         },
       };
 }

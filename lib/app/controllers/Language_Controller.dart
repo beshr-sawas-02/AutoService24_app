@@ -17,7 +17,6 @@ class LanguageController extends GetxController {
     if (savedLang != null && savedLang.isNotEmpty) {
       locale.value = Locale(savedLang);
     } else {
-      // إذا لم توجد لغة محفوظة، احفظ الألمانية كافتراضي
       locale.value = const Locale('de');
       StorageService.saveLanguage('de');
     }

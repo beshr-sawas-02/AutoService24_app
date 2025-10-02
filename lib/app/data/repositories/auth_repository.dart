@@ -104,7 +104,6 @@ class AuthRepository {
     }
   }
 
-
   Future<Map<String, dynamic>> updateProfileWithImage(String userId, Map<String, dynamic> data, File? imageFile) async {
     try {
 
@@ -160,8 +159,6 @@ class AuthRepository {
       throw Exception('Password reset failed: ${e.toString()}');
     }
   }
-
-  // Add these methods to your existing AuthRepository class
 
   Future<void> sendForgotPasswordCode(String email) async {
     try {

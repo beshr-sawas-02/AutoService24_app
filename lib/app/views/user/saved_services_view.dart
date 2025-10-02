@@ -124,18 +124,6 @@ class _SavedServicesViewState extends State<SavedServicesView> {
         icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
         onPressed: () => Get.back(),
       ),
-      actions: [
-        Obx(() {
-          if (authController.isGuest || !authController.isLoggedIn.value) {
-            return const SizedBox.shrink();
-          }
-          return IconButton(
-            icon: const Icon(Icons.refresh, color: AppColors.primary),
-            onPressed: () => serviceController.loadSavedServices(),
-            tooltip: 'refresh'.tr,
-          );
-        }),
-      ],
     );
   }
 

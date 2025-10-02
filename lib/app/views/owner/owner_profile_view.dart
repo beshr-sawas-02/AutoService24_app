@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/privacy_policy_controller.dart';
 import '../../controllers/workshop_controller.dart';
 import '../../controllers/service_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../utils/helpers.dart';
+import '../privacy_policy_screen.dart';
 
 class OwnerProfileView extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
   final WorkshopController workshopController = Get.find<WorkshopController>();
   final ServiceController serviceController = Get.find<ServiceController>();
+  final PrivacyPolicyController privacyController = Get.find<PrivacyPolicyController>();
+
 
   OwnerProfileView({super.key});
 
@@ -43,6 +47,8 @@ class OwnerProfileView extends StatelessWidget {
 
                       // Profile Options
                       _buildProfileOptions(),
+                      const SizedBox(height: 20),
+                      _buildPrivacySection(),
 
                       const SizedBox(height: 24),
 
@@ -352,6 +358,46 @@ class OwnerProfileView extends StatelessWidget {
       ],
     );
   }
+
+  Widget _buildPrivacySection() {
+    return _buildSectionCard(
+      title: 'privacy_security'.tr,
+      children: [
+        _buildProfileOption(
+          icon: Icons.privacy_tip_outlined,
+          title: 'privacy_policy'.tr,
+          subtitle: 'view_privacy_policy'.tr,
+          onTap: () => _showPrivacyPolicy(),
+          iconColor: Colors.indigo,
+        ),
+      ],
+    );
+  }
+
+
+  void _showPrivacyPolicy() {
+    Get.to(
+          () => PrivacyPolicyView(
+        showAcceptButton: false,
+        isFromRegistration: false,
+      ),
+      transition: Transition.cupertino,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
+
+  void _showPrivacyPolicyWithAccept() {
+    Get.to(
+          () => PrivacyPolicyView(
+        showAcceptButton: true,
+        isFromRegistration: false,
+      ),
+      transition: Transition.cupertino,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
+
+
 
   Widget _buildSectionCard(
       {required String title, required List<Widget> children}) {

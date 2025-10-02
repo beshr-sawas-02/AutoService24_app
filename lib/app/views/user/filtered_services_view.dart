@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/service_controller.dart';
@@ -298,7 +299,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                   color: AppColors.primary,
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
+                          loadingProgress.expectedTotalBytes!
                       : null,
                 ),
               ),
@@ -390,7 +391,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
       }
 
       final workshop =
-      await workshopController.getWorkshopById(service.workshopId);
+          await workshopController.getWorkshopById(service.workshopId);
 
       if (workshop == null) {
         Get.snackbar(
@@ -495,6 +496,20 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           ),
         );
       }),
+      floatingActionButton: isOwner
+          ? FloatingActionButton(
+              onPressed: () {
+                Get.toNamed(
+                  AppRoutes.addService,
+                  arguments: selectedServiceType,
+                );
+              },
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
+              tooltip: 'add_service'.tr,
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 
@@ -624,9 +639,11 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Avatar
           CircleAvatar(
-            radius: 24,
+            radius: 28,
             backgroundColor: AppColors.primaryWithOpacity(0.2),
             child: Text(
               service.workshopName.isNotEmpty
@@ -640,6 +657,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
             ),
           ),
           const SizedBox(width: 12),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -652,6 +670,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                     color: AppColors.textPrimary,
                   ),
                 ),
+                const SizedBox(height: 2),
                 if (service.workshopData?['working_hours'] != null)
                   Text(
                     service.workshopData!['working_hours'],
@@ -660,26 +679,28 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                       color: AppColors.textSecondary,
                     ),
                   ),
+                const SizedBox(height: 6),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryWithOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    service.serviceTypeName,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.primaryWithOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              service.serviceTypeName,
-              style: const TextStyle(
-                fontSize: 10,
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          if (isServiceOwner) ...[
-            const SizedBox(width: 8),
+
+          if (isServiceOwner)
             PopupMenuButton<String>(
               icon: const Icon(
                 Icons.more_vert,
@@ -692,11 +713,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               ),
               elevation: 8,
               onSelected: (value) {
-                switch (value) {
-                  case 'delete':
-                    _showDeleteConfirmation(service);
-                    break;
-                }
+                if (value == 'delete') _showDeleteConfirmation(service);
               },
               itemBuilder: (context) => [
                 PopupMenuItem(
@@ -721,7 +738,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                 ),
               ],
             ),
-          ],
         ],
       ),
     );
@@ -793,7 +809,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
                   service.images.length,
-                      (index) => Container(
+                  (index) => Container(
                     margin: const EdgeInsets.symmetric(horizontal: 3),
                     width: 6,
                     height: 6,
@@ -886,13 +902,18 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
   }
 
   Widget _buildActionButtons(ServiceModel service) {
-    final isServiceOwner = _isServiceOwner(service);
+    final currentUser = authController.currentUser.value;
+    final bool isCurrentUserOwner = currentUser?.isOwner ?? false;
+    final String currentUserId = currentUser?.id ?? '';
+
+    final bool isServiceOwner = service.userId == currentUserId ||
+        service.workshopData?['user_id'] == currentUserId;
 
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          if (!isServiceOwner)
+          if (!isCurrentUserOwner)
             Row(
               children: [
                 Expanded(
@@ -916,7 +937,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                         } else {
                           await serviceController.saveService(
                             service.id,
-                            authController.currentUser.value?.id ?? '',
+                            currentUserId,
                           );
                         }
                       },
@@ -950,47 +971,95 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                   }),
                 ),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      if (authController.isGuest) {
-                        _showGuestDialog();
-                        return;
-                      }
-                      _startChatWithWorkshop(service);
-                    },
-                    icon: const Icon(
-                      Icons.chat_bubble_outline,
-                      size: 18,
-                      color: AppColors.info,
-                    ),
-                    label: Text(
-                      'chat'.tr,
-                      style: const TextStyle(
-                        color: AppColors.info,
-                        fontSize: 14,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(
+                if (!isServiceOwner)
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        if (authController.isGuest) {
+                          _showGuestDialog();
+                          return;
+                        }
+                        _startChatWithWorkshop(service);
+                      },
+                      icon: const Icon(
+                        Icons.chat_bubble_outline,
+                        size: 18,
                         color: AppColors.info,
                       ),
+                      label: Text(
+                        'chat'.tr,
+                        style: const TextStyle(
+                          color: AppColors.info,
+                          fontSize: 14,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                          color: AppColors.info,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          if (!isCurrentUserOwner) const SizedBox(height: 12),
+          // Contact button - only for regular users (not owners, not service owners)
+          if (!isCurrentUserOwner && !isServiceOwner)
+            Obx(() => SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: serviceController.isLoadingPhone.value
+                        ? null
+                        : () {
+                            if (authController.isGuest) {
+                              _showGuestDialog();
+                              return;
+                            }
+                            _contactWorkshopOwner(service.id);
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.success,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 16),
+                      elevation: 0,
+                    ),
+                    icon: serviceController.isLoadingPhone.value
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Icon(Icons.phone, size: 20),
+                    label: Text(
+                      serviceController.isLoadingPhone.value
+                          ? 'getting_phone_number'.tr
+                          : 'contact_workshop_owner'.tr,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          if (!isServiceOwner) const SizedBox(height: 12),
+                )),
+          if (!isCurrentUserOwner && !isServiceOwner)
+            const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                if (authController.isGuest && !isServiceOwner) {
+                if (authController.isGuest && !isCurrentUserOwner) {
                   _showGuestDialog();
                   return;
                 }
@@ -1011,6 +1080,87 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
               ),
               child: Text('view_details'.tr),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _contactWorkshopOwner(String serviceId) async {
+    try {
+      // Check if user is logged in first
+      if (authController.isGuest) {
+        _showGuestDialog();
+        return;
+      }
+
+      // Get phone number from ServiceController
+      final phoneNumber =
+          await serviceController.getWorkshopOwnerPhone(serviceId);
+
+      if (phoneNumber != null && phoneNumber.isNotEmpty) {
+        // Clean phone number from unwanted characters
+        final cleanPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+
+        // Create call link
+        final Uri phoneUri = Uri(scheme: 'tel', path: cleanPhoneNumber);
+
+        // Try to open phone app
+        if (await canLaunchUrl(phoneUri)) {
+          await launchUrl(phoneUri);
+        } else {
+          // If can't open phone app
+          _showErrorDialog('cannot_open_phone_app'.tr);
+        }
+      } else {
+        // If no phone number available
+        _showErrorDialog('phone_number_not_available'.tr);
+      }
+    } catch (e) {
+      // If error occurred
+      _showErrorDialog('error_getting_phone_number'.tr);
+      print('Error contacting workshop owner: $e');
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            const Icon(
+              Icons.error_outline,
+              color: Colors.red,
+              size: 24,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'error'.tr,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Get.back(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text('ok'.tr),
           ),
         ],
       ),
@@ -1207,7 +1357,12 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
           if (isOwner) ...[
             const SizedBox(height: 12),
             ElevatedButton.icon(
-              onPressed: () => Get.toNamed(AppRoutes.addService),
+              onPressed: () {
+                Get.toNamed(
+                  AppRoutes.addService,
+                  arguments: selectedServiceType,
+                );
+              },
               icon: const Icon(Icons.add),
               label: Text('add_service'.tr),
               style: ElevatedButton.styleFrom(

@@ -116,9 +116,7 @@ class AuthController extends GetxController {
         final chatController = Get.find<ChatController>();
         await chatController.updateWebSocketUser(userId);
       }
-    } catch (e) {
-
-    }
+    } catch (e) {}
   }
 
   Future<bool> login(String email, String password) async {
@@ -127,11 +125,9 @@ class AuthController extends GetxController {
 
       final response = await _authRepository.login(email, password);
 
-      // إذا السيرفر رجع user + token، تسجيل الدخول ناجح
       if (response.containsKey('user') && response.containsKey('token')) {
         final user = response['user'];
 
-        // تحقق من حالة verified لو السيرفر فعلاً رجعها
         if (user['verified'] == false) {
           Helpers.showErrorSnackbar(
             'Please verify your account first. Check your email.',
@@ -139,13 +135,21 @@ class AuthController extends GetxController {
           return false;
         }
 
-        // تسجيل الدخول ناجح
         await StorageService.saveToken(response['token']);
         await StorageService.saveUserData(user);
 
         currentUser.value = UserModel.fromJson(user);
         isLoggedIn.value = true;
         isUserDataLoaded.value = true;
+
+        // Check if user has accepted privacy policy
+        final hasAcceptedPrivacy = await StorageService.hasAcceptedPrivacyPolicy();
+        if (!hasAcceptedPrivacy) {
+          // For existing users who haven't accepted privacy policy yet
+          // You can either auto-accept or redirect to privacy policy
+          await StorageService.setAcceptedPrivacyPolicy(true);
+          await StorageService.setAcceptedPrivacyVersion("1.0");
+        }
 
         await _clearServiceData();
         await _updateWebSocketUser(currentUser.value?.id);
@@ -162,7 +166,6 @@ class AuthController extends GetxController {
         return true;
 
       } else {
-        // السيرفر لم يرجع user/token، نفترض Unauthorized أو خطأ عام
         Helpers.showErrorSnackbar(
           'Unable to login. Please check your email and password, or verify your account.',
         );
@@ -404,6 +407,11 @@ class AuthController extends GetxController {
         isLoggedIn.value = true;
         isUserDataLoaded.value = true;
 
+        // Automatically mark privacy policy as accepted for social login
+        // since user already accepted it in the registration form
+        await StorageService.setAcceptedPrivacyPolicy(true);
+        await StorageService.setAcceptedPrivacyVersion("1.0");
+
         await _clearServiceData();
 
         await _updateWebSocketUser(currentUser.value?.id);
@@ -460,6 +468,12 @@ class AuthController extends GetxController {
         isLoggedIn.value = true;
         isUserDataLoaded.value = true;
 
+        // Mark privacy policy as accepted for this user
+        if (userData['acceptsPrivacyPolicy'] == true) {
+          await StorageService.setAcceptedPrivacyPolicy(true);
+          await StorageService.setAcceptedPrivacyVersion("1.0");
+        }
+
         await _clearServiceData();
         await _updateWebSocketUser(currentUser.value?.id);
 
@@ -479,6 +493,12 @@ class AuthController extends GetxController {
         if (response['status'] == true) {
           // Save user data temporarily (without token)
           await StorageService.saveUserData(response['user']);
+
+          // Mark privacy policy as accepted even for unverified accounts
+          if (userData['acceptsPrivacyPolicy'] == true) {
+            await StorageService.setAcceptedPrivacyPolicy(true);
+            await StorageService.setAcceptedPrivacyVersion("1.0");
+          }
 
           // Show success message
           Helpers.showSuccessSnackbar(
@@ -505,6 +525,12 @@ class AuthController extends GetxController {
       else if (response.containsKey('message') &&
           response.containsKey('email_verification_required') &&
           response['email_verification_required'] == true) {
+
+        // Mark privacy policy as accepted for this registration
+        if (userData['acceptsPrivacyPolicy'] == true) {
+          await StorageService.setAcceptedPrivacyPolicy(true);
+          await StorageService.setAcceptedPrivacyVersion("1.0");
+        }
 
         Helpers.showSuccessSnackbar(
           response['message'] ?? 'account_created_verify_email'.tr,
@@ -541,7 +567,20 @@ class AuthController extends GetxController {
 
       await _clearServiceData();
 
+      // Preserve privacy policy acceptance even after logout
+      final hasAcceptedPrivacy = await StorageService.hasAcceptedPrivacyPolicy();
+      final privacyVersion = await StorageService.getAcceptedPrivacyVersion();
+
       await StorageService.clearAll();
+
+      // Restore privacy policy acceptance
+      if (hasAcceptedPrivacy) {
+        await StorageService.setAcceptedPrivacyPolicy(true);
+        if (privacyVersion != null) {
+          await StorageService.setAcceptedPrivacyVersion(privacyVersion);
+        }
+      }
+
       isLoggedIn.value = false;
       currentUser.value = null;
       isUserDataLoaded.value = true;
@@ -638,9 +677,6 @@ class AuthController extends GetxController {
     }
   }
 
-  // Add these methods to your existing AuthController class
-
-// Send forgot password verification code
   Future<bool> sendForgotPasswordCode(String email) async {
     try {
       isLoading.value = true;
@@ -657,7 +693,6 @@ class AuthController extends GetxController {
     }
   }
 
-// Verify reset code
   Future<bool> verifyResetCode(String email, String code) async {
     try {
       isLoading.value = true;

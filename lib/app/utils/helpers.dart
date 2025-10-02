@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'math_helpers.dart';
@@ -246,5 +247,13 @@ class Helpers {
     var inDebugMode = false;
     assert(inDebugMode = true);
     return inDebugMode;
+  }
+
+  static void copyToClipboard(String text) {
+    try {
+      Clipboard.setData(ClipboardData(text: text));
+    } catch (e) {
+      // Handle error silently
+    }
   }
 }

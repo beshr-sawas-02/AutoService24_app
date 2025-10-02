@@ -19,8 +19,7 @@ class ChatRepository {
         return UserModel.fromJson(response.data);
       } else {
       }
-    } catch (e) {
-    }
+    } catch (e) {}
     return null;
   }
 
@@ -45,8 +44,7 @@ class ChatRepository {
         try {
           final chat = ChatModel.fromJson(chatJson);
           chats.add(chat);
-        } catch (e) {
-        }
+        } catch (e) {}
       }
 
       return chats;

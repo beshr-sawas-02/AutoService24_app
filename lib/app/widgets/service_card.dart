@@ -10,35 +10,23 @@ import '../config/app_colors.dart';
 class ServiceCard extends StatelessWidget {
   final ServiceModel service;
   final VoidCallback onTap;
-  final bool isOwner;
-  final bool showSaveButton;
-  final VoidCallback? onEdit;
-  final VoidCallback? onDelete;
 
   const ServiceCard({
     super.key,
     required this.service,
     required this.onTap,
-    this.isOwner = false,
-    this.showSaveButton = true,
-    this.onEdit,
-    this.onDelete,
   });
 
   Widget _buildImageWidget(String imagePath) {
     imagePath = imagePath.trim();
 
-    if (imagePath.isEmpty) {
-      return _buildErrorContainer();
-    }
+    if (imagePath.isEmpty) return _buildErrorContainer();
 
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       return Image.network(
         imagePath,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildErrorContainer();
-        },
+        errorBuilder: (context, error, stackTrace) => _buildErrorContainer(),
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
           return Container(
@@ -60,23 +48,17 @@ class ServiceCard extends StatelessWidget {
           );
         },
       );
-    }
-    else if (imagePath.startsWith('/') || imagePath.contains('/data/')) {
+    } else if (imagePath.startsWith('/') || imagePath.contains('/data/')) {
       return Image.file(
         File(imagePath),
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildErrorContainer();
-        },
+        errorBuilder: (context, error, stackTrace) => _buildErrorContainer(),
       );
-    }
-    else {
+    } else {
       return Image.asset(
         imagePath,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildErrorContainer();
-        },
+        errorBuilder: (context, error, stackTrace) => _buildErrorContainer(),
       );
     }
   }
@@ -161,7 +143,7 @@ class ServiceCard extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        _buildActionButton(),
+        _buildActionButton(), // زر الحفظ يظهر فقط للمستخدم العادي
       ],
     );
   }
@@ -184,69 +166,6 @@ class ServiceCard extends StatelessWidget {
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
-      ),
-    );
-  }
-
-  Widget _buildActionButton() {
-    if (isOwner) {
-      return _buildOwnerMenu();
-    } else if (showSaveButton) {
-      return _buildSaveButton();
-    }
-    return const SizedBox.shrink();
-  }
-
-  Widget _buildOwnerMenu() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.grey100,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: PopupMenuButton<String>(
-        onSelected: (value) {
-          if (value == 'edit' && onEdit != null) {
-            onEdit!();
-          } else if (value == 'delete' && onDelete != null) {
-            onDelete!();
-          }
-        },
-        icon: const Icon(
-          Icons.more_vert,
-          color: AppColors.textSecondary,
-          size: 20,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        itemBuilder: (context) => [
-          PopupMenuItem(
-            value: 'edit',
-            child: Row(
-              children: [
-                const Icon(Icons.edit, size: 18, color: AppColors.info),
-                const SizedBox(width: 12),
-                Text(
-                  'edit'.tr,
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-          PopupMenuItem(
-            value: 'delete',
-            child: Row(
-              children: [
-                const Icon(Icons.delete, size: 18, color: AppColors.error),
-                const SizedBox(width: 12),
-                Text(
-                  'delete'.tr,
-                  style: const TextStyle(color: AppColors.error, fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -339,6 +258,17 @@ class ServiceCard extends StatelessWidget {
           ),
       ],
     );
+  }
+
+  Widget _buildActionButton() {
+    final authController = Get.find<AuthController>();
+
+    // فقط المستخدم العادي يرى زر الحفظ
+    if (authController.currentUser.value?.isUser ?? false) {
+      return _buildSaveButton();
+    } else {
+      return const SizedBox.shrink(); // الـ owner لا يرى أي شيء
+    }
   }
 
   Widget _buildSaveButton() {

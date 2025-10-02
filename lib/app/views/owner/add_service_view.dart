@@ -6,6 +6,7 @@ import '../../controllers/service_controller.dart';
 import '../../controllers/workshop_controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../data/models/service_model.dart';
+import '../../routes/app_routes.dart';
 import '../../utils/image_service.dart';
 import '../../utils/validators.dart';
 import '../../widgets/custom_text_field.dart';
@@ -28,9 +29,16 @@ class _AddServiceViewState extends State<AddServiceView> {
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
 
-  ServiceType _selectedServiceType = ServiceType.CHANGE_OIL;
+  late ServiceType _selectedServiceType;
+
   String? _selectedWorkshopId;
   List<File> _selectedImages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedServiceType = Get.arguments ?? ServiceType.CHANGE_OIL;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +63,8 @@ class _AddServiceViewState extends State<AddServiceView> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-
               _buildWorkshopDropdown(),
               const SizedBox(height: 16),
-
               CustomTextField(
                 controller: _titleController,
                 labelText: 'service_title'.tr,
@@ -72,30 +78,21 @@ class _AddServiceViewState extends State<AddServiceView> {
                 },
               ),
               const SizedBox(height: 16),
-
               _buildServiceTypeDropdown(),
               const SizedBox(height: 16),
-
               CustomTextField(
                 controller: _descriptionController,
                 labelText: 'description'.tr,
                 prefixIcon: Icons.description,
                 maxLines: 3,
-                validator: (value) {
-                  final result = Validators.validateDescription(value);
-                  if (result != null) {
-                    return 'please_enter_description'.tr;
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
-
               CustomTextField(
                 controller: _priceController,
                 labelText: 'price_usd'.tr,
                 prefixIcon: Icons.euro,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
                 validator: (value) {
                   final result = Validators.validatePrice(value);
                   if (result != null) {
@@ -105,15 +102,15 @@ class _AddServiceViewState extends State<AddServiceView> {
                 },
               ),
               const SizedBox(height: 24),
-
               _buildImagesSection(),
               const SizedBox(height: 32),
-
               Obx(() => CustomButton(
-                text: 'create_service'.tr,
-                onPressed: serviceController.isLoading.value ? null : _createService,
-                isLoading: serviceController.isLoading.value,
-              )),
+                    text: 'create_service'.tr,
+                    onPressed: serviceController.isLoading.value
+                        ? null
+                        : _createService,
+                    isLoading: serviceController.isLoading.value,
+                  )),
             ],
           ),
         ),
@@ -224,7 +221,8 @@ class _AddServiceViewState extends State<AddServiceView> {
           width: double.infinity,
           height: 120,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!, style: BorderStyle.solid),
+            border:
+                Border.all(color: Colors.grey[300]!, style: BorderStyle.solid),
             borderRadius: BorderRadius.circular(8),
           ),
           child: InkWell(
@@ -338,26 +336,24 @@ class _AddServiceViewState extends State<AddServiceView> {
       return;
     }
 
-    // FIXED: Prepare service data without images first
+    // Prepare service data without images first
     final serviceData = {
       'workshop_id': _selectedWorkshopId,
       'title': _titleController.text.trim(),
       'description': _descriptionController.text.trim(),
       'price': double.parse(_priceController.text),
-      'service_type': _selectedServiceType.displayName, // Use .name instead of .displayName
+      'service_type': _selectedServiceType.displayName,
     };
 
     bool success;
 
-    // FIXED: Use the correct method based on whether images are selected
+    // Use the correct method based on whether images are selected
     if (_selectedImages.isNotEmpty) {
-      // Use createServiceWithImages for services with images
       success = await serviceController.createServiceWithImages(
         serviceData,
         _selectedImages,
       );
     } else {
-      // Use regular createService for services without images
       success = await serviceController.createService(serviceData);
     }
 
@@ -369,7 +365,7 @@ class _AddServiceViewState extends State<AddServiceView> {
         backgroundColor: Colors.green,
         colorText: Colors.white,
         margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 3),
+        duration: const Duration(seconds: 2),
       );
 
       // Reset form
@@ -377,14 +373,28 @@ class _AddServiceViewState extends State<AddServiceView> {
       _titleController.clear();
       _descriptionController.clear();
       _priceController.clear();
+
+      // Store the selected service type before clearing
+      final ServiceType createdServiceType = _selectedServiceType;
+
       setState(() {
         _selectedServiceType = ServiceType.CHANGE_OIL;
         _selectedWorkshopId = null;
         _selectedImages.clear();
       });
 
-      // Navigate back or refresh services
-      Get.back();
+      // Navigate back and then to FilteredServicesView with the created service type
+      Get.back(); // Close AddServiceView
+
+      // Navigate to FilteredServicesView with the service type
+      Get.toNamed(
+        AppRoutes.filteredServices,
+        arguments: {
+          'serviceType': createdServiceType,
+          'title': createdServiceType.displayName,
+          'isOwner': true, // Since the owner created the service
+        },
+      );
     } else {
       Get.snackbar(
         'error'.tr,

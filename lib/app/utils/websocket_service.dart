@@ -56,6 +56,7 @@ class WebSocketService extends GetxService {
         _onMessage,
         onError: _onError,
         onDone: _onDisconnected,
+        cancelOnError: false,
       );
 
       _isConnected = true;
@@ -75,20 +76,38 @@ class WebSocketService extends GetxService {
   }
 
   void disconnect() {
-    _isConnected = false;
-    isConnected.value = false;
-    connectionStatus.value = 'Disconnected';
+    try {
+      _isConnected = false;
+      isConnected.value = false;
+      connectionStatus.value = 'Disconnected';
 
-    _heartbeatTimer?.cancel();
-    _reconnectTimer?.cancel();
-    _subscription?.cancel();
+      // Cancel timers first
+      _heartbeatTimer?.cancel();
+      _heartbeatTimer = null;
 
-    if (_channel != null) {
-      _channel!.sink.close(status.goingAway);
-      _channel = null;
+      _reconnectTimer?.cancel();
+      _reconnectTimer = null;
+
+      // Cancel subscription before closing channel
+      if (_subscription != null) {
+        _subscription?.cancel();
+        _subscription = null;
+      }
+
+      // Close the channel
+      if (_channel != null) {
+        try {
+          _channel!.sink.close(status.goingAway);
+        } catch (e) {
+          // Ignore errors when closing
+        }
+        _channel = null;
+      }
+
+      _processedMessageIds.clear();
+    } catch (e) {
+      // Ignore any errors during disconnect
     }
-
-    _processedMessageIds.clear();
   }
 
   Future<void> _authenticate() async {
@@ -137,8 +156,10 @@ class WebSocketService extends GetxService {
     if (_channel?.sink != null && _isConnected) {
       try {
         _channel!.sink.add(json.encode(message));
-      } catch (e) {}
-    } else {}
+      } catch (e) {
+        // Ignore send errors
+      }
+    }
   }
 
   void _onMessage(dynamic message) {
@@ -172,7 +193,9 @@ class WebSocketService extends GetxService {
 
         default:
       }
-    } catch (e) {}
+    } catch (e) {
+      // Ignore message parsing errors
+    }
   }
 
   void _handleNewMessage(Map<String, dynamic> messageData) {
@@ -189,7 +212,7 @@ class WebSocketService extends GetxService {
 
       if (_processedMessageIds.length > 1000) {
         final toRemove =
-            _processedMessageIds.take(_processedMessageIds.length - 1000);
+        _processedMessageIds.take(_processedMessageIds.length - 1000);
         _processedMessageIds.removeAll(toRemove);
       }
 
@@ -216,13 +239,21 @@ class WebSocketService extends GetxService {
         final exists = chatController.messages.any((m) => m.id == message.id);
         if (!exists) {
           chatController.messages.add(message);
-        } else {}
-      } catch (e) {}
+          chatController.lastMessages[message.chatId] = message;
+
+          // Sort chats after receiving new message
+          chatController.sortChatsByLastMessage();
+        }
+      } catch (e) {
+        // ChatController might not be initialized
+      }
 
       if (message.senderId != _currentUserId) {
         _showNotification(message);
       }
-    } catch (e) {}
+    } catch (e) {
+      // Ignore message handling errors
+    }
   }
 
   void _handleTypingStatus(Map<String, dynamic> data) {
@@ -242,28 +273,42 @@ class WebSocketService extends GetxService {
           });
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      // Ignore typing status errors
+    }
   }
 
   void _showNotification(MessageModel message) {
-    Get.snackbar(
-      'رسالة جديدة',
-      message.content ?? 'صورة',
-      snackPosition: SnackPosition.TOP,
-      duration: const Duration(seconds: 3),
-    );
+    try {
+      Get.snackbar(
+        'رسالة جديدة',
+        message.content ?? 'صورة',
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 3),
+      );
+    } catch (e) {
+      // Ignore notification errors
+    }
   }
 
   void _onError(error) {
-    _onConnectionFailed();
+    if (_isConnected) {
+      _onConnectionFailed();
+    }
   }
 
   void _onDisconnected() {
+    if (!_isConnected) {
+      return; // Already disconnected
+    }
+
     _isConnected = false;
     isConnected.value = false;
     connectionStatus.value = 'Disconnected';
 
     _heartbeatTimer?.cancel();
+    _heartbeatTimer = null;
+
     _attemptReconnect();
   }
 
@@ -283,13 +328,13 @@ class WebSocketService extends GetxService {
     _reconnectAttempts++;
 
     connectionStatus.value =
-        'Reconnecting... ($_reconnectAttempts/$MAX_RECONNECT_ATTEMPTS)';
+    'Reconnecting... ($_reconnectAttempts/$MAX_RECONNECT_ATTEMPTS)';
 
     _reconnectTimer =
         Timer(const Duration(seconds: RECONNECT_DELAY_SECONDS), () {
-      _isReconnecting = false;
-      connect();
-    });
+          _isReconnecting = false;
+          connect();
+        });
   }
 
   void _startHeartbeat() {
@@ -332,7 +377,11 @@ class WebSocketService extends GetxService {
 
   @override
   void onClose() {
-    disconnect();
+    try {
+      disconnect();
+    } catch (e) {
+      // Ignore errors during cleanup
+    }
     super.onClose();
   }
 }

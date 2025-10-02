@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
+import '../controllers/privacy_policy_controller.dart';
 import '../views/auth/email_verification_view.dart';
 import '../views/common/workshop_map_search_view.dart';
+import '../views/privacy_policy_screen.dart';
 import '../views/splash_view.dart';
 import '../views/auth/login_view.dart';
 import '../views/auth/register_view.dart';
@@ -42,6 +44,7 @@ class AppRoutes {
   static const String workshopMapSearch = '/workshop-map-search';
   static const String editProfile = '/edit-profile';
   static const emailVerification = '/email-verification';
+  static const String privacyPolicy = '/privacy-policy';
 //  static const String settings = '/settings';
 
   static List<GetPage> routes = [
@@ -129,5 +132,12 @@ class AppRoutes {
     //   name: settings,
     //   page: () => const SettingsView(),
     // ),
+    GetPage(
+      name: privacyPolicy,
+      page: () => PrivacyPolicyView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => PrivacyPolicyController());
+      }),
+    ),
   ];
 }

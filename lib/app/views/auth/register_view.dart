@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/privacy_policy_controller.dart';
 import '../../routes/app_routes.dart';
+import '../privacy_policy_screen.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -12,6 +15,7 @@ class RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<RegisterView> {
   final AuthController authController = Get.find<AuthController>();
+  final PrivacyPolicyController privacyController = Get.put(PrivacyPolicyController());
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -22,10 +26,10 @@ class _RegisterViewState extends State<RegisterView> {
   String _selectedUserType = 'user';
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _acceptPrivacy = false;
 
   @override
   Widget build(BuildContext context) {
-    // الحصول على أبعاد الشاشة
     final screenSize = MediaQuery.of(context).size;
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
@@ -97,7 +101,7 @@ class _RegisterViewState extends State<RegisterView> {
                     ),
                     SizedBox(height: isTablet ? 12 : 16),
 
-                    // User Type Cards - محسن للشاشات المختلفة
+                    // User Type Cards
                     Row(
                       children: [
                         Expanded(
@@ -125,7 +129,7 @@ class _RegisterViewState extends State<RegisterView> {
                     ),
                     SizedBox(height: isTablet ? 24 : 32),
 
-                    // Form Fields - محسن للشاشات المختلفة
+                    // Form Fields
                     _buildTextField(
                       controller: _usernameController,
                       icon: Icons.person,
@@ -235,15 +239,18 @@ class _RegisterViewState extends State<RegisterView> {
                         return null;
                       },
                     ),
-                    SizedBox(height: isTablet ? 24 : 32),
+                    SizedBox(height: isTablet ? 20 : 24),
+
+                    // Privacy Policy Checkbox
+                    _buildPrivacyPolicyCheckbox(isTablet),
+                    SizedBox(height: isTablet ? 20 : 24),
 
                     // Create Account Button
                     Obx(() => SizedBox(
                       width: double.infinity,
                       height: isTablet ? 52 : 56,
                       child: ElevatedButton(
-                        onPressed:
-                        authController.isLoading.value ? null : _register,
+                        onPressed: authController.isLoading.value ? null : _register,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFFF8A50),
                           foregroundColor: Colors.white,
@@ -352,6 +359,140 @@ class _RegisterViewState extends State<RegisterView> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPrivacyPolicyCheckbox(bool isTablet) {
+    return Container(
+      padding: EdgeInsets.all(isTablet ? 12 : 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(isTablet ? 12 : 16),
+        border: Border.all(
+          color: _acceptPrivacy ? const Color(0xFFFF8A50) : Colors.grey[300]!,
+          width: _acceptPrivacy ? 2 : 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Checkbox
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _acceptPrivacy = !_acceptPrivacy;
+                  });
+                },
+                child: Container(
+                  width: isTablet ? 20 : 24,
+                  height: isTablet ? 20 : 24,
+                  decoration: BoxDecoration(
+                    color: _acceptPrivacy
+                        ? const Color(0xFFFF8A50)
+                        : Colors.transparent,
+                    border: Border.all(
+                      color: _acceptPrivacy
+                          ? const Color(0xFFFF8A50)
+                          : Colors.grey[400]!,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: _acceptPrivacy
+                      ? Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: isTablet ? 14 : 16,
+                  )
+                      : null,
+                ),
+              ),
+              SizedBox(width: isTablet ? 8 : 12),
+              // Privacy Policy Text
+              Expanded(
+                child: RichText(
+                  text: TextSpan(
+                    text: 'agree_to'.tr,
+                    style: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: isTablet ? 13 : 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: 'privacy_policy'.tr,
+                        style: TextStyle(
+                          color: const Color(0xFFFF8A50),
+                          fontSize: isTablet ? 13 : 15,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline,
+                          decorationColor: const Color(0xFFFF8A50),
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => _showPrivacyPolicy(),
+                      ),
+                      TextSpan(
+                        text: ' ${'and'.tr} ',
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: isTablet ? 13 : 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'terms_of_service'.tr,
+                        style: TextStyle(
+                          color: const Color(0xFFFF8A50),
+                          fontSize: isTablet ? 13 : 15,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline,
+                          decorationColor: const Color(0xFFFF8A50),
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => _showPrivacyPolicy(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (_acceptPrivacy) ...[
+            SizedBox(height: isTablet ? 12 : 16),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(isTablet ? 8 : 12),
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.green, width: 1),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                    size: isTablet ? 16 : 18,
+                  ),
+                  SizedBox(width: isTablet ? 6 : 8),
+                  Expanded(
+                    child: Text(
+                      'privacy_policy_accepted_short'.tr,
+                      style: TextStyle(
+                        color: Colors.green[800],
+                        fontSize: isTablet ? 12 : 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -611,40 +752,83 @@ class _RegisterViewState extends State<RegisterView> {
     );
   }
 
+  void _showPrivacyPolicy() {
+    Get.to(
+          () => PrivacyPolicyView(
+        showAcceptButton: true,
+        isFromRegistration: true,
+        onAccepted: () {
+          setState(() {
+            _acceptPrivacy = true;
+          });
+        },
+      ),
+      transition: Transition.cupertino,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
+
   void _register() async {
     if (_formKey.currentState!.validate()) {
+      if (!_acceptPrivacy) {
+        Get.snackbar(
+          'error'.tr,
+          'privacy_terms_agreement'.tr,
+          backgroundColor: Colors.red.withValues(alpha: 0.1),
+          colorText: Colors.red,
+          icon: Icon(Icons.warning, color: Colors.red),
+          duration: Duration(seconds: 4),
+        );
+        return;
+      }
+
       final userData = {
         'username': _usernameController.text.trim(),
         'email': _emailController.text.trim(),
         'phone': _phoneController.text.trim(),
         'password': _passwordController.text,
         'user_type': _selectedUserType,
+        'acceptsPrivacyPolicy': true,
       };
 
       final success = await authController.register(userData);
 
-      if (!success) {}
+      if (success) {
+        // Mark privacy policy as accepted locally
+        await privacyController.acceptPrivacyPolicy();
+      }
     }
   }
 
   void _socialLogin(String provider) async {
+    if (!_acceptPrivacy) {
+      Get.snackbar(
+        'error'.tr,
+        'privacy_terms_agreement'.tr,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
+        colorText: Colors.red,
+        icon: Icon(Icons.warning, color: Colors.red),
+        duration: Duration(seconds: 4),
+      );
+      return;
+    }
+
     bool success = false;
 
     switch (provider) {
       case 'google':
-        success =
-        await authController.signInWithGoogle(userType: _selectedUserType);
+        success = await authController.signInWithGoogle(userType: _selectedUserType);
         break;
       case 'facebook':
-        success = await authController.signInWithFacebook(
-            userType: _selectedUserType);
+        success = await authController.signInWithFacebook(userType: _selectedUserType);
         break;
       case 'apple':
-        success =
-        await authController.signInWithApple(userType: _selectedUserType);
+        success = await authController.signInWithApple(userType: _selectedUserType);
         break;
     }
 
-    if (!success) {}
-  }
-}
+    if (success) {
+      // Mark privacy policy as accepted locally for social login
+      await privacyController.acceptPrivacyPolicy();
+    }
+  }}

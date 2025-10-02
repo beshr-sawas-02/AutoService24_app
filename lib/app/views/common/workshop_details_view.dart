@@ -80,18 +80,6 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
                 ),
               ),
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.message),
-                onPressed: () {
-                  if (authController.isGuest) {
-                    _showGuestDialog();
-                  } else {
-                    _startChat();
-                  }
-                },
-              ),
-            ],
           ),
           SliverToBoxAdapter(
             child: Padding(

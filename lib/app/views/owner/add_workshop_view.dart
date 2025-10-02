@@ -6,6 +6,8 @@ import '../../controllers/workshop_controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/map_controller.dart';
 import '../../config/app_colors.dart';
+import '../../data/models/service_model.dart';
+import '../../routes/app_routes.dart';
 
 class AddWorkshopView extends StatefulWidget {
   const AddWorkshopView({super.key});
@@ -85,12 +87,6 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 labelText: 'description'.tr,
                 icon: Icons.description,
                 maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'please_enter_description'.tr;
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
 
@@ -307,12 +303,21 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
     final success = await workshopController.createWorkshop(workshopData);
 
     if (success) {
-      Get.back();
       Get.snackbar(
         'success'.tr,
         'workshop_created_successfully'.tr,
         backgroundColor: AppColors.success,
         colorText: AppColors.white,
+        duration: const Duration(seconds: 2),
+      );
+
+      // Close AddWorkshopView
+      Get.back();
+
+      // Navigate to AddServiceView with default service type
+      Get.toNamed(
+        AppRoutes.addService,
+        arguments: ServiceType.CHANGE_OIL, // Default service type
       );
     }
   }
