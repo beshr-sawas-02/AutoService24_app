@@ -32,6 +32,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
     super.initState();
     workshop = Get.arguments as WorkshopModel;
 
+    // تأخير تحميل الخدمات
     Future.delayed(Duration.zero, () {
       _loadWorkshopServices();
     });
@@ -57,27 +58,27 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               ),
               background: workshop.profileImage != null
                   ? Image.network(
-                      AppConstants.buildImageUrl(workshop.profileImage!),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: AppColors.grey300,
-                          child: const Icon(
-                            Icons.business,
-                            size: 80,
-                            color: AppColors.textSecondary,
-                          ),
-                        );
-                      },
-                    )
-                  : Container(
-                      color: AppColors.grey300,
-                      child: const Icon(
-                        Icons.business,
-                        size: 80,
-                        color: AppColors.textSecondary,
-                      ),
+                AppConstants.buildImageUrl(workshop.profileImage!),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: AppColors.grey300,
+                    child: const Icon(
+                      Icons.business,
+                      size: 80,
+                      color: AppColors.textSecondary,
                     ),
+                  );
+                },
+              )
+                  : Container(
+                color: AppColors.grey300,
+                child: const Icon(
+                  Icons.business,
+                  size: 80,
+                  color: AppColors.textSecondary,
+                ),
+              ),
             ),
           ),
           SliverToBoxAdapter(
@@ -168,77 +169,44 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
   }
 
   Widget _buildLocationMap() {
-    return GestureDetector(
-      onTap: _navigateToWorkshopLocation,
-      child: Container(
-        height: 200,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Stack(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: MapWidget(
-                key: const ValueKey("workshopDetailsMap"),
-                cameraOptions: CameraOptions(
-                  center: Point(
-                    coordinates: Position(
-                      workshop.longitude,
-                      workshop.latitude,
-                    ),
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: MapWidget(
+              key: const ValueKey("workshopDetailsMap"),
+              cameraOptions: CameraOptions(
+                center: Point(
+                  coordinates: Position(
+                    workshop.longitude,
+                    workshop.latitude,
                   ),
-                  zoom: 15.0,
                 ),
-                onMapCreated: _onMapCreated,
+                zoom: 15.0,
               ),
+              onMapCreated: _onMapCreated,
+              onTapListener: (MapContentGestureContext context) {
+                _navigateToWorkshopLocation();
+              },
             ),
-            Positioned.fill(
+          ),
+          // Invisible overlay to capture taps
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: _navigateToWorkshopLocation,
+              behavior: HitTestBehavior.translucent,
               child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.black.withValues(alpha: 0.1),
-                ),
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.white.withValues(alpha: 0.9),
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.location_on,
-                          color: AppColors.primary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'view_on_map'.tr,
-                          style: const TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                color: Colors.transparent,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -247,6 +215,7 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
     _mapboxMap = mapboxMap;
     mapController.setMapboxMap(mapboxMap);
 
+    // استخدام الوظيفة المُحسنة مع فحص الاتصال
     Future.delayed(const Duration(milliseconds: 2000), () {
       _setupMapWithWorkshopMarker();
     });
@@ -265,10 +234,16 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
           title: workshop.name,
           userData: {'workshopId': workshop.id},
         );
-      } catch (e) {}
+
+        print('Workshop marker added successfully');
+      } catch (e) {
+        print('Error setting up workshop marker: $e');
+        // لا تُظهر خطأ للمستخدم، فقط سجل في console
+      }
     }
   }
 
+  /// التنقل إلى صفحة الخريطة مع التركيز على موقع الورشة
   void _navigateToWorkshopLocation() {
     Get.toNamed(
       AppRoutes.map,
@@ -391,27 +366,27 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
 
     if (workshopServices.isNotEmpty) {
       Get.to(() => Scaffold(
-            appBar: AppBar(
-              title: Text('${workshop.name} ${'services'.tr}'),
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.white,
-            ),
-            body: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: workshopServices.length,
-              itemBuilder: (context, index) {
-                return ServiceCard(
-                  service: workshopServices[index],
-                  onTap: () {
-                    Get.toNamed(
-                      AppRoutes.serviceDetails,
-                      arguments: workshopServices[index],
-                    );
-                  },
+        appBar: AppBar(
+          title: Text('${workshop.name} ${'services'.tr}'),
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.white,
+        ),
+        body: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: workshopServices.length,
+          itemBuilder: (context, index) {
+            return ServiceCard(
+              service: workshopServices[index],
+              onTap: () {
+                Get.toNamed(
+                  AppRoutes.serviceDetails,
+                  arguments: workshopServices[index],
                 );
               },
-            ),
-          ));
+            );
+          },
+        ),
+      ));
     }
   }
 

@@ -28,7 +28,7 @@ class _MapViewState extends State<MapView> {
   String? _targetWorkshopId;
   double? _targetLatitude;
   double? _targetLongitude;
-  String? _targetWorkshopName;
+  String _targetWorkshopName = '';
   double _targetZoom = 16.0;
 
   // Constants
@@ -43,13 +43,11 @@ class _MapViewState extends State<MapView> {
     super.initState();
     _parseArguments();
 
-    // تأخير التهيئة
     Future.delayed(Duration.zero, () {
       _initializeMap();
     });
   }
 
-  /// Parse navigation arguments for workshop focus
   void _parseArguments() {
     final arguments = Get.arguments;
     if (arguments is Map<String, dynamic>) {
@@ -57,7 +55,7 @@ class _MapViewState extends State<MapView> {
       _targetWorkshopId = arguments['workshopId'];
       _targetLatitude = arguments['latitude'];
       _targetLongitude = arguments['longitude'];
-      _targetWorkshopName = arguments['workshopName'];
+      _targetWorkshopName = arguments['workshopName'] ?? '';
       _targetZoom = arguments['zoom']?.toDouble() ?? _focusZoom;
     }
   }
@@ -66,6 +64,15 @@ class _MapViewState extends State<MapView> {
   Future<void> _initializeMap() async {
     try {
       await _mapController.checkLocationServices();
+
+      final currentPos = _mapController.currentPosition.value;
+      if (currentPos != null) {
+        await _mapController.addCurrentLocationMarker(
+          currentPos.latitude,
+          currentPos.longitude,
+        );
+      }
+
       await _loadWorkshopMarkers();
 
       if (_shouldFocusOnSpecificWorkshop()) {
@@ -87,6 +94,16 @@ class _MapViewState extends State<MapView> {
   Future<void> _focusOnTargetWorkshop() async {
     // Wait for map to load
     await Future.delayed(const Duration(milliseconds: 1000));
+
+    // Add red pin marker for workshop BEFORE moving camera
+    await _mapController.addWorkshopLocationMarker(
+      _targetLatitude!,
+      _targetLongitude!,
+      workshopName: _targetWorkshopName,
+    );
+
+    // Wait a bit for marker to render
+    await Future.delayed(const Duration(milliseconds: 300));
 
     // Move to workshop location
     await _mapController.flyToLocation(
@@ -118,8 +135,8 @@ class _MapViewState extends State<MapView> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       title: Text(
-        _shouldFocusOnWorkshop && _targetWorkshopName != null
-            ? _targetWorkshopName!
+        _shouldFocusOnWorkshop && _targetWorkshopName.isNotEmpty
+            ? _targetWorkshopName
             : 'workshop_locations'.tr,
       ),
       backgroundColor: AppColors.primary,
@@ -237,7 +254,6 @@ class _MapViewState extends State<MapView> {
     _mapboxMap = mapboxMap;
     _mapController.setMapboxMap(mapboxMap);
 
-    // استخدام الوظيفة المُحسنة مع فحص الاتصال
     Future.delayed(const Duration(milliseconds: 2000), () {
       _setupAnnotationManagers();
     });
@@ -245,17 +261,12 @@ class _MapViewState extends State<MapView> {
 
   Future<void> _setupAnnotationManagers() async {
     try {
-      // استخدام الوظيفة المُحسنة
       await _mapController.setupAnnotationManagersWithHealthCheck();
 
-      // تأخير إضافي قبل تحميل العلامات
       await Future.delayed(const Duration(milliseconds: 1000));
       await _loadWorkshopMarkers();
     } catch (e) {
       _showError('annotation_setup_error'.tr, e.toString());
-
-      // محاولة fallback بدون annotations
-      print('Setup failed, continuing without annotations');
     }
   }
 
@@ -279,8 +290,10 @@ class _MapViewState extends State<MapView> {
     for (WorkshopModel workshop in _workshopController.workshops) {
       if (_isValidWorkshopLocation(workshop)) {
         double distance = _mapController.calculateDistance(
-          lat, lng,
-          workshop.latitude, workshop.longitude,
+          lat,
+          lng,
+          workshop.latitude,
+          workshop.longitude,
         );
 
         if (distance < minDistance && distance < _maxTapDistance) {
@@ -356,7 +369,7 @@ class _MapViewState extends State<MapView> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop(); // إغلاق الـ BottomSheet الحالي
+                      Navigator.of(context).pop();
                       _navigateToWorkshopDetails(workshop);
                     },
                     style: ElevatedButton.styleFrom(
@@ -371,7 +384,7 @@ class _MapViewState extends State<MapView> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
-                      Navigator.of(context).pop(); // إغلاق الـ BottomSheet الحالي
+                      Navigator.of(context).pop();
                       _getDirections(workshop);
                     },
                     style: OutlinedButton.styleFrom(
@@ -418,8 +431,8 @@ class _MapViewState extends State<MapView> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    Navigator.of(context).pop(); // إغلاق الـ BottomSheet الحالي
-                    Get.back(); // العودة للصفحة السابقة
+                    Navigator.of(context).pop();
+                    Get.back();
                   },
                   icon: const Icon(Icons.arrow_back),
                   label: Text('back_to_services'.tr),
@@ -447,13 +460,25 @@ class _MapViewState extends State<MapView> {
     final currentPos = _mapController.currentPosition.value;
 
     if (currentPos != null && _mapboxMap != null) {
+      _mapController.addCurrentLocationMarker(
+        currentPos.latitude,
+        currentPos.longitude,
+      );
+
       _mapController.flyToLocation(
         currentPos.latitude,
         currentPos.longitude,
         zoom: _currentLocationZoom,
       );
     } else {
-      _mapController.getCurrentLocation();
+      _mapController.getCurrentLocation().then((pos) {
+        if (pos != null) {
+          _mapController.addCurrentLocationMarker(
+            pos.latitude,
+            pos.longitude,
+          );
+        }
+      });
       _showInfo('getting_location'.tr);
     }
   }
@@ -461,10 +486,18 @@ class _MapViewState extends State<MapView> {
   /// Load workshop markers on map with enhanced error handling
   Future<void> _loadWorkshopMarkers() async {
     try {
-      // محاولة مسح العلامات الموجودة
+      final currentPos = _mapController.currentPosition.value;
+
       await _mapController.clearMarkers();
 
-      // Add workshop markers واحدة تلو الأخرى
+      // Add current location marker first
+      if (currentPos != null) {
+        await _mapController.addCurrentLocationMarker(
+          currentPos.latitude,
+          currentPos.longitude,
+        );
+      }
+
       int successCount = 0;
       int totalWorkshops = _workshopController.workshops.length;
 
@@ -477,45 +510,39 @@ class _MapViewState extends State<MapView> {
               title: workshop.name,
             );
             successCount++;
-          } catch (e) {
-            print('Failed to add marker for workshop ${workshop.name}: $e');
-            // استمر في إضافة باقي العلامات
-          }
+          } catch (e) {}
         }
       }
 
-      print('Successfully added $successCount markers out of $totalWorkshops workshops');
-
-      // Add focus circle if needed
+      // If focusing on specific workshop, add red pin
       if (_shouldFocusOnSpecificWorkshop()) {
-        await _addFocusCircle();
+        await _mapController.addWorkshopLocationMarker(
+          _targetLatitude!,
+          _targetLongitude!,
+          workshopName: _targetWorkshopName,
+        );
       }
 
-      // إذا لم تنجح أي علامة، أظهر رسالة
       if (successCount == 0 && totalWorkshops > 0) {
         _showInfo('markers_load_error'.tr);
       }
-
     } catch (e) {
       _showError('markers_load_error'.tr, e.toString());
     }
   }
-
   /// Add circle around focused workshop
-  Future<void> _addFocusCircle() async {
-    try {
-      await _mapController.addCircle(
-        _targetLatitude!,
-        _targetLongitude!,
-        _circleRadius,
-        fillColor: 0x330066FF,
-        strokeColor: 0xFF0066FF,
-        strokeWidth: 2.0,
-      );
-    } catch (e) {
-      print('Error adding focus circle: $e');
-    }
-  }
+  // Future<void> _addFocusCircle() async {
+  //   try {
+  //     await _mapController.addCircle(
+  //       _targetLatitude!,
+  //       _targetLongitude!,
+  //       _circleRadius,
+  //       fillColor: 0x330066FF,
+  //       strokeColor: 0xFF0066FF,
+  //       strokeWidth: 2.0,
+  //     );
+  //   } catch (e) {}
+  // }
 
   /// Navigate to workshop details
   void _navigateToWorkshopDetails(WorkshopModel workshop) {
@@ -527,7 +554,8 @@ class _MapViewState extends State<MapView> {
   }
 
   /// Calculate distance between workshop and current position
-  double _calculateDistance(WorkshopModel workshop, geo.Position currentPosition) {
+  double _calculateDistance(
+      WorkshopModel workshop, geo.Position currentPosition) {
     return _mapController.calculateDistance(
       currentPosition.latitude,
       currentPosition.longitude,
@@ -546,13 +574,11 @@ class _MapViewState extends State<MapView> {
         return;
       }
 
-      // Check if map controller is ready
       if (_mapController.mapboxMap == null) {
         _showError('error'.tr, 'map_not_ready'.tr);
         return;
       }
 
-      // Show loading indicator
       Get.snackbar(
         'loading'.tr,
         'creating_route'.tr,
@@ -562,7 +588,6 @@ class _MapViewState extends State<MapView> {
         duration: const Duration(seconds: 2),
       );
 
-      // إنشاء route من الموقع الحالي إلى الورشة
       await _createNavigationRoute(
         startLat: currentPos.latitude,
         startLng: currentPos.longitude,
@@ -570,7 +595,6 @@ class _MapViewState extends State<MapView> {
         endLng: workshop.longitude,
         workshopName: workshop.name,
       );
-
     } catch (e) {
       _showError('navigation_error'.tr, e.toString());
     }
@@ -585,7 +609,6 @@ class _MapViewState extends State<MapView> {
     required String workshopName,
   }) async {
     try {
-      // إضافة خط المسار على الخريطة
       await _mapController.addRoute(
         startLat: startLat,
         startLng: startLng,
@@ -593,14 +616,6 @@ class _MapViewState extends State<MapView> {
         endLng: endLng,
       );
 
-      // إضافة marker للوجهة إذا لم يكن موجود
-      await _mapController.addDestinationMarker(
-        endLat,
-        endLng,
-        title: workshopName,
-      );
-
-      // تحريك الكاميرا لإظهار المسار كاملاً
       await _mapController.fitRoute(
         startLat: startLat,
         startLng: startLng,
@@ -608,20 +623,17 @@ class _MapViewState extends State<MapView> {
         endLng: endLng,
       );
 
-      // إظهار معلومات المسار
       _showRouteInfo(startLat, startLng, endLat, endLng, workshopName);
-
     } catch (e) {
       _showError('route_creation_error'.tr, e.toString());
     }
   }
 
   /// Show route information in bottom sheet
-  /// Show route information in bottom sheet
-  void _showRouteInfo(
-      double startLat, double startLng, double endLat, double endLng, String workshopName) {
+  void _showRouteInfo(double startLat, double startLng, double endLat,
+      double endLng, String workshopName) {
     final distance =
-    _mapController.calculateDistance(startLat, startLng, endLat, endLng);
+        _mapController.calculateDistance(startLat, startLng, endLat, endLng);
     final estimatedTime = _calculateEstimatedTime(distance);
 
     showModalBottomSheet(
@@ -638,7 +650,8 @@ class _MapViewState extends State<MapView> {
             // Route header
             Row(
               children: [
-                const Icon(Icons.navigation, color: AppColors.primary, size: 24),
+                const Icon(Icons.navigation,
+                    color: AppColors.primary, size: 24),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -661,7 +674,8 @@ class _MapViewState extends State<MapView> {
                 // Distance
                 Column(
                   children: [
-                    const Icon(Icons.straighten, color: AppColors.textSecondary),
+                    const Icon(Icons.straighten,
+                        color: AppColors.textSecondary),
                     const SizedBox(height: 4),
                     Text(
                       _mapController.formatDistance(distance),
@@ -683,7 +697,8 @@ class _MapViewState extends State<MapView> {
                 // Estimated time
                 Column(
                   children: [
-                    const Icon(Icons.access_time, color: AppColors.textSecondary),
+                    const Icon(Icons.access_time,
+                        color: AppColors.textSecondary),
                     const SizedBox(height: 4),
                     Text(
                       estimatedTime,
@@ -713,10 +728,8 @@ class _MapViewState extends State<MapView> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      // سكر الـ bottomSheet الحالي فقط
                       Navigator.of(context).pop();
 
-                      // بدء الملاحة
                       _startNavigation(endLat, endLng, workshopName);
                     },
                     icon: const Icon(Icons.navigation),
@@ -734,10 +747,8 @@ class _MapViewState extends State<MapView> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      // سكر الـ bottomSheet الحالي فقط
                       Navigator.of(context).pop();
 
-                      // مسح المسار
                       _clearRoute();
                     },
                     icon: const Icon(Icons.clear),
@@ -759,7 +770,6 @@ class _MapViewState extends State<MapView> {
 
   /// Start turn-by-turn navigation
   void _startNavigation(double lat, double lng, String workshopName) {
-
     Get.snackbar(
       'navigation_started'.tr,
       '${'navigating_to'.tr} $workshopName',
@@ -778,9 +788,8 @@ class _MapViewState extends State<MapView> {
 
   /// Calculate estimated time based on distance
   String _calculateEstimatedTime(double distanceInMeters) {
-    // افتراض سرعة متوسطة 40 كم/ساعة في المدينة
     const double averageSpeedKmh = 40.0;
-    const double averageSpeedMs = averageSpeedKmh * 1000 / 3600; // متر/ثانية
+    const double averageSpeedMs = averageSpeedKmh * 1000 / 3600;
 
     final double timeInSeconds = distanceInMeters / averageSpeedMs;
     final int minutes = (timeInSeconds / 60).round();
