@@ -59,6 +59,15 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
     if (_isDisposed) return;
     await mapController.checkLocationServices();
 
+
+    final currentPos = mapController.currentPosition.value;
+    if (currentPos != null) {
+      await mapController.addCurrentLocationMarker(
+        currentPos.latitude,
+        currentPos.longitude,
+      );
+    }
+
     if (shouldFocusOnWorkshop &&
         targetLatitude != null &&
         targetLongitude != null) {
@@ -89,7 +98,6 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
       _setInitialSearchCenter();
     }
   }
-
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -156,7 +164,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 10,
                           offset: const Offset(0, 2),
                         ),
@@ -234,7 +242,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                       borderRadius: BorderRadius.circular(isTablet ? 20 : 24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
+                          color: Colors.black.withValues(alpha: 0.15),
                           blurRadius: 10,
                           offset: const Offset(0, 2),
                         ),
@@ -276,7 +284,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
         borderRadius: BorderRadius.circular(isTablet ? 22.5 : 25),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -342,7 +350,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
         borderRadius: BorderRadius.circular(isTablet ? 10 : 12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -383,7 +391,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? AppColors.primary.withOpacity(0.1)
+                        ? AppColors.primary.withValues(alpha: 0.1)
                         : Colors.grey[100],
                     borderRadius: BorderRadius.circular(isTablet ? 6 : 8),
                     border: Border.all(
@@ -417,11 +425,11 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
       height: isTablet ? 220 : 250,
       width: isTablet ? 65 : 70,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(isTablet ? 25 : 30),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -502,7 +510,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -697,12 +705,12 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
       height: isTablet ? 48 : 56,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
+          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
         ),
         borderRadius: BorderRadius.circular(isTablet ? 24 : 28),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -751,7 +759,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
       contentPadding: EdgeInsets.symmetric(vertical: isTablet ? 6 : 8, horizontal: 0),
       leading: CircleAvatar(
         radius: isTablet ? 22 : 25,
-        backgroundColor: AppColors.primary.withOpacity(0.1),
+        backgroundColor: AppColors.primary.withValues(alpha: 0.1),
         child: Text(
           workshop.name.isNotEmpty ? workshop.name[0].toUpperCase() : 'W',
           style: TextStyle(
@@ -862,6 +870,12 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
         });
       }
 
+
+      mapController.addCurrentLocationMarker(
+        currentPos.latitude,
+        currentPos.longitude,
+      );
+
       mapController.flyToLocation(
         currentPos.latitude,
         currentPos.longitude,
@@ -870,7 +884,14 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
 
       _updateSearchCircle();
     } else {
-      mapController.getCurrentLocation();
+      mapController.getCurrentLocation().then((pos) {
+        if (pos != null) {
+          mapController.addCurrentLocationMarker(
+            pos.latitude,
+            pos.longitude,
+          );
+        }
+      });
     }
   }
 
@@ -898,7 +919,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
       Get.snackbar(
         'error'.tr,
         'select_location_and_service'.tr,
-        backgroundColor: AppColors.error.withOpacity(0.1),
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,
       );
       return;
@@ -933,14 +954,14 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
           'found_workshops'
               .tr
               .replaceAll('{count}', _nearbyWorkshops.length.toString()),
-          backgroundColor: AppColors.success.withOpacity(0.1),
+          backgroundColor: AppColors.success.withValues(alpha: 0.1),
           colorText: AppColors.success,
         );
       } else {
         Get.snackbar(
           'search_complete'.tr,
           'no_workshops_found_in_area'.tr,
-          backgroundColor: AppColors.warning.withOpacity(0.1),
+          backgroundColor: AppColors.warning.withValues(alpha: 0.1),
           colorText: AppColors.warning,
         );
       }
@@ -948,7 +969,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
       Get.snackbar(
         'error'.tr,
         '${'search_failed'.tr}: ${e.toString()}',
-        backgroundColor: AppColors.error.withOpacity(0.1),
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,
       );
     } finally {
@@ -960,15 +981,28 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
     }
   }
 
+// في _addWorkshopMarkers:
+
   Future<void> _addWorkshopMarkers() async {
     if (_isDisposed) return;
+
+    final currentPos = mapController.currentPosition.value;
+
     await mapController.clearMarkers();
 
+
+    if (currentPos != null) {
+      await mapController.addCurrentLocationMarker(
+        currentPos.latitude,
+        currentPos.longitude,
+      );
+    }
+
     for (final workshop in _nearbyWorkshops) {
-      await mapController.addMarker(
+      await mapController.addWorkshopPinMarker(
         workshop.latitude,
         workshop.longitude,
-        title: workshop.name,
+        workshopName: workshop.name,
       );
     }
   }
@@ -1004,7 +1038,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, -2),
               ),
@@ -1029,7 +1063,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                   children: [
                     CircleAvatar(
                       radius: isTablet ? 25 : 30,
-                      backgroundColor: AppColors.primary.withOpacity(0.2),
+                      backgroundColor: AppColors.primary.withValues(alpha: 0.2),
                       child: Text(
                         workshop.name.isNotEmpty
                             ? workshop.name[0].toUpperCase()
@@ -1226,11 +1260,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
         endLng: endLng,
       );
 
-      await mapController.addDestinationMarker(
-        endLat,
-        endLng,
-        title: workshopName,
-      );
+
+      // await mapController.addDestinationMarker(...);
 
       await mapController.fitRoute(
         startLat: startLat,
