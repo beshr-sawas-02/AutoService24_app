@@ -53,7 +53,7 @@ class ApiProvider {
       );
 
       return response;
-    } on DioException catch (e) {
+    } on DioException {
       rethrow;
     } catch (e) {
       rethrow;
@@ -367,7 +367,7 @@ class ApiProvider {
     try {
       final response = await _dio.post('/messages/sendmessage', data: data);
       return response;
-    } on DioException catch (e) {
+    } on DioException {
       rethrow;
     } catch (e) {
       rethrow;

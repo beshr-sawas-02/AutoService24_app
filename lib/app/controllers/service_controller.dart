@@ -4,7 +4,6 @@ import '../data/repositories/service_repository.dart';
 import '../data/models/service_model.dart';
 import '../data/models/saved_service_model.dart';
 import '../utils/error_handler.dart';
-import '../utils/helpers.dart';
 import '../utils/storage_service.dart';
 
 class ServiceController extends GetxController {
@@ -55,8 +54,7 @@ class ServiceController extends GetxController {
       services.value = serviceList;
       _applyFilters();
     } catch (e) {
-      Helpers.showErrorSnackbar('Unable to load services. Please try again.');
-
+      ErrorHandler.handleAndShowError(e);
       services.clear();
       filteredServices.clear();
     } finally {
@@ -69,7 +67,7 @@ class ServiceController extends GetxController {
       final response = await _serviceRepository.getServiceById(serviceId);
       return response;
     } catch (e) {
-      ErrorHandler.handleAndShowError(e);
+      ErrorHandler.handleAndShowError(e, silent: true);
       return null;
     }
   }
@@ -86,6 +84,7 @@ class ServiceController extends GetxController {
       ownerServices.value = serviceList;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
+      ownerServices.clear();
     } finally {
       isLoading.value = false;
     }
@@ -99,11 +98,8 @@ class ServiceController extends GetxController {
       }
       final savedList = await _serviceRepository.getSavedServices();
       savedServices.value = savedList;
-      for (int i = 0; i < savedList.length; i++) {
-        final saved = savedList[i];
-      }
     } catch (e) {
-      // savedServices.clear();
+      ErrorHandler.handleAndShowError(e, silent: true);
     }
   }
 
@@ -128,6 +124,8 @@ class ServiceController extends GetxController {
       _applyFilters();
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
+      services.clear();
+      filteredServices.clear();
     } finally {
       isLoading.value = false;
     }
@@ -155,7 +153,7 @@ class ServiceController extends GetxController {
   Future<bool> saveService(String serviceId, String userId) async {
     try {
       if (isServiceSaved(serviceId)) {
-        Helpers.showInfoSnackbar('Service is already saved');
+        ErrorHandler.showInfo('service_already_saved'.tr);
         return true;
       }
 
@@ -165,14 +163,14 @@ class ServiceController extends GetxController {
       });
 
       savedServices.add(savedService);
-      Helpers.showSuccessSnackbar('Service saved successfully');
+      ErrorHandler.showSuccess('service_saved_successfully'.tr);
       return true;
     } catch (e) {
 
       if (e.toString().contains('already saved') ||
           e.toString().contains('already exists') ||
           e.toString().contains('duplicate')) {
-        Helpers.showInfoSnackbar('Service is already in your saved list');
+        ErrorHandler.showInfo('service_already_in_list'.tr);
 
         loadSavedServices();
         return true;
@@ -188,7 +186,6 @@ class ServiceController extends GetxController {
       await _serviceRepository.unsaveService(savedServiceId);
 
       savedServices.removeWhere((service) => service.id == savedServiceId);
-      Helpers.showSuccessSnackbar('Service removed from saved');
       return true;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
@@ -204,7 +201,6 @@ class ServiceController extends GetxController {
       }
       return false;
     } else {
-
       return await saveService(serviceId, userId);
     }
   }
@@ -227,7 +223,6 @@ class ServiceController extends GetxController {
       ownerServices.insert(0, newService);
       services.insert(0, newService);
 
-      Helpers.showSuccessSnackbar('Service created successfully');
       return true;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
@@ -249,11 +244,9 @@ class ServiceController extends GetxController {
       ownerServices.insert(0, newService);
       services.insert(0, newService);
 
-      Helpers.showSuccessSnackbar('Service created successfully');
       return true;
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -273,11 +266,9 @@ class ServiceController extends GetxController {
         ownerServices[index] = ServiceModel.fromJson(response['service']);
       }
 
-      Helpers.showSuccessSnackbar('Images uploaded successfully');
       return true;
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -296,7 +287,6 @@ class ServiceController extends GetxController {
         ownerServices[index] = updatedService;
       }
 
-      Helpers.showSuccessSnackbar('Service updated successfully');
       return true;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
@@ -315,7 +305,6 @@ class ServiceController extends GetxController {
       ownerServices.removeWhere((service) => service.id == id);
       services.removeWhere((service) => service.id == id);
 
-      Helpers.showSuccessSnackbar('Service deleted successfully');
       return true;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
@@ -327,7 +316,6 @@ class ServiceController extends GetxController {
 
   Future<void> debugSavedServices() async {
     try {
-
       await StorageService.debugPrintStoredData();
 
       final debugData = await _serviceRepository.debugGetSavedServicesRaw();
@@ -351,24 +339,23 @@ class ServiceController extends GetxController {
           }
         }
       }
-
-      for (int i = 0; i < savedServices.length; i++) {
-        final saved = savedServices[i];
-      }
-    } catch (e) {}
+    } catch (e) {
+      // Debug errors are silent - only logged in console
+      ErrorHandler.handleAndShowError(e, silent: true);
+    }
   }
 
   Future<void> loadServicesByWorkshopId(String workshopId) async {
     try {
       isLoading.value = true;
 
-      final serviceList = await _serviceRepository.getServicesByWorkshopId(workshopId);
+      final serviceList =
+      await _serviceRepository.getServicesByWorkshopId(workshopId);
 
       // Sort services by creation date
       _sortServicesByDate(serviceList);
 
       ownerServices.value = serviceList;
-
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
       ownerServices.clear();
@@ -381,25 +368,14 @@ class ServiceController extends GetxController {
     try {
       isLoadingPhone.value = true;
 
-      final phoneNumber = await _serviceRepository.getWorkshopOwnerPhone(serviceId);
+      final phoneNumber =
+      await _serviceRepository.getWorkshopOwnerPhone(serviceId);
       return phoneNumber;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
       return null;
     } finally {
       isLoadingPhone.value = false;
-    }
-  }
-
-  String _extractErrorMessage(String error) {
-    if (error.contains('Exception:')) {
-      return error.split('Exception: ').last;
-    } else if (error.contains('Network error')) {
-      return 'Network error - Check your internet connection';
-    } else if (error.contains('Server error')) {
-      return 'Server error - Please try again later';
-    } else {
-      return 'An error occurred - Please try again';
     }
   }
 }

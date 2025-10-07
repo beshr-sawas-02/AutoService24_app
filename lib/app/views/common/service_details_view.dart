@@ -402,7 +402,6 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     } catch (e) {
       // If error occurred
       _showErrorDialog('error_getting_phone_number'.tr);
-      print('Error contacting workshop owner: $e');
     }
   }
 

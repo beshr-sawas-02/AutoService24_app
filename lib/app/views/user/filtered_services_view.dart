@@ -1119,7 +1119,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     } catch (e) {
       // If error occurred
       _showErrorDialog('error_getting_phone_number'.tr);
-      print('Error contacting workshop owner: $e');
     }
   }
 
@@ -1272,18 +1271,6 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
     try {
       final success = await serviceController.deleteService(service.id);
       if (success) {
-        Get.snackbar(
-          'deleted'.tr,
-          'service_deleted_successfully'.tr,
-          backgroundColor: AppColors.success.withValues(alpha: 0.1),
-          colorText: AppColors.success,
-          duration: const Duration(seconds: 2),
-          icon: const Icon(Icons.check_circle, color: AppColors.success),
-          margin: const EdgeInsets.all(16),
-          borderRadius: 8,
-          snackPosition: SnackPosition.TOP,
-        );
-
         await _loadAndFilterServices();
       } else {
         Get.snackbar(

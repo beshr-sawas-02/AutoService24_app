@@ -313,10 +313,10 @@ class StorageService {
       message,
       backgroundColor: Colors.blue.withValues(alpha: 0.1),
       colorText: Colors.blue,
-      icon: Icon(Icons.info_outline, color: Colors.blue),
+      icon: const Icon(Icons.info_outline, color: Colors.blue),
       snackPosition: SnackPosition.BOTTOM,
-      duration: Duration(seconds: 3),
-      margin: EdgeInsets.all(10),
+      duration: const Duration(seconds: 3),
+      margin: const EdgeInsets.all(10),
       borderRadius: 8,
     );
   }

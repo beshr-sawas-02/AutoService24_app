@@ -8,19 +8,13 @@ import '../../routes/app_routes.dart';
 import '../../widgets/guest_banner.dart';
 import '../../config/app_colors.dart';
 
-class UserHomeView extends StatefulWidget {
-  const UserHomeView({super.key});
+class UserHomeView extends StatelessWidget {
+  UserHomeView({super.key});
 
-  @override
-  _UserHomeViewState createState() => _UserHomeViewState();
-}
-
-class _UserHomeViewState extends State<UserHomeView> {
-  int _currentIndex = 0;
   final AuthController authController = Get.find<AuthController>();
+  final LanguageController languageController = Get.find<LanguageController>();
 
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = "";
+  final RxString searchQuery = ''.obs;
 
   final List<Map<String, dynamic>> categories = [
     {
@@ -114,67 +108,33 @@ class _UserHomeViewState extends State<UserHomeView> {
         elevation: 0,
         title: Text(
           'auto_services'.tr,
-          style: const TextStyle(
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             color: AppColors.textPrimary,
-            fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
         automaticallyImplyLeading: false,
         actions: [
-          _buildLanguageSwitcher(),
+          _LanguageSwitcher(languageController: languageController),
         ],
       ),
-      body: _getBody(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textSecondary,
-        backgroundColor: AppColors.white,
-        elevation: 8,
-        onTap: (index) {
-          if (index == 1) {
-            Get.toNamed(AppRoutes.savedServices);
-            return;
-          }
-          if (index == 2) {
-            Get.toNamed(AppRoutes.chatList);
-            return;
-          }
-          if (index == 3) {
-            Get.toNamed(AppRoutes.userProfile);
-            return;
-          }
-
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
-            label: 'home'.tr,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.bookmark),
-            label: 'saved'.tr,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.message),
-            label: 'chat'.tr,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
-            label: 'profile'.tr,
-          ),
-        ],
+      body: _HomeBody(
+        authController: authController,
+        categories: categories,
+        searchQuery: searchQuery,
+        onRefresh: _handleRefresh,
       ),
+      bottomNavigationBar: _BottomNav(),
     );
   }
+}
 
-  Widget _buildLanguageSwitcher() {
-    final LanguageController languageController = Get.find<LanguageController>();
+class _LanguageSwitcher extends StatelessWidget {
+  final LanguageController languageController;
+  const _LanguageSwitcher({required this.languageController});
 
+  @override
+  Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       icon: const Icon(Icons.language, color: AppColors.textSecondary),
       tooltip: 'switch_language'.tr,
@@ -182,93 +142,91 @@ class _UserHomeViewState extends State<UserHomeView> {
         languageController.changeLocale(languageCode);
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-        PopupMenuItem<String>(
-          value: 'en',
-          child: Row(
-            children: [
-              const Text('🇺🇸'),
-              const SizedBox(width: 8),
-              Text('english'.tr),
-              if (languageController.locale.value.languageCode == 'en')
-                const Spacer()
-              else
-                const SizedBox.shrink(),
-              if (languageController.locale.value.languageCode == 'en')
-                const Icon(Icons.check, color: AppColors.primary)
-              else
-                const SizedBox.shrink(),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'de',
-          child: Row(
-            children: [
-              const Text('🇩🇪'),
-              const SizedBox(width: 8),
-              Text('german'.tr),
-              if (languageController.locale.value.languageCode == 'de')
-                const Spacer()
-              else
-                const SizedBox.shrink(),
-              if (languageController.locale.value.languageCode == 'de')
-                const Icon(Icons.check, color: AppColors.primary)
-              else
-                const SizedBox.shrink(),
-            ],
-          ),
-        ),
+        _buildItem('en', '🇺🇸', 'english'.tr),
+        _buildItem('de', '🇩🇪', 'german'.tr),
       ],
     );
   }
 
-  Widget _getBody() {
-    return _buildHomeContent();
+  PopupMenuItem<String> _buildItem(String code, String flag, String text) {
+    final isSelected = languageController.locale.value.languageCode == code;
+    return PopupMenuItem<String>(
+      value: code,
+      child: Row(
+        children: [
+          Text(flag),
+          const SizedBox(width: 8),
+          Text(text),
+          const Spacer(),
+          if (isSelected) const Icon(Icons.check, color: AppColors.primary),
+        ],
+      ),
+    );
   }
+}
 
-  Widget _buildHomeContent() {
-    final filteredCategories = categories.where((cat) {
-      final title = (cat['title'] as String).tr.toLowerCase();
-      return title.contains(_searchQuery.toLowerCase());
-    }).toList();
+class _HomeBody extends StatelessWidget {
+  final AuthController authController;
+  final List<Map<String, dynamic>> categories;
+  final RxString searchQuery;
+  final Future<void> Function() onRefresh;
 
+  const _HomeBody({
+    required this.authController,
+    required this.categories,
+    required this.searchQuery,
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
-        Obx(() => authController.isGuest
-            ? const GuestBanner()
-            : const SizedBox.shrink()),
+        Obx(() => authController.isGuest ? const GuestBanner() : const SizedBox.shrink()),
         Expanded(
           child: RefreshIndicator(
-            onRefresh: _handleRefresh,
+            onRefresh: onRefresh,
             color: AppColors.primary,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSearchBar(),
-                  const SizedBox(height: 24),
-                  Text(
-                    'categories'.tr,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+            child: Obx(() {
+              final filtered = categories.where((cat) {
+                final title = (cat['title'] as String).tr.toLowerCase();
+                return title.contains(searchQuery.value.toLowerCase());
+              }).toList();
+
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SearchBar(searchQuery: searchQuery),
+                    const SizedBox(height: 24),
+                    Text(
+                      'categories'.tr,
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildServiceCategories(filteredCategories),
-                ],
-              ),
-            ),
+                    const SizedBox(height: 20),
+                    _ServiceCategories(categoriesToShow: filtered),
+                  ],
+                ),
+              );
+            }),
           ),
         ),
       ],
     );
   }
+}
 
-  Widget _buildSearchBar() {
+class _SearchBar extends StatelessWidget {
+  final RxString searchQuery;
+  const _SearchBar({required this.searchQuery});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -282,7 +240,7 @@ class _UserHomeViewState extends State<UserHomeView> {
         ],
       ),
       child: TextField(
-        controller: _searchController,
+        onChanged: (query) => searchQuery.value = query,
         decoration: InputDecoration(
           hintText: 'search_categories'.tr,
           hintStyle: const TextStyle(color: AppColors.textHint),
@@ -293,19 +251,19 @@ class _UserHomeViewState extends State<UserHomeView> {
           ),
           filled: true,
           fillColor: AppColors.white,
-          contentPadding:
-          const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
-        onChanged: (query) {
-          setState(() {
-            _searchQuery = query;
-          });
-        },
       ),
     );
   }
+}
 
-  Widget _buildServiceCategories(List<Map<String, dynamic>> categoriesToShow) {
+class _ServiceCategories extends StatelessWidget {
+  final List<Map<String, dynamic>> categoriesToShow;
+  const _ServiceCategories({required this.categoriesToShow});
+
+  @override
+  Widget build(BuildContext context) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -318,7 +276,8 @@ class _UserHomeViewState extends State<UserHomeView> {
       itemCount: categoriesToShow.length,
       itemBuilder: (context, index) {
         final category = categoriesToShow[index];
-        return GestureDetector(
+        return InkWell(
+          borderRadius: BorderRadius.circular(16),
           onTap: () {
             Get.toNamed(
               AppRoutes.filteredServices,
@@ -355,10 +314,8 @@ class _UserHomeViewState extends State<UserHomeView> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              (category['color'] as Color)
-                                  .withValues(alpha: 0.8),
-                              (category['color'] as Color)
-                                  .withValues(alpha: 0.6),
+                              (category['color'] as Color).withValues(alpha: 0.8),
+                              (category['color'] as Color).withValues(alpha: 0.6),
                             ],
                           ),
                         ),
@@ -381,9 +338,8 @@ class _UserHomeViewState extends State<UserHomeView> {
                     child: Text(
                       (category['title'] as String).tr,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: AppColors.white,
-                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         shadows: [
                           Shadow(
@@ -403,5 +359,59 @@ class _UserHomeViewState extends State<UserHomeView> {
       },
     );
   }
+}
 
+class _BottomNav extends StatefulWidget {
+  @override
+  State<_BottomNav> createState() => _BottomNavState();
+}
+
+class _BottomNavState extends State<_BottomNav> {
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      currentIndex: _currentIndex,
+      selectedItemColor: AppColors.primary,
+      unselectedItemColor: AppColors.textSecondary,
+      backgroundColor: AppColors.white,
+      elevation: 8,
+      onTap: (index) {
+        if (index == 1) {
+          Get.toNamed(AppRoutes.savedServices);
+          return;
+        }
+        if (index == 2) {
+          Get.toNamed(AppRoutes.chatList);
+          return;
+        }
+        if (index == 3) {
+          Get.toNamed(AppRoutes.userProfile);
+          return;
+        }
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      items: [
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.home),
+          label: 'home'.tr,
+        ),
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.bookmark),
+          label: 'saved'.tr,
+        ),
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.message),
+          label: 'chat'.tr,
+        ),
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.person),
+          label: 'profile'.tr,
+        ),
+      ],
+    );
+  }
 }

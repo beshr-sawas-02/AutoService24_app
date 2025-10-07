@@ -143,7 +143,7 @@ class ServiceCard extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        _buildActionButton(), // زر الحفظ يظهر فقط للمستخدم العادي
+        _buildActionButton(),
       ],
     );
   }
@@ -263,11 +263,11 @@ class ServiceCard extends StatelessWidget {
   Widget _buildActionButton() {
     final authController = Get.find<AuthController>();
 
-    // فقط المستخدم العادي يرى زر الحفظ
+
     if (authController.currentUser.value?.isUser ?? false) {
       return _buildSaveButton();
     } else {
-      return const SizedBox.shrink(); // الـ owner لا يرى أي شيء
+      return const SizedBox.shrink();
     }
   }
 

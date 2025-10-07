@@ -280,12 +280,6 @@ class WebSocketService extends GetxService {
 
   void _showNotification(MessageModel message) {
     try {
-      Get.snackbar(
-        'رسالة جديدة',
-        message.content ?? 'صورة',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-      );
     } catch (e) {
       // Ignore notification errors
     }

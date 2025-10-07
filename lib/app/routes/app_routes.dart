@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../controllers/privacy_policy_controller.dart';
 import '../views/auth/email_verification_view.dart';
 import '../views/common/workshop_map_search_view.dart';
+import '../views/owner/owner_workshops_view.dart';
 import '../views/privacy_policy_screen.dart';
 import '../views/splash_view.dart';
 import '../views/auth/login_view.dart';
@@ -21,7 +22,6 @@ import '../views/common/service_details_view.dart';
 import '../views/common/workshop_details_view.dart';
 import '../views/common/map_view.dart';
 import '../views/common/edit_profile_view.dart';
-import '../views/common/settings_view.dart';
 
 class AppRoutes {
   static const String splash = '/splash';
@@ -40,6 +40,7 @@ class AppRoutes {
   static const String chat = '/chat';
   static const String serviceDetails = '/service-details';
   static const String workshopDetails = '/workshop-details';
+  static const String ownerWorkshops = '/owner-workshops';
   static const String map = '/map';
   static const String workshopMapSearch = '/workshop-map-search';
   static const String editProfile = '/edit-profile';
@@ -66,11 +67,11 @@ class AppRoutes {
     ),
     GetPage(
       name: AppRoutes.emailVerification,
-      page: () => EmailVerificationView(),
+      page: () => const EmailVerificationView(),
     ),
     GetPage(
       name: userHome,
-      page: () => const UserHomeView(),
+      page: () =>  UserHomeView(),
     ),
     GetPage(
       name: userProfile,
@@ -97,6 +98,10 @@ class AppRoutes {
       page: () => const AddWorkshopView(),
     ),
     GetPage(
+      name: AppRoutes.ownerWorkshops,
+      page: () => const OwnerWorkshopsView(),
+    ),
+    GetPage(
       name: addService,
       page: () => const AddServiceView(),
     ),
@@ -110,7 +115,7 @@ class AppRoutes {
     ),
     GetPage(
       name: serviceDetails,
-      page: () => ServiceDetailsView(),
+      page: () => const ServiceDetailsView(),
     ),
     GetPage(
       name: workshopDetails,

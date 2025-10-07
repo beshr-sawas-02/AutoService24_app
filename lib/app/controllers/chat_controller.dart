@@ -1,12 +1,10 @@
 import 'package:get/get.dart';
 import 'dart:io';
-import '../config/app_colors.dart';
 import '../data/repositories/chat_repository.dart';
 import '../data/models/chat_model.dart';
 import '../data/models/message_model.dart';
 import '../data/models/user_model.dart';
 import '../utils/error_handler.dart';
-import '../utils/helpers.dart';
 import '../utils/websocket_service.dart';
 
 class ChatController extends GetxController {
@@ -65,7 +63,9 @@ class ChatController extends GetxController {
       if (_webSocketService != null) {
         otherUserTyping.bindStream(_webSocketService!.otherUserTyping.stream);
       }
-    } catch (e) {}
+    } catch (e) {
+      ErrorHandler.handleAndShowError(e, silent: true);
+    }
   }
 
   Future<void> loadChats() async {
@@ -183,21 +183,7 @@ class ChatController extends GetxController {
 
       return true;
     } catch (e) {
-      String errorMessage = 'Failed to send message';
-      if (e.toString().contains('500')) {
-        errorMessage = 'Server error - Please check the backend logs';
-      } else if (e.toString().contains('Network')) {
-        errorMessage = 'Network error - Check your connection';
-      }
-
-      Get.snackbar(
-        'Send Message Failed',
-        errorMessage,
-        backgroundColor: AppColors.error.withValues(alpha: 0.1),
-        colorText: AppColors.error,
-        duration: const Duration(seconds: 5),
-      );
-
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       Future.delayed(const Duration(milliseconds: 1500), () {
@@ -230,7 +216,7 @@ class ChatController extends GetxController {
     try {
       _webSocketService?.disconnect();
     } catch (e) {
-      // Ignore errors during disconnect
+      ErrorHandler.handleAndShowError(e, silent: true);
     }
   }
 
@@ -250,6 +236,7 @@ class ChatController extends GetxController {
       }
       return user;
     } catch (e) {
+      ErrorHandler.handleAndShowError(e, silent: true);
       return null;
     }
   }
@@ -308,7 +295,9 @@ class ChatController extends GetxController {
         try {
           await getUserById(userId);
           await Future.delayed(const Duration(milliseconds: 100));
-        } catch (e) {}
+        } catch (e) {
+          ErrorHandler.handleAndShowError(e, silent: true);
+        }
       }
     } finally {
       isLoadingUsers.value = false;
@@ -345,7 +334,6 @@ class ChatController extends GetxController {
     File? imageFile,
   }) async {
     try {
-
       if (_isSendingImageMessage) {
         return false;
       }
@@ -376,15 +364,12 @@ class ChatController extends GetxController {
 
       // Enhanced duplicate detection for image messages
       final exists = messages.any((m) {
-        // Check content match
         bool contentMatch = (m.content == newMessage.content) ||
             (m.content?.isEmpty == true && newMessage.content?.isEmpty == true);
 
-        // Check basic fields
         bool basicMatch =
             m.senderId == newMessage.senderId && m.chatId == newMessage.chatId;
 
-        // Check timing
         bool timeMatch = newMessage.createdAt == null ||
             m.createdAt == null ||
             newMessage.createdAt!.difference(m.createdAt!).inSeconds.abs() < 15;
@@ -394,7 +379,6 @@ class ChatController extends GetxController {
 
       if (!exists) {
         messages.add(newMessage);
-        Helpers.showSuccessSnackbar('Image sent successfully');
         // Update last message immediately for chat list
         lastMessages[chatId] = newMessage;
         // Sort chats to move this chat to the top
@@ -403,8 +387,7 @@ class ChatController extends GetxController {
 
       return true;
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       Future.delayed(const Duration(milliseconds: 2000), () {
@@ -417,7 +400,6 @@ class ChatController extends GetxController {
     try {
       await _chatRepository.deleteMessage(messageId);
       messages.removeWhere((message) => message.id == messageId);
-      Helpers.showSuccessSnackbar('Message deleted');
       return true;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
@@ -430,14 +412,12 @@ class ChatController extends GetxController {
       await _chatRepository.deleteChat(chatId);
       chats.removeWhere((chat) => chat.id == chatId);
       unreadChats.remove(chatId);
-      Helpers.showSuccessSnackbar('Chat deleted');
       return true;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
       return false;
     }
   }
-
 
   Future<bool> updateMessage(
       String messageId, Map<String, dynamic> data) async {
@@ -457,24 +437,12 @@ class ChatController extends GetxController {
     }
   }
 
-  String _extractErrorMessage(String error) {
-    if (error.contains('Exception:')) {
-      return error.split('Exception: ').last;
-    } else if (error.contains('Network error')) {
-      return 'Network error - Check your internet connection';
-    } else if (error.contains('Server error')) {
-      return 'Server error - Please try again later';
-    } else {
-      return 'An error occurred - Please try again';
-    }
-  }
-
   @override
   void onClose() {
     try {
       disconnectWebSocket();
     } catch (e) {
-      // Ignore any errors during cleanup
+      ErrorHandler.handleAndShowError(e, silent: true);
     }
     super.onClose();
   }

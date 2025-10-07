@@ -22,7 +22,7 @@ class _SplashViewState extends State<SplashView> {
   Future<void> _checkAuthStatus() async {
     await Future.delayed(const Duration(seconds: 3));
 
-    if (await authController.isLoggedIn()) {
+    if (authController.isLoggedIn()) {
       final userType = authController.currentUser.value?.userType;
 
       if (userType == 'owner') {

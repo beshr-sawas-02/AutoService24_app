@@ -4,7 +4,6 @@ import '../data/repositories/user_repository.dart';
 import '../data/repositories/auth_repository.dart';
 import '../data/models/user_model.dart';
 import '../utils/error_handler.dart';
-import '../utils/helpers.dart';
 
 class UserController extends GetxController {
   final UserRepository _userRepository;
@@ -22,7 +21,6 @@ class UserController extends GetxController {
       final response = await _authRepository.updateProfileWithImage(userId, data, imageFile);
 
       if (response.containsKey('user')) {
-
         user.value = UserModel.fromJson(response['user']);
         return true;
       } else if (response.containsKey('status') && response['status'] == true) {
@@ -31,8 +29,7 @@ class UserController extends GetxController {
         throw Exception('Invalid response from server');
       }
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -79,26 +76,12 @@ class UserController extends GetxController {
       await _userRepository.deleteUser(userId);
       users.removeWhere((u) => u.id == userId);
 
-      Helpers.showSuccessSnackbar('User deleted successfully');
       return true;
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
-    }
-  }
-
-  String _extractErrorMessage(String error) {
-    if (error.contains('Exception:')) {
-      return error.split('Exception: ').last;
-    } else if (error.contains('Network error')) {
-      return 'Network error - Check your internet connection';
-    } else if (error.contains('Server error')) {
-      return 'Server error - Please try again later';
-    } else {
-      return 'An error occurred - Please try again';
     }
   }
 }

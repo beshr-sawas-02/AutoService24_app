@@ -108,7 +108,7 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
       final otherUser = chatController.usersCache[otherUserId.toString()];
       final lastMessage = chatController.lastMessages[chat.id];
 
-      final username = otherUser?.username?.toLowerCase() ?? '';
+      final username = otherUser?.username.toLowerCase() ?? '';
       final messageContent = lastMessage?.content?.toLowerCase() ?? '';
       final searchQuery = _searchController.text.toLowerCase();
 
@@ -164,7 +164,7 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
           end: Alignment.bottomRight,
           colors: [
             AppColors.primary,
-            AppColors.primary.withOpacity(0.85),
+            AppColors.primary.withValues(alpha: 0.85),
           ],
         ),
       ),
@@ -214,7 +214,7 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
                                   ? '$unreadCount new messages'
                                   : '$totalChats conversations',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -228,7 +228,7 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
                       child: Container(
                         height: 44,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(22),
                         ),
                         child: TextField(
@@ -241,19 +241,19 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
                           decoration: InputDecoration(
                             hintText: 'Search conversations...',
                             hintStyle: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                               fontSize: 15,
                             ),
                             prefixIcon: Icon(
                               Icons.search,
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               size: 22,
                             ),
                             suffixIcon: _searchController.text.isNotEmpty
                                 ? IconButton(
                               icon: Icon(
                                 Icons.clear,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 size: 20,
                               ),
                               onPressed: () {
@@ -295,7 +295,7 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
                         padding: const EdgeInsets.all(10),
                         decoration: _isSearching
                             ? BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                         )
                             : null,
@@ -320,7 +320,7 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
                       ),
                       child: Text(
                         '$unreadCount',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColors.primary,
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
@@ -344,7 +344,7 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
       separatorBuilder: (context, index) => Divider(
         height: 1,
         thickness: 0.5,
-        color: const Color(0xFFE5E5EA).withOpacity(0.5),
+        color: const Color(0xFFE5E5EA).withValues(alpha: 0.5),
         indent: 88,
       ),
       itemBuilder: (context, index) {
@@ -405,7 +405,7 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
       separatorBuilder: (context, index) => Divider(
         height: 1,
         thickness: 0.5,
-        color: const Color(0xFFE5E5EA).withOpacity(0.5),
+        color: const Color(0xFFE5E5EA).withValues(alpha: 0.5),
         indent: 88,
       ),
       itemBuilder: (context, index) {
@@ -588,7 +588,7 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
           end: Alignment.bottomRight,
           colors: [
             AppColors.primary,
-            AppColors.primary.withOpacity(0.7),
+            AppColors.primary.withValues(alpha: 0.7),
           ],
         ),
       ),
@@ -639,14 +639,14 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
             Container(
               width: 120,
               height: 120,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF2F2F7),
+              decoration: const BoxDecoration(
+                color: Color(0xFFF2F2F7),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.chat_bubble_outline,
                 size: 56,
-                color: const Color(0xFF8E8E93),
+                color: Color(0xFF8E8E93),
               ),
             ),
             const SizedBox(height: 28),
@@ -714,7 +714,7 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
           end: Alignment.bottomCenter,
           colors: [
             AppColors.primary,
-            AppColors.primary.withOpacity(0.8),
+            AppColors.primary.withValues(alpha: 0.8),
           ],
         ),
       ),
@@ -746,10 +746,10 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
                         width: 100,
                         height: 100,
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.chat_bubble,
                           size: 50,
                           color: AppColors.primary,
@@ -814,7 +814,7 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
                           onPressed: () => Get.toNamed(AppRoutes.register),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.primary,
-                            side: BorderSide(color: AppColors.primary, width: 2),
+                            side: const BorderSide(color: AppColors.primary, width: 2),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -861,7 +861,7 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(

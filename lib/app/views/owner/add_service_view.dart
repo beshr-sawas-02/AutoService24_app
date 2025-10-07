@@ -358,15 +358,6 @@ class _AddServiceViewState extends State<AddServiceView> {
     }
 
     if (success) {
-      Get.snackbar(
-        'success'.tr,
-        'service_created_successfully'.tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 2),
-      );
 
       // Reset form
       _formKey.currentState!.reset();

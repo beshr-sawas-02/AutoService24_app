@@ -355,6 +355,13 @@ class OwnerProfileView extends StatelessWidget {
           onTap: () => Get.toNamed(AppRoutes.editProfile),
           iconColor: Colors.orange,
         ),
+        _buildProfileOption(
+          icon: Icons.store_outlined,
+          title: 'my_workshops'.tr,
+          subtitle: 'manage_workshops_services'.tr,
+          onTap: () => Get.toNamed(AppRoutes.ownerWorkshops),
+          iconColor: Colors.blue,
+        ),
       ],
     );
   }

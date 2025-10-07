@@ -76,7 +76,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: AppColors.textSecondary.withOpacity(0.1),
+                            color: AppColors.textSecondary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(
@@ -122,8 +122,8 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      AppColors.primary.withOpacity(0.1),
-                                      AppColors.primary.withOpacity(0.2),
+                                      AppColors.primary.withValues(alpha: 0.1),
+                                      AppColors.primary.withValues(alpha: 0.2),
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -131,7 +131,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.primary.withOpacity(0.2),
+                                      color: AppColors.primary.withValues(alpha: 0.2),
                                       blurRadius: 20,
                                       offset: const Offset(0, 8),
                                     ),
@@ -167,10 +167,10 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.08),
+                            color: AppColors.primary.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(25),
                             border: Border.all(
-                              color: AppColors.primary.withOpacity(0.3),
+                              color: AppColors.primary.withValues(alpha: 0.3),
                               width: 1,
                             ),
                           ),
@@ -218,7 +218,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.06),
+                                color: Colors.black.withValues(alpha: 0.06),
                                 blurRadius: 20,
                                 offset: const Offset(0, 4),
                               ),
@@ -261,10 +261,10 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.amber.withOpacity(0.1),
+                            color: Colors.amber.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Colors.amber.withOpacity(0.3),
+                              color: Colors.amber.withValues(alpha: 0.3),
                             ),
                           ),
                           child: Row(

@@ -56,8 +56,8 @@ class UserModel {
       profileImage: json['profile_image']?.toString(),
       provider: json['provider']?.toString() ?? 'local',
       providerId: json['providerId']?.toString(),
-      verified: json['verified'] == true, // جديد
-      verificationToken: json['verificationToken']?.toString(), // جديد
+      verified: json['verified'] == true,
+      verificationToken: json['verificationToken']?.toString(),
     );
   }
 
@@ -67,7 +67,7 @@ class UserModel {
       'username': username,
       'user_type': userType,
       'provider': provider,
-      'verified': verified, // جديد
+      'verified': verified,
     };
 
     if (password != null) data['password'] = password;

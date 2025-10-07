@@ -5,7 +5,8 @@ import '../controllers/privacy_policy_controller.dart';
 import '../config/app_colors.dart';
 
 class PrivacyPolicyView extends StatelessWidget {
-  final PrivacyPolicyController privacyController = Get.find<PrivacyPolicyController>();
+  final PrivacyPolicyController privacyController =
+      Get.find<PrivacyPolicyController>();
   final AuthController authController = Get.find<AuthController>();
 
   final bool showAcceptButton;
@@ -30,7 +31,6 @@ class PrivacyPolicyView extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // حالة الموافقة أعلى الشاشة (إذا مطلوب)
             if (showAcceptButton)
               Obx(() {
                 if (privacyController.hasAcceptedPrivacyPolicy.value) {
@@ -38,13 +38,9 @@ class PrivacyPolicyView extends StatelessWidget {
                 }
                 return const SizedBox.shrink();
               }),
-
-            // المحتوى قابل للتمرير
             Expanded(
               child: _buildPrivacyContent(isTablet),
             ),
-
-            // زر الموافقة أسفل الشاشة
             if (showAcceptButton) _buildBottomActionBar(isTablet),
           ],
         ),
@@ -84,7 +80,7 @@ class PrivacyPolicyView extends StatelessWidget {
       margin: EdgeInsets.all(isTablet ? 16 : 20),
       padding: EdgeInsets.all(isTablet ? 16 : 20),
       decoration: BoxDecoration(
-        color: Colors.green.withOpacity(0.1),
+        color: Colors.green.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.green, width: 1),
       ),
@@ -191,7 +187,7 @@ class PrivacyPolicyView extends StatelessWidget {
             _buildContactSection(isTablet),
             SizedBox(height: isTablet ? 24 : 32),
             _buildLastUpdated(isTablet),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -211,7 +207,7 @@ class PrivacyPolicyView extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFF8A50).withOpacity(0.3),
+            color: const Color(0xFFFF8A50).withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -225,7 +221,7 @@ class PrivacyPolicyView extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -251,7 +247,7 @@ class PrivacyPolicyView extends StatelessWidget {
                       'privacy_policy_header'.tr,
                       style: TextStyle(
                         fontSize: isTablet ? 14 : 16,
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -265,7 +261,7 @@ class PrivacyPolicyView extends StatelessWidget {
             'privacy_commitment'.tr,
             style: TextStyle(
               fontSize: isTablet ? 14 : 16,
-              color: Colors.white.withOpacity(0.95),
+              color: Colors.white.withValues(alpha: 0.95),
               height: 1.6,
             ),
           ),
@@ -289,7 +285,7 @@ class PrivacyPolicyView extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.info_rounded, color: Colors.blue[700], size: 24),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Text(
                 'important_notice'.tr,
                 style: TextStyle(
@@ -300,7 +296,7 @@ class PrivacyPolicyView extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
             'privacy_introduction'.tr,
             style: TextStyle(
@@ -329,7 +325,7 @@ class PrivacyPolicyView extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -339,7 +335,7 @@ class PrivacyPolicyView extends StatelessWidget {
         leading: Container(
           padding: EdgeInsets.all(isTablet ? 8 : 10),
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: AppColors.primary, size: isTablet ? 18 : 20),
@@ -354,10 +350,14 @@ class PrivacyPolicyView extends StatelessWidget {
         ),
         children: [
           Padding(
-            padding: EdgeInsets.fromLTRB(isTablet ? 16 : 20, 0, isTablet ? 16 : 20, isTablet ? 16 : 20),
+            padding: EdgeInsets.fromLTRB(
+                isTablet ? 16 : 20, 0, isTablet ? 16 : 20, isTablet ? 16 : 20),
             child: Text(
               content,
-              style: TextStyle(fontSize: isTablet ? 13 : 15, color: Colors.grey[700], height: 1.6),
+              style: TextStyle(
+                  fontSize: isTablet ? 13 : 15,
+                  color: Colors.grey[700],
+                  height: 1.6),
             ),
           ),
         ],
@@ -389,30 +389,42 @@ class PrivacyPolicyView extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.contact_support_rounded, color: Colors.green[700], size: 24),
-              SizedBox(width: 12),
+              Icon(Icons.contact_support_rounded,
+                  color: Colors.green[700], size: 24),
+              const SizedBox(width: 12),
               Text(
                 'contact_us_title'.tr,
-                style: TextStyle(fontSize: isTablet ? 16 : 18, fontWeight: FontWeight.bold, color: Colors.green[800]),
+                style: TextStyle(
+                    fontSize: isTablet ? 16 : 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[800]),
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             'contact_privacy_text'.tr,
-            style: TextStyle(fontSize: isTablet ? 13 : 15, color: Colors.green[700], height: 1.6),
+            style: TextStyle(
+                fontSize: isTablet ? 13 : 15,
+                color: Colors.green[700],
+                height: 1.6),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.green[100], borderRadius: BorderRadius.circular(8)),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+                color: Colors.green[100],
+                borderRadius: BorderRadius.circular(8)),
             child: Row(
               children: [
                 Icon(Icons.email_rounded, color: Colors.green[700], size: 20),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
                   'privacy@autoservice24.com',
-                  style: TextStyle(fontSize: isTablet ? 13 : 15, fontWeight: FontWeight.w600, color: Colors.green[800]),
+                  style: TextStyle(
+                      fontSize: isTablet ? 13 : 15,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.green[800]),
                 ),
               ],
             ),
@@ -435,12 +447,18 @@ class PrivacyPolicyView extends StatelessWidget {
         children: [
           Text(
             'last_updated_title'.tr,
-            style: TextStyle(fontSize: isTablet ? 12 : 14, fontWeight: FontWeight.w600, color: Colors.grey[600]),
+            style: TextStyle(
+                fontSize: isTablet ? 12 : 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[600]),
           ),
           SizedBox(height: isTablet ? 6 : 8),
           Text(
             'January 1, 2025',
-            style: TextStyle(fontSize: isTablet ? 14 : 16, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+            style: TextStyle(
+                fontSize: isTablet ? 14 : 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[800]),
           ),
           SizedBox(height: isTablet ? 4 : 6),
           Row(
@@ -448,15 +466,21 @@ class PrivacyPolicyView extends StatelessWidget {
             children: [
               Text(
                 '${'version_label'.tr}: ${PrivacyPolicyController.currentPrivacyVersion}',
-                style: TextStyle(fontSize: isTablet ? 12 : 14, color: Colors.grey[600]),
+                style: TextStyle(
+                    fontSize: isTablet ? 12 : 14, color: Colors.grey[600]),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(color: Colors.green[100], borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                    color: Colors.green[100],
+                    borderRadius: BorderRadius.circular(12)),
                 child: Text(
                   'current_label'.tr,
-                  style: TextStyle(fontSize: 10, color: Colors.green[700], fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.green[700],
+                      fontWeight: FontWeight.w600),
                 ),
               ),
             ],
@@ -471,7 +495,12 @@ class PrivacyPolicyView extends StatelessWidget {
       padding: EdgeInsets.all(isTablet ? 16 : 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, -4))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, -4))
+        ],
       ),
       child: SafeArea(
         child: Obx(() {
@@ -480,29 +509,35 @@ class PrivacyPolicyView extends StatelessWidget {
               width: double.infinity,
               height: isTablet ? 50 : 56,
               child: ElevatedButton(
-                onPressed: privacyController.isLoading.value ? null : _handleAcceptPrivacy,
+                onPressed: privacyController.isLoading.value
+                    ? null
+                    : _handleAcceptPrivacy,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(isTablet ? 14 : 16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(isTablet ? 14 : 16)),
                 ),
                 child: privacyController.isLoading.value
                     ? SizedBox(
-                  width: isTablet ? 20 : 24,
-                  height: isTablet ? 20 : 24,
-                  child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
-                )
+                        width: isTablet ? 20 : 24,
+                        height: isTablet ? 20 : 24,
+                        child: const CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2.5),
+                      )
                     : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.check_circle_rounded, size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      'accept_privacy_policy_button'.tr,
-                      style: TextStyle(fontSize: isTablet ? 14 : 16, fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.check_circle_rounded, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'accept_privacy_policy_button'.tr,
+                            style: TextStyle(
+                                fontSize: isTablet ? 14 : 16,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
               ),
             );
           } else {
@@ -510,7 +545,7 @@ class PrivacyPolicyView extends StatelessWidget {
               width: double.infinity,
               padding: EdgeInsets.all(isTablet ? 16 : 20),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.green, width: 1),
               ),
@@ -521,7 +556,10 @@ class PrivacyPolicyView extends StatelessWidget {
                   SizedBox(width: isTablet ? 8 : 12),
                   Text(
                     'privacy_policy_accepted_status'.tr,
-                    style: TextStyle(fontSize: isTablet ? 14 : 16, fontWeight: FontWeight.w600, color: Colors.green[800]),
+                    style: TextStyle(
+                        fontSize: isTablet ? 14 : 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.green[800]),
                   ),
                 ],
               ),
@@ -541,12 +579,20 @@ class PrivacyPolicyView extends StatelessWidget {
   }
 
   // Content methods
-  String _getInformationWeCollectContent() => 'information_we_collect_content'.tr;
+  String _getInformationWeCollectContent() =>
+      'information_we_collect_content'.tr;
+
   String _getHowWeUseContent() => 'how_we_use_content'.tr;
+
   String _getLocationServicesContent() => 'location_services_content'.tr;
+
   String _getDataSharingContent() => 'data_sharing_content'.tr;
+
   String _getDataSecurityContent() => 'data_security_content'.tr;
+
   String _getYourRightsContent() => 'your_rights_content'.tr;
+
   String _getThirdPartyContent() => 'third_party_content'.tr;
+
   String _getChildrenPrivacyContent() => 'children_privacy_content'.tr;
 }

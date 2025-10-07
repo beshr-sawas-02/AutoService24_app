@@ -7,7 +7,6 @@ import '../data/repositories/auth_repository.dart';
 import '../data/models/user_model.dart';
 import '../utils/storage_service.dart';
 import '../utils/error_handler.dart';
-import '../utils/helpers.dart';
 import '../routes/app_routes.dart';
 import 'service_controller.dart';
 import 'chat_controller.dart';
@@ -23,13 +22,9 @@ class AuthController extends GetxController {
   var isUserDataLoaded = false.obs;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-      scopes: [
-        'email',
-        'profile'
-      ],
-
-      clientId:
-          '1073993043012-but35ubclk4kel50nri6ih64i3965i1i.apps.googleusercontent.com');
+    scopes: ['email', 'profile'],
+    clientId: '1073993043012-but35ubclk4kel50nri6ih64i3965i1i.apps.googleusercontent.com',
+  );
 
   @override
   void onInit() {
@@ -48,8 +43,6 @@ class AuthController extends GetxController {
 
         if (currentUser.value != null) {
           isLoggedIn.value = true;
-
-
           _updateWebSocketUserSilently(currentUser.value?.id);
         } else {
           isLoggedIn.value = false;
@@ -59,6 +52,7 @@ class AuthController extends GetxController {
         currentUser.value = null;
       }
     } catch (e) {
+      ErrorHandler.handleAndShowError(e, silent: true);
       isLoggedIn.value = false;
       currentUser.value = null;
     } finally {
@@ -81,7 +75,7 @@ class AuthController extends GetxController {
         }
       }
     } catch (e) {
-      ErrorHandler.logError(e, null);
+      ErrorHandler.handleAndShowError(e, silent: true);
     }
   }
 
@@ -95,9 +89,9 @@ class AuthController extends GetxController {
         serviceController.filteredServices.clear();
       }
     } catch (e) {
+      ErrorHandler.handleAndShowError(e, silent: true);
     }
   }
-
 
   void _updateWebSocketUserSilently(String? userId) {
     try {
@@ -106,9 +100,9 @@ class AuthController extends GetxController {
         chatController.updateWebSocketUser(userId);
       }
     } catch (e) {
+      ErrorHandler.handleAndShowError(e, silent: true);
     }
   }
-
 
   Future<void> _updateWebSocketUser(String? userId) async {
     try {
@@ -116,7 +110,9 @@ class AuthController extends GetxController {
         final chatController = Get.find<ChatController>();
         await chatController.updateWebSocketUser(userId);
       }
-    } catch (e) {}
+    } catch (e) {
+      ErrorHandler.handleAndShowError(e, silent: true);
+    }
   }
 
   Future<bool> login(String email, String password) async {
@@ -129,9 +125,7 @@ class AuthController extends GetxController {
         final user = response['user'];
 
         if (user['verified'] == false) {
-          Helpers.showErrorSnackbar(
-            'Please verify your account first. Check your email.',
-          );
+          ErrorHandler.showInfo('verify_account_first'.tr);
           return false;
         }
 
@@ -142,20 +136,14 @@ class AuthController extends GetxController {
         isLoggedIn.value = true;
         isUserDataLoaded.value = true;
 
-        // Check if user has accepted privacy policy
         final hasAcceptedPrivacy = await StorageService.hasAcceptedPrivacyPolicy();
         if (!hasAcceptedPrivacy) {
-          // For existing users who haven't accepted privacy policy yet
-          // You can either auto-accept or redirect to privacy policy
           await StorageService.setAcceptedPrivacyPolicy(true);
           await StorageService.setAcceptedPrivacyVersion("1.0");
         }
 
         await _clearServiceData();
         await _updateWebSocketUser(currentUser.value?.id);
-
-        Helpers.showSuccessSnackbar('Login successful');
-
         Get.offAllNamed(
           currentUser.value?.userType == 'owner'
               ? AppRoutes.ownerHome
@@ -164,24 +152,12 @@ class AuthController extends GetxController {
 
         await _reloadUserSpecificData();
         return true;
-
       } else {
-        Helpers.showErrorSnackbar(
-          'Unable to login. Please check your email and password, or verify your account.',
-        );
+        ErrorHandler.showInfo('login_failed_check_credentials'.tr);
         return false;
       }
     } catch (e) {
-      String errorMessage = e.toString().toLowerCase();
-
-      if (errorMessage.contains('unauthorized') || errorMessage.contains('invalid credentials')) {
-        Helpers.showErrorSnackbar(
-          'Unable to login. Please check your email and password, or verify your account.',
-        );
-      } else {
-        Helpers.showErrorSnackbar('An error occurred - Please try again.');
-      }
-
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -193,53 +169,43 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
 
-
       final response =
-          await _authRepository.updateProfileWithImage(userId, data, imageFile);
+      await _authRepository.updateProfileWithImage(userId, data, imageFile);
 
       if (response.containsKey('user')) {
         final updatedUserData = response['user'];
 
-
         currentUser.value = UserModel.fromJson(updatedUserData);
-
-
         await StorageService.saveUserData(updatedUserData);
-
-
         currentUser.refresh();
 
-        Helpers.showSuccessSnackbar('Profile updated successfully');
+        ErrorHandler.showSuccess('profile_updated_successfully'.tr);
         return true;
       } else if (response.containsKey('status') && response['status'] == true) {
-
-
         final updatedUser = currentUser.value!.copyWith(
           username: data['username'],
           email: data['email'],
           phone: data['phone'],
           profileImage:
-              response['profileImage'] ?? currentUser.value!.profileImage,
+          response['profileImage'] ?? currentUser.value!.profileImage,
         );
 
         currentUser.value = updatedUser;
         await StorageService.saveUserData(updatedUser.toJson());
         currentUser.refresh();
 
-        Helpers.showSuccessSnackbar('Profile updated successfully');
+        ErrorHandler.showSuccess('profile_updated_successfully'.tr);
         return true;
       } else {
         throw Exception('Invalid response from server');
       }
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
     }
   }
-
 
   Future<bool> updateProfileImage(File imageFile) async {
     try {
@@ -263,33 +229,24 @@ class AuthController extends GetxController {
           newImageUrl = response['profileImage'] ?? '';
         }
 
-
-
         final updatedUser = currentUser.value!.copyWith(
           profileImage: newImageUrl,
         );
 
         currentUser.value = updatedUser;
         await StorageService.saveUserData(updatedUser.toJson());
-
         currentUser.refresh();
 
-        Helpers.showSuccessSnackbar('Profile image updated successfully');
         return true;
       }
 
       return false;
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
     }
-  }
-
-
-  void debugProfileImage() {
   }
 
   Future<void> _reloadUserSpecificData() async {
@@ -298,11 +255,11 @@ class AuthController extends GetxController {
 
       if (Get.isRegistered<ServiceController>()) {
         final serviceController = Get.find<ServiceController>();
-
         await serviceController.loadServices();
         await serviceController.loadSavedServices();
       }
     } catch (e) {
+      ErrorHandler.handleAndShowError(e, silent: true);
     }
   }
 
@@ -310,30 +267,24 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
 
-
       final account = await _googleSignIn.signIn();
 
       if (account == null) {
-        Helpers.showErrorSnackbar('Google sign in cancelled');
+        ErrorHandler.showInfo('google_signin_cancelled'.tr);
         return false;
       }
 
-
       final authentication = await account.authentication;
-
-
       final idToken = authentication.idToken;
 
       if (idToken == null) {
         throw Exception('Failed to get Google ID token');
       }
 
-
       return await _handleSocialLoginResponse('google', idToken,
           userType: userType);
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar('Google sign in failed: $errorMessage');
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -353,12 +304,11 @@ class AuthController extends GetxController {
         return await _handleSocialLoginResponse('facebook', accessToken,
             userType: userType);
       } else {
-        Helpers.showErrorSnackbar(result.message ?? 'Facebook sign in failed');
+        ErrorHandler.showInfo(result.message ?? 'facebook_signin_failed'.tr);
         return false;
       }
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar('Facebook sign in failed: $errorMessage');
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -384,8 +334,7 @@ class AuthController extends GetxController {
       return await _handleSocialLoginResponse('apple', identityToken,
           userType: userType);
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar('Apple sign in failed: $errorMessage');
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -403,21 +352,16 @@ class AuthController extends GetxController {
         await StorageService.saveUserData(response['user']);
 
         currentUser.value = UserModel.fromJson(response['user']);
-
         isLoggedIn.value = true;
         isUserDataLoaded.value = true;
 
-        // Automatically mark privacy policy as accepted for social login
-        // since user already accepted it in the registration form
         await StorageService.setAcceptedPrivacyPolicy(true);
         await StorageService.setAcceptedPrivacyVersion("1.0");
 
         await _clearServiceData();
-
         await _updateWebSocketUser(currentUser.value?.id);
 
-        Helpers.showSuccessSnackbar(
-            '${_capitalizeProvider(provider)} login successful');
+        ErrorHandler.showSuccess('${_capitalizeProvider(provider)} ${'login_successful'.tr}');
 
         if (currentUser.value?.userType == 'owner') {
           Get.offAllNamed(AppRoutes.ownerHome);
@@ -426,15 +370,13 @@ class AuthController extends GetxController {
         }
 
         await _reloadUserSpecificData();
-
         return true;
       } else {
-        Helpers.showErrorSnackbar('Invalid server response');
+        ErrorHandler.showInfo('invalid_server_response'.tr);
         return false;
       }
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     }
   }
@@ -458,17 +400,14 @@ class AuthController extends GetxController {
 
       final response = await _authRepository.register(userData);
 
-      // Case 1: User is immediately verified and logged in
       if (response.containsKey('token') && response.containsKey('user')) {
         await StorageService.saveToken(response['token']);
         await StorageService.saveUserData(response['user']);
 
         currentUser.value = UserModel.fromJson(response['user']);
-
         isLoggedIn.value = true;
         isUserDataLoaded.value = true;
 
-        // Mark privacy policy as accepted for this user
         if (userData['acceptsPrivacyPolicy'] == true) {
           await StorageService.setAcceptedPrivacyPolicy(true);
           await StorageService.setAcceptedPrivacyVersion("1.0");
@@ -477,7 +416,6 @@ class AuthController extends GetxController {
         await _clearServiceData();
         await _updateWebSocketUser(currentUser.value?.id);
 
-        Helpers.showSuccessSnackbar('account_created_and_verified'.tr);
 
         if (currentUser.value?.userType == 'owner') {
           Get.offAllNamed(AppRoutes.ownerHome);
@@ -487,25 +425,19 @@ class AuthController extends GetxController {
 
         await _reloadUserSpecificData();
         return true;
-      }
-      // Case 2: Account created but needs email verification
-      else if (response.containsKey('status') && response.containsKey('user')) {
+      } else if (response.containsKey('status') && response.containsKey('user')) {
         if (response['status'] == true) {
-          // Save user data temporarily (without token)
           await StorageService.saveUserData(response['user']);
 
-          // Mark privacy policy as accepted even for unverified accounts
           if (userData['acceptsPrivacyPolicy'] == true) {
             await StorageService.setAcceptedPrivacyPolicy(true);
             await StorageService.setAcceptedPrivacyVersion("1.0");
           }
 
-          // Show success message
-          Helpers.showSuccessSnackbar(
+          ErrorHandler.showSuccess(
             response['message'] ?? 'account_created_verify_email'.tr,
           );
 
-          // Navigate to email verification with user's email
           String userEmail = response['user']['email'] ?? userData['email'] ?? '';
           Get.offAllNamed(
             AppRoutes.emailVerification,
@@ -514,29 +446,23 @@ class AuthController extends GetxController {
 
           return true;
         } else {
-          // Registration failed
-          Helpers.showErrorSnackbar(
+          ErrorHandler.showInfo(
             response['message'] ?? 'registration_failed'.tr,
           );
           return false;
         }
-      }
-      // Case 3: Account created, email verification required (alternative response format)
-      else if (response.containsKey('message') &&
+      } else if (response.containsKey('message') &&
           response.containsKey('email_verification_required') &&
           response['email_verification_required'] == true) {
-
-        // Mark privacy policy as accepted for this registration
         if (userData['acceptsPrivacyPolicy'] == true) {
           await StorageService.setAcceptedPrivacyPolicy(true);
           await StorageService.setAcceptedPrivacyVersion("1.0");
         }
 
-        Helpers.showSuccessSnackbar(
+        ErrorHandler.showSuccess(
           response['message'] ?? 'account_created_verify_email'.tr,
         );
 
-        // Navigate to email verification
         String userEmail = userData['email'] ?? '';
         Get.offAllNamed(
           AppRoutes.emailVerification,
@@ -544,15 +470,12 @@ class AuthController extends GetxController {
         );
 
         return true;
-      }
-      // Case 4: Invalid response
-      else {
-        Helpers.showErrorSnackbar('invalid_server_response'.tr);
+      } else {
+        ErrorHandler.showInfo('invalid_server_response'.tr);
         return false;
       }
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -562,18 +485,14 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     try {
       await _updateWebSocketUser(null);
-
       await _signOutFromSocialProviders();
-
       await _clearServiceData();
 
-      // Preserve privacy policy acceptance even after logout
       final hasAcceptedPrivacy = await StorageService.hasAcceptedPrivacyPolicy();
       final privacyVersion = await StorageService.getAcceptedPrivacyVersion();
 
       await StorageService.clearAll();
 
-      // Restore privacy policy acceptance
       if (hasAcceptedPrivacy) {
         await StorageService.setAcceptedPrivacyPolicy(true);
         if (privacyVersion != null) {
@@ -585,10 +504,9 @@ class AuthController extends GetxController {
       currentUser.value = null;
       isUserDataLoaded.value = true;
 
-      Helpers.showSuccessSnackbar('Logged out successfully');
       Get.offAllNamed(AppRoutes.userHome);
     } catch (e) {
-      ErrorHandler.logError(e, null);
+      ErrorHandler.handleAndShowError(e, silent: true);
     }
   }
 
@@ -597,30 +515,22 @@ class AuthController extends GetxController {
       await _googleSignIn.signOut();
       await FacebookAuth.instance.logOut();
     } catch (e) {
-
+      ErrorHandler.handleAndShowError(e, silent: true);
     }
   }
 
   bool get isGuest => !isLoggedIn.value;
-
   bool get isOwner => currentUser.value?.userType == 'owner';
-
   bool get isUser => currentUser.value?.userType == 'user';
-
   String get displayName => currentUser.value?.username ?? 'Guest';
-
   String get userEmail => currentUser.value?.email ?? '';
-
 
   Future<void> refreshUserData() async {
     isUserDataLoaded.value = false;
-
-
     await _loadUserData();
 
     if (currentUser.value != null) {
       currentUser.refresh();
-    } else {
     }
 
     isUserDataLoaded.value = true;
@@ -641,20 +551,17 @@ class AuthController extends GetxController {
 
       if (currentUser.value?.id != null) {
         await _authRepository.deleteAccount(currentUser.value!.id);
-
-
         await _updateWebSocketUser(null);
-
         await logout();
-        Helpers.showSuccessSnackbar('Account deleted successfully');
+
+        ErrorHandler.showSuccess('account_deleted_successfully'.tr);
         return true;
       }
 
-      Helpers.showErrorSnackbar('Unable to delete account');
+      ErrorHandler.showInfo('unable_to_delete_account'.tr);
       return false;
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -666,11 +573,10 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       await _authRepository.forgotPassword(email, newPassword);
-      Helpers.showSuccessSnackbar('Password updated successfully');
+      ErrorHandler.showSuccess('password_updated_successfully'.tr);
       return true;
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -682,11 +588,10 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       await _authRepository.sendForgotPasswordCode(email);
-      Helpers.showSuccessSnackbar('verification_code_sent_successfully'.tr);
+      ErrorHandler.showSuccess('verification_code_sent_successfully'.tr);
       return true;
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -698,11 +603,10 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       await _authRepository.verifyResetCode(email, code);
-      Helpers.showSuccessSnackbar('code_verified_successfully'.tr);
+      ErrorHandler.showSuccess('code_verified_successfully'.tr);
       return true;
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -718,32 +622,12 @@ class AuthController extends GetxController {
       await StorageService.saveUserData(userData);
       currentUser.value = UserModel.fromJson(userData);
 
-      Helpers.showSuccessSnackbar('Profile updated successfully');
       return true;
     } catch (e) {
-      String errorMessage = _extractErrorMessage(e.toString());
-      Helpers.showErrorSnackbar(errorMessage);
+      ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
-    }
-  }
-
-  String _extractErrorMessage(String error) {
-    error = error.toLowerCase();
-
-    if (error.contains('verify') || error.contains('not verified')) {
-      return 'Please verify your account first. Check your email.';
-    } else if (error.contains('invalid email or password') || error.contains('unauthorized')) {
-      return 'Invalid email or password';
-    } else if (error.contains('email already exists')) {
-      return 'This email is already registered';
-    } else if (error.contains('network error')) {
-      return 'Network error - Check your internet connection';
-    } else if (error.contains('server error')) {
-      return 'Server error - Please try again later';
-    } else {
-      return 'An error occurred - Please try again';
     }
   }
 }

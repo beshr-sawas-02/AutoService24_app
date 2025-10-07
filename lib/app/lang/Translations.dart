@@ -4,7 +4,7 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'en': {
-          // Auth translations
+          'user_deleted_successfully': 'User deleted successfully',
           'reset_password': 'Reset Password',
           'forgot_password': 'Forgot Password?',
           'enter_email_reset':
@@ -894,15 +894,105 @@ Termination:
           'registration_failed': 'Registration failed',
           'login_to_manage_privacy': 'Login to manage privacy settings',
           "delete_chat": "Delete Chat",
-          "are_you_sure_delete_chat": "Are you sure you want to delete this chat?",
-          "show_results":"Show Results",
-          'tap_to_view_conversation':'Tap to view conversation',
+          "are_you_sure_delete_chat":
+              "Are you sure you want to delete this chat?",
+          "show_results": "Show Results",
+          'tap_to_view_conversation': 'Tap to view conversation',
+          'retry': 'Retry',
+
+          // Connection errors
+          'connection_timeout': 'Connection timeout. Check your internet',
+          'request_timeout': 'Request timeout. Try again',
+          'server_timeout': 'Server response timeout. Try again',
+          'connection_error': 'Connection error. Check your internet',
+          'request_cancelled': 'Request cancelled',
+          'unexpected_error': 'An unexpected error occurred',
+          'something_went_wrong': 'Something went wrong. Please try again',
+
+          // HTTP errors
+          'bad_request': 'Bad request. Check your input',
+          'unauthorized_login_again': 'Session expired. Please login again',
+          'access_forbidden': 'You don\'t have permission for this action',
+          'resource_not_found': 'Content not found',
+          'resource_already_exists': 'Item already exists',
+          'invalid_data_provided': 'Invalid data provided',
+          'too_many_requests': 'Too many requests. Try later',
+          'server_error': 'Server issue. Try later',
+          'bad_gateway': 'Server temporarily unavailable',
+          'gateway_timeout': 'Gateway timeout',
+          'server_error_occurred': 'Server error occurred',
+
+          // Data errors
+          'invalid_data_format': 'Invalid data format',
+          'data_type_error': 'Data type error',
+
+          // Other messages
+          'validation_error': 'Validation error',
+          'session_expired': 'Session expired. Please login again',
+
+          // Service actions
+          'removed_unavailable_services':
+              '{count} unavailable services removed',
+          'service_already_saved': 'Service is already saved',
+          'service_saved_successfully': 'Service saved successfully',
+          'service_already_in_list': 'Service is already in your saved list',
+          'service_removed_successfully': 'Service removed from saved',
+          'images_uploaded_successfully': 'Images uploaded successfully',
+          'service_updated_successfully': 'Service updated successfully',
+
+          // Chat actions
+          'image_sent_successfully': 'Image sent successfully',
+          'message_deleted_successfully': 'Message deleted successfully',
+          'chat_deleted_successfully': 'Chat deleted successfully',
+
+          // Auth actions
+          'verify_account_first':
+              'Please verify your account first. Check your email',
+          'login_successful': 'Login successful',
+          'login_failed_check_credentials':
+              'Login failed. Check your email and password',
+          'profile_image_updated_successfully':
+              'Profile image updated successfully',
+          'google_signin_cancelled': 'Google sign in cancelled',
+          'facebook_signin_failed': 'Facebook sign in failed',
+          'logged_out_successfully': 'Logged out successfully',
+          'account_deleted_successfully': 'Account deleted successfully',
+          'unable_to_delete_account': 'Unable to delete account',
+          'password_updated_successfully': 'Password updated successfully',
+          'workshop_updated_successfully': 'Workshop updated successfully',
+          'workshop_deleted_successfully': 'Workshop deleted successfully',
+          'my_workshops': 'My Workshops',
+          'loading_workshops': 'Loading workshops...',
+          'no_workshops_yet': 'No workshops yet',
+          'create_first_workshop':
+              'Create your first workshop to start offering services',
+          'no_address': 'No address',
+          'view_services': 'View Services',
+          'edit_workshop': 'Edit Workshop',
+          'delete_workshop': 'Delete Workshop',
+          'services_count': 'Services',
+          'confirm_delete_workshop':
+              'Are you sure you want to delete this workshop?',
+          'workshop_services_will_be_deleted':
+              '{count} services will be permanently deleted',
+          'deleting_workshop': 'Deleting workshop...',
+          'please_wait': 'Please wait',
+          'edit_workshop_info': 'Edit Workshop Info',
+          'enter_workshop_name': 'Enter workshop name',
+          'enter_workshop_description': 'Enter workshop description',
+          'enter_working_hours': 'e.g., Mon-Fri: 9AM-6PM',
+          'workshop_name_required': 'Workshop name is required',
+          'workshop_description_required': 'Workshop description is required',
+          'working_hours_required': 'Working hours is required',
+          'manage_workshops_services': 'Manage your workshops and services',
         },
         'de': {
-          'tap_to_view_conversation':'Tippen, um die Unterhaltung anzuzeigen',
-          "show_results":"Ergebnisse anzeigen",
+          'user_deleted_successfully': 'Benutzer erfolgreich gelöscht',
+          'tap_to_view_conversation': 'Tippen, um die Unterhaltung anzuzeigen',
+          "show_results": "Ergebnisse anzeigen",
           "delete_chat": "Chat löschen",
-          "are_you_sure_delete_chat": "Möchten Sie diesen Chat wirklich löschen?",
+          "are_you_sure_delete_chat":
+              "Möchten Sie diesen Chat wirklich löschen?",
           'login_to_manage_privacy':
               'Anmelden, um Datenschutzeinstellungen zu verwalten',
           'privacy_policy_accepted_successfully':
@@ -1846,6 +1936,102 @@ Kündigung:
           'privacy_contact_phone': 'Telefon',
           'privacy_contact_address': 'Adresse',
           'privacy_contact_address_value': 'Königreich Saudi-Arabien',
+          'retry': 'Wiederholen',
+
+          // Verbindungsfehler
+          'connection_timeout':
+              'Verbindungszeitüberschreitung. Prüfen Sie Ihr Internet',
+          'request_timeout':
+              'Anfragezeitüberschreitung. Versuchen Sie es erneut',
+          'server_timeout':
+              'Server-Antwortzeitüberschreitung. Versuchen Sie es erneut',
+          'connection_error': 'Verbindungsfehler. Prüfen Sie Ihr Internet',
+          'request_cancelled': 'Anfrage abgebrochen',
+          'unexpected_error': 'Ein unerwarteter Fehler ist aufgetreten',
+          'something_went_wrong':
+              'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut',
+
+          // HTTP-Fehler
+          'bad_request': 'Ungültige Anfrage. Überprüfen Sie Ihre Eingabe',
+          'unauthorized_login_again':
+              'Sitzung abgelaufen. Bitte melden Sie sich erneut an',
+          'access_forbidden': 'Sie haben keine Berechtigung für diese Aktion',
+          'resource_not_found': 'Inhalt nicht gefunden',
+          'resource_already_exists': 'Element existiert bereits',
+          'invalid_data_provided': 'Ungültige Daten angegeben',
+          'too_many_requests': 'Zu viele Anfragen. Versuchen Sie es später',
+          'server_error': 'Serverproblem. Versuchen Sie es später',
+          'bad_gateway': 'Server vorübergehend nicht verfügbar',
+          'gateway_timeout': 'Gateway-Zeitüberschreitung',
+          'server_error_occurred': 'Serverfehler aufgetreten',
+
+          // Datenfehler
+          'invalid_data_format': 'Ungültiges Datenformat',
+          'data_type_error': 'Datentypfehler',
+
+          // Andere Nachrichten
+          'validation_error': 'Validierungsfehler',
+          'session_expired':
+              'Sitzung abgelaufen. Bitte melden Sie sich erneut an',
+
+          // Service-Aktionen
+          'removed_unavailable_services':
+              '{count} nicht verfügbare Dienste entfernt',
+          'service_already_saved': 'Dienst ist bereits gespeichert',
+          'service_saved_successfully': 'Dienst erfolgreich gespeichert',
+          'service_already_in_list':
+              'Dienst ist bereits in Ihrer gespeicherten Liste',
+          'service_removed_successfully': 'Dienst aus gespeicherten entfernt',
+          'images_uploaded_successfully': 'Bilder erfolgreich hochgeladen',
+          'service_updated_successfully': 'Dienst erfolgreich aktualisiert',
+
+          // Chat-Aktionen
+          'image_sent_successfully': 'Bild erfolgreich gesendet',
+          'message_deleted_successfully': 'Nachricht erfolgreich gelöscht',
+          'chat_deleted_successfully': 'Chat erfolgreich gelöscht',
+
+          // Auth-Aktionen
+          'verify_account_first':
+              'Bitte verifizieren Sie zuerst Ihr Konto. Überprüfen Sie Ihre E-Mail',
+          'login_successful': 'Anmeldung erfolgreich',
+          'login_failed_check_credentials':
+              'Anmeldung fehlgeschlagen. Überprüfen Sie E-Mail und Passwort',
+          'profile_image_updated_successfully':
+              'Profilbild erfolgreich aktualisiert',
+          'google_signin_cancelled': 'Google-Anmeldung abgebrochen',
+          'facebook_signin_failed': 'Facebook-Anmeldung fehlgeschlagen',
+          'logged_out_successfully': 'Erfolgreich abgemeldet',
+          'account_deleted_successfully': 'Konto erfolgreich gelöscht',
+          'unable_to_delete_account': 'Konto kann nicht gelöscht werden',
+          'password_updated_successfully': 'Passwort erfolgreich aktualisiert',
+          'workshop_updated_successfully': 'Werkstatt erfolgreich aktualisiert',
+          'workshop_deleted_successfully': 'Werkstatt erfolgreich gelöscht',
+          'my_workshops': 'Meine Werkstätten',
+          'loading_workshops': 'Werkstätten werden geladen...',
+          'no_workshops_yet': 'Noch keine Werkstätten',
+          'create_first_workshop':
+              'Erstellen Sie Ihre erste Werkstatt, um Dienste anzubieten',
+          'no_address': 'Keine Adresse',
+          'view_services': 'Dienste anzeigen',
+          'edit_workshop': 'Werkstatt bearbeiten',
+          'delete_workshop': 'Werkstatt löschen',
+          'services_count': 'Dienste',
+          'confirm_delete_workshop':
+              'Möchten Sie diese Werkstatt wirklich löschen?',
+          'workshop_services_will_be_deleted':
+              '{count} Dienste werden dauerhaft gelöscht',
+          'deleting_workshop': 'Werkstatt wird gelöscht...',
+          'please_wait': 'Bitte warten',
+          'edit_workshop_info': 'Werkstatt-Info bearbeiten',
+          'enter_workshop_name': 'Werkstattnamen eingeben',
+          'enter_workshop_description': 'Werkstattbeschreibung eingeben',
+          'enter_working_hours': 'z.B., Mo-Fr: 9-18 Uhr',
+          'workshop_name_required': 'Werkstattname ist erforderlich',
+          'workshop_description_required':
+              'Werkstattbeschreibung ist erforderlich',
+          'working_hours_required': 'Arbeitszeiten sind erforderlich',
+          'manage_workshops_services':
+              'Verwalten Sie Ihre Werkstätten und Dienste',
         },
       };
 }

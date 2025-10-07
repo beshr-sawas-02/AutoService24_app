@@ -217,10 +217,10 @@ class PrivacyPolicyController extends GetxController {
     if (kDebugMode) {
       debugPrint('=== Privacy Policy Controller Debug ===');
       debugPrint('Status: ${privacyStatus.toString()}');
-      debugPrint('Privacy Status Text: ${privacyStatusText}');
-      debugPrint('Accepted Date Text: ${acceptedDateText}');
-      debugPrint('Can Proceed: ${canProceed}');
-      debugPrint('Needs Update: ${needsPrivacyUpdate}');
+      debugPrint('Privacy Status Text: $privacyStatusText');
+      debugPrint('Accepted Date Text: $acceptedDateText');
+      debugPrint('Can Proceed: $canProceed');
+      debugPrint('Needs Update: $needsPrivacyUpdate');
       debugPrint('======================================');
     }
   }

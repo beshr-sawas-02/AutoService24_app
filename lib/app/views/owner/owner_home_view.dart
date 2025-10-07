@@ -44,21 +44,20 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
         elevation: 0,
         title: Text(
           'auto_services'.tr,
-          style: const TextStyle(
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: AppColors.textPrimary,
-            fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
         ),
         automaticallyImplyLeading: false,
         actions: [
-          _buildLanguageSwitcher(),
+          _LanguageSwitcher(),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: _loadData,
         color: AppColors.primary,
-        child: _getBody(),
+        child: _HomeContent(authController: authController),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -79,9 +78,7 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
             Get.toNamed(AppRoutes.ownerProfile);
             return;
           }
-          setState(() {
-            _currentIndex = index;
-          });
+          setState(() => _currentIndex = index);
         },
         items: [
           BottomNavigationBarItem(
@@ -111,10 +108,12 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       ),
     );
   }
+}
 
-  Widget _buildLanguageSwitcher() {
-    final LanguageController languageController =
-    Get.find<LanguageController>();
+class _LanguageSwitcher extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final LanguageController languageController = Get.find<LanguageController>();
 
     return PopupMenuButton<String>(
       icon: const Icon(Icons.language, color: AppColors.textSecondary),
@@ -122,83 +121,68 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       onSelected: (String languageCode) {
         languageController.changeLocale(languageCode);
       },
-      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-        PopupMenuItem<String>(
-          value: 'en',
-          child: Row(
-            children: [
-              const Text('🇺🇸'),
-              const SizedBox(width: 8),
-              Text('english'.tr),
-              if (languageController.locale.value.languageCode == 'en')
-                const Spacer()
-              else
-                const SizedBox.shrink(),
-              if (languageController.locale.value.languageCode == 'en')
-                const Icon(Icons.check, color: AppColors.primary)
-              else
-                const SizedBox.shrink(),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'de',
-          child: Row(
-            children: [
-              const Text('🇩🇪'),
-              const SizedBox(width: 8),
-              Text('german'.tr),
-              if (languageController.locale.value.languageCode == 'de')
-                const Spacer()
-              else
-                const SizedBox.shrink(),
-              if (languageController.locale.value.languageCode == 'de')
-                const Icon(Icons.check, color: AppColors.primary)
-              else
-                const SizedBox.shrink(),
-            ],
-          ),
-        ),
+      itemBuilder: (BuildContext context) => [
+        _buildItem('en', '🇺🇸', 'english'.tr, languageController),
+        _buildItem('de', '🇩🇪', 'german'.tr, languageController),
       ],
     );
   }
 
-  Widget _getBody() {
-    return _buildHomeContent();
+  PopupMenuItem<String> _buildItem(
+      String code, String flag, String label, LanguageController controller) {
+    final isSelected = controller.locale.value.languageCode == code;
+    return PopupMenuItem<String>(
+      value: code,
+      child: Row(
+        children: [
+          Text(flag),
+          const SizedBox(width: 8),
+          Text(label),
+          const Spacer(),
+          if (isSelected)
+            const Icon(Icons.check, color: AppColors.primary),
+        ],
+      ),
+    );
   }
+}
 
-  Widget _buildHomeContent() {
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildWelcomeCard(),
-                const SizedBox(height: 24),
-                Text(
-                  'service_categories'.tr,
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                _buildServiceCategories(),
-                const SizedBox(height: 100),
-              ],
+class _HomeContent extends StatelessWidget {
+  final AuthController authController;
+  const _HomeContent({required this.authController});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _WelcomeCard(authController: authController),
+          const SizedBox(height: 24),
+          Text(
+            'service_categories'.tr,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 20),
+          const _ServiceCategories(),
+          const SizedBox(height: 100),
+        ],
+      ),
     );
   }
+}
 
-  Widget _buildWelcomeCard() {
+class _WelcomeCard extends StatelessWidget {
+  final AuthController authController;
+  const _WelcomeCard({required this.authController});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -222,9 +206,8 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
               'hello_user'
                   .tr
                   .replaceAll('{name}', authController.displayName),
-              style: const TextStyle(
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: AppColors.white,
-                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             )),
@@ -233,8 +216,13 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       ),
     );
   }
+}
 
-  Widget _buildServiceCategories() {
+class _ServiceCategories extends StatelessWidget {
+  const _ServiceCategories();
+
+  @override
+  Widget build(BuildContext context) {
     final categories = [
       {
         'title': 'vehicle_inspection',
@@ -316,7 +304,8 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
-        return GestureDetector(
+        return InkWell(
+          borderRadius: BorderRadius.circular(16),
           onTap: () {
             Get.toNamed(
               AppRoutes.filteredServices,
@@ -353,10 +342,8 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              (category['color'] as Color)
-                                  .withValues(alpha: 0.8),
-                              (category['color'] as Color)
-                                  .withValues(alpha: 0.6),
+                              (category['color'] as Color).withValues(alpha: 0.8),
+                              (category['color'] as Color).withValues(alpha: 0.6),
                             ],
                           ),
                         ),
@@ -379,9 +366,8 @@ class _OwnerHomeViewState extends State<OwnerHomeView> {
                     child: Text(
                       (category['title'] as String).tr,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: AppColors.white,
-                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         shadows: [
                           Shadow(
