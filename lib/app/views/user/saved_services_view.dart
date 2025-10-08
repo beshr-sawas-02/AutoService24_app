@@ -55,14 +55,13 @@ class _SavedServicesViewState extends State<SavedServicesView> {
               strokeWidth: 2,
               value: loadingProgress.expectedTotalBytes != null
                   ? loadingProgress.cumulativeBytesLoaded /
-                  loadingProgress.expectedTotalBytes!
+                      loadingProgress.expectedTotalBytes!
                   : null,
             ),
           );
         },
       );
-    }
-    else if (imagePath.startsWith('/') || imagePath.contains('/data/')) {
+    } else if (imagePath.startsWith('/') || imagePath.contains('/data/')) {
       return Image.file(
         File(imagePath),
         fit: BoxFit.cover,
@@ -70,8 +69,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
           return _buildErrorContainer();
         },
       );
-    }
-    else {
+    } else {
       return Image.asset(
         imagePath,
         fit: BoxFit.cover,
@@ -241,30 +239,30 @@ class _SavedServicesViewState extends State<SavedServicesView> {
           ),
           const SizedBox(height: 16),
           ...features.map((feature) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    feature,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        feature,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          )),
+              )),
         ],
       ),
     );
@@ -440,13 +438,21 @@ class _SavedServicesViewState extends State<SavedServicesView> {
         }
 
         if (snapshot.hasError || snapshot.data == null) {
-          return _buildErrorCard(savedService);
+          _autoDeleteRemovedService(savedService);
+
+          return const SizedBox.shrink();
         }
 
         final service = snapshot.data!;
         return _buildSavedServiceCard(service, savedService);
       },
     );
+  }
+
+  Future<void> _autoDeleteRemovedService(savedService) async {
+    try {
+      await serviceController.unsaveService(savedService.id);
+    } catch (e) {}
   }
 
   Widget _buildSavedServiceCard(ServiceModel service, savedService) {
@@ -483,7 +489,8 @@ class _SavedServicesViewState extends State<SavedServicesView> {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: AppColors.primaryWithOpacity(0.1),
                             borderRadius: BorderRadius.circular(16),
@@ -524,8 +531,10 @@ class _SavedServicesViewState extends State<SavedServicesView> {
                   height: 70,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
-                    itemCount: service.images.length > 3 ? 3 : service.images.length,
-                    separatorBuilder: (context, index) => const SizedBox(width: 8),
+                    itemCount:
+                        service.images.length > 3 ? 3 : service.images.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 8),
                     itemBuilder: (context, index) {
                       return Container(
                         width: 70,
@@ -578,32 +587,8 @@ class _SavedServicesViewState extends State<SavedServicesView> {
       child: const SizedBox(
         height: 120,
         child: Center(
-          child: CircularProgressIndicator(color: AppColors.primary, strokeWidth: 2),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorCard(savedService) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: AppColors.white,
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppColors.error.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(Icons.error_outline, color: AppColors.error),
-        ),
-        title: Text('service_unavailable'.tr),
-        subtitle: Text('service_removed_unavailable'.tr),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete_outline, color: AppColors.error),
-          onPressed: () => _unsaveService(savedService),
-          tooltip: 'remove_from_saved'.tr,
+          child: CircularProgressIndicator(
+              color: AppColors.primary, strokeWidth: 2),
         ),
       ),
     );
@@ -689,7 +674,9 @@ class _SavedServicesViewState extends State<SavedServicesView> {
     final difference = now.difference(savedDate);
 
     if (difference.inDays > 7) {
-      return 'saved_date'.tr.replaceAll('{date}', Helpers.formatDate(savedDate));
+      return 'saved_date'
+          .tr
+          .replaceAll('{date}', Helpers.formatDate(savedDate));
     } else if (difference.inDays > 0) {
       return 'days_ago'.tr.replaceAll('{days}', '${difference.inDays}');
     } else if (difference.inHours > 0) {

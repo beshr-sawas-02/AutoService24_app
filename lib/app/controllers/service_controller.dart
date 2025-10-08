@@ -46,7 +46,7 @@ class ServiceController extends GetxController {
     try {
       isLoading.value = true;
       final serviceList =
-      await _serviceRepository.getAllServices(serviceType: serviceType);
+          await _serviceRepository.getAllServices(serviceType: serviceType);
 
       // Sort services by creation date
       _sortServicesByDate(serviceList);
@@ -67,6 +67,12 @@ class ServiceController extends GetxController {
       final response = await _serviceRepository.getServiceById(serviceId);
       return response;
     } catch (e) {
+      if (e.toString().contains('404') ||
+          e.toString().contains('not found') ||
+          e.toString().contains('Not Found')) {
+        return null;
+      }
+
       ErrorHandler.handleAndShowError(e, silent: true);
       return null;
     }
@@ -146,7 +152,7 @@ class ServiceController extends GetxController {
 
   String? getSavedServiceId(String serviceId) {
     final saved =
-    savedServices.firstWhereOrNull((s) => s.serviceId == serviceId);
+        savedServices.firstWhereOrNull((s) => s.serviceId == serviceId);
     return saved?.id;
   }
 
@@ -166,7 +172,6 @@ class ServiceController extends GetxController {
       ErrorHandler.showSuccess('service_saved_successfully'.tr);
       return true;
     } catch (e) {
-
       if (e.toString().contains('already saved') ||
           e.toString().contains('already exists') ||
           e.toString().contains('duplicate')) {
@@ -259,7 +264,7 @@ class ServiceController extends GetxController {
       isLoading.value = true;
 
       final response =
-      await _serviceRepository.uploadServiceImages(serviceId, imageFiles);
+          await _serviceRepository.uploadServiceImages(serviceId, imageFiles);
 
       final index = ownerServices.indexWhere((s) => s.id == serviceId);
       if (index != -1 && response.containsKey('service')) {
@@ -281,7 +286,7 @@ class ServiceController extends GetxController {
       isLoading.value = true;
 
       final updatedService =
-      await _serviceRepository.updateService(id, serviceData);
+          await _serviceRepository.updateService(id, serviceData);
       final index = ownerServices.indexWhere((s) => s.id == id);
       if (index != -1) {
         ownerServices[index] = updatedService;
@@ -350,7 +355,7 @@ class ServiceController extends GetxController {
       isLoading.value = true;
 
       final serviceList =
-      await _serviceRepository.getServicesByWorkshopId(workshopId);
+          await _serviceRepository.getServicesByWorkshopId(workshopId);
 
       // Sort services by creation date
       _sortServicesByDate(serviceList);
@@ -369,7 +374,7 @@ class ServiceController extends GetxController {
       isLoadingPhone.value = true;
 
       final phoneNumber =
-      await _serviceRepository.getWorkshopOwnerPhone(serviceId);
+          await _serviceRepository.getWorkshopOwnerPhone(serviceId);
       return phoneNumber;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
