@@ -1607,7 +1607,7 @@ Kündigung:
           'diagnostic_test': 'Diagnose-Test',
           'pre_tuv_check': 'Vor-TÜV-Prüfung',
           'balance_tires': 'Reifen auswuchten',
-          'wheel_alignment': 'Rad-\nausrichtung',
+          'wheel_alignment': 'Achsvermessung',
           'polish': 'Polieren',
           'change_brake_fluid': 'Brems-\nflüssigkeit wechseln',
           'logout': 'Abmelden',

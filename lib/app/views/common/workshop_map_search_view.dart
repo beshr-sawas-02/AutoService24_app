@@ -59,7 +59,6 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
     if (_isDisposed) return;
     await mapController.checkLocationServices();
 
-
     final currentPos = mapController.currentPosition.value;
     if (currentPos != null) {
       await mapController.addCurrentLocationMarker(
@@ -98,6 +97,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
       _setInitialSearchCenter();
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -133,21 +133,18 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
               );
             }),
           ),
-
           Positioned(
             top: topPadding + 10,
             left: isTablet ? 24 : 16,
             right: isTablet ? 24 : 16,
             child: _buildTopSearchBar(isTablet),
           ),
-
           if (!shouldFocusOnWorkshop)
             Positioned(
               left: isTablet ? 24 : 16,
               top: topPadding + (isTablet ? 100 : 120),
               child: _buildRadiusSlider(isTablet),
             ),
-
           Positioned(
             right: isTablet ? 24 : 16,
             top: topPadding + (isTablet ? 100 : 120),
@@ -194,7 +191,6 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
               ],
             ),
           ),
-
           if (_showSearchOptions && !shouldFocusOnWorkshop)
             Positioned(
               top: topPadding + (isTablet ? 70 : 80),
@@ -202,14 +198,12 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
               right: isTablet ? 24 : 16,
               child: _buildSearchOptionsPanel(isTablet),
             ),
-
           Positioned(
             bottom: 0,
             left: 0,
             right: 0,
             child: _buildBottomResultsPanel(isTablet),
           ),
-
           if (!shouldFocusOnWorkshop)
             Positioned(
               top: topPadding + (isTablet ? 65 : 70),
@@ -219,8 +213,9 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                 child: _buildSearchFAB(isTablet),
               ),
             ),
-
-          if (!_showResultsPanel && _nearbyWorkshops.isNotEmpty && !shouldFocusOnWorkshop)
+          if (!_showResultsPanel &&
+              _nearbyWorkshops.isNotEmpty &&
+              !shouldFocusOnWorkshop)
             Positioned(
               bottom: isTablet ? 24 : 30,
               left: 0,
@@ -293,7 +288,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
       child: Row(
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.grey, size: isTablet ? 20 : 24),
+            icon: Icon(Icons.arrow_back,
+                color: Colors.grey, size: isTablet ? 20 : 24),
             onPressed: () => Get.back(),
           ),
           Expanded(
@@ -301,22 +297,26 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
               onTap: shouldFocusOnWorkshop
                   ? null
                   : () {
-                setState(() {
-                  _showSearchOptions = !_showSearchOptions;
-                });
-              },
+                      setState(() {
+                        _showSearchOptions = !_showSearchOptions;
+                      });
+                    },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: isTablet ? 10 : 12),
                 child: Text(
                   shouldFocusOnWorkshop && targetWorkshopName != null
                       ? targetWorkshopName!
-                      : _selectedServiceType?.displayName ?? 'select_service_type'.tr,
+                      : _selectedServiceType?.displayName ??
+                          'select_service_type'.tr,
                   style: TextStyle(
                     fontSize: isTablet ? 14 : 16,
-                    color: (_selectedServiceType != null || shouldFocusOnWorkshop)
-                        ? Colors.black87
-                        : Colors.grey[600],
-                    fontWeight: shouldFocusOnWorkshop ? FontWeight.bold : FontWeight.normal,
+                    color:
+                        (_selectedServiceType != null || shouldFocusOnWorkshop)
+                            ? Colors.black87
+                            : Colors.grey[600],
+                    fontWeight: shouldFocusOnWorkshop
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -402,8 +402,10 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                     child: Text(
                       serviceType.displayName,
                       style: TextStyle(
-                        color: isSelected ? AppColors.primary : Colors.grey[700],
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color:
+                            isSelected ? AppColors.primary : Colors.grey[700],
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
                         fontSize: isTablet ? 10 : 12,
                       ),
                       textAlign: TextAlign.center,
@@ -467,8 +469,10 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
               child: SliderTheme(
                 data: SliderTheme.of(context).copyWith(
                   trackHeight: isTablet ? 3 : 4,
-                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: isTablet ? 6 : 8),
-                  overlayShape: RoundSliderOverlayShape(overlayRadius: isTablet ? 12 : 16),
+                  thumbShape: RoundSliderThumbShape(
+                      enabledThumbRadius: isTablet ? 6 : 8),
+                  overlayShape: RoundSliderOverlayShape(
+                      overlayRadius: isTablet ? 12 : 16),
                 ),
                 child: Slider(
                   value: _radiusKm,
@@ -532,7 +536,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
       return const SizedBox.shrink();
     }
 
-    final panelHeight = MediaQuery.of(context).size.height * (isTablet ? 0.25 : 0.3);
+    final panelHeight =
+        MediaQuery.of(context).size.height * (isTablet ? 0.25 : 0.3);
 
     if (_nearbyWorkshops.isEmpty && !shouldFocusOnWorkshop) {
       return GestureDetector(
@@ -565,7 +570,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.search, size: isTablet ? 28 : 32, color: Colors.grey[400]),
+                      Icon(Icons.search,
+                          size: isTablet ? 28 : 32, color: Colors.grey[400]),
                       SizedBox(height: isTablet ? 6 : 8),
                       Text(
                         _selectedServiceType != null
@@ -602,7 +608,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
               child: OutlinedButton.icon(
                 onPressed: () => Get.back(),
                 icon: Icon(Icons.arrow_back, size: isTablet ? 18 : 20),
-                label: Text('back_to_services'.tr, style: TextStyle(fontSize: isTablet ? 13 : 15)),
+                label: Text('back_to_services'.tr,
+                    style: TextStyle(fontSize: isTablet ? 13 : 15)),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primary,
                   side: const BorderSide(color: AppColors.primary),
@@ -662,7 +669,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                   if (!shouldFocusOnWorkshop)
                     TextButton(
                       onPressed: _showAllResults,
-                      child: Text('view_all'.tr, style: TextStyle(fontSize: isTablet ? 12 : 14)),
+                      child: Text('view_all'.tr,
+                          style: TextStyle(fontSize: isTablet ? 12 : 14)),
                     ),
                 ],
               ),
@@ -673,7 +681,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                 itemCount: _nearbyWorkshops.length,
                 separatorBuilder: (context, index) => const Divider(),
                 itemBuilder: (context, index) {
-                  return _buildWorkshopListItem(_nearbyWorkshops[index], isTablet);
+                  return _buildWorkshopListItem(
+                      _nearbyWorkshops[index], isTablet);
                 },
               ),
             ),
@@ -685,11 +694,13 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                   child: OutlinedButton.icon(
                     onPressed: () => Get.back(),
                     icon: Icon(Icons.arrow_back, size: isTablet ? 18 : 20),
-                    label: Text('back_to_services'.tr, style: TextStyle(fontSize: isTablet ? 13 : 15)),
+                    label: Text('back_to_services'.tr,
+                        style: TextStyle(fontSize: isTablet ? 13 : 15)),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.primary,
                       side: const BorderSide(color: AppColors.primary),
-                      padding: EdgeInsets.symmetric(vertical: isTablet ? 10 : 12),
+                      padding:
+                          EdgeInsets.symmetric(vertical: isTablet ? 10 : 12),
                     ),
                   ),
                 ),
@@ -736,7 +747,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                     ),
                   )
                 else
-                  Icon(Icons.search, color: Colors.white, size: isTablet ? 18 : 20),
+                  Icon(Icons.search,
+                      color: Colors.white, size: isTablet ? 18 : 20),
                 SizedBox(width: isTablet ? 6 : 8),
                 Text(
                   'search'.tr,
@@ -756,7 +768,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
 
   Widget _buildWorkshopListItem(WorkshopModel workshop, bool isTablet) {
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(vertical: isTablet ? 6 : 8, horizontal: 0),
+      contentPadding:
+          EdgeInsets.symmetric(vertical: isTablet ? 6 : 8, horizontal: 0),
       leading: CircleAvatar(
         radius: isTablet ? 22 : 25,
         backgroundColor: AppColors.primary.withValues(alpha: 0.1),
@@ -771,7 +784,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
       ),
       title: Text(
         workshop.name,
-        style: TextStyle(fontWeight: FontWeight.w600, fontSize: isTablet ? 14 : 16),
+        style: TextStyle(
+            fontWeight: FontWeight.w600, fontSize: isTablet ? 14 : 16),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
@@ -788,14 +802,18 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
           SizedBox(height: isTablet ? 2 : 4),
           Row(
             children: [
-              Icon(Icons.location_on, size: isTablet ? 14 : 16, color: Colors.grey),
+              Icon(Icons.location_on,
+                  size: isTablet ? 14 : 16, color: Colors.grey),
               SizedBox(width: isTablet ? 2 : 4),
               Expanded(
                 child: Text(
                   workshop.distanceFromUser != null
-                      ? mapController.formatDistance(workshop.distanceFromUser! * 1000)
-                      : mapController.formatDistance(_calculateDistance(workshop) * 1000),
-                  style: TextStyle(color: Colors.grey, fontSize: isTablet ? 10 : 12),
+                      ? mapController
+                          .formatDistance(workshop.distanceFromUser! * 1000)
+                      : mapController
+                          .formatDistance(_calculateDistance(workshop) * 1000),
+                  style: TextStyle(
+                      color: Colors.grey, fontSize: isTablet ? 10 : 12),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -804,7 +822,8 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
           ),
         ],
       ),
-      trailing: Icon(Icons.arrow_forward_ios, size: isTablet ? 14 : 16, color: Colors.grey),
+      trailing: Icon(Icons.arrow_forward_ios,
+          size: isTablet ? 14 : 16, color: Colors.grey),
       onTap: () => _focusOnWorkshop(workshop),
     );
   }
@@ -823,10 +842,12 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
 
   void _onMapTap(MapContentGestureContext context) {
     if (_isDisposed || shouldFocusOnWorkshop) return;
+
     setState(() {
       _searchCenter = context.point;
       _showSearchOptions = false;
     });
+
     _updateSearchCircle();
   }
 
@@ -859,6 +880,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
   void _goToCurrentLocation() {
     if (_isDisposed) return;
     final currentPos = mapController.currentPosition.value;
+
     if (currentPos != null && _mapboxMap != null) {
       final currentPoint = Point(
         coordinates: Position(currentPos.longitude, currentPos.latitude),
@@ -869,7 +891,6 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
           _searchCenter = currentPoint;
         });
       }
-
 
       mapController.addCurrentLocationMarker(
         currentPos.latitude,
@@ -898,14 +919,14 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
   Future<void> _updateSearchCircle() async {
     if (_searchCenter == null || _isDisposed) return;
 
-    await mapController.clearCircles();
-    await mapController.addCircle(
+    await mapController.clearSearchCircles();
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    await mapController.addSearchCircle(
       _searchCenter!.coordinates.lat.toDouble(),
       _searchCenter!.coordinates.lng.toDouble(),
-      mapController.kilometersToMeters(_radiusKm),
-      fillColor: AppColors.primary.withOpacity(0.2).value,
-      strokeColor: AppColors.primary.value,
-      strokeWidth: 2.0,
+      _radiusKm,
     );
   }
 
@@ -981,15 +1002,12 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
     }
   }
 
-// في _addWorkshopMarkers:
-
   Future<void> _addWorkshopMarkers() async {
     if (_isDisposed) return;
 
     final currentPos = mapController.currentPosition.value;
 
     await mapController.clearMarkers();
-
 
     if (currentPos != null) {
       await mapController.addCurrentLocationMarker(
@@ -1112,9 +1130,9 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                               Text(
                                 workshop.distanceFromUser != null
                                     ? mapController.formatDistance(
-                                    workshop.distanceFromUser! * 1000)
+                                        workshop.distanceFromUser! * 1000)
                                     : mapController.formatDistance(
-                                    _calculateDistance(workshop) * 1000),
+                                        _calculateDistance(workshop) * 1000),
                                 style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: isTablet ? 12 : 14),
@@ -1260,9 +1278,6 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
         endLng: endLng,
       );
 
-
-      // await mapController.addDestinationMarker(...);
-
       await mapController.fitRoute(
         startLat: startLat,
         startLng: startLng,
@@ -1279,7 +1294,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
   void _showRouteInfo(double startLat, double startLng, double endLat,
       double endLng, String workshopName) {
     final distance =
-    mapController.calculateDistance(startLat, startLng, endLat, endLng);
+        mapController.calculateDistance(startLat, startLng, endLat, endLng);
     final estimatedTime = _calculateEstimatedTime(distance);
 
     showModalBottomSheet(
