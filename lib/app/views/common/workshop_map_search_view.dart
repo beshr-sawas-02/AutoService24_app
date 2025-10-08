@@ -24,7 +24,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
   MapboxMap? _mapboxMap;
   Point? _searchCenter;
 
-  double _radiusKm = 10.0;
+  double _radiusKm = 2.0;
   ServiceType? _selectedServiceType;
   List<WorkshopModel> _nearbyWorkshops = [];
   bool _isLoading = false;
