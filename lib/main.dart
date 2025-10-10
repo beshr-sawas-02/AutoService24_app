@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Auto Service 24',
+      title: 'AutoService24',
       debugShowCheckedModeBanner: false,
       initialBinding: AppBinding(),
       translations: AppTranslations(),

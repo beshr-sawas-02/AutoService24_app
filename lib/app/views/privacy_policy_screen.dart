@@ -236,7 +236,7 @@ class PrivacyPolicyView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Auto Service 24',
+                      'AutoService24',
                       style: TextStyle(
                         fontSize: isTablet ? 20 : 24,
                         fontWeight: FontWeight.bold,

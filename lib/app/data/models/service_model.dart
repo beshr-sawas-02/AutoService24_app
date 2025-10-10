@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+
 enum ServiceType {
   VEHICLE_INSPECTION('Vehicle inspection & emissions test'),
   CHANGE_OIL('Change oil'),
@@ -14,6 +16,34 @@ enum ServiceType {
   const ServiceType(this.displayName);
 
   final String displayName;
+
+
+  String get translatedName {
+    switch (this) {
+      case ServiceType.VEHICLE_INSPECTION:
+        return 'vehicle_inspection'.tr;
+      case ServiceType.CHANGE_OIL:
+        return 'change_oil'.tr;
+      case ServiceType.CHANGE_TIRES:
+        return 'change_tires'.tr;
+      case ServiceType.REMOVE_INSTALL_TIRES:
+        return 'remove_install_tires'.tr;
+      case ServiceType.CLEANING:
+        return 'cleaning'.tr;
+      case ServiceType.DIAGNOSTIC_TEST:
+        return 'diagnostic_test'.tr;
+      case ServiceType.AU_TUV:
+        return 'au_tuv'.tr;
+      case ServiceType.BALANCE_TIRES:
+        return 'balance_tires'.tr;
+      case ServiceType.WHEEL_ALIGNMENT:
+        return 'wheel_alignment'.tr;
+      case ServiceType.POLISH:
+        return 'polish'.tr;
+      case ServiceType.CHANGE_BRAKE_FLUID:
+        return 'change_brake_fluid'.tr;
+    }
+  }
 
   static ServiceType? fromString(String value) {
     for (ServiceType type in ServiceType.values) {
@@ -190,7 +220,6 @@ class ServiceModel {
   String get formattedPrice => '\€${price.toStringAsFixed(2)}';
 
   String get serviceTypeName => serviceType.displayName;
-
 
   String get workshopName {
     return workshopData?['name'] ?? 'Unknown Workshop';

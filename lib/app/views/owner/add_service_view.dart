@@ -192,7 +192,7 @@ class _AddServiceViewState extends State<AddServiceView> {
       items: ServiceType.values.map((type) {
         return DropdownMenuItem(
           value: type,
-          child: Text(type.displayName),
+          child: Text(type.translatedName),
         );
       }).toList(),
       onChanged: (value) {
@@ -358,7 +358,6 @@ class _AddServiceViewState extends State<AddServiceView> {
     }
 
     if (success) {
-
       // Reset form
       _formKey.currentState!.reset();
       _titleController.clear();
@@ -398,6 +397,7 @@ class _AddServiceViewState extends State<AddServiceView> {
       );
     }
   }
+
   @override
   void dispose() {
     _titleController.dispose();

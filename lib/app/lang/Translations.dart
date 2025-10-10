@@ -57,7 +57,7 @@ class AppTranslations extends Translations {
 
           // Register translations
           'create_account': 'Create Account',
-          'join_community': 'Join CarServiceHub community',
+          'join_community': 'Join AutoService24 community',
           'i_am_a': 'I am a:',
           'looking_for_services': 'Looking for services',
           'providing_services': 'Providing services',
@@ -275,7 +275,7 @@ class AppTranslations extends Translations {
           'remove_install_tires': 'Remove & Install\nTires',
           'cleaning': 'Cleaning',
           'diagnostic_test': 'Diagnostic Test',
-          'pre_tuv_check': 'Pre-TÜV Check',
+          'au_tuv': 'AU & TÜV',
           'balance_tires': 'Balance Tires',
           'wheel_alignment': 'Wheel\nAlignment',
           'polish': 'Polish',
@@ -561,14 +561,14 @@ class AppTranslations extends Translations {
               'If you don\'t see the email, please check your spam folder',
           'back_to_login': 'Back to Login',
           'create_different_account': 'Create Different Account',
-          'app_name': 'Auto Service 24',
+          'app_name': 'AutoService24',
           'last_updated': 'Last Updated',
           'accept_privacy_policy': 'Accept Privacy Policy',
 
           // Introduction Section
           'privacy_intro_title': 'Introduction',
           'privacy_intro_content':
-              'Welcome to Auto Service 24. We are committed to protecting your privacy and personal data. This privacy policy explains how we collect, use, and protect your personal information when using our app.\n\nBy using Auto Service 24, you agree to the information collection and use practices described in this policy.',
+              'Welcome to AutoService24. We are committed to protecting your privacy and personal data. This privacy policy explains how we collect, use, and protect your personal information when using our app.\n\nBy using AutoService24, you agree to the information collection and use practices described in this policy.',
 
           // Data Collection Section
           'privacy_data_collection_title': 'Data We Collect',
@@ -728,10 +728,10 @@ class AppTranslations extends Translations {
           'privacy_policy_title': 'Privacy Policy & Terms',
           'privacy_policy_header': 'Privacy & Terms of Service',
           'privacy_commitment':
-              'We are committed to protecting your privacy and ensuring the security of your personal information while you use Auto Service 24.',
+              'We are committed to protecting your privacy and ensuring the security of your personal information while you use AutoService24.',
           'important_notice': 'Important Notice',
           'privacy_introduction':
-              'This privacy policy explains how Auto Service 24 collects, uses, and protects your information when you use our automotive service platform. By using our services, you agree to the collection and use of information in accordance with this policy.',
+              'This privacy policy explains how AutoService24 collects, uses, and protects your information when you use our automotive service platform. By using our services, you agree to the collection and use of information in accordance with this policy.',
 
           // Main Content Sections
           'information_we_collect_title': 'Information We Collect',
@@ -830,10 +830,10 @@ These services have their own privacy policies. We recommend reviewing them:
 
           'children_privacy_title': 'Children\'s Privacy',
           'children_privacy_content':
-              '''Auto Service 24 is intended for users 18 years and older. We do not knowingly collect personal information from children under 18. If we discover that a child has provided us with personal information, we will delete it immediately. If you believe a child has provided us with information, please contact us at privacy@autoservice24.com.''',
+              '''AutoService24 is intended for users 18 years and older. We do not knowingly collect personal information from children under 18. If we discover that a child has provided us with personal information, we will delete it immediately. If you believe a child has provided us with information, please contact us at privacy@autoservice24.com.''',
 
           'terms_of_service_title': 'Terms of Service',
-          'terms_of_service_content': '''By using Auto Service 24, you agree to:
+          'terms_of_service_content': '''By using AutoService24, you agree to:
 
 Acceptable Use:
 • Use the service only for legitimate automotive service needs
@@ -852,7 +852,7 @@ Communication:
 • Users are responsible for their own service arrangements
 
 Limitation of Liability:
-• Auto Service 24 connects customers with service providers but is not responsible for the quality of services performed
+• AutoService24 connects customers with service providers but is not responsible for the quality of services performed
 • We are not liable for damages arising from service interactions
 • Users arrange services directly with workshop owners
 • Our liability is limited to the maximum extent permitted by law
@@ -987,6 +987,25 @@ Termination:
           'manage_workshops_services': 'Manage your workshops and services',
         },
         'de': {
+          "add_service": "Dienst hinzufügen",
+          "create_new_service": "Neuen Dienst erstellen",
+          "service_title": "Diensttitel",
+          "please_enter_service_title": "Bitte geben Sie einen Diensttitel ein",
+          "description": "Beschreibung",
+          "price_usd": "Preis (€)",
+          "please_enter_valid_price":
+              "Bitte geben Sie einen gültigen Preis ein",
+          "service_type": "Diensttyp",
+          "select_workshop": "Werkstatt auswählen",
+          "please_select_workshop": "Bitte wählen Sie eine Werkstatt aus",
+          "create_workshop_first":
+              "Sie müssen zuerst eine Werkstatt erstellen, bevor Sie einen Dienst hinzufügen.",
+          "service_images": "Bilder des Dienstes",
+          "add_images": "Bilder hinzufügen",
+          "create_service": "Dienst erstellen",
+          "error": "Fehler",
+          "failed_create_service":
+              "Dienst konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
           'user_deleted_successfully': 'Benutzer erfolgreich gelöscht',
           'tap_to_view_conversation': 'Tippen, um die Unterhaltung anzuzeigen',
           "show_results": "Ergebnisse anzeigen",
@@ -1013,10 +1032,10 @@ Termination:
           'privacy_policy_title': 'Datenschutzrichtlinie & AGB',
           'privacy_policy_header': 'Datenschutz & Nutzungsbedingungen',
           'privacy_commitment':
-              'Wir verpflichten uns, Ihre Privatsphäre zu schützen und die Sicherheit Ihrer persönlichen Daten während der Nutzung von Auto Service 24 zu gewährleisten.',
+              'Wir verpflichten uns, Ihre Privatsphäre zu schützen und die Sicherheit Ihrer persönlichen Daten während der Nutzung von AutoService24 zu gewährleisten.',
           'important_notice': 'Wichtiger Hinweis',
           'privacy_introduction':
-              'Diese Datenschutzrichtlinie erklärt, wie Auto Service 24 Ihre Informationen sammelt, verwendet und schützt, wenn Sie unsere Automotive-Service-Plattform nutzen. Durch die Nutzung unserer Services stimmen Sie der Sammlung und Verwendung von Informationen gemäß dieser Richtlinie zu.',
+              'Diese Datenschutzrichtlinie erklärt, wie AutoService24 Ihre Informationen sammelt, verwendet und schützt, wenn Sie unsere Automotive-Service-Plattform nutzen. Durch die Nutzung unserer Services stimmen Sie der Sammlung und Verwendung von Informationen gemäß dieser Richtlinie zu.',
 
           // Main Content Sections
           'information_we_collect_title': 'Informationen, die wir sammeln',
@@ -1115,11 +1134,11 @@ Diese Services haben ihre eigenen Datenschutzrichtlinien. Wir empfehlen deren Ü
 
           'children_privacy_title': 'Datenschutz für Kinder',
           'children_privacy_content':
-              '''Auto Service 24 ist für Nutzer ab 18 Jahren bestimmt. Wir sammeln wissentlich keine persönlichen Daten von Kindern unter 18 Jahren. Wenn wir entdecken, dass ein Kind uns persönliche Daten zur Verfügung gestellt hat, werden wir diese sofort löschen. Wenn Sie glauben, dass ein Kind uns Informationen gegeben hat, kontaktieren Sie uns bitte unter privacy@autoservice24.com.''',
+              '''AutoService24 ist für Nutzer ab 18 Jahren bestimmt. Wir sammeln wissentlich keine persönlichen Daten von Kindern unter 18 Jahren. Wenn wir entdecken, dass ein Kind uns persönliche Daten zur Verfügung gestellt hat, werden wir diese sofort löschen. Wenn Sie glauben, dass ein Kind uns Informationen gegeben hat, kontaktieren Sie uns bitte unter privacy@autoservice24.com.''',
 
           'terms_of_service_title': 'Nutzungsbedingungen',
           'terms_of_service_content':
-              '''Durch die Nutzung von Auto Service 24 stimmen Sie zu:
+              '''Durch die Nutzung von AutoService24 stimmen Sie zu:
 
 Akzeptable Nutzung:
 • Den Service nur für legitime Automotive-Service-Bedürfnisse nutzen
@@ -1138,7 +1157,7 @@ Kommunikation:
 • Nutzer sind für ihre eigenen Service-Vereinbarungen verantwortlich
 
 Haftungsbeschränkung:
-• Auto Service 24 verbindet Kunden mit Service-Anbietern, ist aber nicht verantwortlich für die Qualität der durchgeführten Services
+• AutoService24 verbindet Kunden mit Service-Anbietern, ist aber nicht verantwortlich für die Qualität der durchgeführten Services
 • Wir haften nicht für Schäden aus Service-Interaktionen
 • Nutzer vereinbaren Services direkt mit Werkstattbesitzern
 • Unsere Haftung ist auf das gesetzlich maximal zulässige Maß beschränkt
@@ -1321,9 +1340,6 @@ Kündigung:
           'more_images': 'Weitere Bilder',
           'contact_workshop_message':
               'Diese Funktion startet einen Chat mit dem Werkstattbesitzer',
-          'please_enter_service_title': 'Bitte geben Sie den Service-Titel ein',
-          'please_enter_valid_price':
-              'Bitte geben Sie einen gültigen Preis ein',
           'success': 'Erfolgreich',
           'workshop_owner': 'Werkstattbesitzer',
           'update_personal_information':
@@ -1395,7 +1411,7 @@ Kündigung:
 
           // Register translations
           'create_account': 'Konto erstellen',
-          'join_community': 'Treten Sie der CarServiceHub-Community bei',
+          'join_community': 'Treten Sie der AutoService24 bei',
           'i_am_a': 'Ich bin ein:',
           'looking_for_services': 'Suche nach Dienstleistungen',
           'providing_services': 'Biete Dienstleistungen an',
@@ -1469,7 +1485,6 @@ Kündigung:
           'opening_directions': 'Wegbeschreibung wird geöffnet zu',
 
           // Service Details translations
-          'description': 'Beschreibung',
           'workshop_information': 'Werkstatt-Informationen',
           'workshop_id': 'Werkstatt-ID',
           'service_duration': 'Servicedauer',
@@ -1559,23 +1574,6 @@ Kündigung:
           'starting_conversation': 'Unterhaltung beginnen mit',
           'login_contact_workshops':
               'Bitte melden Sie sich an oder registrieren Sie sich, um Werkstätten zu kontaktieren.',
-
-          // Add Service translations
-          'add_service': 'Service hinzufügen',
-          'create_new_service': 'Neuen Service erstellen',
-          'select_workshop': 'Werkstatt auswählen',
-          'create_workshop_first':
-              'Sie müssen zuerst eine Werkstatt erstellen, bevor Sie Services hinzufügen können.',
-          'service_title': 'Service-Titel',
-          'service_type': 'Service-Typ',
-          'price_usd': 'Preis (\€)',
-          'service_images': 'Service-Bilder',
-          'add_images': 'Bilder hinzufügen',
-          'create_service': 'Service erstellen',
-          'please_select_workshop': 'Bitte wählen Sie eine Werkstatt aus',
-          'service_created_successfully': 'Service erfolgreich erstellt!',
-          'failed_create_service': 'Service konnte nicht erstellt werden',
-
           // Add Workshop translations
           'add_workshop': 'Werkstatt hinzufügen',
           'create_your_workshop': 'Ihre Werkstatt erstellen',
@@ -1600,12 +1598,12 @@ Kündigung:
           'hello_user': 'Hallo {name}',
           'service_categories': 'Service-Kategorien',
           'vehicle_inspection': 'Fahrzeug-\nInspektion',
-          'change_oil': 'Öl wechseln',
+          'change_oil': 'Ölwechseln',
           'change_tires': 'Reifen wechseln',
-          'remove_install_tires': 'Reifen aus- und\neinbauen',
+          'remove_install_tires': 'Reifen Montage',
           'cleaning': 'Reinigung',
           'diagnostic_test': 'Diagnose-Test',
-          'pre_tuv_check': 'Vor-TÜV-Prüfung',
+          'au_tuv': 'AU & TÜV',
           'balance_tires': 'Reifen auswuchten',
           'wheel_alignment': 'Achsvermessung',
           'polish': 'Polieren',
@@ -1705,7 +1703,6 @@ Kündigung:
           'service_management_soon': 'Service-Verwaltung kommt bald',
           'switch_language': 'Sprache wechseln',
           'current_language': 'Deutsch',
-          'error': 'Fehler',
           'failed_remove_service':
               'Service konnte nicht entfernt werden. Bitte versuchen Sie es erneut.',
           'error_occurred_try_again':
@@ -1777,14 +1774,14 @@ Kündigung:
               'Wenn Sie die E-Mail nicht sehen, überprüfen Sie Ihren Spam-Ordner',
           'back_to_login': 'Zurück zur Anmeldung',
           'create_different_account': 'Anderes Konto erstellen',
-          'app_name': 'Auto Service 24',
+          'app_name': 'AutoService24',
           'last_updated': 'Zuletzt aktualisiert',
           'accept_privacy_policy': 'Datenschutzrichtlinie akzeptieren',
 
           // Introduction Section
           'privacy_intro_title': 'Einleitung',
           'privacy_intro_content':
-              'Willkommen bei Auto Service 24. Wir verpflichten uns, Ihre Privatsphäre und persönlichen Daten zu schützen. Diese Datenschutzrichtlinie erklärt, wie wir Ihre persönlichen Informationen sammeln, verwenden und schützen, wenn Sie unsere App nutzen.\n\nDurch die Nutzung von Auto Service 24 stimmen Sie den in dieser Richtlinie beschriebenen Praktiken zur Datensammlung und -nutzung zu.',
+              'Willkommen bei AutoService24. Wir verpflichten uns, Ihre Privatsphäre und persönlichen Daten zu schützen. Diese Datenschutzrichtlinie erklärt, wie wir Ihre persönlichen Informationen sammeln, verwenden und schützen, wenn Sie unsere App nutzen.\n\nDurch die Nutzung von AutoService24 stimmen Sie den in dieser Richtlinie beschriebenen Praktiken zur Datensammlung und -nutzung zu.',
 
           // Data Collection Section
           'privacy_data_collection_title': 'Daten, die wir sammeln',
