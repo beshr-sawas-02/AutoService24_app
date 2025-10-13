@@ -45,5 +45,27 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	    <!-- 🔹 الموقع -->
+        <key>NSLocationWhenInUseUsageDescription</key>
+        <string>نحتاج إلى موقعك لعرض الخدمات القريبة منك.</string>
+
+        <!-- 🔹 الكاميرا -->
+        <key>NSCameraUsageDescription</key>
+        <string>نحتاج لاستخدام الكاميرا لالتقاط صور للمخالفات أو الوثائق.</string>
+
+        <!-- 🔹 مكتبة الصور -->
+        <key>NSPhotoLibraryUsageDescription</key>
+        <string>نحتاج للوصول إلى الصور لاختيار أو تحميل ملفات من جهازك.</string>
+
+        <!-- 🔹 حفظ الصور -->
+        <key>NSPhotoLibraryAddUsageDescription</key>
+        <string>نحتاج لحفظ الصور في مكتبتك بعد معالجتها.</string>
+
+        <!-- 🔹 السماح بفتح روابط الهاتف -->
+        <key>LSApplicationQueriesSchemes</key>
+        <array>
+            <string>tel</string>
+        </array>
+
 </dict>
 </plist>

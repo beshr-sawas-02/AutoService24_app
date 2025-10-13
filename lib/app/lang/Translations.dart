@@ -1659,7 +1659,7 @@ Kündigung:
               'Chat konnte nicht gestartet werden. Bitte versuchen Sie es erneut.',
 
           // Saved Services translations
-          'saved_services': 'Gespeicherte Services',
+          'saved_services': "Gespeicherte Dienstleistungen",
           'save_favorite_services': 'Speichern Sie Ihre Lieblings-Services',
           'create_account_save':
               'Erstellen Sie ein Konto, um Services zu speichern, die Sie mögen, und greifen Sie jederzeit und überall darauf zu.',
