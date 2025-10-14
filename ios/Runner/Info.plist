@@ -53,38 +53,96 @@
   <key>UIApplicationSupportsIndirectInputEvents</key>
   <true/>
 
-  <!-- ✅ أذونات الموقع -->
+  <!-- ✅ أذونات الموقع (ADDED) -->
   <key>NSLocationWhenInUseUsageDescription</key>
   <string>نحتاج إلى موقعك لعرض الخدمات القريبة منك.</string>
+  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  <string>نحتاج إلى موقعك دائماً لتقديم خدمات أفضل.</string>
 
-  <!-- ✅ الكاميرا -->
+  <!-- ✅ الكاميرا (ALREADY THERE) -->
   <key>NSCameraUsageDescription</key>
   <string>نحتاج لاستخدام الكاميرا لالتقاط صور للمخالفات أو الوثائق.</string>
 
-  <!-- ✅ مكتبة الصور -->
+  <!-- ✅ مكتبة الصور - iOS 14+ (ADDED) -->
   <key>NSPhotoLibraryUsageDescription</key>
   <string>نحتاج للوصول إلى الصور لاختيار أو تحميل ملفات من جهازك.</string>
 
-  <!-- ✅ حفظ الصور -->
+  <!-- ✅ حفظ الصور في المكتبة (ALREADY THERE) -->
   <key>NSPhotoLibraryAddUsageDescription</key>
   <string>نحتاج لحفظ الصور في مكتبتك بعد معالجتها.</string>
 
-  <!-- ✅ السماح بفتح روابط الهاتف -->
+  <!-- ✅ صلاحيات الإنترنت والشبكة (ADDED) -->
+  <key>NSBonjourServices</key>
+  <array>
+    <string>_services._tcp</string>
+  </array>
+
+  <!-- ✅ الوصول إلى الشبكة (ADDED) -->
+  <key>NSLocalNetworkUsageDescription</key>
+  <string>نحتاج للوصول إلى الشبكة المحلية للخدمات.</string>
+
+  <!-- ✅ السماح بفتح روابط الهاتف والتطبيقات -->
   <key>LSApplicationQueriesSchemes</key>
   <array>
     <string>tel</string>
+    <string>sms</string>
+    <string>mailto</string>
+    <string>facetime</string>
+    <string>http</string>
+    <string>https</string>
+    <string>fb-messenger</string>
+    <string>whatsapp</string>
   </array>
 
-  <!-- ✅ إعداد Apple Sign-In -->
+  <!-- ✅ إعداد Facebook و Apple Sign-In -->
   <key>CFBundleURLTypes</key>
   <array>
     <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleURLName</key>
+      <string>facebook-login</string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>fb1876950892856284</string>
+      </array>
+    </dict>
+    <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleURLName</key>
+      <string>com.example.autoservice24</string>
       <key>CFBundleURLSchemes</key>
       <array>
         <string>com.example.autoservice24</string>
       </array>
     </dict>
   </array>
+
+  <!-- ✅ إعدادات Facebook (ADDED) -->
+  <key>FacebookAppID</key>
+  <string>1876950892856284</string>
+  <key>FacebookDisplayName</key>
+  <string>Auto Service 24</string>
+  <key>FacebookClientToken</key>
+  <string>013cb102c13ef7479e9d4441277f9808</string>
+
+  <!-- ✅ السماح بتحميل محتوى خارجي (ADDED) -->
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <false/>
+    <key>NSExceptionDomains</key>
+    <dict>
+      <key>facebook.com</key>
+      <dict>
+        <key>NSIncludesSubdomains</key>
+        <true/>
+        <key>NSExceptionAllowsInsecureHTTPLoads</key>
+        <false/>
+      </dict>
+    </dict>
+  </dict>
 
 </dict>
 </plist>
