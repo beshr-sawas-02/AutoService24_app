@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Auto Service 24</string>
+    <string name="facebook_app_id">1876950892856284</string>
+    <string name="facebook_client_token">013cb102c13ef7479e9d4441277f9808</string>
+    <string name="fb_login_protocol_scheme">fb1876950892856284</string>
+</resources>

@@ -295,25 +295,72 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
 
+      // 1️⃣ تسجيل الدخول على فيسبوك
       final result = await FacebookAuth.instance.login(
         permissions: ['email', 'public_profile'],
       );
 
       if (result.status == LoginStatus.success) {
         final accessToken = result.accessToken!.token;
-        return await _handleSocialLoginResponse('facebook', accessToken,
-            userType: userType);
+        print('✅ Facebook Access Token: $accessToken');
+
+        // 2️⃣ جلب بيانات المستخدم من فيسبوك (اختياري)
+        final userData = await FacebookAuth.instance.getUserData(
+          fields: "name,email,picture.width(200)",
+        );
+        print('ℹ️ Facebook User Data: $userData');
+
+        // 3️⃣ إرسال التوكن للسيرفر
+        final loginSuccess = await _handleSocialLoginResponse(
+          'facebook',
+          accessToken,
+          userType: userType,
+        );
+
+        return loginSuccess;
+      } else if (result.status == LoginStatus.cancelled) {
+        print('⚠️ Facebook login cancelled by user.');
+        return false;
       } else {
-        ErrorHandler.showInfo(result.message ?? 'facebook_signin_failed'.tr);
+        ErrorHandler.showInfo(
+          result.message ?? 'facebook_signin_failed'.tr,
+        );
         return false;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('❌ Facebook login error: $e');
+      print(stackTrace);
       ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
       isLoading.value = false;
     }
   }
+
+
+  // Future<bool> signInWithFacebook({String userType = 'user'}) async {
+  //   try {
+  //     isLoading.value = true;
+  //
+  //     final result = await FacebookAuth.instance.login(
+  //       permissions: ['email', 'public_profile'],
+  //     );
+  //
+  //     if (result.status == LoginStatus.success) {
+  //       final accessToken = result.accessToken!.token;
+  //       return await _handleSocialLoginResponse('facebook', accessToken,
+  //           userType: userType);
+  //     } else {
+  //       ErrorHandler.showInfo(result.message ?? 'facebook_signin_failed'.tr);
+  //       return false;
+  //     }
+  //   } catch (e) {
+  //     ErrorHandler.handleAndShowError(e);
+  //     return false;
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   Future<bool> signInWithApple({String userType = 'user'}) async {
     try {
@@ -340,6 +387,63 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  // Future<bool> signInWithApple({String userType = 'user'}) async {
+  //   try {
+  //     isLoading.value = true;
+  //
+  //     // Request Apple ID credentials
+  //     final credential = await SignInWithApple.getAppleIDCredential(
+  //       scopes: [
+  //         AppleIDAuthorizationScopes.email,
+  //         AppleIDAuthorizationScopes.fullName,
+  //       ],
+  //       webAuthenticationOptions: WebAuthenticationOptions(
+  //         clientId: 'com.example.autoservice24', // Replace with your actual Service ID
+  //         redirectUri: Uri.parse('https://www.autoservicely.com/auth/social-login'),
+  //       ),
+  //     );
+  //
+  //     // Validate required credentials
+  //     final authorizationCode = credential.authorizationCode;
+  //     final identityToken = credential.identityToken;
+  //
+  //     if (authorizationCode == null || identityToken == null) {
+  //       throw Exception('Failed to get Apple credentials');
+  //     }
+  //
+  //     // Send credentials to backend
+  //     final response = await http.post(
+  //       Uri.parse('https://www.autoservicely.com/auth/social-login'),
+  //       body: jsonEncode({
+  //         'provider': 'apple',
+  //         'authorizationCode': authorizationCode,
+  //         'idToken': identityToken,
+  //         'email': credential.email,
+  //         'givenName': credential.givenName,
+  //         'familyName': credential.familyName,
+  //         'userType': userType,
+  //       }),
+  //       headers: {'Content-Type': 'application/json'},
+  //     );
+  //
+  //     // Handle backend response
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+  //       // Process successful login (save token, navigate, etc.)
+  //       // Example: await _saveUserSession(data);
+  //       return true;
+  //     } else {
+  //       throw Exception('Server error: ${response.statusCode}');
+  //     }
+  //
+  //   } catch (e) {
+  //     ErrorHandler.handleAndShowError(e);
+  //     return false;
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   Future<bool> _handleSocialLoginResponse(String provider, String token,
       {String userType = 'user'}) async {
