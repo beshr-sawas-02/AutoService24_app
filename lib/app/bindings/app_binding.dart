@@ -7,7 +7,7 @@ import '../controllers/workshop_controller.dart';
 import '../controllers/service_controller.dart';
 import '../controllers/chat_controller.dart';
 import '../controllers/map_controller.dart';
-import '../controllers/Language_Controller.dart';
+import '../controllers/language_controller.dart';
 import '../utils/location_service.dart';
 import '../utils/network_service.dart';
 import '../data/providers/api_provider.dart';

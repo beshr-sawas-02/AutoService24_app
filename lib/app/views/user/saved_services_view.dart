@@ -451,7 +451,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
 
   Future<void> _autoDeleteRemovedService(savedService) async {
     try {
-      await serviceController.unsaveService(savedService.id);
+      await serviceController.unSaveService(savedService.id);
     } catch (e) {}
   }
 
@@ -508,7 +508,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () => _showUnsaveConfirmation(savedService),
+                    onPressed: () => _showUnSaveConfirmation(savedService),
                     icon: const Icon(Icons.bookmark, color: AppColors.primary),
                     tooltip: 'remove_from_saved'.tr,
                   ),
@@ -609,7 +609,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
     }
   }
 
-  void _showUnsaveConfirmation(savedService) {
+  void _showUnSaveConfirmation(savedService) {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.white,
@@ -627,7 +627,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
           ElevatedButton(
             onPressed: () {
               Get.back();
-              _performUnsave(savedService);
+              _performUnSave(savedService);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
@@ -640,9 +640,9 @@ class _SavedServicesViewState extends State<SavedServicesView> {
     );
   }
 
-  void _performUnsave(savedService) async {
+  void _performUnSave(savedService) async {
     try {
-      final success = await serviceController.unsaveService(savedService.id);
+      final success = await serviceController.unSaveService(savedService.id);
 
       if (!success) {
         Get.snackbar(
@@ -662,12 +662,12 @@ class _SavedServicesViewState extends State<SavedServicesView> {
     }
   }
 
-  Future<void> _unsaveService(savedService) async {
-    final success = await serviceController.unsaveService(savedService.id);
-    if (success) {
-      // Success handled by controller
-    }
-  }
+  // Future<void> _unSaveService(savedService) async {
+  //   final success = await serviceController.unSaveService(savedService.id);
+  //   if (success) {
+  //     // Success handled by controller
+  //   }
+  // }
 
   String _formatSavedDate(DateTime savedDate) {
     final now = DateTime.now();

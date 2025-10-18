@@ -111,10 +111,10 @@
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
       <key>CFBundleURLName</key>
-      <string>com.example.autoservice24</string>
+      <string>com.autoservicely.app</string>
       <key>CFBundleURLSchemes</key>
       <array>
-        <string>com.example.autoservice24</string>
+        <string>com.autoservicely.app</string>
       </array>
     </dict>
   </array>

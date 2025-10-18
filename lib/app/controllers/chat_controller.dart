@@ -161,7 +161,7 @@ class ChatController extends GetxController {
 
       // Enhanced duplicate detection
       final exists = messages.any((m) =>
-      m.content == newMessage.content &&
+          m.content == newMessage.content &&
           m.senderId == newMessage.senderId &&
           m.chatId == newMessage.chatId &&
           (newMessage.createdAt == null ||
@@ -307,7 +307,7 @@ class ChatController extends GetxController {
   Future<ChatModel?> createChat(String user1Id, String user2Id) async {
     try {
       final existingChat =
-      await _chatRepository.findChatBetweenUsers(user1Id, user2Id);
+          await _chatRepository.findChatBetweenUsers(user1Id, user2Id);
       if (existingChat != null) {
         return existingChat;
       }
@@ -423,7 +423,7 @@ class ChatController extends GetxController {
       String messageId, Map<String, dynamic> data) async {
     try {
       final updatedMessage =
-      await _chatRepository.updateMessage(messageId, data);
+          await _chatRepository.updateMessage(messageId, data);
 
       final index = messages.indexWhere((m) => m.id == messageId);
       if (index != -1) {

@@ -12,8 +12,8 @@ class OwnerProfileView extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
   final WorkshopController workshopController = Get.find<WorkshopController>();
   final ServiceController serviceController = Get.find<ServiceController>();
-  final PrivacyPolicyController privacyController = Get.find<PrivacyPolicyController>();
-
+  final PrivacyPolicyController privacyController =
+      Get.find<PrivacyPolicyController>();
 
   OwnerProfileView({super.key});
 
@@ -144,33 +144,33 @@ class OwnerProfileView extends StatelessWidget {
                   backgroundColor: Colors.white.withValues(alpha: 0.2),
                   child: user?.fullProfileImage != null
                       ? ClipRRect(
-                    borderRadius: BorderRadius.circular(58),
-                    child: Image.network(
-                      user!.fullProfileImage!,
-                      width: 116,
-                      height: 116,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Text(
-                          user?.username?.substring(0, 1).toUpperCase() ??
-                              'N',
+                          borderRadius: BorderRadius.circular(58),
+                          child: Image.network(
+                            user!.fullProfileImage!,
+                            width: 116,
+                            height: 116,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Text(
+                                user?.username?.substring(0, 1).toUpperCase() ??
+                                    'N',
+                                style: const TextStyle(
+                                  fontSize: 48,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : Text(
+                          user?.username?.substring(0, 1).toUpperCase() ?? 'N',
                           style: const TextStyle(
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
-                        );
-                      },
-                    ),
-                  )
-                      : Text(
-                    user?.username?.substring(0, 1).toUpperCase() ?? 'N',
-                    style: const TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+                        ),
                 ),
               ),
 
@@ -381,10 +381,9 @@ class OwnerProfileView extends StatelessWidget {
     );
   }
 
-
   void _showPrivacyPolicy() {
     Get.to(
-          () => PrivacyPolicyView(
+      () => PrivacyPolicyView(
         showAcceptButton: false,
         isFromRegistration: false,
       ),
@@ -393,18 +392,16 @@ class OwnerProfileView extends StatelessWidget {
     );
   }
 
-  void _showPrivacyPolicyWithAccept() {
-    Get.to(
-          () => PrivacyPolicyView(
-        showAcceptButton: true,
-        isFromRegistration: false,
-      ),
-      transition: Transition.cupertino,
-      duration: const Duration(milliseconds: 300),
-    );
-  }
-
-
+  // void _showPrivacyPolicyWithAccept() {
+  //   Get.to(
+  //         () => PrivacyPolicyView(
+  //       showAcceptButton: true,
+  //       isFromRegistration: false,
+  //     ),
+  //     transition: Transition.cupertino,
+  //     duration: const Duration(milliseconds: 300),
+  //   );
+  // }
 
   Widget _buildSectionCard(
       {required String title, required List<Widget> children}) {
@@ -631,15 +628,15 @@ class OwnerProfileView extends StatelessWidget {
               'all_business_data'.tr
             ]
                 .map((item) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                children: [
-                  const Icon(Icons.close, color: Colors.red, size: 16),
-                  const SizedBox(width: 8),
-                  Text(item),
-                ],
-              ),
-            ))
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.close, color: Colors.red, size: 16),
+                          const SizedBox(width: 8),
+                          Text(item),
+                        ],
+                      ),
+                    ))
                 .toList(),
             const SizedBox(height: 16),
             Container(
@@ -732,39 +729,38 @@ class OwnerProfileView extends StatelessWidget {
             child: Text('cancel'.tr),
           ),
           Obx(() => ElevatedButton(
-            onPressed: authController.isLoading.value
-                ? null
-                : () async {
-              if (confirmController.text.trim().toUpperCase() ==
-                  'DELETE') {
-                Get.back();
-                final success = await authController.deleteAccount();
-                if (success) {
-                  Get.offAllNamed(AppRoutes.userHome);
-                }
-              } else {
-                Helpers.showErrorSnackbar(
-                    'please_type_delete'.tr);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: authController.isLoading.value
-                ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2,
-              ),
-            )
-                : Text('confirm_delete'.tr),
-          )),
+                onPressed: authController.isLoading.value
+                    ? null
+                    : () async {
+                        if (confirmController.text.trim().toUpperCase() ==
+                            'DELETE') {
+                          Get.back();
+                          final success = await authController.deleteAccount();
+                          if (success) {
+                            Get.offAllNamed(AppRoutes.userHome);
+                          }
+                        } else {
+                          Helpers.showErrorSnackbar('please_type_delete'.tr);
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: authController.isLoading.value
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Text('confirm_delete'.tr),
+              )),
         ],
       ),
     );

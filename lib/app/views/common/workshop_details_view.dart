@@ -32,7 +32,6 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
     super.initState();
     workshop = Get.arguments as WorkshopModel;
 
-    // تأخير تحميل الخدمات
     Future.delayed(Duration.zero, () {
       _loadWorkshopServices();
     });
@@ -58,27 +57,27 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
               ),
               background: workshop.profileImage != null
                   ? Image.network(
-                AppConstants.buildImageUrl(workshop.profileImage!),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: AppColors.grey300,
-                    child: const Icon(
-                      Icons.business,
-                      size: 80,
-                      color: AppColors.textSecondary,
-                    ),
-                  );
-                },
-              )
+                      AppConstants.buildImageUrl(workshop.profileImage!),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: AppColors.grey300,
+                          child: const Icon(
+                            Icons.business,
+                            size: 80,
+                            color: AppColors.textSecondary,
+                          ),
+                        );
+                      },
+                    )
                   : Container(
-                color: AppColors.grey300,
-                child: const Icon(
-                  Icons.business,
-                  size: 80,
-                  color: AppColors.textSecondary,
-                ),
-              ),
+                      color: AppColors.grey300,
+                      child: const Icon(
+                        Icons.business,
+                        size: 80,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
             ),
           ),
           SliverToBoxAdapter(
@@ -215,7 +214,6 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
     _mapboxMap = mapboxMap;
     mapController.setMapboxMap(mapboxMap);
 
-    // استخدام الوظيفة المُحسنة مع فحص الاتصال
     Future.delayed(const Duration(milliseconds: 2000), () {
       _setupMapWithWorkshopMarker();
     });
@@ -234,16 +232,10 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
           title: workshop.name,
           userData: {'workshopId': workshop.id},
         );
-
-        print('Workshop marker added successfully');
-      } catch (e) {
-        print('Error setting up workshop marker: $e');
-        // لا تُظهر خطأ للمستخدم، فقط سجل في console
-      }
+      } catch (e) {}
     }
   }
 
-  /// التنقل إلى صفحة الخريطة مع التركيز على موقع الورشة
   void _navigateToWorkshopLocation() {
     Get.toNamed(
       AppRoutes.map,
@@ -366,93 +358,93 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
 
     if (workshopServices.isNotEmpty) {
       Get.to(() => Scaffold(
-        appBar: AppBar(
-          title: Text('${workshop.name} ${'services'.tr}'),
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.white,
-        ),
-        body: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: workshopServices.length,
-          itemBuilder: (context, index) {
-            return ServiceCard(
-              service: workshopServices[index],
-              onTap: () {
-                Get.toNamed(
-                  AppRoutes.serviceDetails,
-                  arguments: workshopServices[index],
+            appBar: AppBar(
+              title: Text('${workshop.name} ${'services'.tr}'),
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
+            ),
+            body: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: workshopServices.length,
+              itemBuilder: (context, index) {
+                return ServiceCard(
+                  service: workshopServices[index],
+                  onTap: () {
+                    Get.toNamed(
+                      AppRoutes.serviceDetails,
+                      arguments: workshopServices[index],
+                    );
+                  },
                 );
               },
-            );
-          },
-        ),
-      ));
+            ),
+          ));
     }
   }
 
-  void _startChat() {
-    // Navigate to chat with workshop owner
-    Get.snackbar(
-      'chat'.tr,
-      '${'starting_conversation'.tr} ${workshop.name}',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+// void _startChat() {
+//   // Navigate to chat with workshop owner
+//   Get.snackbar(
+//     'chat'.tr,
+//     '${'starting_conversation'.tr} ${workshop.name}',
+//     snackPosition: SnackPosition.BOTTOM,
+//   );
+//
+//   // In a real app, you would:
+//   // 1. Create or find existing chat
+//   // 2. Navigate to chat view
+//   Get.toNamed(
+//     AppRoutes.chat,
+//     arguments: {
+//       'receiverId': workshop.userId,
+//       'receiverName': workshop.name,
+//       'currentUserId': authController.currentUser.value?.id,
+//     },
+//   );
+// }
 
-    // In a real app, you would:
-    // 1. Create or find existing chat
-    // 2. Navigate to chat view
-    Get.toNamed(
-      AppRoutes.chat,
-      arguments: {
-        'receiverId': workshop.userId,
-        'receiverName': workshop.name,
-        'currentUserId': authController.currentUser.value?.id,
-      },
-    );
-  }
-
-  void _showGuestDialog() {
-    Get.dialog(
-      AlertDialog(
-        backgroundColor: AppColors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Text(
-          'login_required'.tr,
-          style: const TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Text(
-          'login_contact_workshops'.tr,
-          style: const TextStyle(color: AppColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              'cancel'.tr,
-              style: const TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-              Get.toNamed(AppRoutes.login);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: Text('login'.tr),
-          ),
-        ],
-      ),
-    );
-  }
+// void _showGuestDialog() {
+//   Get.dialog(
+//     AlertDialog(
+//       backgroundColor: AppColors.white,
+//       shape: RoundedRectangleBorder(
+//         borderRadius: BorderRadius.circular(16),
+//       ),
+//       title: Text(
+//         'login_required'.tr,
+//         style: const TextStyle(
+//           color: AppColors.textPrimary,
+//           fontWeight: FontWeight.bold,
+//         ),
+//       ),
+//       content: Text(
+//         'login_contact_workshops'.tr,
+//         style: const TextStyle(color: AppColors.textSecondary),
+//       ),
+//       actions: [
+//         TextButton(
+//           onPressed: () => Get.back(),
+//           child: Text(
+//             'cancel'.tr,
+//             style: const TextStyle(color: AppColors.textSecondary),
+//           ),
+//         ),
+//         ElevatedButton(
+//           onPressed: () {
+//             Get.back();
+//             Get.toNamed(AppRoutes.login);
+//           },
+//           style: ElevatedButton.styleFrom(
+//             backgroundColor: AppColors.primary,
+//             foregroundColor: AppColors.white,
+//             shape: RoundedRectangleBorder(
+//               borderRadius: BorderRadius.circular(8),
+//             ),
+//           ),
+//           child: Text('login'.tr),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 }

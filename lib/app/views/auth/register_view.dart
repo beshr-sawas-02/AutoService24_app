@@ -15,7 +15,8 @@ class RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<RegisterView> {
   final AuthController authController = Get.find<AuthController>();
-  final PrivacyPolicyController privacyController = Get.put(PrivacyPolicyController());
+  final PrivacyPolicyController privacyController =
+      Get.put(PrivacyPolicyController());
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -195,7 +196,8 @@ class _RegisterViewState extends State<RegisterView> {
                           size: isTablet ? 20 : 22,
                         ),
                         onPressed: () {
-                          setState(() => _isPasswordVisible = !_isPasswordVisible);
+                          setState(
+                              () => _isPasswordVisible = !_isPasswordVisible);
                         },
                       ),
                       validator: (value) {
@@ -225,8 +227,8 @@ class _RegisterViewState extends State<RegisterView> {
                           size: isTablet ? 20 : 22,
                         ),
                         onPressed: () {
-                          setState(() =>
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible);
+                          setState(() => _isConfirmPasswordVisible =
+                              !_isConfirmPasswordVisible);
                         },
                       ),
                       validator: (value) {
@@ -247,46 +249,51 @@ class _RegisterViewState extends State<RegisterView> {
 
                     // Create Account Button
                     Obx(() => SizedBox(
-                      width: double.infinity,
-                      height: isTablet ? 52 : 56,
-                      child: ElevatedButton(
-                        onPressed: authController.isLoading.value ? null : _register,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFF8A50),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(isTablet ? 14 : 16),
+                          width: double.infinity,
+                          height: isTablet ? 52 : 56,
+                          child: ElevatedButton(
+                            onPressed: authController.isLoading.value
+                                ? null
+                                : _register,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFFF8A50),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(isTablet ? 14 : 16),
+                              ),
+                              elevation: 0,
+                              shadowColor: Colors.transparent,
+                            ),
+                            child: authController.isLoading.value
+                                ? SizedBox(
+                                    width: isTablet ? 20 : 24,
+                                    height: isTablet ? 20 : 24,
+                                    child: const CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : Text(
+                                    'create_account'.tr,
+                                    style: TextStyle(
+                                      fontSize: isTablet ? 14 : 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                           ),
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                        ),
-                        child: authController.isLoading.value
-                            ? SizedBox(
-                          width: isTablet ? 20 : 24,
-                          height: isTablet ? 20 : 24,
-                          child: const CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.5,
-                          ),
-                        )
-                            : Text(
-                          'create_account'.tr,
-                          style: TextStyle(
-                            fontSize: isTablet ? 14 : 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    )),
+                        )),
                     SizedBox(height: isTablet ? 20 : 24),
 
                     // Divider with "or continue with"
                     Row(
                       children: [
                         Expanded(
-                            child: Divider(color: Colors.grey[300], thickness: 1)),
+                            child:
+                                Divider(color: Colors.grey[300], thickness: 1)),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: isTablet ? 16 : 20),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: isTablet ? 16 : 20),
                           child: Text(
                             'or_continue_with'.tr,
                             style: TextStyle(
@@ -297,7 +304,8 @@ class _RegisterViewState extends State<RegisterView> {
                           ),
                         ),
                         Expanded(
-                            child: Divider(color: Colors.grey[300], thickness: 1)),
+                            child:
+                                Divider(color: Colors.grey[300], thickness: 1)),
                       ],
                     ),
                     SizedBox(height: isTablet ? 20 : 24),
@@ -403,10 +411,10 @@ class _RegisterViewState extends State<RegisterView> {
                   ),
                   child: _acceptPrivacy
                       ? Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: isTablet ? 14 : 16,
-                  )
+                          Icons.check,
+                          color: Colors.white,
+                          size: isTablet ? 14 : 16,
+                        )
                       : null,
                 ),
               ),
@@ -512,9 +520,7 @@ class _RegisterViewState extends State<RegisterView> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(isTablet ? 14 : 16),
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFFFF8A50)
-                : Colors.grey[300]!,
+            color: isSelected ? const Color(0xFFFF8A50) : Colors.grey[300]!,
             width: 2,
           ),
           color: isSelected
@@ -527,9 +533,7 @@ class _RegisterViewState extends State<RegisterView> {
             Container(
               padding: EdgeInsets.all(isTablet ? 10 : 12),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? const Color(0xFFFF8A50)
-                    : Colors.grey[400],
+                color: isSelected ? const Color(0xFFFF8A50) : Colors.grey[400],
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -544,9 +548,7 @@ class _RegisterViewState extends State<RegisterView> {
               style: TextStyle(
                 fontSize: isTablet ? 13 : 16,
                 fontWeight: FontWeight.bold,
-                color: isSelected
-                    ? const Color(0xFFFF8A50)
-                    : Colors.black87,
+                color: isSelected ? const Color(0xFFFF8A50) : Colors.black87,
               ),
               textAlign: TextAlign.center,
             ),
@@ -569,53 +571,53 @@ class _RegisterViewState extends State<RegisterView> {
 
   Widget _buildSocialLoginSection(bool isTablet) {
     return Obx(() => Column(
-      children: [
-        // Google Login
-        _buildSocialButton(
-          label: 'continue_with_google'.tr,
-          backgroundColor: Colors.grey[100]!,
-          borderColor: Colors.grey[400]!,
-          textColor: Colors.grey[800]!,
-          icon: Icons.account_circle_outlined,
-          iconColor: Colors.red[600],
-          onTap: authController.isLoading.value
-              ? null
-              : () => _socialLogin('google'),
-          isGoogle: true,
-          isTablet: isTablet,
-        ),
-        SizedBox(height: isTablet ? 12 : 16),
+          children: [
+            // Google Login
+            _buildSocialButton(
+              label: 'continue_with_google'.tr,
+              backgroundColor: Colors.grey[100]!,
+              borderColor: Colors.grey[400]!,
+              textColor: Colors.grey[800]!,
+              icon: Icons.account_circle_outlined,
+              iconColor: Colors.red[600],
+              onTap: authController.isLoading.value
+                  ? null
+                  : () => _socialLogin('google'),
+              isGoogle: true,
+              isTablet: isTablet,
+            ),
+            SizedBox(height: isTablet ? 12 : 16),
 
-        // Facebook Login
-        _buildSocialButton(
-          label: 'continue_with_facebook'.tr,
-          backgroundColor: const Color(0xFF1877F2),
-          borderColor: const Color(0xFF1877F2),
-          textColor: Colors.white,
-          icon: Icons.facebook_rounded,
-          iconColor: Colors.white,
-          onTap: authController.isLoading.value
-              ? null
-              : () => _socialLogin('facebook'),
-          isTablet: isTablet,
-        ),
+            // Facebook Login
+            _buildSocialButton(
+              label: 'continue_with_facebook'.tr,
+              backgroundColor: const Color(0xFF1877F2),
+              borderColor: const Color(0xFF1877F2),
+              textColor: Colors.white,
+              icon: Icons.facebook_rounded,
+              iconColor: Colors.white,
+              onTap: authController.isLoading.value
+                  ? null
+                  : () => _socialLogin('facebook'),
+              isTablet: isTablet,
+            ),
 
-        // Apple Login
-        SizedBox(height: isTablet ? 12 : 16),
-        _buildSocialButton(
-          label: 'continue_with_apple'.tr,
-          backgroundColor: Colors.black,
-          borderColor: Colors.black,
-          textColor: Colors.white,
-          icon: Icons.apple_rounded,
-          iconColor: Colors.white,
-          onTap: authController.isLoading.value
-              ? null
-              : () => _socialLogin('apple'),
-          isTablet: isTablet,
-        ),
-      ],
-    ));
+            // Apple Login
+            SizedBox(height: isTablet ? 12 : 16),
+            _buildSocialButton(
+              label: 'continue_with_apple'.tr,
+              backgroundColor: Colors.black,
+              borderColor: Colors.black,
+              textColor: Colors.white,
+              icon: Icons.apple_rounded,
+              iconColor: Colors.white,
+              onTap: authController.isLoading.value
+                  ? null
+                  : () => _socialLogin('apple'),
+              isTablet: isTablet,
+            ),
+          ],
+        ));
   }
 
   Widget _buildTextField({
@@ -730,7 +732,8 @@ class _RegisterViewState extends State<RegisterView> {
             else
               Icon(
                 icon,
-                color: onTap != null ? (iconColor ?? textColor) : Colors.grey[500],
+                color:
+                    onTap != null ? (iconColor ?? textColor) : Colors.grey[500],
                 size: isTablet ? 20 : 24,
               ),
             SizedBox(width: isTablet ? 8 : 12),
@@ -754,7 +757,7 @@ class _RegisterViewState extends State<RegisterView> {
 
   void _showPrivacyPolicy() {
     Get.to(
-          () => PrivacyPolicyView(
+      () => PrivacyPolicyView(
         showAcceptButton: true,
         isFromRegistration: true,
         onAccepted: () {
@@ -776,8 +779,8 @@ class _RegisterViewState extends State<RegisterView> {
           'privacy_terms_agreement'.tr,
           backgroundColor: Colors.red.withValues(alpha: 0.1),
           colorText: Colors.red,
-          icon: Icon(Icons.warning, color: Colors.red),
-          duration: Duration(seconds: 4),
+          icon: const Icon(Icons.warning, color: Colors.red),
+          duration: const Duration(seconds: 4),
         );
         return;
       }
@@ -807,8 +810,8 @@ class _RegisterViewState extends State<RegisterView> {
         'privacy_terms_agreement'.tr,
         backgroundColor: Colors.red.withValues(alpha: 0.1),
         colorText: Colors.red,
-        icon: Icon(Icons.warning, color: Colors.red),
-        duration: Duration(seconds: 4),
+        icon: const Icon(Icons.warning, color: Colors.red),
+        duration: const Duration(seconds: 4),
       );
       return;
     }
@@ -817,13 +820,16 @@ class _RegisterViewState extends State<RegisterView> {
 
     switch (provider) {
       case 'google':
-        success = await authController.signInWithGoogle(userType: _selectedUserType);
+        success =
+            await authController.signInWithGoogle(userType: _selectedUserType);
         break;
       case 'facebook':
-        success = await authController.signInWithFacebook(userType: _selectedUserType);
+        success = await authController.signInWithFacebook(
+            userType: _selectedUserType);
         break;
       case 'apple':
-        success = await authController.signInWithApple(userType: _selectedUserType);
+        success =
+            await authController.signInWithApple(userType: _selectedUserType);
         break;
     }
 
@@ -831,4 +837,5 @@ class _RegisterViewState extends State<RegisterView> {
       // Mark privacy policy as accepted locally for social login
       await privacyController.acceptPrivacyPolicy();
     }
-  }}
+  }
+}

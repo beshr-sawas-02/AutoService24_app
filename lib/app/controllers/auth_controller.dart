@@ -23,7 +23,8 @@ class AuthController extends GetxController {
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
-    clientId: '1073993043012-but35ubclk4kel50nri6ih64i3965i1i.apps.googleusercontent.com',
+    clientId:
+        '1073993043012-ku9rjlel3sqqc58o95qpu4ucgr6iq578.apps.googleusercontent.com',
   );
 
   @override
@@ -136,7 +137,8 @@ class AuthController extends GetxController {
         isLoggedIn.value = true;
         isUserDataLoaded.value = true;
 
-        final hasAcceptedPrivacy = await StorageService.hasAcceptedPrivacyPolicy();
+        final hasAcceptedPrivacy =
+            await StorageService.hasAcceptedPrivacyPolicy();
         if (!hasAcceptedPrivacy) {
           await StorageService.setAcceptedPrivacyPolicy(true);
           await StorageService.setAcceptedPrivacyVersion("1.0");
@@ -170,7 +172,7 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       final response =
-      await _authRepository.updateProfileWithImage(userId, data, imageFile);
+          await _authRepository.updateProfileWithImage(userId, data, imageFile);
 
       if (response.containsKey('user')) {
         final updatedUserData = response['user'];
@@ -187,7 +189,7 @@ class AuthController extends GetxController {
           email: data['email'],
           phone: data['phone'],
           profileImage:
-          response['profileImage'] ?? currentUser.value!.profileImage,
+              response['profileImage'] ?? currentUser.value!.profileImage,
         );
 
         currentUser.value = updatedUser;
@@ -295,22 +297,19 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
 
-      // 1️⃣ تسجيل الدخول على فيسبوك
       final result = await FacebookAuth.instance.login(
         permissions: ['email', 'public_profile'],
       );
 
       if (result.status == LoginStatus.success) {
         final accessToken = result.accessToken!.token;
-        print('✅ Facebook Access Token: $accessToken');
 
-        // 2️⃣ جلب بيانات المستخدم من فيسبوك (اختياري)
+
         final userData = await FacebookAuth.instance.getUserData(
           fields: "name,email,picture.width(200)",
         );
-        print('ℹ️ Facebook User Data: $userData');
 
-        // 3️⃣ إرسال التوكن للسيرفر
+
         final loginSuccess = await _handleSocialLoginResponse(
           'facebook',
           accessToken,
@@ -319,7 +318,6 @@ class AuthController extends GetxController {
 
         return loginSuccess;
       } else if (result.status == LoginStatus.cancelled) {
-        print('⚠️ Facebook login cancelled by user.');
         return false;
       } else {
         ErrorHandler.showInfo(
@@ -327,9 +325,7 @@ class AuthController extends GetxController {
         );
         return false;
       }
-    } catch (e, stackTrace) {
-      print('❌ Facebook login error: $e');
-      print(stackTrace);
+    } catch (e) {
       ErrorHandler.handleAndShowError(e);
       return false;
     } finally {
@@ -337,30 +333,6 @@ class AuthController extends GetxController {
     }
   }
 
-
-  // Future<bool> signInWithFacebook({String userType = 'user'}) async {
-  //   try {
-  //     isLoading.value = true;
-  //
-  //     final result = await FacebookAuth.instance.login(
-  //       permissions: ['email', 'public_profile'],
-  //     );
-  //
-  //     if (result.status == LoginStatus.success) {
-  //       final accessToken = result.accessToken!.token;
-  //       return await _handleSocialLoginResponse('facebook', accessToken,
-  //           userType: userType);
-  //     } else {
-  //       ErrorHandler.showInfo(result.message ?? 'facebook_signin_failed'.tr);
-  //       return false;
-  //     }
-  //   } catch (e) {
-  //     ErrorHandler.handleAndShowError(e);
-  //     return false;
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
 
   Future<bool> signInWithApple({String userType = 'user'}) async {
     try {
@@ -465,7 +437,8 @@ class AuthController extends GetxController {
         await _clearServiceData();
         await _updateWebSocketUser(currentUser.value?.id);
 
-        ErrorHandler.showSuccess('${_capitalizeProvider(provider)} ${'login_successful'.tr}');
+        ErrorHandler.showSuccess(
+            '${_capitalizeProvider(provider)} ${'login_successful'.tr}');
 
         if (currentUser.value?.userType == 'owner') {
           Get.offAllNamed(AppRoutes.ownerHome);
@@ -520,7 +493,6 @@ class AuthController extends GetxController {
         await _clearServiceData();
         await _updateWebSocketUser(currentUser.value?.id);
 
-
         if (currentUser.value?.userType == 'owner') {
           Get.offAllNamed(AppRoutes.ownerHome);
         } else {
@@ -529,7 +501,8 @@ class AuthController extends GetxController {
 
         await _reloadUserSpecificData();
         return true;
-      } else if (response.containsKey('status') && response.containsKey('user')) {
+      } else if (response.containsKey('status') &&
+          response.containsKey('user')) {
         if (response['status'] == true) {
           await StorageService.saveUserData(response['user']);
 
@@ -542,7 +515,8 @@ class AuthController extends GetxController {
             response['message'] ?? 'account_created_verify_email'.tr,
           );
 
-          String userEmail = response['user']['email'] ?? userData['email'] ?? '';
+          String userEmail =
+              response['user']['email'] ?? userData['email'] ?? '';
           Get.offAllNamed(
             AppRoutes.emailVerification,
             arguments: userEmail,
@@ -592,7 +566,8 @@ class AuthController extends GetxController {
       await _signOutFromSocialProviders();
       await _clearServiceData();
 
-      final hasAcceptedPrivacy = await StorageService.hasAcceptedPrivacyPolicy();
+      final hasAcceptedPrivacy =
+          await StorageService.hasAcceptedPrivacyPolicy();
       final privacyVersion = await StorageService.getAcceptedPrivacyVersion();
 
       await StorageService.clearAll();
@@ -624,9 +599,13 @@ class AuthController extends GetxController {
   }
 
   bool get isGuest => !isLoggedIn.value;
+
   bool get isOwner => currentUser.value?.userType == 'owner';
+
   bool get isUser => currentUser.value?.userType == 'user';
+
   String get displayName => currentUser.value?.username ?? 'Guest';
+
   String get userEmail => currentUser.value?.email ?? '';
 
   Future<void> refreshUserData() async {

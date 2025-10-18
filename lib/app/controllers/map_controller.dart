@@ -3,7 +3,7 @@ import 'package:geolocator/geolocator.dart' as geo;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:math' show pow, cos, sin, pi;
+import 'dart:math' show cos, sin, pi;
 import '../utils/constants.dart';
 import '../utils/location_service.dart';
 
@@ -281,108 +281,110 @@ class MapController extends GetxController {
     }
   }
 
-  Future<bool> _tryMultipleCirclesPin(double latitude, double longitude) async {
-    if (circleAnnotationManager == null) return false;
+  // Future<bool> _tryMultipleCirclesPin(double latitude, double longitude) async {
+  //   if (circleAnnotationManager == null) return false;
+  //
+  //   try {
+  //     final point = Point(coordinates: Position(longitude, latitude));
+  //
+  //     final outerCircle = CircleAnnotationOptions(
+  //       geometry: point,
+  //       circleRadius: 18.0,
+  //       circleColor: 0xFFFF0000,
+  //       circleStrokeColor: 0xFFFFFFFF,
+  //       circleStrokeWidth: 2.0,
+  //     );
+  //
+  //     await circleAnnotationManager!.create(outerCircle);
+  //
+  //     final innerCircle = CircleAnnotationOptions(
+  //       geometry: point,
+  //       circleRadius: 8.0,
+  //       circleColor: 0xFFFFFFFF,
+  //     );
+  //
+  //     await circleAnnotationManager!.create(innerCircle);
+  //
+  //     return true;
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // }
 
-    try {
-      final point = Point(coordinates: Position(longitude, latitude));
+  // Future<bool> _trySingleCirclePin(double latitude, double longitude) async {
+  //   if (circleAnnotationManager == null) return false;
+  //
+  //   try {
+  //     final point = Point(coordinates: Position(longitude, latitude));
+  //
+  //     final circle = CircleAnnotationOptions(
+  //       geometry: point,
+  //       circleRadius: 15.0,
+  //       circleColor: 0xFFFF0000,
+  //       circleStrokeColor: 0xFFFFFFFF,
+  //       circleStrokeWidth: 3.0,
+  //     );
+  //
+  //     await circleAnnotationManager!.create(circle);
+  //     return true;
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // }
 
-      final outerCircle = CircleAnnotationOptions(
-        geometry: point,
-        circleRadius: 18.0,
-        circleColor: 0xFFFF0000,
-        circleStrokeColor: 0xFFFFFFFF,
-        circleStrokeWidth: 2.0,
-      );
+  // Future<bool> _tryTextOnlyMarker(double latitude, double longitude) async {
+  //   if (pointAnnotationManager == null) return false;
+  //
+  //   try {
+  //     final point = Point(coordinates: Position(longitude, latitude));
+  //
+  //     final textOptions = PointAnnotationOptions(
+  //       geometry: point,
+  //       textField: "WORKSHOP HERE",
+  //       textSize: 14.0,
+  //       textColor: 0xFFFF0000,
+  //       textHaloColor: 0xFFFFFFFF,
+  //       textHaloWidth: 2.0,
+  //       textAnchor: TextAnchor.CENTER,
+  //     );
+  //
+  //     await pointAnnotationManager!.create(textOptions);
+  //     return true;
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // }
 
-      await circleAnnotationManager!.create(outerCircle);
-
-      final innerCircle = CircleAnnotationOptions(
-        geometry: point,
-        circleRadius: 8.0,
-        circleColor: 0xFFFFFFFF,
-      );
-
-      await circleAnnotationManager!.create(innerCircle);
-
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<bool> _trySingleCirclePin(double latitude, double longitude) async {
-    if (circleAnnotationManager == null) return false;
-
-    try {
-      final point = Point(coordinates: Position(longitude, latitude));
-
-      final circle = CircleAnnotationOptions(
-        geometry: point,
-        circleRadius: 15.0,
-        circleColor: 0xFFFF0000,
-        circleStrokeColor: 0xFFFFFFFF,
-        circleStrokeWidth: 3.0,
-      );
-
-      await circleAnnotationManager!.create(circle);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<bool> _tryTextOnlyMarker(double latitude, double longitude) async {
-    if (pointAnnotationManager == null) return false;
-
-    try {
-      final point = Point(coordinates: Position(longitude, latitude));
-
-      final textOptions = PointAnnotationOptions(
-        geometry: point,
-        textField: "WORKSHOP HERE",
-        textSize: 14.0,
-        textColor: 0xFFFF0000,
-        textHaloColor: 0xFFFFFFFF,
-        textHaloWidth: 2.0,
-        textAnchor: TextAnchor.CENTER,
-      );
-
-      await pointAnnotationManager!.create(textOptions);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<void> _tryAddWorkshopText(double latitude, double longitude) async {
-    if (pointAnnotationManager == null) {
-      return;
-    }
-
-    try {
-      final textPoint =
-          Point(coordinates: Position(longitude, latitude - 0.0002));
-
-      final textOptions = PointAnnotationOptions(
-        geometry: textPoint,
-        textField: "Workshop",
-        textSize: 12.0,
-        textColor: 0xFFFF0000,
-        textHaloColor: 0xFFFFFFFF,
-        textHaloWidth: 2.0,
-        textAnchor: TextAnchor.CENTER,
-      );
-
-      await pointAnnotationManager!.create(textOptions);
-    } catch (e) {}
-  }
+  // Future<void> _tryAddWorkshopText(double latitude, double longitude) async {
+  //   if (pointAnnotationManager == null) {
+  //     return;
+  //   }
+  //
+  //   try {
+  //     final textPoint =
+  //         Point(coordinates: Position(longitude, latitude - 0.0002));
+  //
+  //     final textOptions = PointAnnotationOptions(
+  //       geometry: textPoint,
+  //       textField: "Workshop",
+  //       textSize: 12.0,
+  //       textColor: 0xFFFF0000,
+  //       textHaloColor: 0xFFFFFFFF,
+  //       textHaloWidth: 2.0,
+  //       textAnchor: TextAnchor.CENTER,
+  //     );
+  //
+  //     await pointAnnotationManager!.create(textOptions);
+  //   } catch (e) {}
+  // }
 
   Future<void> debugAnnotationManagers() async {
     if (mapboxMap != null) {
       try {
-        final cameraState = await mapboxMap!.getCameraState();
-      } catch (e) {}
+        await mapboxMap!.getCameraState();
+      } catch (e) {
+        // Ignored intentionally: only checking if mapboxMap is ready
+      }
     }
   }
 
@@ -615,7 +617,9 @@ class MapController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
         duration: const Duration(seconds: 3),
       );
-    } catch (e) {}
+    } catch (e) {
+      // Ignored intentionally: fallback UI only, no critical operation
+    }
   }
 
   Future<List<Position>> _getDirectionsRoute({
@@ -721,25 +725,25 @@ class MapController extends GetxController {
     return null;
   }
 
-  Future<void> _addStraightLineRoute(
-      double startLat, double startLng, double endLat, double endLng) async {
-    try {
-      if (polylineAnnotationManager != null) {
-        final coordinates =
-            _getStraightLineCoordinates(startLat, startLng, endLat, endLng);
-        final lineString = LineString(coordinates: coordinates);
-
-        final options = PolylineAnnotationOptions(
-          geometry: lineString,
-          lineColor: 0xFFFF6B6B,
-          lineWidth: 5.0,
-          lineOpacity: 0.8,
-        );
-
-        await polylineAnnotationManager!.create(options);
-      }
-    } catch (e) {}
-  }
+  // Future<void> _addStraightLineRoute(
+  //     double startLat, double startLng, double endLat, double endLng) async {
+  //   try {
+  //     if (polylineAnnotationManager != null) {
+  //       final coordinates =
+  //           _getStraightLineCoordinates(startLat, startLng, endLat, endLng);
+  //       final lineString = LineString(coordinates: coordinates);
+  //
+  //       final options = PolylineAnnotationOptions(
+  //         geometry: lineString,
+  //         lineColor: 0xFFFF6B6B,
+  //         lineWidth: 5.0,
+  //         lineOpacity: 0.8,
+  //       );
+  //
+  //       await polylineAnnotationManager!.create(options);
+  //     }
+  //   } catch (e) {}
+  // }
 
   List<Position> _getStraightLineCoordinates(
       double startLat, double startLng, double endLat, double endLng) {
@@ -795,16 +799,18 @@ class MapController extends GetxController {
         final double maxDiff = latDiff > lngDiff ? latDiff : lngDiff;
 
         double zoom = 10.0;
-        if (maxDiff < 0.01)
+
+        if (maxDiff < 0.01) {
           zoom = 14.0;
-        else if (maxDiff < 0.05)
+        } else if (maxDiff < 0.05) {
           zoom = 12.0;
-        else if (maxDiff < 0.1)
+        } else if (maxDiff < 0.1) {
           zoom = 11.0;
-        else if (maxDiff < 0.5)
+        } else if (maxDiff < 0.5) {
           zoom = 9.0;
-        else
+        } else {
           zoom = 8.0;
+        }
 
         final center = Point(coordinates: Position(centerLng, centerLat));
 
@@ -1214,7 +1220,7 @@ class MapController extends GetxController {
     if (mapboxMap == null) return false;
 
     try {
-      final cameraState = await mapboxMap!.getCameraState();
+      await mapboxMap!.getCameraState();
       return true;
     } catch (e) {
       return false;

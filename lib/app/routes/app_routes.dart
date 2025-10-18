@@ -46,6 +46,7 @@ class AppRoutes {
   static const String editProfile = '/edit-profile';
   static const emailVerification = '/email-verification';
   static const String privacyPolicy = '/privacy-policy';
+
 //  static const String settings = '/settings';
 
   static List<GetPage> routes = [
@@ -71,7 +72,7 @@ class AppRoutes {
     ),
     GetPage(
       name: userHome,
-      page: () =>  UserHomeView(),
+      page: () => UserHomeView(),
     ),
     GetPage(
       name: userProfile,

@@ -39,7 +39,8 @@ class WorkshopController extends GetxController {
   Future<void> loadOwnerWorkshops(String userId) async {
     try {
       isLoading.value = true;
-      final workshopList = await _workshopRepository.getWorkshopsByUserId(userId);
+      final workshopList =
+          await _workshopRepository.getWorkshopsByUserId(userId);
       ownerWorkshops.value = workshopList;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
@@ -61,7 +62,8 @@ class WorkshopController extends GetxController {
   Future<bool> createWorkshop(Map<String, dynamic> workshopData) async {
     try {
       isLoading.value = true;
-      final newWorkshop = await _workshopRepository.createWorkshop(workshopData);
+      final newWorkshop =
+          await _workshopRepository.createWorkshop(workshopData);
       ownerWorkshops.add(newWorkshop);
       workshops.add(newWorkshop);
       clearSearchCache();
@@ -74,10 +76,12 @@ class WorkshopController extends GetxController {
     }
   }
 
-  Future<bool> updateWorkshop(String id, Map<String, dynamic> workshopData) async {
+  Future<bool> updateWorkshop(
+      String id, Map<String, dynamic> workshopData) async {
     try {
       isLoading.value = true;
-      final updatedWorkshop = await _workshopRepository.updateWorkshop(id, workshopData);
+      final updatedWorkshop =
+          await _workshopRepository.updateWorkshop(id, workshopData);
 
       final index = ownerWorkshops.indexWhere((w) => w.id == id);
       if (index != -1) {
@@ -163,11 +167,7 @@ class WorkshopController extends GetxController {
       }
 
       double distance = _calculateDistance(
-          latitude,
-          longitude,
-          workshop.latitude,
-          workshop.longitude
-      );
+          latitude, longitude, workshop.latitude, workshop.longitude);
 
       if (distance <= radiusKm) {
         bool hasService = serviceController.services.any((service) {
@@ -179,17 +179,15 @@ class WorkshopController extends GetxController {
         });
 
         if (hasService) {
-          var workshopWithDistance = workshop.copyWith(
-              distanceFromUser: distance
-          );
+          var workshopWithDistance =
+              workshop.copyWith(distanceFromUser: distance);
           nearbyWorkshops.add(workshopWithDistance);
         }
       }
     }
 
-    nearbyWorkshops.sort((a, b) =>
-        (a.distanceFromUser ?? 0).compareTo(b.distanceFromUser ?? 0)
-    );
+    nearbyWorkshops.sort(
+        (a, b) => (a.distanceFromUser ?? 0).compareTo(b.distanceFromUser ?? 0));
 
     _searchCache[cacheKey] = nearbyWorkshops;
 
@@ -213,21 +211,17 @@ class WorkshopController extends GetxController {
       }
 
       double distance = _calculateDistance(
-          userLat, userLng,
-          workshop.latitude, workshop.longitude
-      );
+          userLat, userLng, workshop.latitude, workshop.longitude);
 
       if (distance <= radiusKm) {
-        var workshopWithDistance = workshop.copyWith(
-            distanceFromUser: distance
-        );
+        var workshopWithDistance =
+            workshop.copyWith(distanceFromUser: distance);
         nearbyWorkshops.add(workshopWithDistance);
       }
     }
 
-    nearbyWorkshops.sort((a, b) =>
-        (a.distanceFromUser ?? 0).compareTo(b.distanceFromUser ?? 0)
-    );
+    nearbyWorkshops.sort(
+        (a, b) => (a.distanceFromUser ?? 0).compareTo(b.distanceFromUser ?? 0));
 
     return nearbyWorkshops;
   }
@@ -240,7 +234,8 @@ class WorkshopController extends GetxController {
   }) async {
     try {
       isLoading.value = true;
-      final nearbyList = await _workshopRepository.getNearbyWorkshopsByServiceType(
+      final nearbyList =
+          await _workshopRepository.getNearbyWorkshopsByServiceType(
         serviceType: serviceType,
         longitude: longitude,
         latitude: latitude,
@@ -258,14 +253,16 @@ class WorkshopController extends GetxController {
     _searchCache.clear();
   }
 
-  double _calculateDistance(double lat1, double lng1, double lat2, double lng2) {
+  double _calculateDistance(
+      double lat1, double lng1, double lat2, double lng2) {
     const double earthRadius = 6371;
 
     double dLat = _degreesToRadians(lat2 - lat1);
     double dLng = _degreesToRadians(lng2 - lng1);
 
     double a = pow(sin(dLat / 2), 2) +
-        cos(_degreesToRadians(lat1)) * cos(_degreesToRadians(lat2)) *
+        cos(_degreesToRadians(lat1)) *
+            cos(_degreesToRadians(lat2)) *
             pow(sin(dLng / 2), 2);
 
     double c = 2 * asin(sqrt(a));

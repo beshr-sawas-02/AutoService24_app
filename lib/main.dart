@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'app/lang/Translations.dart';
+import 'app/lang/translations.dart';
 import 'app/routes/app_routes.dart';
 import 'app/bindings/app_binding.dart';
 import 'app/utils/constants.dart';

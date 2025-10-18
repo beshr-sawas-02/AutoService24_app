@@ -933,7 +933,7 @@ class _FilteredServicesViewState extends State<FilteredServicesView> {
                               .firstWhere(
                                   (saved) => saved.serviceId == service.id);
                           await serviceController
-                              .unsaveService(savedService.id);
+                              .unSaveService(savedService.id);
                         } else {
                           await serviceController.saveService(
                             service.id,

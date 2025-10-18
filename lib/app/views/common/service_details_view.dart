@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/service_controller.dart';
+import '../../controllers/workshop_controller.dart';
 import '../../data/models/service_model.dart';
 import '../../routes/app_routes.dart';
 
@@ -18,6 +19,7 @@ class ServiceDetailsView extends StatefulWidget {
 class _ServiceDetailsViewState extends State<ServiceDetailsView> {
   final AuthController authController = Get.find<AuthController>();
   final ServiceController serviceController = Get.find<ServiceController>();
+  final WorkshopController workshopController = Get.find<WorkshopController>();
   final PageController pageController = PageController();
 
   int currentImageIndex = 0;
@@ -59,8 +61,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                       top: 50,
                       right: 16,
                       child: Container(
-                        padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(20),
@@ -86,7 +88,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                         children: List.generate(
                           service.images.length,
                               (index) => Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 3),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 3),
                             width: 8,
                             height: 8,
                             decoration: BoxDecoration(
@@ -110,14 +113,16 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                           child: GestureDetector(
                             onTap: () {
                               pageController.previousPage(
-                                duration: const Duration(milliseconds: 300),
+                                duration:
+                                const Duration(milliseconds: 300),
                                 curve: Curves.easeInOut,
                               );
                             },
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.5),
+                                color:
+                                Colors.black.withValues(alpha: 0.5),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -138,14 +143,16 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                           child: GestureDetector(
                             onTap: () {
                               pageController.nextPage(
-                                duration: const Duration(milliseconds: 300),
+                                duration:
+                                const Duration(milliseconds: 300),
                                 curve: Curves.easeInOut,
                               );
                             },
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.5),
+                                color:
+                                Colors.black.withValues(alpha: 0.5),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -183,13 +190,14 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                   );
                 }
 
-                // Owner → لا يظهر الزر
+
                 if (authController.currentUser.value?.isOwner ?? false) {
                   return const SizedBox.shrink();
                 }
 
-                // User عادي
-                final isBookmarked = serviceController.isServiceSaved(service.id);
+
+                final isBookmarked =
+                serviceController.isServiceSaved(service.id);
 
                 return IconButton(
                   icon: Container(
@@ -209,11 +217,13 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                   onPressed: () async {
                     final userId = authController.currentUser.value?.id;
                     if (userId != null) {
-                      await serviceController.toggleSaveService(service.id, userId);
+                      await serviceController.toggleSaveService(
+                          service.id, userId);
                     }
                   },
-                  tooltip:
-                  isBookmarked ? 'remove_from_saved'.tr : 'save_service'.tr,
+                  tooltip: isBookmarked
+                      ? 'remove_from_saved'.tr
+                      : 'save_service'.tr,
                 );
               }),
             ],
@@ -299,7 +309,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                       _buildInfoRow(
                         Icons.business,
                         'workshop_name'.tr,
-                        service.workshopName ,
+                        service.workshopName,
                       ),
                       _buildInfoRow(
                         Icons.description,
@@ -314,13 +324,12 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                     ],
                   ),
 
-
                   if (service.images.length > 1) ...[
                     const SizedBox(height: 24),
                     _buildImageGallery(service.images),
                   ],
 
-                  const SizedBox(height: 100), // Space for the button
+                  const SizedBox(height: 120), // Space for the buttons
                 ],
               ),
             ),
@@ -328,45 +337,215 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
         ],
       ),
 
-      // Contact button at the bottom
+      // Action buttons at the bottom
       bottomNavigationBar: SafeArea(
-        child: Padding(
+        child: Container(
           padding: const EdgeInsets.all(16),
-          child: Obx(() => ElevatedButton.icon(
-            onPressed: serviceController.isLoadingPhone.value
-                ? null
-                : () => _contactWorkshopOwner(service.id),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadowLight,
+                blurRadius: 10,
+                offset: const Offset(0, -2),
               ),
-            ),
-            icon: serviceController.isLoadingPhone.value
-                ? const SizedBox(
-              width: 22,
-              height: 22,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            )
-                : const Icon(Icons.phone, size: 22),
-            label: Text(
-              serviceController.isLoadingPhone.value
-                  ? 'getting_phone_number'.tr
-                  : 'contact_workshop_owner'.tr,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          )),
+            ],
+          ),
+          child: Obx(() {
+            final currentUser = authController.currentUser.value;
+            final bool isCurrentUserOwner = currentUser?.isOwner ?? false;
+            final String currentUserId = currentUser?.id ?? '';
+
+            final bool isServiceOwner = service.userId == currentUserId ||
+                service.workshopData?['user_id'] == currentUserId;
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Chat Button - only for regular users
+                if (!isCurrentUserOwner && !isServiceOwner)
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        if (authController.isGuest) {
+                          _showGuestDialog();
+                          return;
+                        }
+                        _startChatWithWorkshop(service);
+                      },
+                      icon: const Icon(
+                        Icons.chat_bubble_outline,
+                        size: 20,
+                        color: AppColors.info,
+                      ),
+                      label: Text(
+                        'chat'.tr,
+                        style: const TextStyle(
+                          color: AppColors.info,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                          color: AppColors.info,
+                          width: 2,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                    ),
+                  ),
+
+                // Spacing between buttons
+                if (!isCurrentUserOwner && !isServiceOwner)
+                  const SizedBox(height: 12),
+
+                // Contact Button - for all users
+                if (!isCurrentUserOwner && !isServiceOwner)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: serviceController.isLoadingPhone.value
+                          ? null
+                          : () => _contactWorkshopOwner(service.id),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.success,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      icon: serviceController.isLoadingPhone.value
+                          ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white),
+                        ),
+                      )
+                          : const Icon(Icons.phone, size: 20),
+                      label: Text(
+                        serviceController.isLoadingPhone.value
+                            ? 'getting_phone_number'.tr
+                            : 'contact_workshop_owner'.tr,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                // Contact button for owners or service owners
+                if (isCurrentUserOwner || isServiceOwner)
+                  ElevatedButton.icon(
+                    onPressed: serviceController.isLoadingPhone.value
+                        ? null
+                        : () => _contactWorkshopOwner(service.id),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    icon: serviceController.isLoadingPhone.value
+                        ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor:
+                        AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                        : const Icon(Icons.phone, size: 22),
+                    label: Text(
+                      serviceController.isLoadingPhone.value
+                          ? 'getting_phone_number'.tr
+                          : 'contact_workshop_owner'.tr,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          }),
         ),
       ),
     );
+  }
+
+  // Start chat with workshop function
+  Future<void> _startChatWithWorkshop(ServiceModel service) async {
+    try {
+      final currentUserId = authController.currentUser.value?.id ?? '';
+
+      if (currentUserId.isEmpty) {
+        Get.snackbar(
+          'error'.tr,
+          'user_not_logged_in'.tr,
+          backgroundColor: AppColors.error.withValues(alpha: 0.1),
+          colorText: AppColors.error,
+        );
+        return;
+      }
+
+      final workshop =
+      await workshopController.getWorkshopById(service.workshopId);
+
+      if (workshop == null) {
+        Get.snackbar(
+          'error'.tr,
+          'workshop_not_found'.tr,
+          backgroundColor: AppColors.error.withValues(alpha: 0.1),
+          colorText: AppColors.error,
+        );
+        return;
+      }
+
+      final workshopOwnerId = workshop.userId;
+      final workshopName = workshop.name;
+
+      if (workshopOwnerId == currentUserId) {
+        Get.snackbar(
+          'info'.tr,
+          'cannot_chat_yourself'.tr,
+          backgroundColor: AppColors.info.withValues(alpha: 0.1),
+          colorText: AppColors.info,
+        );
+        return;
+      }
+
+      Get.toNamed(
+        AppRoutes.chat,
+        arguments: {
+          'receiverId': workshopOwnerId,
+          'receiverName': workshopName,
+          'currentUserId': currentUserId,
+          'serviceId': service.id,
+          'serviceTitle': service.title,
+        },
+      );
+    } catch (e) {
+      Get.snackbar(
+        'error'.tr,
+        'failed_start_chat'.tr,
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+        colorText: AppColors.error,
+      );
+    }
   }
 
   // Contact workshop owner function
@@ -379,7 +558,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       }
 
       // Get phone number from ServiceController
-      final phoneNumber = await serviceController.getWorkshopOwnerPhone(serviceId);
+      final phoneNumber =
+      await serviceController.getWorkshopOwnerPhone(serviceId);
 
       if (phoneNumber != null && phoneNumber.isNotEmpty) {
         // Clean phone number from unwanted characters

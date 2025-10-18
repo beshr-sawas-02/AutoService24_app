@@ -1,4 +1,4 @@
-package com.example.autoservice24
+package com.autoservicely.app
 
 import io.flutter.embedding.android.FlutterActivity
 

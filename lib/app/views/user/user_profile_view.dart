@@ -7,7 +7,8 @@ import '../privacy_policy_screen.dart';
 
 class UserProfileView extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
-  final PrivacyPolicyController privacyController = Get.put(PrivacyPolicyController());
+  final PrivacyPolicyController privacyController =
+      Get.put(PrivacyPolicyController());
 
   UserProfileView({super.key});
 
@@ -151,7 +152,8 @@ class UserProfileView extends StatelessWidget {
                   // Privacy Policy link for guests
                   TextButton.icon(
                     onPressed: () => _showPrivacyPolicy(),
-                    icon: const Icon(Icons.privacy_tip_outlined, color: Colors.white),
+                    icon: const Icon(Icons.privacy_tip_outlined,
+                        color: Colors.white),
                     label: Text(
                       'privacy_policy'.tr,
                       style: TextStyle(
@@ -270,34 +272,35 @@ class UserProfileView extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 58,
                   backgroundColor: Colors.white.withValues(alpha: 0.2),
-                  child: user.fullProfileImage != null && user.fullProfileImage!.isNotEmpty
+                  child: user.fullProfileImage != null &&
+                          user.fullProfileImage!.isNotEmpty
                       ? ClipRRect(
-                    borderRadius: BorderRadius.circular(58),
-                    child: Image.network(
-                      user.fullProfileImage!,
-                      width: 116,
-                      height: 116,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Text(
+                          borderRadius: BorderRadius.circular(58),
+                          child: Image.network(
+                            user.fullProfileImage!,
+                            width: 116,
+                            height: 116,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Text(
+                                user.username.substring(0, 1).toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 48,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : Text(
                           user.username.substring(0, 1).toUpperCase(),
                           style: const TextStyle(
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
-                        );
-                      },
-                    ),
-                  )
-                      : Text(
-                    user.username.substring(0, 1).toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+                        ),
                 ),
               ),
 
@@ -402,7 +405,8 @@ class UserProfileView extends StatelessWidget {
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.email_outlined, color: Colors.grey[600], size: 20),
+                child: Icon(Icons.email_outlined,
+                    color: Colors.grey[600], size: 20),
               ),
               const SizedBox(width: 16),
               Column(
@@ -439,7 +443,8 @@ class UserProfileView extends StatelessWidget {
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.phone_outlined, color: Colors.grey[600], size: 20),
+                child: Icon(Icons.phone_outlined,
+                    color: Colors.grey[600], size: 20),
               ),
               const SizedBox(width: 16),
               Column(
@@ -458,7 +463,9 @@ class UserProfileView extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: phone != 'not_provided'.tr ? Colors.black87 : Colors.grey[500],
+                      color: phone != 'not_provided'.tr
+                          ? Colors.black87
+                          : Colors.grey[500],
                     ),
                   ),
                 ],
@@ -522,7 +529,8 @@ class UserProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionCard({required String title, required List<Widget> children}) {
+  Widget _buildSectionCard(
+      {required String title, required List<Widget> children}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -663,7 +671,7 @@ class UserProfileView extends StatelessWidget {
 
   void _showPrivacyPolicy() {
     Get.to(
-          () => PrivacyPolicyView(
+      () => PrivacyPolicyView(
         showAcceptButton: false,
         isFromRegistration: false,
       ),
@@ -672,16 +680,16 @@ class UserProfileView extends StatelessWidget {
     );
   }
 
-  void _showPrivacyPolicyWithAccept() {
-    Get.to(
-          () => PrivacyPolicyView(
-        showAcceptButton: true,
-        isFromRegistration: false,
-      ),
-      transition: Transition.cupertino,
-      duration: const Duration(milliseconds: 300),
-    );
-  }
+  // void _showPrivacyPolicyWithAccept() {
+  //   Get.to(
+  //         () => PrivacyPolicyView(
+  //       showAcceptButton: true,
+  //       isFromRegistration: false,
+  //     ),
+  //     transition: Transition.cupertino,
+  //     duration: const Duration(milliseconds: 300),
+  //   );
+  // }
 
   void _showLogoutDialog() {
     Get.dialog(
@@ -801,4 +809,5 @@ class UserProfileView extends StatelessWidget {
         ],
       ),
     );
-  }}
+  }
+}

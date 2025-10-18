@@ -15,10 +15,12 @@ class UserController extends GetxController {
   var user = Rx<UserModel?>(null);
   var users = <UserModel>[].obs;
 
-  Future<bool> updateProfileWithImage(String userId, Map<String, dynamic> data, File? imageFile) async {
+  Future<bool> updateProfileWithImage(
+      String userId, Map<String, dynamic> data, File? imageFile) async {
     try {
       isLoading.value = true;
-      final response = await _authRepository.updateProfileWithImage(userId, data, imageFile);
+      final response =
+          await _authRepository.updateProfileWithImage(userId, data, imageFile);
 
       if (response.containsKey('user')) {
         user.value = UserModel.fromJson(response['user']);
@@ -36,7 +38,8 @@ class UserController extends GetxController {
     }
   }
 
-  Future<bool> updateProfile(String userId, Map<String, dynamic> userData) async {
+  Future<bool> updateProfile(
+      String userId, Map<String, dynamic> userData) async {
     return await updateProfileWithImage(userId, userData, null);
   }
 

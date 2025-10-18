@@ -32,7 +32,7 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    Theme.of(context);
     final primaryColor = backgroundColor ?? AppColors.primary;
     final onPrimaryColor = textColor ?? Colors.white;
 

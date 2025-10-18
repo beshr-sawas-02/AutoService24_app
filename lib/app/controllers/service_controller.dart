@@ -186,7 +186,7 @@ class ServiceController extends GetxController {
     }
   }
 
-  Future<bool> unsaveService(String savedServiceId) async {
+  Future<bool> unSaveService(String savedServiceId) async {
     try {
       await _serviceRepository.unsaveService(savedServiceId);
 
@@ -202,7 +202,7 @@ class ServiceController extends GetxController {
     if (isServiceSaved(serviceId)) {
       final savedServiceId = getSavedServiceId(serviceId);
       if (savedServiceId != null) {
-        return await unsaveService(savedServiceId);
+        return await unSaveService(savedServiceId);
       }
       return false;
     } else {

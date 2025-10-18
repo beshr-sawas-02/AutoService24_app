@@ -19,8 +19,8 @@ class AuthRepository {
         throw Exception('Login failed with status: ${response.statusCode}');
       }
     } catch (e) {
-
-      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') ||
+          e.toString().contains('DioError')) {
         if (e.toString().contains('400')) {
           throw Exception('Invalid email or password');
         } else if (e.toString().contains('401')) {
@@ -38,9 +38,9 @@ class AuthRepository {
     }
   }
 
-  Future<Map<String, dynamic>> socialLogin(String provider, String token, {String userType = 'user'}) async {
+  Future<Map<String, dynamic>> socialLogin(String provider, String token,
+      {String userType = 'user'}) async {
     try {
-
       final response = await _apiProvider.socialLogin({
         'provider': provider,
         'Token': token,
@@ -50,11 +50,12 @@ class AuthRepository {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response.data as Map<String, dynamic>;
       } else {
-        throw Exception('Social login failed with status: ${response.statusCode}');
+        throw Exception(
+            'Social login failed with status: ${response.statusCode}');
       }
     } catch (e) {
-
-      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') ||
+          e.toString().contains('DioError')) {
         if (e.toString().contains('400')) {
           throw Exception('Invalid social login data');
         } else if (e.toString().contains('401')) {
@@ -76,17 +77,17 @@ class AuthRepository {
 
   Future<Map<String, dynamic>> register(Map<String, dynamic> userData) async {
     try {
-
       final response = await _apiProvider.register(userData);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response.data as Map<String, dynamic>;
       } else {
-        throw Exception('Registration failed with status: ${response.statusCode}');
+        throw Exception(
+            'Registration failed with status: ${response.statusCode}');
       }
     } catch (e) {
-
-      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') ||
+          e.toString().contains('DioError')) {
         if (e.toString().contains('400')) {
           throw Exception('Invalid registration data');
         } else if (e.toString().contains('409')) {
@@ -104,19 +105,21 @@ class AuthRepository {
     }
   }
 
-  Future<Map<String, dynamic>> updateProfileWithImage(String userId, Map<String, dynamic> data, File? imageFile) async {
+  Future<Map<String, dynamic>> updateProfileWithImage(
+      String userId, Map<String, dynamic> data, File? imageFile) async {
     try {
-
-      final response = await _apiProvider.updateProfileWithImage(userId, data, imageFile);
+      final response =
+          await _apiProvider.updateProfileWithImage(userId, data, imageFile);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response.data as Map<String, dynamic>;
       } else {
-        throw Exception('Profile update failed with status: ${response.statusCode}');
+        throw Exception(
+            'Profile update failed with status: ${response.statusCode}');
       }
     } catch (e) {
-
-      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') ||
+          e.toString().contains('DioError')) {
         if (e.toString().contains('400')) {
           throw Exception('Invalid profile data');
         } else if (e.toString().contains('401')) {
@@ -142,11 +145,12 @@ class AuthRepository {
       });
 
       if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('Password reset failed with status: ${response.statusCode}');
+        throw Exception(
+            'Password reset failed with status: ${response.statusCode}');
       }
     } catch (e) {
-
-      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') ||
+          e.toString().contains('DioError')) {
         if (e.toString().contains('404')) {
           throw Exception('Email not found');
         } else if (e.toString().contains('400')) {
@@ -167,10 +171,12 @@ class AuthRepository {
       });
 
       if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('Failed to send verification code with status: ${response.statusCode}');
+        throw Exception(
+            'Failed to send verification code with status: ${response.statusCode}');
       }
     } catch (e) {
-      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') ||
+          e.toString().contains('DioError')) {
         if (e.toString().contains('404')) {
           throw Exception('Email not found');
         } else if (e.toString().contains('400')) {
@@ -196,10 +202,12 @@ class AuthRepository {
       });
 
       if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('Code verification failed with status: ${response.statusCode}');
+        throw Exception(
+            'Code verification failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') ||
+          e.toString().contains('DioError')) {
         if (e.toString().contains('400')) {
           throw Exception('Invalid or expired verification code');
         } else if (e.toString().contains('404')) {
@@ -220,11 +228,12 @@ class AuthRepository {
       final response = await _apiProvider.deleteUser(userId);
 
       if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('Account deletion failed with status: ${response.statusCode}');
+        throw Exception(
+            'Account deletion failed with status: ${response.statusCode}');
       }
     } catch (e) {
-
-      if (e.toString().contains('DioException') || e.toString().contains('DioError')) {
+      if (e.toString().contains('DioException') ||
+          e.toString().contains('DioError')) {
         if (e.toString().contains('404')) {
           throw Exception('Account not found');
         } else if (e.toString().contains('401')) {
@@ -237,5 +246,4 @@ class AuthRepository {
       throw Exception('Account deletion failed: ${e.toString()}');
     }
   }
-
 }

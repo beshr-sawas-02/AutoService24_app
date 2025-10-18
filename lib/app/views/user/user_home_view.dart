@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../controllers/Language_Controller.dart';
+import '../../controllers/language_controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/service_controller.dart';
 import '../../data/models/service_model.dart';
@@ -109,9 +109,9 @@ class UserHomeView extends StatelessWidget {
         title: Text(
           'auto_services'.tr,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+              ),
         ),
         automaticallyImplyLeading: false,
         actions: [
@@ -131,6 +131,7 @@ class UserHomeView extends StatelessWidget {
 
 class _LanguageSwitcher extends StatelessWidget {
   final LanguageController languageController;
+
   const _LanguageSwitcher({required this.languageController});
 
   @override
@@ -182,7 +183,9 @@ class _HomeBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Obx(() => authController.isGuest ? const GuestBanner() : const SizedBox.shrink()),
+        Obx(() => authController.isGuest
+            ? const GuestBanner()
+            : const SizedBox.shrink()),
         Expanded(
           child: RefreshIndicator(
             onRefresh: onRefresh,
@@ -203,10 +206,11 @@ class _HomeBody extends StatelessWidget {
                     const SizedBox(height: 24),
                     Text(
                       'categories'.tr,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
                     ),
                     const SizedBox(height: 20),
                     _ServiceCategories(categoriesToShow: filtered),
@@ -223,6 +227,7 @@ class _HomeBody extends StatelessWidget {
 
 class _SearchBar extends StatelessWidget {
   final RxString searchQuery;
+
   const _SearchBar({required this.searchQuery});
 
   @override
@@ -251,7 +256,8 @@ class _SearchBar extends StatelessWidget {
           ),
           filled: true,
           fillColor: AppColors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
       ),
     );
@@ -260,6 +266,7 @@ class _SearchBar extends StatelessWidget {
 
 class _ServiceCategories extends StatelessWidget {
   final List<Map<String, dynamic>> categoriesToShow;
+
   const _ServiceCategories({required this.categoriesToShow});
 
   @override
@@ -314,8 +321,10 @@ class _ServiceCategories extends StatelessWidget {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              (category['color'] as Color).withValues(alpha: 0.8),
-                              (category['color'] as Color).withValues(alpha: 0.6),
+                              (category['color'] as Color)
+                                  .withValues(alpha: 0.8),
+                              (category['color'] as Color)
+                                  .withValues(alpha: 0.6),
                             ],
                           ),
                         ),
