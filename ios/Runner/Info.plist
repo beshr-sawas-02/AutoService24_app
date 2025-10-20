@@ -53,31 +53,31 @@
   <key>UIApplicationSupportsIndirectInputEvents</key>
   <true/>
 
-  <!-- ✅ أذونات الموقع (ADDED) -->
+  <!-- ✅ أذونات الموقع -->
   <key>NSLocationWhenInUseUsageDescription</key>
   <string>نحتاج إلى موقعك لعرض الخدمات القريبة منك.</string>
   <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
   <string>نحتاج إلى موقعك دائماً لتقديم خدمات أفضل.</string>
 
-  <!-- ✅ الكاميرا (ALREADY THERE) -->
+  <!-- ✅ الكاميرا -->
   <key>NSCameraUsageDescription</key>
   <string>نحتاج لاستخدام الكاميرا لالتقاط صور للمخالفات أو الوثائق.</string>
 
-  <!-- ✅ مكتبة الصور - iOS 14+ (ADDED) -->
+  <!-- ✅ مكتبة الصور -->
   <key>NSPhotoLibraryUsageDescription</key>
   <string>نحتاج للوصول إلى الصور لاختيار أو تحميل ملفات من جهازك.</string>
 
-  <!-- ✅ حفظ الصور في المكتبة (ALREADY THERE) -->
+  <!-- ✅ حفظ الصور في المكتبة -->
   <key>NSPhotoLibraryAddUsageDescription</key>
   <string>نحتاج لحفظ الصور في مكتبتك بعد معالجتها.</string>
 
-  <!-- ✅ صلاحيات الإنترنت والشبكة (ADDED) -->
+  <!-- ✅ صلاحيات الإنترنت والشبكة -->
   <key>NSBonjourServices</key>
   <array>
     <string>_services._tcp</string>
   </array>
 
-  <!-- ✅ الوصول إلى الشبكة (ADDED) -->
+  <!-- ✅ الوصول إلى الشبكة المحلية -->
   <key>NSLocalNetworkUsageDescription</key>
   <string>نحتاج للوصول إلى الشبكة المحلية للخدمات.</string>
 
@@ -119,7 +119,7 @@
     </dict>
   </array>
 
-  <!-- ✅ إعدادات Facebook (ADDED) -->
+  <!-- ✅ إعدادات Facebook -->
   <key>FacebookAppID</key>
   <string>1876950892856284</string>
   <key>FacebookDisplayName</key>
@@ -127,7 +127,11 @@
   <key>FacebookClientToken</key>
   <string>013cb102c13ef7479e9d4441277f9808</string>
 
-  <!-- ✅ السماح بتحميل محتوى خارجي (ADDED) -->
+  <!-- ✅ Apple Sign In Configuration (CRITICAL) -->
+  <key>ASWebAuthenticationSessionCompletionAssistantEnabled</key>
+  <true/>
+
+  <!-- السماح بتحميل محتوى خارجي -->
   <key>NSAppTransportSecurity</key>
   <dict>
     <key>NSAllowsArbitraryLoads</key>
@@ -135,6 +139,13 @@
     <key>NSExceptionDomains</key>
     <dict>
       <key>facebook.com</key>
+      <dict>
+        <key>NSIncludesSubdomains</key>
+        <true/>
+        <key>NSExceptionAllowsInsecureHTTPLoads</key>
+        <false/>
+      </dict>
+      <key>appleid.apple.com</key>
       <dict>
         <key>NSIncludesSubdomains</key>
         <true/>

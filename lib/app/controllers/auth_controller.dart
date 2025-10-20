@@ -304,11 +304,9 @@ class AuthController extends GetxController {
       if (result.status == LoginStatus.success) {
         final accessToken = result.accessToken!.token;
 
-
         final userData = await FacebookAuth.instance.getUserData(
           fields: "name,email,picture.width(200)",
         );
-
 
         final loginSuccess = await _handleSocialLoginResponse(
           'facebook',
@@ -332,7 +330,6 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
   }
-
 
   Future<bool> signInWithApple({String userType = 'user'}) async {
     try {
@@ -423,35 +420,47 @@ class AuthController extends GetxController {
       final response = await _authRepository.socialLogin(provider, token,
           userType: userType);
 
-      if (response.containsKey('token') && response.containsKey('user')) {
-        await StorageService.saveToken(response['token']);
-        await StorageService.saveUserData(response['user']);
-
-        currentUser.value = UserModel.fromJson(response['user']);
-        isLoggedIn.value = true;
-        isUserDataLoaded.value = true;
-
-        await StorageService.setAcceptedPrivacyPolicy(true);
-        await StorageService.setAcceptedPrivacyVersion("1.0");
-
-        await _clearServiceData();
-        await _updateWebSocketUser(currentUser.value?.id);
-
-        ErrorHandler.showSuccess(
-            '${_capitalizeProvider(provider)} ${'login_successful'.tr}');
-
-        if (currentUser.value?.userType == 'owner') {
-          Get.offAllNamed(AppRoutes.ownerHome);
-        } else {
-          Get.offAllNamed(AppRoutes.userHome);
-        }
-
-        await _reloadUserSpecificData();
-        return true;
-      } else {
+      if (response.isEmpty) {
         ErrorHandler.showInfo('invalid_server_response'.tr);
         return false;
       }
+
+      final hasToken = response.containsKey('token') &&
+          response['token'] != null &&
+          response['token'].toString().isNotEmpty;
+      final hasUser = response.containsKey('user') && response['user'] != null;
+
+      if (!hasToken || !hasUser) {
+        ErrorHandler.showInfo('invalid_server_response'.tr);
+        return false;
+      }
+
+      await StorageService.saveToken(response['token']);
+      await StorageService.saveUserData(response['user']);
+
+      currentUser.value = UserModel.fromJson(response['user']);
+      isLoggedIn.value = true;
+      isUserDataLoaded.value = true;
+
+      await StorageService.setAcceptedPrivacyPolicy(true);
+      await StorageService.setAcceptedPrivacyVersion("1.0");
+
+      await _clearServiceData();
+
+      await _updateWebSocketUser(currentUser.value?.id);
+
+      ErrorHandler.showSuccess(
+          '${_capitalizeProvider(provider)} ${'login_successful'.tr}');
+
+      if (currentUser.value?.userType == 'owner') {
+        Get.offAllNamed(AppRoutes.ownerHome);
+      } else {
+        Get.offAllNamed(AppRoutes.userHome);
+      }
+
+      await _reloadUserSpecificData();
+
+      return true;
     } catch (e) {
       ErrorHandler.handleAndShowError(e);
       return false;
