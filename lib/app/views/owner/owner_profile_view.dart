@@ -153,7 +153,7 @@ class OwnerProfileView extends StatelessWidget {
                             errorBuilder: (context, error, stackTrace) {
                               return Text(
                                 user?.username?.substring(0, 1).toUpperCase() ??
-                                    'N',
+                                    'U',
                                 style: const TextStyle(
                                   fontSize: 48,
                                   fontWeight: FontWeight.bold,
@@ -164,7 +164,7 @@ class OwnerProfileView extends StatelessWidget {
                           ),
                         )
                       : Text(
-                          user?.username?.substring(0, 1).toUpperCase() ?? 'N',
+                          user?.username?.substring(0, 1).toUpperCase() ?? 'U',
                           style: const TextStyle(
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
@@ -210,7 +210,7 @@ class OwnerProfileView extends StatelessWidget {
 
           // User name
           Text(
-            user?.username ?? 'nirvana',
+            user?.username ?? 'user'.tr,
             style: const TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.w300,
@@ -263,7 +263,7 @@ class OwnerProfileView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
-          // Email
+          // Email - مع Expanded
           Row(
             children: [
               Container(
@@ -276,32 +276,36 @@ class OwnerProfileView extends StatelessWidget {
                     color: Colors.grey[600], size: 20),
               ),
               const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'email'.tr,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'email'.tr,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    user?.email ?? 'info@gmail.com',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                    const SizedBox(height: 2),
+                    Text(
+                      user?.email ?? 'info@gmail.com',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
 
           const SizedBox(height: 20),
 
-          // Phone
+          // Phone - مع Expanded
           Row(
             children: [
               Container(
@@ -314,28 +318,32 @@ class OwnerProfileView extends StatelessWidget {
                     color: Colors.grey[600], size: 20),
               ),
               const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'phone'.tr,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'phone'.tr,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    user?.phone ?? 'not_provided'.tr,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: user?.phone != null
-                          ? Colors.black87
-                          : Colors.grey[500],
+                    const SizedBox(height: 2),
+                    Text(
+                      user?.phone ?? 'not_provided'.tr,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: user?.phone != null
+                            ? Colors.black87
+                            : Colors.grey[500],
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -391,17 +399,6 @@ class OwnerProfileView extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
     );
   }
-
-  // void _showPrivacyPolicyWithAccept() {
-  //   Get.to(
-  //         () => PrivacyPolicyView(
-  //       showAcceptButton: true,
-  //       isFromRegistration: false,
-  //     ),
-  //     transition: Transition.cupertino,
-  //     duration: const Duration(milliseconds: 300),
-  //   );
-  // }
 
   Widget _buildSectionCard(
       {required String title, required List<Widget> children}) {
@@ -608,7 +605,9 @@ class OwnerProfileView extends StatelessWidget {
               child: const Icon(Icons.warning, color: Colors.red),
             ),
             const SizedBox(width: 12),
-            Text('delete_confirmation_title'.tr),
+            Expanded(
+              child: Text('delete_confirmation_title'.tr),
+            ),
           ],
         ),
         content: Column(
@@ -633,7 +632,9 @@ class OwnerProfileView extends StatelessWidget {
                         children: [
                           const Icon(Icons.close, color: Colors.red, size: 16),
                           const SizedBox(width: 8),
-                          Text(item),
+                          Expanded(
+                            child: Text(item),
+                          ),
                         ],
                       ),
                     ))

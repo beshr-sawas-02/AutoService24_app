@@ -382,7 +382,6 @@ class _EditProfileViewState extends State<EditProfileView> {
         Get.back();
       }
     } catch (e) {
-      Helpers.showErrorSnackbar('${'failed_to_update_profile'.tr}: ${e.toString()}');
     } finally {
       setState(() {
         _isLoading = false;

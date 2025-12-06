@@ -1,7 +1,7 @@
 name: autoservice24
 description: Auto Service 24 - Car Service Management App
 
-version: 1.0.0+1
+version: 1.0.8+20
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -43,10 +43,8 @@ dependencies:
   # Maps & Location - UPDATED FOR MAPBOX
   geolocator: ^10.1.0
   permission_handler: ^11.1.0
-  mapbox_maps_flutter:
-    git:
-      url: https://github.com/mapbox/mapbox-maps-flutter.git
-      ref: main
+  mapbox_maps_flutter: 2.9.0
+
   geocoding: ^2.1.1
 
   # Utils

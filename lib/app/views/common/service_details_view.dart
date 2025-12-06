@@ -446,36 +446,40 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
 
                 // Contact button for owners or service owners
                 if (isCurrentUserOwner || isServiceOwner)
-                  ElevatedButton.icon(
-                    onPressed: serviceController.isLoadingPhone.value
-                        ? null
-                        : () => _contactWorkshopOwner(service.id),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: serviceController.isLoadingPhone.value
+                          ? null
+                          : () => _contactWorkshopOwner(service.id),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.success,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
                       ),
-                    ),
-                    icon: serviceController.isLoadingPhone.value
-                        ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor:
-                        AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
-                        : const Icon(Icons.phone, size: 22),
-                    label: Text(
-                      serviceController.isLoadingPhone.value
-                          ? 'getting_phone_number'.tr
-                          : 'contact_workshop_owner'.tr,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      icon: serviceController.isLoadingPhone.value
+                          ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor:
+                          AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                          : const Icon(Icons.phone, size: 22),
+                      label: Text(
+                        serviceController.isLoadingPhone.value
+                            ? 'getting_phone_number'.tr
+                            : 'contact_workshop_owner'.tr,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),

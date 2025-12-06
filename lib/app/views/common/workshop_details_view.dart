@@ -5,7 +5,9 @@ import '../../controllers/workshop_controller.dart';
 import '../../controllers/service_controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/map_controller.dart';
+import '../../data/models/service_model.dart';
 import '../../data/models/workshop_model.dart';
+import '../../utils/error_handler.dart';
 import '../../widgets/service_card.dart';
 import '../../routes/app_routes.dart';
 import '../../config/app_colors.dart';
@@ -26,83 +28,136 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
 
   late WorkshopModel workshop;
   MapboxMap? _mapboxMap;
+  late GlobalKey<RefreshIndicatorState> _refreshKey;
+  late Future<List<ServiceModel>> _servicesFuture;
 
   @override
   void initState() {
     super.initState();
+    _refreshKey = GlobalKey<RefreshIndicatorState>();
     workshop = Get.arguments as WorkshopModel;
+    _servicesFuture = serviceController.getServicesForWorkshop(workshop.id);
 
     Future.delayed(Duration.zero, () {
       _loadWorkshopServices();
     });
+
+    // ✅ استمع لتحديثات الخدمات
+    _listenToServiceUpdates();
+  }
+
+  // ✅ استمع لتحديثات الخدمات في الوقت الفعلي
+  void _listenToServiceUpdates() {
+    // استمع للتغييرات على ownerServices و services
+    ever(serviceController.ownerServices, (services) {
+      if (mounted) {
+        setState(() {
+          _servicesFuture =
+              serviceController.getServicesForWorkshop(workshop.id);
+        });
+      }
+    });
+
+    ever(serviceController.services, (services) {
+      if (mounted) {
+        setState(() {
+          _servicesFuture =
+              serviceController.getServicesForWorkshop(workshop.id);
+        });
+      }
+    });
+  }
+
+  Future<void> _refreshData() async {
+    try {
+      setState(() {
+        _servicesFuture = serviceController.getServicesForWorkshop(workshop.id);
+      });
+
+      await _servicesFuture;
+
+      if (_mapboxMap != null) {
+        await _setupMapWithWorkshopMarker();
+      }
+    } catch (e) {
+      if (mounted) {
+        ErrorHandler.handleAndShowError(e, silent: true);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 200,
-            pinned: true,
-            backgroundColor: AppColors.primary,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                workshop.name,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.white,
+      body: RefreshIndicator(
+        key: _refreshKey,
+        onRefresh: _refreshData,
+        backgroundColor: AppColors.white,
+        color: AppColors.primary,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 200,
+              pinned: true,
+              backgroundColor: AppColors.primary,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  workshop.name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.white,
+                  ),
                 ),
-              ),
-              background: workshop.profileImage != null
-                  ? Image.network(
-                      AppConstants.buildImageUrl(workshop.profileImage!),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: AppColors.grey300,
-                          child: const Icon(
-                            Icons.business,
-                            size: 80,
-                            color: AppColors.textSecondary,
-                          ),
-                        );
-                      },
-                    )
-                  : Container(
+                background: workshop.profileImage != null
+                    ? Image.network(
+                  AppConstants.buildImageUrl(workshop.profileImage!),
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
                       color: AppColors.grey300,
                       child: const Icon(
                         Icons.business,
                         size: 80,
                         color: AppColors.textSecondary,
                       ),
-                    ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Workshop Info
-                  _buildWorkshopInfo(),
-
-                  const SizedBox(height: 24),
-
-                  // Map
-                  _buildLocationMap(),
-
-                  const SizedBox(height: 24),
-
-                  // Services Section
-                  _buildServicesSection(),
-                ],
+                    );
+                  },
+                )
+                    : Container(
+                  color: AppColors.grey300,
+                  child: const Icon(
+                    Icons.business,
+                    size: 80,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
               ),
             ),
-          ),
-        ],
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Workshop Info
+                    _buildWorkshopInfo(),
+
+                    const SizedBox(height: 24),
+
+                    // Map
+                    _buildLocationMap(),
+
+                    const SizedBox(height: 24),
+
+                    // Services Section
+                    _buildServicesSection(),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -267,7 +322,6 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
             ),
             TextButton(
               onPressed: () {
-                // Show all services for this workshop
                 _showAllWorkshopServices();
               },
               child: Text('view_all'.tr),
@@ -275,40 +329,47 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
           ],
         ),
         const SizedBox(height: 16),
-        Obx(() {
-          if (serviceController.isLoading.value) {
-            return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary));
-          }
+        FutureBuilder<List<ServiceModel>>(
+          future: _servicesFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary));
+            }
 
-          // Filter services for this workshop
-          final workshopServices = serviceController.services
-              .where((service) => service.workshopId == workshop.id)
-              .toList();
+            if (snapshot.hasError) {
+              return _buildEmptyServices();
+            }
 
-          if (workshopServices.isEmpty) {
-            return _buildEmptyServices();
-          }
+            final allServices = snapshot.data ?? [];
 
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: workshopServices.length > 3
-                ? 3
-                : workshopServices.length, // Show max 3 services
-            itemBuilder: (context, index) {
-              return ServiceCard(
-                service: workshopServices[index],
-                onTap: () {
-                  Get.toNamed(
-                    AppRoutes.serviceDetails,
-                    arguments: workshopServices[index],
-                  );
-                },
-              );
-            },
-          );
-        }),
+            final workshopServices = allServices
+                .where((service) => service.workshopId == workshop.id)
+                .toList();
+
+            if (workshopServices.isEmpty) {
+              return _buildEmptyServices();
+            }
+
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount:
+              workshopServices.length > 3 ? 3 : workshopServices.length,
+              itemBuilder: (context, index) {
+                return ServiceCard(
+                  service: workshopServices[index],
+                  onTap: () {
+                    Get.toNamed(
+                      AppRoutes.serviceDetails,
+                      arguments: workshopServices[index],
+                    );
+                  },
+                );
+              },
+            );
+          },
+        ),
       ],
     );
   }
@@ -346,105 +407,47 @@ class _WorkshopDetailsViewState extends State<WorkshopDetailsView> {
     );
   }
 
-  void _loadWorkshopServices() {
-    // Load services for this workshop
-    serviceController.loadServices();
-  }
+  void _loadWorkshopServices() {}
 
   void _showAllWorkshopServices() {
-    final workshopServices = serviceController.services
-        .where((service) => service.workshopId == workshop.id)
-        .toList();
+    serviceController.getServicesForWorkshop(workshop.id).then((services) {
+      final workshopServices = services
+          .where((service) => service.workshopId == workshop.id)
+          .toList();
 
-    if (workshopServices.isNotEmpty) {
-      Get.to(() => Scaffold(
-            appBar: AppBar(
-              title: Text('${workshop.name} ${'services'.tr}'),
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.white,
-            ),
-            body: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: workshopServices.length,
-              itemBuilder: (context, index) {
-                return ServiceCard(
-                  service: workshopServices[index],
-                  onTap: () {
-                    Get.toNamed(
-                      AppRoutes.serviceDetails,
-                      arguments: workshopServices[index],
-                    );
-                  },
-                );
-              },
-            ),
-          ));
-    }
+      if (workshopServices.isNotEmpty) {
+        Get.to(() => Scaffold(
+          appBar: AppBar(
+            title: Text('${workshop.name} ${'services'.tr}'),
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.white,
+          ),
+          body: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: workshopServices.length,
+            itemBuilder: (context, index) {
+              return ServiceCard(
+                service: workshopServices[index],
+                onTap: () {
+                  Get.toNamed(
+                    AppRoutes.serviceDetails,
+                    arguments: workshopServices[index],
+                  );
+                },
+              );
+            },
+          ),
+        ));
+      } else {
+        ErrorHandler.showInfo('no_services_available'.tr);
+      }
+    }).catchError((e) {
+      ErrorHandler.handleAndShowError(e, silent: true);
+    });
   }
 
-// void _startChat() {
-//   // Navigate to chat with workshop owner
-//   Get.snackbar(
-//     'chat'.tr,
-//     '${'starting_conversation'.tr} ${workshop.name}',
-//     snackPosition: SnackPosition.BOTTOM,
-//   );
-//
-//   // In a real app, you would:
-//   // 1. Create or find existing chat
-//   // 2. Navigate to chat view
-//   Get.toNamed(
-//     AppRoutes.chat,
-//     arguments: {
-//       'receiverId': workshop.userId,
-//       'receiverName': workshop.name,
-//       'currentUserId': authController.currentUser.value?.id,
-//     },
-//   );
-// }
-
-// void _showGuestDialog() {
-//   Get.dialog(
-//     AlertDialog(
-//       backgroundColor: AppColors.white,
-//       shape: RoundedRectangleBorder(
-//         borderRadius: BorderRadius.circular(16),
-//       ),
-//       title: Text(
-//         'login_required'.tr,
-//         style: const TextStyle(
-//           color: AppColors.textPrimary,
-//           fontWeight: FontWeight.bold,
-//         ),
-//       ),
-//       content: Text(
-//         'login_contact_workshops'.tr,
-//         style: const TextStyle(color: AppColors.textSecondary),
-//       ),
-//       actions: [
-//         TextButton(
-//           onPressed: () => Get.back(),
-//           child: Text(
-//             'cancel'.tr,
-//             style: const TextStyle(color: AppColors.textSecondary),
-//           ),
-//         ),
-//         ElevatedButton(
-//           onPressed: () {
-//             Get.back();
-//             Get.toNamed(AppRoutes.login);
-//           },
-//           style: ElevatedButton.styleFrom(
-//             backgroundColor: AppColors.primary,
-//             foregroundColor: AppColors.white,
-//             shape: RoundedRectangleBorder(
-//               borderRadius: BorderRadius.circular(8),
-//             ),
-//           ),
-//           child: Text('login'.tr),
-//         ),
-//       ],
-//     ),
-//   );
-// }
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }

@@ -1,0 +1,10 @@
+<resources>
+    <string name="permission_location_title">Zugriff auf Standort erlauben</string>
+    <string name="permission_location_message">Wir verwenden Ihren Standort, um nahegelegene Dienste zu finden.</string>
+
+    <string name="permission_camera_title">Zugriff auf Kamera erlauben</string>
+    <string name="permission_camera_message">Wir benötigen Ihre Kamera, um Fotos für den Service hochzuladen.</string>
+
+    <string name="permission_notification_title">Benachrichtigungen aktivieren</string>
+    <string name="permission_notification_message">Erhalten Sie Updates zu Ihren Serviceanfragen.</string>
+</resources>

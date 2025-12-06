@@ -4,6 +4,23 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'en': {
+          "terms_of_service": "Terms of Service",
+          "didnt_receive_code": "Didn't receive the code?",
+          'not_provided': 'Not provided',
+          'processing_request': 'Processing your request...',
+          'tap_to_view_details': 'Tap to view details',
+          'pull_to_refresh': 'Pull to refresh',
+          'professional_service': 'Professional Service',
+          'image_preview': 'Image preview',
+          'privacy_policy': 'Privacy Policy',
+          'sign_out': 'Sign Out',
+          'about': 'About',
+          "new_images": "New images",
+          "max_5_images": "Maximum 5 images",
+          "add_new_images": "Add new images",
+          'edit_service': 'Edit Service',
+          'open_maps': 'Open in Google Maps',
+          'google_maps_not_available': 'Google Maps is not available',
           'user_deleted_successfully': 'User deleted successfully',
           'reset_password': 'Reset Password',
           'forgot_password': 'Forgot Password?',
@@ -86,17 +103,14 @@ class AppTranslations extends Translations {
           'share_photos': 'Share photos of your vehicle',
           'share_location': 'Share location details',
           'register': 'Register',
-          'explore_services_instead': 'Explore Services Instead',
           'no_conversations_yet': 'No conversations yet',
           'start_chatting':
               'Start chatting with workshop owners and service providers',
-          'browse_services': 'Browse Services',
+          'browse_services': 'Explore available services',
           'starting_chat': 'Starting Chat...',
           'creating_chat_with': 'Creating chat with',
           'online': 'Online',
           'offline': 'Offline',
-          'feature_coming_soon': 'Feature Coming Soon',
-          'voice_call_soon': 'Voice call feature will be available soon',
           'view_service': 'View Service',
           'block_user': 'Block User',
           'report': 'Report',
@@ -113,8 +127,6 @@ class AppTranslations extends Translations {
           'cancel': 'Cancel',
           'report_user': 'Report User',
           'report_inappropriate': 'Report {name} for inappropriate behavior?',
-          'user_blocking_soon': 'User blocking feature coming soon',
-          'user_reporting_soon': 'User reporting feature coming soon',
           'just_now': 'Just now',
           'minutes_ago': '{minutes}m ago',
           'hours_ago': '{hours}h ago',
@@ -159,62 +171,6 @@ class AppTranslations extends Translations {
           '30_days': '30 days',
 
           // Settings translations
-          'settings': 'Settings',
-          'account': 'Account',
-          'change_password': 'Change Password',
-          'update_password': 'Update your password',
-          'preferences': 'Preferences',
-          'push_notifications': 'Push Notifications',
-          'receive_notifications':
-              'Receive notifications about new messages and updates',
-          'location_services': 'Location Services',
-          'allow_location': 'Allow app to access your location',
-          'dark_mode': 'Dark Mode',
-          'use_dark_theme': 'Use dark theme',
-          'app': 'App',
-          'language': 'Language',
-          'about': 'About',
-          'app_version_info': 'App version and information',
-          'help_support': 'Help & Support',
-          'get_help_support': 'Get help and contact support',
-          'privacy_policy': 'Privacy Policy',
-          'read_privacy_policy': 'Read our privacy policy',
-          'terms_of_service': 'Terms of Service',
-          'read_terms': 'Read our terms of service',
-          'data': 'Data',
-          'download_data': 'Download Data',
-          'download_copy_data': 'Download a copy of your data',
-          'clear_cache': 'Clear Cache',
-          'clear_temp_files': 'Clear app cache and temporary files',
-          'sign_out': 'Sign Out',
-          'settings_saved': 'Settings saved',
-          'password_change_implemented':
-              'Password change functionality would be implemented here.',
-          'change': 'Change',
-          'select_language': 'Select Language',
-          'english': 'English',
-          'arabic': 'Arabic',
-          'german': 'German',
-          'french': 'French',
-          'spanish': 'Spanish',
-          'about_autoservice': 'About AutoService24',
-          'version': 'Version: 1.0.0',
-          'car_service_partner': 'Your Car Service Partner',
-          'find_book_services': 'Find and book automotive services near you.',
-          'copyright': '© 2024 AutoService24. All rights reserved.',
-          'ok': 'OK',
-          'need_help_contact': 'Need help? Contact us:',
-          'support_email': 'support@autoservice24.com',
-          'support_phone': '+1 (555) 123-4567',
-          'privacy_displayed_here': 'Privacy Policy would be displayed here',
-          'terms_displayed_here': 'Terms of Service would be displayed here',
-          'data_download_implemented':
-              'Data download functionality would be implemented here',
-          'are_you_sure_clear_cache':
-              'Are you sure you want to clear the app cache? This will remove temporary files and may slow down the app initially.',
-          'clear': 'Clear',
-          'cache_cleared': 'Cache cleared successfully',
-          'are_you_sure_sign_out': 'Are you sure you want to sign out?',
 
           // Workshop Details translations
           'workshop_info': 'Workshop Information',
@@ -224,7 +180,7 @@ class AppTranslations extends Translations {
           'view_reviews': 'View Reviews',
           'services': 'Services',
           'view_all': 'View All',
-          'no_services_available': 'No services available',
+          'no_services_available': 'No services are currently available.',
           'workshop_no_services':
               'This workshop hasn\'t added any services yet',
           'starting_conversation': 'Starting conversation with',
@@ -239,22 +195,22 @@ class AppTranslations extends Translations {
               'You need to create a workshop first before adding services.',
           'service_title': 'Service Title',
           'service_type': 'Service Type',
-          'price_usd': 'Price (\€)',
-          'service_images': 'Service Images',
+          'price_usd': 'Price (€)',
+          'service_images': 'Service image not available',
           'add_images': 'Add Images',
           'create_service': 'Create Service',
           'please_select_workshop': 'Please select a workshop',
           'service_created_successfully': 'Service created successfully!',
           'failed_create_service': 'Failed to create service',
+          'failed_update_service':
+              'Failed to update service. Please try again.',
 
           // Add Workshop translations
           'add_workshop': 'Add Workshop',
           'create_your_workshop': 'Create Your Workshop',
           'workshop_name': 'Workshop Name',
-          'please_enter_workshop_name': 'Please enter workshop name',
           'please_enter_description': 'Please enter description',
-          'working_hours_example': 'Working Hours (e.g., 8:00 AM - 6:00 PM)',
-          'please_enter_working_hours': 'Please enter working hours',
+          'working_hours_example': 'Working Hours',
           'workshop_location': 'Workshop Location',
           'tap_map_select_location':
               'Tap on the map to select your workshop location',
@@ -285,7 +241,6 @@ class AppTranslations extends Translations {
 
           // Owner Profile translations
           'contact_information': 'Contact Information',
-          'not_provided': 'Not provided',
           'workshops': 'Workshops',
           'total_services': 'Total Services',
           'total_reviews': 'Total Reviews',
@@ -352,7 +307,7 @@ class AppTranslations extends Translations {
           'recently': 'recently',
 
           // User Home translations
-          'auto_services': 'Auto Services',
+          'auto_services': 'AutoServices24',
           'categories': 'Categories',
           'search_categories': 'Search categories...',
           'failed_refresh_services': 'Failed to refresh services',
@@ -366,8 +321,6 @@ class AppTranslations extends Translations {
           'manage_workshop': 'Manage your workshop',
           'my_services': 'My Services',
           'manage_services': 'Manage your services',
-          'workshop_management_soon': 'Workshop management coming soon',
-          'service_management_soon': 'Service management coming soon',
           'permanently_delete_account':
               'This will permanently delete your account and all data. This action cannot be undone.',
           'failed_delete_account':
@@ -386,7 +339,7 @@ class AppTranslations extends Translations {
           'failed_remove_service':
               'Failed to remove service. Please try again.',
           'error_occurred_try_again': 'An error occurred. Please try again.',
-          'service_image': 'Service Image',
+          'service_image': 'Service image not available',
           'user_not_logged_in': 'User not logged in',
           'info': 'Info',
           'view_location': 'View Location',
@@ -417,7 +370,6 @@ class AppTranslations extends Translations {
           'add_caption': 'Add a caption...',
           'select_attachment': 'Select Attachment',
           'file': 'File',
-          'file_attachment_soon': 'File attachment will be available soon',
           'failed_load_image': 'Failed to load image',
           'camera_error': 'Camera Error',
           'camera_permission_error':
@@ -525,7 +477,7 @@ class AppTranslations extends Translations {
           'tap_confirm_or_select_another':
               'Tap confirm or select another location',
           'workshop_location_selected': 'Workshop Location Selected',
-          'tap_to_open_map': 'Tap to open map',
+          'tap_to_open_map': "Tap on the map to select your workshop location",
           'select_workshop_location': 'Select Workshop Location',
           'cannot_get_current_location': 'Cannot get current location',
           'enter_verification_code': 'Enter Verification Code',
@@ -550,12 +502,12 @@ class AppTranslations extends Translations {
           'email_verification': 'Email Verification',
           'check_your_email': 'Check Your Email',
           'verification_sent_description':
-              'A verification link has been sent to your email address. Please click on the link to activate your account.',
+              'A verification link has been sent to your email address. Please on the link to activate your account.',
           'next_steps': 'Next Steps',
           'open_gmail_app': 'Open Gmail app or your email client',
           'find_verification_email':
               'Find verification email from AutoService24',
-          'click_verify_button': 'Click on "Verify Email" button',
+          'verify_button': 'on "Verify Email" button',
           'return_to_login': 'Return to login screen',
           'check_spam_folder':
               'If you don\'t see the email, please check your spam folder',
@@ -709,7 +661,6 @@ class AppTranslations extends Translations {
           'agree_to': 'I agree to ',
           'and': ' and ',
           'terms_of_use': 'Terms of Use',
-          'terms_page_coming_soon': 'Terms of Use page will be available soon',
           'privacy_policy_subtitle': 'See how your data is protected',
           'by_continuing_you_agree': 'By continuing, you agree to',
           'privacy_policy_accepted_successfully':
@@ -814,7 +765,7 @@ While we use industry-standard security measures, no system is 100% secure. We e
 • Control location sharing permissions
 • Request information about how your data is used
 
-To exercise these rights, contact us at privacy@autoservice24.com or use the account settings in the app.''',
+To exercise these rights, contact us at Codarise468@gmail.com or use the account settings in the app.''',
 
           'third_party_title': 'Third-Party Services',
           'third_party_content':
@@ -830,7 +781,7 @@ These services have their own privacy policies. We recommend reviewing them:
 
           'children_privacy_title': 'Children\'s Privacy',
           'children_privacy_content':
-              '''AutoService24 is intended for users 18 years and older. We do not knowingly collect personal information from children under 18. If we discover that a child has provided us with personal information, we will delete it immediately. If you believe a child has provided us with information, please contact us at privacy@autoservice24.com.''',
+              '''AutoService24 is intended for users 18 years and older. We do not knowingly collect personal information from children under 18. If we discover that a child has provided us with personal information, we will delete it immediately. If you believe a child has provided us with information, please contact us at Codarise468@gmail.com.''',
 
           'terms_of_service_title': 'Terms of Service',
           'terms_of_service_content': '''By using AutoService24, you agree to:
@@ -976,7 +927,6 @@ Termination:
           'workshop_services_will_be_deleted':
               '{count} services will be permanently deleted',
           'deleting_workshop': 'Deleting workshop...',
-          'please_wait': 'Please wait',
           'edit_workshop_info': 'Edit Workshop Info',
           'enter_workshop_name': 'Enter workshop name',
           'enter_workshop_description': 'Enter workshop description',
@@ -987,25 +937,40 @@ Termination:
           'manage_workshops_services': 'Manage your workshops and services',
         },
         'de': {
-          "add_service": "Dienst hinzufügen",
-          "create_new_service": "Neuen Dienst erstellen",
-          "service_title": "Diensttitel",
-          "please_enter_service_title": "Bitte geben Sie einen Diensttitel ein",
-          "description": "Beschreibung",
-          "price_usd": "Preis (€)",
-          "please_enter_valid_price":
-              "Bitte geben Sie einen gültigen Preis ein",
-          "service_type": "Diensttyp",
-          "select_workshop": "Werkstatt auswählen",
-          "please_select_workshop": "Bitte wählen Sie eine Werkstatt aus",
-          "create_workshop_first":
-              "Sie müssen zuerst eine Werkstatt erstellen, bevor Sie einen Dienst hinzufügen.",
-          "service_images": "Bilder des Dienstes",
-          "add_images": "Bilder hinzufügen",
-          "create_service": "Dienst erstellen",
-          "error": "Fehler",
-          "failed_create_service":
-              "Dienst konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+          "terms_of_service": "Nutzungsbedingungen",
+          "didnt_receive_code": "Code nicht erhalten?",
+          'processing_request': 'Ihre Anfrage wird bearbeitet...',
+          'tap_to_view_details': 'Zum Anzeigen tippen',
+          'pull_to_refresh': 'Zum Aktualisieren ziehen',
+          'professional_service': 'Professioneller Service',
+          'image_preview': 'Bildvorschau',
+          'error': 'Fehler',
+          'description': 'Beschreibung',
+          'add_service': 'Dienst hinzufügen',
+          'create_new_service': 'Neuen Dienst erstellen',
+          'select_workshop': 'Werkstatt auswählen',
+          'create_workshop_first': 'Erstelle zuerst eine Werkstatt',
+          'service_title': 'Servicetitel',
+          'service_type': 'Servicetyp',
+          'price_usd': 'Preis (€)',
+          'service_images': 'Servicebild nicht verfügbar',
+          'add_images': 'Bilder hinzufügen',
+          'create_service': 'Dienst erstellen',
+          'please_select_workshop': 'Bitte Werkstatt auswählen',
+          'service_created_successfully': 'Dienst erfolgreich erstellt',
+          'failed_create_service': 'Fehler beim Erstellen des Dienstes',
+          'saved_services': 'Gespeicherte Dienste',
+          'please_enter_service_title': 'Bitte Servicetitel eingeben',
+          'please_enter_valid_price': 'Bitte gültigen Preis eingeben',
+          "new_images": "Neue Bilder",
+          "max_5_images": "Maximal 5 Bilder",
+          "add_new_images": "Neue Bilder hinzufügen",
+          'edit_service': 'Service bearbeiten',
+          'open_maps': 'In Google Maps öffnen',
+          'google_maps_not_available': 'Google Maps ist nicht verfügbar',
+          'current_location': 'Mein Standort',
+          'failed_update_service':
+              'Aktualisierung des Dienstes fehlgeschlagen. Bitte versuchen Sie es erneut.',
           'user_deleted_successfully': 'Benutzer erfolgreich gelöscht',
           'tap_to_view_conversation': 'Tippen, um die Unterhaltung anzuzeigen',
           "show_results": "Ergebnisse anzeigen",
@@ -1119,7 +1084,7 @@ Während wir branchenübliche Sicherheitsmaßnahmen verwenden, ist kein System z
 • Kontrolle über Standortfreigabe-Berechtigungen
 • Anfrage von Informationen über die Nutzung Ihrer Daten
 
-Um diese Rechte auszuüben, kontaktieren Sie uns unter privacy@autoservice24.com oder nutzen Sie die Kontoeinstellungen in der App.''',
+Um diese Rechte auszuüben, kontaktieren Sie uns unter Codarise468@gmail.com oder nutzen Sie die Kontoeinstellungen in der App.''',
 
           'third_party_title': 'Drittanbieter-Services',
           'third_party_content':
@@ -1134,7 +1099,7 @@ Diese Services haben ihre eigenen Datenschutzrichtlinien. Wir empfehlen deren Ü
 
           'children_privacy_title': 'Datenschutz für Kinder',
           'children_privacy_content':
-              '''AutoService24 ist für Nutzer ab 18 Jahren bestimmt. Wir sammeln wissentlich keine persönlichen Daten von Kindern unter 18 Jahren. Wenn wir entdecken, dass ein Kind uns persönliche Daten zur Verfügung gestellt hat, werden wir diese sofort löschen. Wenn Sie glauben, dass ein Kind uns Informationen gegeben hat, kontaktieren Sie uns bitte unter privacy@autoservice24.com.''',
+              '''AutoService24 ist für Nutzer ab 18 Jahren bestimmt. Wir sammeln wissentlich keine persönlichen Daten von Kindern unter 18 Jahren. Wenn wir entdecken, dass ein Kind uns persönliche Daten zur Verfügung gestellt hat, werden wir diese sofort löschen. Wenn Sie glauben, dass ein Kind uns Informationen gegeben hat, kontaktieren Sie uns bitte unter Codarise468@gmail.com.''',
 
           'terms_of_service_title': 'Nutzungsbedingungen',
           'terms_of_service_content':
@@ -1207,8 +1172,6 @@ Kündigung:
           'and': ' und ',
           'terms_of_use': 'Nutzungsbedingungen',
           'info': 'Info',
-          'terms_page_coming_soon':
-              'Die Seite mit den Nutzungsbedingungen wird bald verfügbar sein',
           'privacy_terms_agreement':
               'Sie müssen der Datenschutzrichtlinie und den Nutzungsbedingungen zustimmen, um fortzufahren',
           'i_agree_to': 'Ich stimme der ',
@@ -1269,15 +1232,11 @@ Kündigung:
           'view_service': 'Service anzeigen',
           'block_user': 'Benutzer blockieren',
           'service': 'Service',
-          'user_blocking_soon': 'Benutzer-Blockierungsfunktion kommt bald',
-          'user_reporting_soon': 'Benutzer-Meldefunktion kommt bald',
           'failed_to_load_image': 'Bild konnte nicht geladen werden',
 
           // Additional chat keys that might be used
           'connection_lost': 'Verbindung verloren',
           'reconnecting': 'Verbindung wird wiederhergestellt...',
-          'feature_coming_soon': 'Funktion kommt bald',
-          'file_attachment_soon': 'Dateianhang wird bald verfügbar sein',
           'camera_error': 'Kamera-Fehler',
           'gallery_error': 'Galerie-Fehler',
           'camera_permission_error':
@@ -1289,7 +1248,6 @@ Kündigung:
           'user_not_found': 'Benutzer nicht gefunden',
           'failed_to_update_profile': 'Profil konnte nicht aktualisiert werden',
           'search': 'Suchen',
-          'current_location': 'Aktueller Standort',
           'map_initialization_error': 'Karten-Initialisierungsfehler',
           'annotation_setup_error': 'Anmerkungen-Setup-Fehler',
           'getting_location': 'Ihr Standort wird ermittelt...',
@@ -1344,7 +1302,7 @@ Kündigung:
           'workshop_owner': 'Werkstattbesitzer',
           'update_personal_information':
               'Aktualisieren Sie Ihre persönlichen Informationen',
-          'service_image': 'Service-Bild',
+          'service_image': 'Servicebild nicht verfügbar',
           'user_not_logged_in': 'Benutzer nicht angemeldet',
           'view_location': 'Standort anzeigen',
           'delete_service': 'Service löschen',
@@ -1439,15 +1397,13 @@ Kündigung:
           'share_photos': 'Fotos Ihres Fahrzeugs teilen',
           'share_location': 'Standortdetails teilen',
           'register': 'Registrieren',
-          'explore_services_instead': 'Dienstleistungen erkunden',
           'no_conversations_yet': 'Noch keine Unterhaltungen',
           'start_chatting':
               'Beginnen Sie zu chatten mit Werkstattbesitzern und Dienstleistern',
-          'browse_services': 'Dienstleistungen durchsuchen',
+          'browse_services': 'Verfügbare Dienstleistungen erkunden',
           'starting_chat': 'Chat wird gestartet...',
           'online': 'Online',
           'offline': 'Offline',
-          'voice_call_soon': 'Sprachanruf-Funktion wird bald verfügbar sein',
           'report': 'Melden',
           'start_conversation': 'Unterhaltung beginnen',
           'send_message_begin': 'Senden Sie eine Nachricht, um zu chatten',
@@ -1501,65 +1457,6 @@ Kündigung:
           '1_2_hours': '1-2 Stunden',
           '30_days': '30 Tage',
 
-          // Settings translations
-          'settings': 'Einstellungen',
-          'account': 'Konto',
-          'change_password': 'Passwort ändern',
-          'update_password': 'Ihr Passwort aktualisieren',
-          'preferences': 'Einstellungen',
-          'push_notifications': 'Push-Benachrichtigungen',
-          'receive_notifications':
-              'Benachrichtigungen über neue Nachrichten und Updates erhalten',
-          'location_services': 'Standortdienste',
-          'allow_location': 'App den Zugriff auf Ihren Standort erlauben',
-          'dark_mode': 'Dunkler Modus',
-          'use_dark_theme': 'Dunkles Design verwenden',
-          'app': 'App',
-          'language': 'Sprache',
-          'app_version_info': 'App-Version und Informationen',
-          'help_support': 'Hilfe & Support',
-          'get_help_support': 'Hilfe erhalten und Support kontaktieren',
-          'read_privacy_policy': 'Unsere Datenschutzrichtlinie lesen',
-          'terms_of_service': 'Nutzungsbedingungen',
-          'read_terms': 'Unsere Nutzungsbedingungen lesen',
-          'data': 'Daten',
-          'download_data': 'Daten herunterladen',
-          'download_copy_data': 'Eine Kopie Ihrer Daten herunterladen',
-          'clear_cache': 'Cache leeren',
-          'clear_temp_files': 'App-Cache und temporäre Dateien leeren',
-          'settings_saved': 'Einstellungen gespeichert',
-          'password_change_implemented':
-              'Passwort-Änderungsfunktion würde hier implementiert werden.',
-          'change': 'Ändern',
-          'select_language': 'Sprache auswählen',
-          'english': 'Englisch',
-          'arabic': 'Arabisch',
-          'german': 'Deutsch',
-          'french': 'Französisch',
-          'spanish': 'Spanisch',
-          'about_autoservice': 'Über AutoService24',
-          'version': 'Version: 1.0.0',
-          'car_service_partner': 'Ihr Auto-Service-Partner',
-          'find_book_services':
-              'Finden und buchen Sie Kfz-Services in Ihrer Nähe.',
-          'copyright': '© 2024 AutoService24. Alle Rechte vorbehalten.',
-          'ok': 'OK',
-          'need_help_contact': 'Brauchen Sie Hilfe? Kontaktieren Sie uns:',
-          'support_email': 'support@autoservice24.com',
-          'support_phone': '+1 (555) 123-4567',
-          'privacy_displayed_here':
-              'Datenschutzrichtlinie würde hier angezeigt werden',
-          'terms_displayed_here':
-              'Nutzungsbedingungen würden hier angezeigt werden',
-          'data_download_implemented':
-              'Daten-Download-Funktion würde hier implementiert werden',
-          'are_you_sure_clear_cache':
-              'Sind Sie sicher, dass Sie den App-Cache leeren möchten? Dies entfernt temporäre Dateien und kann die App anfangs verlangsamen.',
-          'clear': 'Leeren',
-          'cache_cleared': 'Cache erfolgreich geleert',
-          'are_you_sure_sign_out':
-              'Sind Sie sicher, dass Sie sich abmelden möchten?',
-
           // Workshop Details translations
           'workshop_info': 'Werkstatt-Informationen',
           'working_hours': 'Arbeitszeiten',
@@ -1568,7 +1465,8 @@ Kündigung:
           'view_reviews': 'Bewertungen anzeigen',
           'services': 'Dienstleistungen',
           'view_all': 'Alle anzeigen',
-          'no_services_available': 'Keine Dienstleistungen verfügbar',
+          'no_services_available':
+              'Derzeit sind keine Dienstleistungen verfügbar.',
           'workshop_no_services':
               'Diese Werkstatt hat noch keine Dienstleistungen hinzugefügt',
           'starting_conversation': 'Unterhaltung beginnen mit',
@@ -1578,11 +1476,8 @@ Kündigung:
           'add_workshop': 'Werkstatt hinzufügen',
           'create_your_workshop': 'Ihre Werkstatt erstellen',
           'workshop_name': 'Werkstatt-Name',
-          'please_enter_workshop_name':
-              'Bitte geben Sie den Werkstatt-Namen ein',
           'please_enter_description': 'Bitte geben Sie eine Beschreibung ein',
-          'working_hours_example': 'Arbeitszeiten (z.B. 8:00 - 18:00)',
-          'please_enter_working_hours': 'Bitte geben Sie die Arbeitszeiten ein',
+          'working_hours_example': 'Arbeitszeiten',
           'tap_map_select_location':
               'Tippen Sie auf die Karte, um den Standort Ihrer Werkstatt auszuwählen',
           'location_selected': 'Standort ausgewählt:',
@@ -1659,7 +1554,6 @@ Kündigung:
               'Chat konnte nicht gestartet werden. Bitte versuchen Sie es erneut.',
 
           // Saved Services translations
-          'saved_services': "Gespeicherte Dienstleistungen",
           'save_favorite_services': 'Speichern Sie Ihre Lieblings-Services',
           'create_account_save':
               'Erstellen Sie ein Konto, um Services zu speichern, die Sie mögen, und greifen Sie jederzeit und überall darauf zu.',
@@ -1685,7 +1579,7 @@ Kündigung:
           'recently': 'kürzlich',
 
           // User Home translations
-          'auto_services': 'Auto-Dienstleistungen',
+          'auto_services': 'Auto-Dienstleistungen24',
           'categories': 'Kategorien',
           'search_categories': 'Kategorien suchen...',
           'failed_refresh_services':
@@ -1699,8 +1593,6 @@ Kündigung:
           'manage_workshop': 'Ihre Werkstatt verwalten',
           'my_services': 'Meine Services',
           'manage_services': 'Ihre Services verwalten',
-          'workshop_management_soon': 'Werkstatt-Verwaltung kommt bald',
-          'service_management_soon': 'Service-Verwaltung kommt bald',
           'switch_language': 'Sprache wechseln',
           'current_language': 'Deutsch',
           'failed_remove_service':
@@ -1736,7 +1628,8 @@ Kündigung:
           'tap_confirm_or_select_another':
               'Tippen Sie bestätigen oder wählen Sie einen anderen Standort',
           'workshop_location_selected': 'Werkstattstandort ausgewählt',
-          'tap_to_open_map': 'Tippen Sie, um die Karte zu öffnen',
+          "tap_to_open_map":
+              "Tippen Sie auf die Karte, um den Standort Ihrer Werkstatt auszuwählen",
           'select_workshop_location': 'Werkstattstandort auswählen',
           'cannot_get_current_location':
               'Aktueller Standort kann nicht abgerufen werden',
@@ -1768,7 +1661,7 @@ Kündigung:
           'open_gmail_app': 'Öffnen Sie Gmail oder Ihren E-Mail-Client',
           'find_verification_email':
               'Finden Sie die Bestätigungs-E-Mail von AutoService24',
-          'click_verify_button': 'Klicken Sie auf "E-Mail bestätigen"',
+          'verify_button': 'Sie auf "E-Mail bestätigen"',
           'return_to_login': 'Zur Anmeldeseite zurückkehren',
           'check_spam_folder':
               'Wenn Sie die E-Mail nicht sehen, überprüfen Sie Ihren Spam-Ordner',
@@ -2018,7 +1911,6 @@ Kündigung:
           'workshop_services_will_be_deleted':
               '{count} Dienste werden dauerhaft gelöscht',
           'deleting_workshop': 'Werkstatt wird gelöscht...',
-          'please_wait': 'Bitte warten',
           'edit_workshop_info': 'Werkstatt-Info bearbeiten',
           'enter_workshop_name': 'Werkstattnamen eingeben',
           'enter_workshop_description': 'Werkstattbeschreibung eingeben',

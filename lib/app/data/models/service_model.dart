@@ -17,7 +17,6 @@ enum ServiceType {
 
   final String displayName;
 
-
   String get translatedName {
     switch (this) {
       case ServiceType.VEHICLE_INSPECTION:
@@ -84,23 +83,36 @@ class ServiceModel {
   });
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
-    String workshopId;
+    print('🔍 ServiceModel.fromJson - Parsing service');
+    print('   Full JSON: $json');
+
+    String workshopId = '';
     Map<String, dynamic>? workshopData;
 
     final workshopIdField = json['workshop_id'];
-    if (workshopIdField is String) {
+    print('   workshop_id field type: ${workshopIdField.runtimeType}');
+    print('   workshop_id value: $workshopIdField');
+
+    if (workshopIdField is String && workshopIdField.isNotEmpty) {
       workshopId = workshopIdField;
+      print('   ✅ Got workshopId as String: $workshopId');
     } else if (workshopIdField is Map<String, dynamic>) {
-      workshopId = workshopIdField['_id'] ?? '';
+      workshopId = workshopIdField['_id']?.toString() ?? '';
       workshopData = workshopIdField;
+      print('   ✅ Got workshopId from Map: $workshopId');
+    } else if (workshopIdField != null) {
+      // محاولة تحويل أي نوع آخر لـ string
+      workshopId = workshopIdField.toString();
+      print('   ✅ Converted workshopId to String: $workshopId');
     } else {
+      print('   ⚠️ workshop_id is null!');
       workshopId = '';
     }
 
     ServiceType? parsedServiceType =
-        ServiceType.fromString(json['service_type'] ?? '');
+    ServiceType.fromString(json['service_type'] ?? '');
 
-    return ServiceModel(
+    final serviceModel = ServiceModel(
       id: json['_id'] ?? '',
       workshopId: workshopId,
       userId: json['user_id'] ?? workshopData?['user_id'] ?? '',
@@ -113,6 +125,13 @@ class ServiceModel {
       updatedAt: _parseDateTime(json['updatedAt']),
       workshopData: workshopData,
     );
+
+    print('   📦 ServiceModel created:');
+    print('      - id: ${serviceModel.id}');
+    print('      - workshopId: ${serviceModel.workshopId}');
+    print('      - title: ${serviceModel.title}');
+
+    return serviceModel;
   }
 
   static double _parsePrice(dynamic price) {
@@ -133,29 +152,29 @@ class ServiceModel {
     if (images is List) {
       return images
           .map((img) {
-            String imagePath = img.toString().trim();
+        String imagePath = img.toString().trim();
 
-            if (imagePath.isEmpty) return '';
+        if (imagePath.isEmpty) return '';
 
-            if (imagePath.startsWith('http://') ||
-                imagePath.startsWith('https://')) {
-              return imagePath;
-            }
+        if (imagePath.startsWith('http://') ||
+            imagePath.startsWith('https://')) {
+          return imagePath;
+        }
 
-            if (imagePath.startsWith('/uploads/')) {
-              return '$baseUrl$imagePath';
-            }
+        if (imagePath.startsWith('/uploads/')) {
+          return '$baseUrl$imagePath';
+        }
 
-            if (imagePath.startsWith('uploads/')) {
-              return '$baseUrl/$imagePath';
-            }
+        if (imagePath.startsWith('uploads/')) {
+          return '$baseUrl/$imagePath';
+        }
 
-            if (imagePath.startsWith('/')) {
-              return '$baseUrl$imagePath';
-            } else {
-              return '$baseUrl/$imagePath';
-            }
-          })
+        if (imagePath.startsWith('/')) {
+          return '$baseUrl$imagePath';
+        } else {
+          return '$baseUrl/$imagePath';
+        }
+      })
           .where((path) => path.isNotEmpty)
           .toList();
     }

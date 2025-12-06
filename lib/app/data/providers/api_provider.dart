@@ -65,10 +65,10 @@ class ApiProvider {
   }
 
   Future<Response> updateProfileWithImage(
-    String userId,
-    Map<String, dynamic> data,
-    File? imageFile,
-  ) async {
+      String userId,
+      Map<String, dynamic> data,
+      File? imageFile,
+      ) async {
     try {
       FormData formData = FormData();
 
@@ -170,7 +170,7 @@ class ApiProvider {
     }
   }
 
-// Alternative method with Map parameters
+  // Alternative method with Map parameters
   Future<Response> searchNearbyWorkshops(Map<String, dynamic> params) async {
     try {
       final response = await _dio.get(
@@ -223,7 +223,51 @@ class ApiProvider {
     return await _dio.delete('/workshop/$id');
   }
 
-  // Service endpoints
+  // Service endpoints - مع الـ Pagination
+  Future<Response> getServices({
+    String? serviceType,
+    int skip = 0,
+    int limit = 10,
+  }) async {
+    try {
+      final queryParams = {
+        'skip': skip.toString(),
+        'limit': limit.toString(),
+      };
+
+      if (serviceType != null && serviceType.isNotEmpty) {
+        // تحويل من اسم الـ Enum إلى القيمة
+        // CHANGE_OIL → Change oil
+        final serviceTypeMap = {
+          'VEHICLE_INSPECTION': 'Vehicle inspection & emissions test',
+          'CHANGE_OIL': 'Change oil',
+          'CHANGE_TIRES': 'Change tires',
+          'REMOVE_INSTALL_TIRES': 'Remove & install tires',
+          'CLEANING': 'Cleaning',
+          'DIAGNOSTIC_TEST': 'Test with diagnostic',
+          'AU_TUV': 'AU & TÜV ',
+          'BALANCE_TIRES': 'Balance tires',
+          'WHEEL_ALIGNMENT': 'Adjust wheel alignment',
+          'POLISH': 'Polish',
+          'CHANGE_BRAKE_FLUID': 'Change brake fluid',
+        };
+
+        final convertedValue = serviceTypeMap[serviceType];
+        if (convertedValue != null) {
+          queryParams['serviceType'] = convertedValue;
+        }
+      }
+
+      final response = await _dio.get(
+        '/services',
+        queryParameters: queryParams,
+      );
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Response> createService(Map<String, dynamic> data) async {
     return await _dio.post('/services/createservice', data: data);
   }
@@ -300,20 +344,28 @@ class ApiProvider {
     }
   }
 
-  Future<Response> getServices({String? serviceType}) async {
-    String url = '/services/findallservice';
-    if (serviceType != null) {
-      url += '?serviceType=$serviceType';
+  Future<Response> searchServices(
+      String query, {
+        String? serviceType,
+        int skip = 0,
+        int limit = 10,
+      }) async {
+    try {
+      final queryParams = {
+        'q': query,
+        'skip': skip.toString(),
+        'limit': limit.toString(),
+      };
+      if (serviceType != null) {
+        queryParams['serviceType'] = serviceType;
+      }
+      return await _dio.get(
+        '/services/search',
+        queryParameters: queryParams,
+      );
+    } catch (e) {
+      rethrow;
     }
-    return await _dio.get(url);
-  }
-
-  Future<Response> searchServices(String query, {String? serviceType}) async {
-    String url = '/services/search?q=$query';
-    if (serviceType != null) {
-      url += '&serviceType=$serviceType';
-    }
-    return await _dio.get(url);
   }
 
   Future<Response> getServiceTypes() async {

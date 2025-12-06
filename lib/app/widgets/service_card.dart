@@ -6,6 +6,8 @@ import '../controllers/service_controller.dart';
 import '../controllers/auth_controller.dart';
 import '../routes/app_routes.dart';
 import '../config/app_colors.dart';
+import '../widgets/custom_text_field.dart';
+import '../utils/image_service.dart';
 
 class ServiceCard extends StatelessWidget {
   final ServiceModel service;
@@ -74,6 +76,553 @@ class ServiceCard extends StatelessWidget {
     );
   }
 
+  bool _isServiceOwner() {
+    final authController = Get.find<AuthController>();
+    final currentUserId = authController.currentUser.value?.id;
+    if (currentUserId == null || currentUserId.isEmpty) return false;
+    return service.userId == currentUserId ||
+        service.workshopData?['user_id'] == currentUserId;
+  }
+
+  void _showEditServiceBottomSheet(BuildContext context) {
+    final titleCtrl = TextEditingController(text: service.title);
+    final descCtrl = TextEditingController(text: service.description);
+    final priceCtrl = TextEditingController(text: service.price.toString());
+    List<File> newImages = [];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: DraggableScrollableSheet(
+            expand: false,
+            initialChildSize: 0.9,
+            minChildSize: 0.5,
+            maxChildSize: 0.95,
+            builder: (context, scrollController) => Column(
+              children: [
+                // ===== Header =====
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.05),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.edit, color: AppColors.primary),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'edit_service'.tr,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              service.title,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textSecondary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                          Get.back();
+                        },
+                        child: const Icon(Icons.close,
+                            color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // ===== Body =====
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomTextField(
+                            controller: titleCtrl,
+                            labelText: 'service_title'.tr,
+                            prefixIcon: Icons.build),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                            controller: descCtrl,
+                            labelText: 'description'.tr,
+                            prefixIcon: Icons.description,
+                            maxLines: 3),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                            controller: priceCtrl,
+                            labelText: 'price_usd'.tr,
+                            prefixIcon: Icons.euro,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true)),
+                        const SizedBox(height: 20),
+
+                        if (service.images.isNotEmpty) ...[
+                          Text(
+                            'current_images'.tr,
+                            style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary),
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            height: 90,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: service.images.length,
+                              itemBuilder: (context, index) => Container(
+                                width: 90,
+                                margin: const EdgeInsets.only(right: 10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border:
+                                    Border.all(color: AppColors.grey300)),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(service.images[index],
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) =>
+                                          Container(
+                                              color: AppColors.grey200,
+                                              child: const Icon(
+                                                  Icons.broken_image,
+                                                  color: AppColors.grey400))),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+
+                        Text(
+                          'add_new_images'.tr,
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary),
+                        ),
+                        const SizedBox(height: 12),
+                        GestureDetector(
+                          onTap: () async {
+                            final images = await ImageService
+                                .pickMultipleImages(maxImages: 5);
+                            setState(() {
+                              newImages.addAll(images);
+                              if (newImages.length > 5) {
+                                newImages = newImages.take(5).toList();
+                              }
+                            });
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            height: 110,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: AppColors.primary, width: 2),
+                              borderRadius: BorderRadius.circular(12),
+                              color: AppColors.primary.withValues(alpha: 0.05),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.add_photo_alternate,
+                                    size: 44, color: AppColors.primary),
+                                const SizedBox(height: 8),
+                                Text('add_images'.tr,
+                                    style: const TextStyle(
+                                        color: AppColors.primary,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600)),
+                                const SizedBox(height: 4),
+                                Text('max_5_images'.tr,
+                                    style: const TextStyle(
+                                        color: AppColors.textSecondary,
+                                        fontSize: 11)),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        if (newImages.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('new_images'.tr,
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.primary)),
+                              Text('${newImages.length}/5',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textSecondary)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            height: 90,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: newImages.length,
+                              itemBuilder: (context, index) => Container(
+                                width: 90,
+                                margin: const EdgeInsets.only(right: 10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                      color: AppColors.primary, width: 2),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius:
+                                      BorderRadius.circular(8),
+                                      child: Image.file(newImages[index],
+                                          width: 90,
+                                          height: 90,
+                                          fit: BoxFit.cover),
+                                    ),
+                                    Positioned(
+                                      top: 2,
+                                      right: 2,
+                                      child: GestureDetector(
+                                        onTap: () => setState(
+                                                () => newImages.removeAt(index)),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(2),
+                                          decoration: const BoxDecoration(
+                                              color: AppColors.error,
+                                              shape: BoxShape.circle),
+                                          child: const Icon(Icons.close,
+                                              color: Colors.white, size: 14),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // ===== Footer Buttons =====
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border:
+                    Border(top: BorderSide(color: AppColors.grey200)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          Get.back();
+                        },
+                        child: Text('cancel'.tr,
+                            style: const TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                      const SizedBox(width: 12),
+                      GetBuilder<ServiceController>(
+                        builder: (serviceController) => Obx(
+                              () => ElevatedButton.icon(
+                            onPressed: serviceController.isLoading.value
+                                ? null
+                                : () {
+                              FocusScope.of(context).unfocus();
+                              _updateService(titleCtrl, descCtrl,
+                                  priceCtrl, newImages);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24, vertical: 12),
+                            ),
+                            icon: serviceController.isLoading.value
+                                ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor:
+                                  AlwaysStoppedAnimation<Color>(
+                                      Colors.white)),
+                            )
+                                : const Icon(Icons.check, size: 18),
+                            label: Text(
+                              serviceController.isLoading.value
+                                  ? 'saving'.tr
+                                  : 'save_changes'.tr,
+                              style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ).whenComplete(() {
+      Future.delayed(const Duration(milliseconds: 200), () {
+        if (titleCtrl.hasListeners) titleCtrl.dispose();
+        if (descCtrl.hasListeners) descCtrl.dispose();
+        if (priceCtrl.hasListeners) priceCtrl.dispose();
+      });
+    });
+  }
+
+  Future<void> _updateService(
+      TextEditingController titleCtrl,
+      TextEditingController descCtrl,
+      TextEditingController priceCtrl,
+      List<File> newImages,
+      ) async {
+    final serviceController = Get.find<ServiceController>();
+    try {
+      if (titleCtrl.text.trim().isEmpty) {
+        Get.snackbar(
+          'error'.tr,
+          'please_enter_service_title'.tr,
+          backgroundColor: AppColors.error.withValues(alpha: 0.1),
+          colorText: AppColors.error,
+        );
+        return;
+      }
+
+      final updateData = {
+        'title': titleCtrl.text.trim(),
+        'description': descCtrl.text.trim(),
+        'price': double.parse(
+            priceCtrl.text.isEmpty ? '0' : priceCtrl.text),
+      };
+
+      bool success = false;
+      if (newImages.isNotEmpty) {
+        success = await serviceController.updateService(service.id, updateData);
+        if (success) {
+          success = await serviceController.uploadServiceImages(
+              service.id, newImages);
+        }
+      } else {
+        success = await serviceController.updateService(service.id, updateData);
+      }
+
+      if (success) {
+        Get.back();
+
+        // ✅ حدّث البيانات فوراً
+        await serviceController.loadServices();
+
+        Get.snackbar(
+          'success'.tr,
+          'service_updated_successfully'.tr,
+          backgroundColor: AppColors.success.withValues(alpha: 0.1),
+          colorText: AppColors.success,
+          duration: const Duration(seconds: 2),
+          icon: const Icon(Icons.check_circle, color: AppColors.success),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 8,
+          snackPosition: SnackPosition.TOP,
+        );
+      } else {
+        Get.snackbar(
+          'error'.tr,
+          'failed_update_service'.tr,
+          backgroundColor: AppColors.error.withValues(alpha: 0.1),
+          colorText: AppColors.error,
+          duration: const Duration(seconds: 2),
+          icon: const Icon(Icons.error_outline, color: AppColors.error),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 8,
+          snackPosition: SnackPosition.TOP,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'error'.tr,
+        'failed_update_service'.tr,
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+        colorText: AppColors.error,
+        duration: const Duration(seconds: 2),
+        icon: const Icon(Icons.error_outline, color: AppColors.error),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 8,
+        snackPosition: SnackPosition.TOP,
+      );
+    }
+  }
+
+  void _showDeleteDialog(BuildContext context) {
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: AppColors.white,
+        shape:
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: AppColors.error),
+            const SizedBox(width: 12),
+            Text('delete_service'.tr,
+                style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('confirm_delete_service'.tr,
+                style: const TextStyle(
+                    color: AppColors.textSecondary, fontSize: 16)),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border:
+                Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(service.title,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary)),
+                  const SizedBox(height: 4),
+                  Text(service.formattedPrice,
+                      style: const TextStyle(
+                          color: AppColors.success,
+                          fontWeight: FontWeight.w600)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text('action_cannot_be_undone'.tr,
+                style: const TextStyle(
+                    color: AppColors.error,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('cancel'.tr,
+                style: const TextStyle(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+              _performDelete();
+            },
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                foregroundColor: AppColors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8))),
+            child: Text('delete'.tr),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  void _performDelete() async {
+    final serviceController = Get.find<ServiceController>();
+    try {
+      final success = await serviceController.deleteService(service.id);
+      if (success) {
+        Get.snackbar(
+          'success'.tr,
+          'service_deleted_successfully'.tr,
+          backgroundColor: AppColors.success.withValues(alpha: 0.1),
+          colorText: AppColors.success,
+          duration: const Duration(seconds: 2),
+          icon: const Icon(Icons.check_circle, color: AppColors.success),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 8,
+          snackPosition: SnackPosition.TOP,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'error'.tr,
+        'failed_delete_service'.tr,
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+        colorText: AppColors.error,
+        duration: const Duration(seconds: 2),
+        icon: const Icon(Icons.error_outline, color: AppColors.error),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 8,
+        snackPosition: SnackPosition.TOP,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -101,7 +650,7 @@ class ServiceCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(),
+                _buildHeader(context),
                 const SizedBox(height: 16),
                 _buildDescription(),
                 if (service.images.isNotEmpty) ...[
@@ -118,7 +667,7 @@ class ServiceCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -143,9 +692,64 @@ class ServiceCard extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        _buildActionButton(),
+        _buildActionButton(context),
       ],
     );
+  }
+
+  Widget _buildActionButton(BuildContext context) {
+    final authController = Get.find<AuthController>();
+    final currentUser = authController.currentUser.value;
+
+    if (_isServiceOwner()) {
+      return PopupMenuButton<String>(
+        icon: const Icon(Icons.more_vert,
+            color: AppColors.textSecondary, size: 20),
+        offset: const Offset(0, 40),
+        shape:
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 8,
+        onSelected: (value) {
+          if (value == 'edit') {
+            _showEditServiceBottomSheet(context);
+          } else if (value == 'delete') {
+            _showDeleteDialog(context);
+          }
+        },
+        itemBuilder: (context) => [
+          PopupMenuItem(
+            value: 'edit',
+            child: Row(
+              children: [
+                const Icon(Icons.edit_outlined,
+                    size: 18, color: AppColors.primary),
+                const SizedBox(width: 12),
+                Text('edit_service'.tr,
+                    style: const TextStyle(
+                        color: AppColors.primary, fontSize: 14)),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: 'delete',
+            child: Row(
+              children: [
+                const Icon(Icons.delete_outline,
+                    size: 18, color: AppColors.error),
+                const SizedBox(width: 12),
+                Text('delete_service'.tr,
+                    style:
+                    const TextStyle(color: AppColors.error, fontSize: 14)),
+              ],
+            ),
+          ),
+        ],
+      );
+    } else if (currentUser?.isUser ?? false) {
+      return _buildSaveButton();
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 
   Widget _buildServiceTypeChip() {
@@ -248,7 +852,8 @@ class ServiceCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              'more_images'.tr.replaceAll('{count}', '${service.images.length - 4}'),
+              'more_images'.tr
+                  .replaceAll('{count}', '${service.images.length - 4}'),
               style: const TextStyle(
                 color: AppColors.textHint,
                 fontSize: 12,
@@ -258,17 +863,6 @@ class ServiceCard extends StatelessWidget {
           ),
       ],
     );
-  }
-
-  Widget _buildActionButton() {
-    final authController = Get.find<AuthController>();
-
-
-    if (authController.currentUser.value?.isUser ?? false) {
-      return _buildSaveButton();
-    } else {
-      return const SizedBox.shrink();
-    }
   }
 
   Widget _buildSaveButton() {
@@ -313,10 +907,14 @@ class ServiceCard extends StatelessWidget {
               },
               icon: Icon(
                 isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                color: isBookmarked ? AppColors.primary : AppColors.textSecondary,
+                color: isBookmarked
+                    ? AppColors.primary
+                    : AppColors.textSecondary,
                 size: 22,
               ),
-              tooltip: isBookmarked ? 'remove_from_saved'.tr : 'save_service'.tr,
+              tooltip: isBookmarked
+                  ? 'remove_from_saved'.tr
+                  : 'save_service'.tr,
             ),
           );
         });
@@ -416,7 +1014,8 @@ class ServiceCard extends StatelessWidget {
                       },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.primary,
-                        side: const BorderSide(color: AppColors.primary, width: 1.5),
+                        side: const BorderSide(
+                            color: AppColors.primary, width: 1.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

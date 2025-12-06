@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
       initialBinding: AppBinding(),
       translations: AppTranslations(),
       locale: _getInitialLocale(),
-      fallbackLocale: const Locale('en'),
+      fallbackLocale: const Locale('en', 'US'),
       theme: _buildAppTheme(),
       initialRoute: _getInitialRoute(),
       getPages: AppRoutes.routes,
@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
       return Locale(savedLang);
     }
     // Default to English instead of German
-    return const Locale('en');
+    return const Locale('de');
   }
 
   ThemeData _buildAppTheme() {

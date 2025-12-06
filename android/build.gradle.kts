@@ -2,7 +2,7 @@
 
 buildscript {
     extra.apply {
-        set("kotlin_version", "1.8.22")
+        set("kotlin_version", "1.9.25")
     }
 
     repositories {
@@ -11,14 +11,16 @@ buildscript {
     }
 
     dependencies {
-        // Android Gradle Plugin متوافق مع Android Studio
-        classpath("com.android.tools.build:gradle:8.3.0")
+        // ✅ Android Gradle Plugin
+        classpath("com.android.tools.build:gradle:8.6.0")
 
-        // Kotlin plugin
+
+
+        // ✅ Kotlin Gradle Plugin
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${property("kotlin_version")}")
 
-        // Google services
-        classpath("com.google.gms:google-services:4.3.15")
+        // ✅ Google Services (Firebase, etc.)
+        classpath("com.google.gms:google-services:4.4.2")
     }
 }
 
@@ -29,20 +31,17 @@ allprojects {
     }
 }
 
-// إعادة بناء مجلد build لمكان آخر (اختياري)
-val newBuildDir: Directory = rootProject.layout.buildDirectory.dir("../../build").get()
+// (اختياري) نقل build directory
+val newBuildDir = rootProject.layout.buildDirectory.dir("../../build").get()
 rootProject.layout.buildDirectory.value(newBuildDir)
 
 subprojects {
-    val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
+    val newSubprojectBuildDir = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
-}
-
-subprojects {
     project.evaluationDependsOn(":app")
 }
 
-// Task لتنظيف المشروع
+// ✅ Clean task
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }

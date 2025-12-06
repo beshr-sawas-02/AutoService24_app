@@ -249,7 +249,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView>
 
                               _buildStep(1, 'open_gmail_app'.tr, Icons.email_rounded),
                               _buildStep(2, 'find_verification_email'.tr, Icons.search_rounded),
-                              _buildStep(3, 'click_verify_button'.tr, Icons.verified_rounded),
+                              _buildStep(3, 'verify_button'.tr, Icons.verified_rounded),
                               _buildStep(4, 'return_to_login'.tr, Icons.login_rounded),
                             ],
                           ),

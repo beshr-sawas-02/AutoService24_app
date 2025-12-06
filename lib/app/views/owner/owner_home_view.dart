@@ -261,7 +261,7 @@ class _ServiceCategories extends StatelessWidget {
         'image': 'assets/images/diagnostic.jpg',
       },
       {
-        'title': 'AU & TÜV',
+        'title': 'au_tuv',
         'type': ServiceType.AU_TUV,
         'color': Colors.teal,
         'image': 'assets/images/au_tuv.jpg',

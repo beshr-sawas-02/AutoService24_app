@@ -420,7 +420,7 @@ class PrivacyPolicyView extends StatelessWidget {
                 Icon(Icons.email_rounded, color: Colors.green[700], size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  'privacy@autoservice24.com',
+                  'Codarise468@gmail.com',
                   style: TextStyle(
                       fontSize: isTablet ? 13 : 15,
                       fontWeight: FontWeight.w600,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../controllers/workshop_controller.dart';
 import '../../controllers/service_controller.dart';
 import '../../controllers/map_controller.dart';
@@ -297,23 +298,23 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
               onTap: shouldFocusOnWorkshop
                   ? null
                   : () {
-                      setState(() {
-                        _showSearchOptions = !_showSearchOptions;
-                      });
-                    },
+                setState(() {
+                  _showSearchOptions = !_showSearchOptions;
+                });
+              },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: isTablet ? 10 : 12),
                 child: Text(
                   shouldFocusOnWorkshop && targetWorkshopName != null
                       ? targetWorkshopName!
                       : _selectedServiceType?.displayName ??
-                          'select_service_type'.tr,
+                      'select_service_type'.tr,
                   style: TextStyle(
                     fontSize: isTablet ? 14 : 16,
                     color:
-                        (_selectedServiceType != null || shouldFocusOnWorkshop)
-                            ? Colors.black87
-                            : Colors.grey[600],
+                    (_selectedServiceType != null || shouldFocusOnWorkshop)
+                        ? Colors.black87
+                        : Colors.grey[600],
                     fontWeight: shouldFocusOnWorkshop
                         ? FontWeight.bold
                         : FontWeight.normal,
@@ -403,9 +404,9 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                       serviceType.displayName,
                       style: TextStyle(
                         color:
-                            isSelected ? AppColors.primary : Colors.grey[700],
+                        isSelected ? AppColors.primary : Colors.grey[700],
                         fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal,
+                        isSelected ? FontWeight.bold : FontWeight.normal,
                         fontSize: isTablet ? 10 : 12,
                       ),
                       textAlign: TextAlign.center,
@@ -506,28 +507,56 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
   }
 
   Widget _buildLocationButton(bool isTablet) {
-    return Container(
-      width: isTablet ? 45 : 50,
-      height: isTablet ? 45 : 50,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+    return Column(
+      children: [
+        Container(
+          width: isTablet ? 45 : 50,
+          height: isTablet ? 45 : 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: IconButton(
-        icon: Icon(
-          Icons.my_location,
-          color: AppColors.primary,
-          size: isTablet ? 20 : 24,
+          child: IconButton(
+            icon: Icon(
+              Icons.my_location,
+              color: AppColors.primary,
+              size: isTablet ? 20 : 24,
+            ),
+            onPressed: _goToCurrentLocation,
+          ),
         ),
-        onPressed: _goToCurrentLocation,
-      ),
+        SizedBox(height: isTablet ? 6 : 8),
+        Container(
+          width: isTablet ? 45 : 50,
+          height: isTablet ? 45 : 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: Icon(
+              Icons.map,
+              color: AppColors.primary,
+              size: isTablet ? 20 : 24,
+            ),
+            onPressed: _openGoogleMapsCurrentLocation,
+          ),
+        ),
+      ],
     );
   }
 
@@ -700,7 +729,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                       foregroundColor: AppColors.primary,
                       side: const BorderSide(color: AppColors.primary),
                       padding:
-                          EdgeInsets.symmetric(vertical: isTablet ? 10 : 12),
+                      EdgeInsets.symmetric(vertical: isTablet ? 10 : 12),
                     ),
                   ),
                 ),
@@ -769,7 +798,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
   Widget _buildWorkshopListItem(WorkshopModel workshop, bool isTablet) {
     return ListTile(
       contentPadding:
-          EdgeInsets.symmetric(vertical: isTablet ? 6 : 8, horizontal: 0),
+      EdgeInsets.symmetric(vertical: isTablet ? 6 : 8, horizontal: 0),
       leading: CircleAvatar(
         radius: isTablet ? 22 : 25,
         backgroundColor: AppColors.primary.withValues(alpha: 0.1),
@@ -809,9 +838,9 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                 child: Text(
                   workshop.distanceFromUser != null
                       ? mapController
-                          .formatDistance(workshop.distanceFromUser! * 1000)
+                      .formatDistance(workshop.distanceFromUser! * 1000)
                       : mapController
-                          .formatDistance(_calculateDistance(workshop) * 1000),
+                      .formatDistance(_calculateDistance(workshop) * 1000),
                   style: TextStyle(
                       color: Colors.grey, fontSize: isTablet ? 10 : 12),
                   maxLines: 1,
@@ -1130,9 +1159,9 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                               Text(
                                 workshop.distanceFromUser != null
                                     ? mapController.formatDistance(
-                                        workshop.distanceFromUser! * 1000)
+                                    workshop.distanceFromUser! * 1000)
                                     : mapController.formatDistance(
-                                        _calculateDistance(workshop) * 1000),
+                                    _calculateDistance(workshop) * 1000),
                                 style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: isTablet ? 12 : 14),
@@ -1158,39 +1187,65 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
                   ),
                 ),
                 SizedBox(height: isTablet ? 16 : 20),
-                Row(
+                Column(
                   children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Get.back();
-                          Get.toNamed(AppRoutes.workshopDetails,
-                              arguments: workshop);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          padding: EdgeInsets.symmetric(
-                              vertical: isTablet ? 10 : 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Get.back();
+                              Get.toNamed(AppRoutes.workshopDetails,
+                                  arguments: workshop);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: isTablet ? 10 : 12),
+                            ),
+                            child: Text('view_details'.tr,
+                                style: TextStyle(fontSize: isTablet ? 13 : 15)),
+                          ),
                         ),
-                        child: Text('view_details'.tr,
-                            style: TextStyle(fontSize: isTablet ? 13 : 15)),
-                      ),
+                        SizedBox(width: isTablet ? 8 : 12),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              Get.back();
+                              _getDirections(workshop);
+                            },
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.primary,
+                              side: const BorderSide(color: AppColors.primary),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: isTablet ? 10 : 12),
+                            ),
+                            child: Text('directions'.tr,
+                                style: TextStyle(fontSize: isTablet ? 13 : 15)),
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: isTablet ? 8 : 12),
-                    Expanded(
-                      child: OutlinedButton(
+                    SizedBox(height: isTablet ? 12 : 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
                         onPressed: () {
                           Get.back();
-                          _getDirections(workshop);
+                          _openGoogleMaps(
+                            latitude: workshop.latitude,
+                            longitude: workshop.longitude,
+                            label: workshop.name,
+                          );
                         },
+                        icon: const Icon(Icons.map),
+                        label: Text('open_maps'.tr),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.primary,
                           side: const BorderSide(color: AppColors.primary),
                           padding: EdgeInsets.symmetric(
                               vertical: isTablet ? 10 : 12),
                         ),
-                        child: Text('directions'.tr,
-                            style: TextStyle(fontSize: isTablet ? 13 : 15)),
                       ),
                     ),
                   ],
@@ -1294,7 +1349,7 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
   void _showRouteInfo(double startLat, double startLng, double endLat,
       double endLng, String workshopName) {
     final distance =
-        mapController.calculateDistance(startLat, startLng, endLat, endLng);
+    mapController.calculateDistance(startLat, startLng, endLat, endLng);
     final estimatedTime = _calculateEstimatedTime(distance);
 
     showModalBottomSheet(
@@ -1466,6 +1521,65 @@ class _WorkshopMapSearchViewState extends State<WorkshopMapSearchView> {
       workshop.latitude,
       workshop.longitude,
     );
+  }
+
+  /// Open worksheet location in Google Maps
+  Future<void> _openGoogleMaps({
+    required double latitude,
+    required double longitude,
+    String? label,
+  }) async {
+    try {
+      String googleMapsUrl =
+          'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+
+      if (label != null && label.isNotEmpty) {
+        googleMapsUrl =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude&query_place_name=$label';
+      }
+
+      if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+        await launchUrl(
+          Uri.parse(googleMapsUrl),
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        throw 'لم يتمكن من فتح Google Maps';
+      }
+    } catch (e) {
+      print('خطأ في فتح Google Maps: $e');
+      Get.snackbar(
+        'error'.tr,
+        'google_maps_not_available'.tr,
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+        colorText: AppColors.error,
+      );
+    }
+  }
+
+  /// Open current location in Google Maps
+  Future<void> _openGoogleMapsCurrentLocation() async {
+    try {
+      final currentPos = mapController.currentPosition.value;
+
+      if (currentPos == null) {
+        Get.snackbar(
+          'error'.tr,
+          'current_location_not_found'.tr,
+          backgroundColor: AppColors.error.withValues(alpha: 0.1),
+          colorText: AppColors.error,
+        );
+        return;
+      }
+
+      await _openGoogleMaps(
+        latitude: currentPos.latitude,
+        longitude: currentPos.longitude,
+        label: 'current_location'.tr,
+      );
+    } catch (e) {
+      _showError('error'.tr, e.toString());
+    }
   }
 
   @override

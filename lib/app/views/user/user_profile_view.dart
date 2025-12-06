@@ -396,7 +396,7 @@ class UserProfileView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
-          // Email
+          // Email - مع Expanded
           Row(
             children: [
               Container(
@@ -409,32 +409,36 @@ class UserProfileView extends StatelessWidget {
                     color: Colors.grey[600], size: 20),
               ),
               const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'email'.tr,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'email'.tr,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    email,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                    const SizedBox(height: 2),
+                    Text(
+                      email,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
 
           const SizedBox(height: 20),
 
-          // Phone
+          // Phone - مع Expanded
           Row(
             children: [
               Container(
@@ -447,28 +451,32 @@ class UserProfileView extends StatelessWidget {
                     color: Colors.grey[600], size: 20),
               ),
               const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'phone'.tr,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'phone'.tr,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    phone,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: phone != 'not_provided'.tr
-                          ? Colors.black87
-                          : Colors.grey[500],
+                    const SizedBox(height: 2),
+                    Text(
+                      phone,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: phone != 'not_provided'.tr
+                            ? Colors.black87
+                            : Colors.grey[500],
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -496,7 +504,6 @@ class UserProfileView extends StatelessWidget {
             title: 'my_workshop'.tr,
             subtitle: 'manage_workshop'.tr,
             onTap: () {
-              Get.snackbar('info'.tr, 'workshop_management_soon'.tr);
             },
             iconColor: Colors.blue,
           ),
@@ -505,7 +512,6 @@ class UserProfileView extends StatelessWidget {
             title: 'my_services'.tr,
             subtitle: 'manage_services'.tr,
             onTap: () {
-              Get.snackbar('info'.tr, 'service_management_soon'.tr);
             },
             iconColor: Colors.green,
           ),
@@ -679,17 +685,6 @@ class UserProfileView extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
     );
   }
-
-  // void _showPrivacyPolicyWithAccept() {
-  //   Get.to(
-  //         () => PrivacyPolicyView(
-  //       showAcceptButton: true,
-  //       isFromRegistration: false,
-  //     ),
-  //     transition: Transition.cupertino,
-  //     duration: const Duration(milliseconds: 300),
-  //   );
-  // }
 
   void _showLogoutDialog() {
     Get.dialog(

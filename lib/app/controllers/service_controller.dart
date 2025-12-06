@@ -11,13 +11,34 @@ class ServiceController extends GetxController {
 
   ServiceController(this._serviceRepository);
 
+  // Loading states
   var isLoading = false.obs;
+  var isLoadingMore = false.obs;
   var isLoadingPhone = false.obs;
+
+  // Services lists
   var services = <ServiceModel>[].obs;
   var ownerServices = <ServiceModel>[].obs;
   var savedServices = <SavedServiceModel>[].obs;
   var filteredServices = <ServiceModel>[].obs;
   var selectedType = Rx<String?>(null);
+
+  // Pagination variables
+  var currentSkip = 0.obs;
+  static const int pageSize = 10;
+  var hasMoreServices = true.obs;
+  var hasMoreOwnerServices = true.obs;
+
+  // Search pagination
+  var searchSkip = 0.obs;
+  var hasMoreSearchResults = true.obs;
+  var lastSearchQuery = ''.obs;
+
+  // ✅ تتبع النوع الحالي
+  var currentServiceType = Rx<String?>(null);
+
+  // ✅ متغير جديد لتخزين آخر workshopId تم تحميل خدماته
+  var lastLoadedWorkshopId = Rx<String?>(null);
 
   @override
   void onInit() {
@@ -28,37 +49,123 @@ class ServiceController extends GetxController {
   void onReady() {
     super.onReady();
     Future.delayed(Duration.zero, () {
-      loadServices();
       loadSavedServices();
     });
   }
 
-  // Helper method to sort services by creation date (newest first)
+  // ============== Helper Methods ==============
+
   void _sortServicesByDate(List<ServiceModel> serviceList) {
     serviceList.sort((a, b) {
       final dateA = a.createdAt ?? DateTime(2000);
       final dateB = b.createdAt ?? DateTime(2000);
-      return dateB.compareTo(dateA); // Descending order (newest first)
+      return dateB.compareTo(dateA);
     });
   }
+
+  bool _isValidServiceList(List<ServiceModel> services) {
+    return services.isNotEmpty;
+  }
+
+  void _updateHasMore(
+    List<ServiceModel> newServices,
+    bool isOwner,
+  ) {
+    if (newServices.length < pageSize) {
+      if (isOwner) {
+        hasMoreOwnerServices.value = false;
+      } else {
+        hasMoreServices.value = false;
+      }
+    }
+  }
+
+  // ============== Load Services ==============
 
   Future<void> loadServices({String? serviceType}) async {
     try {
       isLoading.value = true;
-      final serviceList =
-          await _serviceRepository.getAllServices(serviceType: serviceType);
+      currentSkip.value = 0;
+      currentServiceType.value = serviceType;
+      hasMoreServices.value = true;
+      lastSearchQuery.value = '';
 
-      // Sort services by creation date
+      print('🔵 loadServices: جاري التحميل - serviceType: $serviceType');
+
+      final serviceList = await _serviceRepository.getAllServices(
+        serviceType: serviceType,
+        skip: 0,
+        limit: pageSize,
+      );
+
+      print('🟢 loadServices: تم التحميل - عدد الخدمات: ${serviceList.length}');
+
       _sortServicesByDate(serviceList);
+      _updateHasMore(serviceList, false);
 
       services.value = serviceList;
+      print('🟠 services.value: ${services.value.length} خدمة');
+
       _applyFilters();
+
+      print('🟡 filteredServices.value: ${filteredServices.value.length} خدمة');
     } catch (e) {
+      print('🔴 loadServices Error: $e');
       ErrorHandler.handleAndShowError(e);
       services.clear();
       filteredServices.clear();
+      hasMoreServices.value = false;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreServices({String? serviceType}) async {
+    // ✅ Check أقوى للتأكد من عدم التكرار
+    if (isLoadingMore.value) {
+      print('⚠️ loadMore already in progress');
+      return;
+    }
+
+    if (!hasMoreServices.value) {
+      print('⚠️ No more services available');
+      return;
+    }
+
+    // ✅ تأكد أن serviceType ما تغيّر أثناء التحميل
+    if (currentServiceType.value != serviceType) {
+      print('⚠️ Service type changed, skipping load');
+      return;
+    }
+
+    try {
+      isLoadingMore.value = true;
+      currentSkip.value += pageSize;
+
+      print('🔵 loadMoreServices: جاري التحميل من skip: ${currentSkip.value}');
+
+      final moreServices = await _serviceRepository.getAllServices(
+        serviceType: serviceType,
+        skip: currentSkip.value,
+        limit: pageSize,
+      );
+
+      print(
+          '🟢 loadMoreServices: تم التحميل - عدد الخدمات: ${moreServices.length}');
+
+      _sortServicesByDate(moreServices);
+      _updateHasMore(moreServices, false);
+
+      services.addAll(moreServices);
+      print('🟠 services.value بعد الإضافة: ${services.value.length} خدمة');
+
+      _applyFilters();
+    } catch (e) {
+      print('🔴 loadMoreServices Error: $e');
+      ErrorHandler.handleAndShowError(e, silent: true);
+      currentSkip.value -= pageSize; // ⬅️ مهم: إرجاع الـ skip للقيمة السابقة
+    } finally {
+      isLoadingMore.value = false;
     }
   }
 
@@ -72,29 +179,89 @@ class ServiceController extends GetxController {
           e.toString().contains('Not Found')) {
         return null;
       }
-
-      ErrorHandler.handleAndShowError(e, silent: true);
       return null;
     }
   }
 
-  Future<void> loadOwnerServices() async {
+  // ============== Load Owner Services ==============
+
+  Future<void> loadOwnerServices({String? serviceType}) async {
     try {
       isLoading.value = true;
+      currentSkip.value = 0;
+      currentServiceType.value = serviceType;
+      hasMoreOwnerServices.value = true;
 
-      final serviceList = await _serviceRepository.getAllServices();
+      print('🔵 loadOwnerServices: جاري التحميل - serviceType: $serviceType');
 
-      // Sort services by creation date
+      final serviceList = await _serviceRepository.getAllServices(
+        serviceType: serviceType,
+        skip: 0,
+        limit: pageSize,
+      );
+
+      print(
+          '🟢 loadOwnerServices: تم التحميل - عدد الخدمات: ${serviceList.length}');
+
       _sortServicesByDate(serviceList);
+      _updateHasMore(serviceList, true);
 
       ownerServices.value = serviceList;
+      print('🟠 ownerServices.value: ${ownerServices.value.length} خدمة');
     } catch (e) {
+      print('🔴 loadOwnerServices Error: $e');
       ErrorHandler.handleAndShowError(e);
       ownerServices.clear();
+      hasMoreOwnerServices.value = false;
     } finally {
       isLoading.value = false;
     }
   }
+
+  Future<void> loadMoreOwnerServices({String? serviceType}) async {
+    if (isLoadingMore.value || !hasMoreOwnerServices.value) {
+      print(
+          '⚠️ Cannot load more - isLoading: ${isLoadingMore.value}, hasMore: ${hasMoreOwnerServices.value}');
+      return;
+    }
+
+    // ✅ تحقق من النوع
+    if (currentServiceType.value != serviceType) {
+      print('⚠️ Service type changed, skipping load');
+      return;
+    }
+
+    try {
+      isLoadingMore.value = true;
+      currentSkip.value += pageSize;
+
+      print(
+          '🔵 loadMoreOwnerServices: جاري التحميل من skip: ${currentSkip.value}');
+
+      final moreServices = await _serviceRepository.getAllServices(
+        serviceType: serviceType,
+        skip: currentSkip.value,
+        limit: pageSize,
+      );
+
+      print(
+          '🟢 loadMoreOwnerServices: تم التحميل - عدد الخدمات: ${moreServices.length}');
+
+      _sortServicesByDate(moreServices);
+      _updateHasMore(moreServices, true);
+
+      ownerServices.addAll(moreServices);
+      print('🟠 ownerServices بعد الإضافة: ${ownerServices.value.length} خدمة');
+    } catch (e) {
+      print('🔴 loadMoreOwnerServices Error: $e');
+      ErrorHandler.handleAndShowError(e, silent: true);
+      currentSkip.value -= pageSize;
+    } finally {
+      isLoadingMore.value = false;
+    }
+  }
+
+  // ============== Saved Services ==============
 
   Future<void> loadSavedServices() async {
     try {
@@ -102,12 +269,15 @@ class ServiceController extends GetxController {
       if (currentUserId == null || currentUserId.isEmpty) {
         return;
       }
+
       final savedList = await _serviceRepository.getSavedServices();
       savedServices.value = savedList;
     } catch (e) {
       ErrorHandler.handleAndShowError(e, silent: true);
     }
   }
+
+  // ============== Search ==============
 
   Future<void> searchServices(String query) async {
     if (query.isEmpty) {
@@ -117,25 +287,83 @@ class ServiceController extends GetxController {
 
     try {
       isLoading.value = true;
+      searchSkip.value = 0;
+      currentSkip.value = 0;
+      hasMoreSearchResults.value = true;
+      lastSearchQuery.value = query;
+
+      print('🔵 searchServices: جاري البحث - query: $query');
 
       final searchResults = await _serviceRepository.searchServices(
         query,
         serviceType: selectedType.value,
+        skip: 0,
+        limit: pageSize,
       );
 
-      // Sort search results by creation date
       _sortServicesByDate(searchResults);
+
+      if (searchResults.length < pageSize) {
+        hasMoreSearchResults.value = false;
+      }
 
       services.value = searchResults;
       _applyFilters();
+
+      print('🟢 searchServices: تم البحث - عدد النتائج: ${services.length}');
     } catch (e) {
+      print('🔴 searchServices Error: $e');
       ErrorHandler.handleAndShowError(e);
       services.clear();
       filteredServices.clear();
+      hasMoreSearchResults.value = false;
     } finally {
       isLoading.value = false;
     }
   }
+
+  Future<void> loadMoreSearchResults() async {
+    if (isLoadingMore.value || !hasMoreSearchResults.value) {
+      return;
+    }
+
+    if (lastSearchQuery.value.isEmpty) return;
+
+    try {
+      isLoadingMore.value = true;
+      searchSkip.value += pageSize;
+
+      print(
+          '🔵 loadMoreSearchResults: جاري التحميل من skip: ${searchSkip.value}');
+
+      final moreResults = await _serviceRepository.searchServices(
+        lastSearchQuery.value,
+        serviceType: selectedType.value,
+        skip: searchSkip.value,
+        limit: pageSize,
+      );
+
+      _sortServicesByDate(moreResults);
+
+      if (moreResults.length < pageSize) {
+        hasMoreSearchResults.value = false;
+      }
+
+      services.addAll(moreResults);
+      _applyFilters();
+
+      print(
+          '🟢 loadMoreSearchResults: تم التحميل - عدد النتائج: ${moreResults.length}');
+    } catch (e) {
+      print('🔴 loadMoreSearchResults Error: $e');
+      ErrorHandler.handleAndShowError(e, silent: true);
+      searchSkip.value -= pageSize;
+    } finally {
+      isLoadingMore.value = false;
+    }
+  }
+
+  // ============== Filter ==============
 
   void filterByType(String? type) {
     selectedType.value = type;
@@ -146,13 +374,16 @@ class ServiceController extends GetxController {
     filteredServices.value = services.toList();
   }
 
+  // ============== Save/Unsave Services ==============
+
   bool isServiceSaved(String serviceId) {
     return savedServices.any((saved) => saved.serviceId == serviceId);
   }
 
   String? getSavedServiceId(String serviceId) {
-    final saved =
-        savedServices.firstWhereOrNull((s) => s.serviceId == serviceId);
+    final saved = savedServices.firstWhereOrNull(
+      (s) => s.serviceId == serviceId,
+    );
     return saved?.id;
   }
 
@@ -169,14 +400,12 @@ class ServiceController extends GetxController {
       });
 
       savedServices.add(savedService);
-      ErrorHandler.showSuccess('service_saved_successfully'.tr);
       return true;
     } catch (e) {
       if (e.toString().contains('already saved') ||
           e.toString().contains('already exists') ||
           e.toString().contains('duplicate')) {
         ErrorHandler.showInfo('service_already_in_list'.tr);
-
         loadSavedServices();
         return true;
       }
@@ -189,11 +418,9 @@ class ServiceController extends GetxController {
   Future<bool> unSaveService(String savedServiceId) async {
     try {
       await _serviceRepository.unsaveService(savedServiceId);
-
       savedServices.removeWhere((service) => service.id == savedServiceId);
       return true;
     } catch (e) {
-      ErrorHandler.handleAndShowError(e);
       return false;
     }
   }
@@ -210,13 +437,7 @@ class ServiceController extends GetxController {
     }
   }
 
-  void clearAllData() {
-    services.clear();
-    ownerServices.clear();
-    savedServices.clear();
-    filteredServices.clear();
-    selectedType.value = null;
-  }
+  // ============== CRUD Operations ==============
 
   Future<bool> createService(Map<String, dynamic> serviceData) async {
     try {
@@ -224,7 +445,6 @@ class ServiceController extends GetxController {
 
       final newService = await _serviceRepository.createService(serviceData);
 
-      // Add new service at the beginning (top)
       ownerServices.insert(0, newService);
       services.insert(0, newService);
 
@@ -238,14 +458,17 @@ class ServiceController extends GetxController {
   }
 
   Future<bool> createServiceWithImages(
-      Map<String, dynamic> serviceData, List<File>? imageFiles) async {
+    Map<String, dynamic> serviceData,
+    List<File>? imageFiles,
+  ) async {
     try {
       isLoading.value = true;
 
       final newService = await _serviceRepository.createServiceWithImages(
-          serviceData, imageFiles);
+        serviceData,
+        imageFiles,
+      );
 
-      // Add new service at the beginning (top)
       ownerServices.insert(0, newService);
       services.insert(0, newService);
 
@@ -259,7 +482,9 @@ class ServiceController extends GetxController {
   }
 
   Future<bool> uploadServiceImages(
-      String serviceId, List<File> imageFiles) async {
+    String serviceId,
+    List<File> imageFiles,
+  ) async {
     try {
       isLoading.value = true;
 
@@ -281,15 +506,23 @@ class ServiceController extends GetxController {
   }
 
   Future<bool> updateService(
-      String id, Map<String, dynamic> serviceData) async {
+    String id,
+    Map<String, dynamic> serviceData,
+  ) async {
     try {
       isLoading.value = true;
 
       final updatedService =
           await _serviceRepository.updateService(id, serviceData);
+
       final index = ownerServices.indexWhere((s) => s.id == id);
       if (index != -1) {
         ownerServices[index] = updatedService;
+      }
+
+      final serviceIndex = services.indexWhere((s) => s.id == id);
+      if (serviceIndex != -1) {
+        services[serviceIndex] = updatedService;
       }
 
       return true;
@@ -319,6 +552,77 @@ class ServiceController extends GetxController {
     }
   }
 
+  // ============== Workshop Operations ==============
+
+  // ✅ عدّل هذا الـ method - حمّل مباشرة في ownerServices
+  Future<void> loadServicesByWorkshopId(String workshopId) async {
+    try {
+      isLoading.value = true;
+
+      print(
+          '🔵 loadServicesByWorkshopId: جاري التحميل - workshopId: $workshopId');
+
+      final serviceList =
+          await _serviceRepository.getServicesByWorkshopId(workshopId);
+
+      print(
+          '🟢 loadServicesByWorkshopId: تم التحميل - عدد: ${serviceList.length}');
+
+      _sortServicesByDate(serviceList);
+
+      // احفظ مباشرة في ownerServices
+      ownerServices.value = serviceList;
+      lastLoadedWorkshopId.value = workshopId;
+
+      print('🟠 ownerServices.value: ${ownerServices.value.length} خدمة');
+    } catch (e) {
+      print('🔴 loadServicesByWorkshopId Error: $e');
+      ErrorHandler.handleAndShowError(e, silent: true);
+      ownerServices.clear();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // ✅ Method جديد - ارجع ownerServices مباشرة بعد التحميل
+  Future<List<ServiceModel>> getServicesForWorkshop(String workshopId) async {
+    try {
+      print('🔵 getServicesForWorkshop: جاري التحميل من API');
+
+      final serviceList =
+          await _serviceRepository.getServicesByWorkshopId(workshopId);
+
+      print(
+          '🟢 getServicesForWorkshop: تم التحميل - عدد: ${serviceList.length}');
+
+      _sortServicesByDate(serviceList);
+
+      // ارجع البيانات مباشرة
+      return serviceList;
+    } catch (e) {
+      print('❌ getServicesForWorkshop Error: $e');
+      ErrorHandler.handleAndShowError(e, silent: true);
+      return [];
+    }
+  }
+
+  Future<String?> getWorkshopOwnerPhone(String serviceId) async {
+    try {
+      isLoadingPhone.value = true;
+
+      final phoneNumber =
+          await _serviceRepository.getWorkshopOwnerPhone(serviceId);
+      return phoneNumber;
+    } catch (e) {
+      ErrorHandler.handleAndShowError(e);
+      return null;
+    } finally {
+      isLoadingPhone.value = false;
+    }
+  }
+
+  // ============== Debug ==============
+
   Future<void> debugSavedServices() async {
     try {
       await StorageService.debugPrintStoredData();
@@ -345,42 +649,31 @@ class ServiceController extends GetxController {
         }
       }
     } catch (e) {
-      // Debug errors are silent - only logged in console
       ErrorHandler.handleAndShowError(e, silent: true);
     }
   }
 
-  Future<void> loadServicesByWorkshopId(String workshopId) async {
-    try {
-      isLoading.value = true;
+  // ============== Cleanup ==============
 
-      final serviceList =
-          await _serviceRepository.getServicesByWorkshopId(workshopId);
-
-      // Sort services by creation date
-      _sortServicesByDate(serviceList);
-
-      ownerServices.value = serviceList;
-    } catch (e) {
-      ErrorHandler.handleAndShowError(e);
-      ownerServices.clear();
-    } finally {
-      isLoading.value = false;
-    }
+  void clearAllData() {
+    services.clear();
+    ownerServices.clear();
+    savedServices.clear();
+    filteredServices.clear();
+    selectedType.value = null;
+    currentServiceType.value = null;
+    currentSkip.value = 0;
+    searchSkip.value = 0;
+    lastSearchQuery.value = '';
+    hasMoreServices.value = true;
+    hasMoreOwnerServices.value = true;
+    hasMoreSearchResults.value = true;
+    lastLoadedWorkshopId.value = null;
   }
 
-  Future<String?> getWorkshopOwnerPhone(String serviceId) async {
-    try {
-      isLoadingPhone.value = true;
-
-      final phoneNumber =
-          await _serviceRepository.getWorkshopOwnerPhone(serviceId);
-      return phoneNumber;
-    } catch (e) {
-      ErrorHandler.handleAndShowError(e);
-      return null;
-    } finally {
-      isLoadingPhone.value = false;
-    }
+  @override
+  void onClose() {
+    clearAllData();
+    super.onClose();
   }
 }

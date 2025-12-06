@@ -662,12 +662,7 @@ class _SavedServicesViewState extends State<SavedServicesView> {
     }
   }
 
-  // Future<void> _unSaveService(savedService) async {
-  //   final success = await serviceController.unSaveService(savedService.id);
-  //   if (success) {
-  //     // Success handled by controller
-  //   }
-  // }
+
 
   String _formatSavedDate(DateTime savedDate) {
     final now = DateTime.now();

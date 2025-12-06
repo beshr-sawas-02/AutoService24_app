@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1073993043012",
+    "project_id": "autoservice24"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073993043012:android:abcd1234",
+        "android_client_info": {
+          "package_name": "com.example.autoservice24"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1073993043012-ku9rjlel3sqqc58o95qpu4ucgr6iq578.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.autoservice24",
+            "certificate_hash": "2A:BE:E1:39:50:EB:DD:0C:C3:E4:BE:E1:50:62:C8:0A:EB:77:CA:79"
+          }
+        },
+        {
+          "client_id": "1073993043012-ku9rjlel3sqqc58o95qpu4ucgr6iq578.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNEwzyy9QEtrLrle0ybKoi2xZReQIcgw4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1073993043012-ku9rjlel3sqqc58o95qpu4ucgr6iq578.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

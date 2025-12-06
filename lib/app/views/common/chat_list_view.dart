@@ -830,17 +830,6 @@ class _ChatListViewState extends State<ChatListView> with TickerProviderStateMix
                         ),
                       ),
                       const SizedBox(height: 20),
-                      TextButton(
-                        onPressed: () => Get.back(),
-                        child: Text(
-                          'explore_services_instead'.tr,
-                          style: const TextStyle(
-                            color: Color(0xFF8E8E93),
-                            fontSize: 15,
-                            letterSpacing: -0.2,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),

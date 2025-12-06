@@ -48,16 +48,25 @@ class _OwnerWorkshopsViewState extends State<OwnerWorkshopsView>
     }
   }
 
+// عدّل _preloadServicesCount في OwnerWorkshopsView
+
   Future<void> _preloadServicesCount() async {
     for (var workshop in workshopController.ownerWorkshops) {
       if (!_servicesCountCache.containsKey(workshop.id)) {
         try {
-          await serviceController.loadServicesByWorkshopId(workshop.id);
-          final count = serviceController.ownerServices
+          // استخدم الـ method الجديد
+          final services =
+              await serviceController.getServicesForWorkshop(workshop.id);
+
+          final count = services
               .where((service) => service.workshopId == workshop.id)
               .length;
+
           _servicesCountCache[workshop.id] = count;
+
+          print('✅ Workshop ${workshop.name}: $count services');
         } catch (e) {
+          print('❌ Error loading services count: $e');
           _servicesCountCache[workshop.id] = 0;
         }
       }
@@ -371,7 +380,7 @@ class _OwnerWorkshopsViewState extends State<OwnerWorkshopsView>
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Tap to view details',
+                            'tap_to_view_details'.tr,  // ✅ مع translation
                             style: TextStyle(
                               fontSize: 13,
                               color: AppColors.primary.withValues(alpha: 0.7),
@@ -1155,7 +1164,7 @@ class _OwnerWorkshopsViewState extends State<OwnerWorkshopsView>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'please_wait'.tr,
+                    'processing_request'.tr,
                     style: TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary.withValues(alpha: 0.8),

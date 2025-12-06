@@ -72,12 +72,6 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 controller: _nameController,
                 labelText: 'workshop_name'.tr,
                 icon: Icons.business,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'please_enter_workshop_name'.tr;
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
 
@@ -95,12 +89,6 @@ class _AddWorkshopViewState extends State<AddWorkshopView> {
                 controller: _workingHoursController,
                 labelText: 'working_hours_example'.tr,
                 icon: Icons.access_time,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'please_enter_working_hours'.tr;
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 24),
 

@@ -452,6 +452,10 @@ class AuthController extends GetxController {
       ErrorHandler.showSuccess(
           '${_capitalizeProvider(provider)} ${'login_successful'.tr}');
 
+
+      await Future.delayed(const Duration(milliseconds: 300));
+
+
       if (currentUser.value?.userType == 'owner') {
         Get.offAllNamed(AppRoutes.ownerHome);
       } else {

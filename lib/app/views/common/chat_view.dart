@@ -65,7 +65,7 @@ class _ChatViewState extends State<ChatView> {
 
     chatId = arguments['chatId']?.toString();
     receiverId = arguments['receiverId']?.toString() ?? '';
-    receiverName = arguments['receiverName']?.toString() ?? 'unknown_user'.tr;
+    receiverName = arguments['receiverName']?.toString() ?? 'user'.tr;
     currentUserId = arguments['currentUserId']?.toString() ??
         authController.currentUser.value?.id ??
         '';
@@ -1066,10 +1066,8 @@ class _ChatViewState extends State<ChatView> {
       }
     } catch (e) {
       _restoreInputOnFailure(content, imageFile);
-      Get.snackbar(
-        'error'.tr,
-        '${'failed_send_message'.tr}: $e',
-        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+      Get.snackbar('error'.tr, 'failed_send_message'.tr,
+      backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,
       );
     }
@@ -1087,55 +1085,6 @@ class _ChatViewState extends State<ChatView> {
     });
   }
 
-  // void _showBlockUserDialog() {
-  //   Get.dialog(
-  //     AlertDialog(
-  //       backgroundColor: AppColors.white,
-  //       title: Text('block_user'.tr),
-  //       content:
-  //           Text('are_you_sure_block'.tr.replaceAll('{user}', receiverName)),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Get.back(),
-  //           child: Text('cancel'.tr),
-  //         ),
-  //         ElevatedButton(
-  //           onPressed: () {
-  //             Get.back();
-  //             Get.snackbar('info'.tr, 'user_blocking_soon'.tr);
-  //           },
-  //           style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-  //           child: Text('block'.tr),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // void _showReportDialog() {
-  //   Get.dialog(
-  //     AlertDialog(
-  //       backgroundColor: AppColors.white,
-  //       title: Text('report_user'.tr),
-  //       content:
-  //           Text('report_inappropriate'.tr.replaceAll('{name}', receiverName)),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Get.back(),
-  //           child: Text('cancel'.tr),
-  //         ),
-  //         ElevatedButton(
-  //           onPressed: () {
-  //             Get.back();
-  //             Get.snackbar('info'.tr, 'user_reporting_soon'.tr);
-  //           },
-  //           style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-  //           child: Text('report'.tr),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   String _formatTime(DateTime? dateTime) {
     if (dateTime == null) return '';

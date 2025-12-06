@@ -4,41 +4,52 @@
 <dict>
   <key>CFBundleDevelopmentRegion</key>
   <string>$(DEVELOPMENT_LANGUAGE)</string>
+
   <key>CFBundleDisplayName</key>
   <string>Autoservice24</string>
+
   <key>CFBundleExecutable</key>
   <string>$(EXECUTABLE_NAME)</string>
+
   <key>CFBundleIdentifier</key>
   <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
+
   <key>CFBundleName</key>
   <string>Auto Service 24</string>
+
   <key>CFBundlePackageType</key>
   <string>APPL</string>
+
   <key>CFBundleShortVersionString</key>
   <string>$(FLUTTER_BUILD_NAME)</string>
+
   <key>CFBundleSignature</key>
   <string>????</string>
+
   <key>CFBundleVersion</key>
   <string>$(FLUTTER_BUILD_NUMBER)</string>
+
   <key>LSRequiresIPhoneOS</key>
   <true/>
 
-  <!-- ✅ شاشة الإقلاع -->
+  <!-- Launch Screen -->
   <key>UILaunchStoryboardName</key>
   <string>LaunchScreen</string>
 
   <key>UIMainStoryboardFile</key>
   <string>Main</string>
 
-  <!-- ✅ الاتجاهات المدعومة -->
+  <!-- Supported Interface Orientations -->
   <key>UISupportedInterfaceOrientations</key>
   <array>
     <string>UIInterfaceOrientationPortrait</string>
     <string>UIInterfaceOrientationLandscapeLeft</string>
     <string>UIInterfaceOrientationLandscapeRight</string>
   </array>
+
   <key>UISupportedInterfaceOrientations~ipad</key>
   <array>
     <string>UIInterfaceOrientationPortrait</string>
@@ -47,44 +58,40 @@
     <string>UIInterfaceOrientationLandscapeRight</string>
   </array>
 
-  <!-- ✅ تحسين الأداء -->
+  <!-- Performance Optimization -->
   <key>CADisableMinimumFrameDurationOnPhone</key>
   <true/>
+
   <key>UIApplicationSupportsIndirectInputEvents</key>
   <true/>
 
-  <!-- ✅ أذونات الموقع -->
+  <!-- Supported Languages -->
+  <key>CFBundleDevelopmentRegion</key>
+  <string>de</string>
+
+  <!-- Location Permissions - Apple Approved -->
   <key>NSLocationWhenInUseUsageDescription</key>
-  <string>نحتاج إلى موقعك لعرض الخدمات القريبة منك.</string>
+  <string>Your location is used to show nearby auto repair workshops and provide directions to service centers.</string>
+
   <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-  <string>نحتاج إلى موقعك دائماً لتقديم خدمات أفضل.</string>
+  <string>Your location is used to send notifications about nearby workshops and track roadside assistance when help is on the way.</string>
 
-  <!-- ✅ الكاميرا -->
+  <!-- Camera Permission - Apple Approved -->
   <key>NSCameraUsageDescription</key>
-  <string>نحتاج لاستخدام الكاميرا لالتقاط صور للمخالفات أو الوثائق.</string>
+  <string>Auto Service 24 uses the camera to capture photos of your vehicle's damage when requesting repair services. For example, you can photograph scratches or mechanical issues to share with workshops.</string>
 
-  <!-- ✅ مكتبة الصور -->
+  <!-- Photo Library Permissions - Apple Approved -->
   <key>NSPhotoLibraryUsageDescription</key>
-  <string>نحتاج للوصول إلى الصور لاختيار أو تحميل ملفات من جهازك.</string>
+  <string>Auto Service 24 uses your photo library to select existing photos of your vehicle's condition when booking repair services.</string>
 
-  <!-- ✅ حفظ الصور في المكتبة -->
   <key>NSPhotoLibraryAddUsageDescription</key>
-  <string>نحتاج لحفظ الصور في مكتبتك بعد معالجتها.</string>
+  <string>Auto Service 24 saves photos of service records and repair documentation to your photo library for future reference.</string>
 
-  <!-- ✅ صلاحيات الإنترنت والشبكة -->
-  <key>NSBonjourServices</key>
-  <array>
-    <string>_services._tcp</string>
-  </array>
-
-  <!-- ✅ الوصول إلى الشبكة المحلية -->
-  <key>NSLocalNetworkUsageDescription</key>
-  <string>نحتاج للوصول إلى الشبكة المحلية للخدمات.</string>
-
-  <!-- ✅ السماح بفتح روابط الهاتف والتطبيقات -->
+  <!-- URL Schemes for External Apps -->
   <key>LSApplicationQueriesSchemes</key>
   <array>
     <string>tel</string>
+    <string>telprompt</string>
     <string>sms</string>
     <string>mailto</string>
     <string>facetime</string>
@@ -92,11 +99,13 @@
     <string>https</string>
     <string>fb-messenger</string>
     <string>whatsapp</string>
+    <string>google</string>
   </array>
 
-  <!-- ✅ إعداد Facebook و Apple Sign-In -->
+  <!-- URL Types for Facebook / Apple / Google -->
   <key>CFBundleURLTypes</key>
   <array>
+    <!-- Facebook -->
     <dict>
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
@@ -107,6 +116,8 @@
         <string>fb1876950892856284</string>
       </array>
     </dict>
+
+    <!-- App Scheme -->
     <dict>
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
@@ -117,21 +128,35 @@
         <string>com.autoservicely.app</string>
       </array>
     </dict>
+
+    <!-- Google Sign-In -->
+    <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleURLName</key>
+      <string>google-signin</string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>com.googleusercontent.apps.1073993043012-8stiih2eh1s6f5mdt0cda26rp35f7385</string>
+      </array>
+    </dict>
   </array>
 
-  <!-- ✅ إعدادات Facebook -->
+  <!-- Facebook Configuration -->
   <key>FacebookAppID</key>
   <string>1876950892856284</string>
+
   <key>FacebookDisplayName</key>
   <string>Auto Service 24</string>
+
   <key>FacebookClientToken</key>
   <string>013cb102c13ef7479e9d4441277f9808</string>
 
-  <!-- ✅ Apple Sign In Configuration (CRITICAL) -->
+  <!-- Apple Sign-In -->
   <key>ASWebAuthenticationSessionCompletionAssistantEnabled</key>
   <true/>
 
-  <!-- السماح بتحميل محتوى خارجي -->
+  <!-- App Transport Security -->
   <key>NSAppTransportSecurity</key>
   <dict>
     <key>NSAllowsArbitraryLoads</key>
@@ -156,4 +181,4 @@
   </dict>
 
 </dict>
-</plist>
+</plist>yغ

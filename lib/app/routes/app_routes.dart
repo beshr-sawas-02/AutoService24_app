@@ -47,7 +47,6 @@ class AppRoutes {
   static const emailVerification = '/email-verification';
   static const String privacyPolicy = '/privacy-policy';
 
-//  static const String settings = '/settings';
 
   static List<GetPage> routes = [
     GetPage(
@@ -134,10 +133,6 @@ class AppRoutes {
       name: editProfile,
       page: () => const EditProfileView(),
     ),
-    // GetPage(
-    //   name: settings,
-    //   page: () => const SettingsView(),
-    // ),
     GetPage(
       name: privacyPolicy,
       page: () => PrivacyPolicyView(),

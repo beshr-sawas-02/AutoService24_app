@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
+import 'package:url_launcher/url_launcher.dart';
 import '../../controllers/workshop_controller.dart';
 import '../../controllers/map_controller.dart';
 import '../../data/models/workshop_model.dart';
@@ -30,6 +31,8 @@ class _MapViewState extends State<MapView> {
   double? _targetLongitude;
   String _targetWorkshopName = '';
   double _targetZoom = 16.0;
+
+
 
   // Constants
   static const double _defaultZoom = 12.0;
@@ -79,7 +82,6 @@ class _MapViewState extends State<MapView> {
         await _focusOnTargetWorkshop();
       }
     } catch (e) {
-      _showError('map_initialization_error'.tr, e.toString());
     }
   }
 
@@ -148,6 +150,16 @@ class _MapViewState extends State<MapView> {
   /// Build app bar actions
   List<Widget> _buildAppBarActions() {
     return [
+      if (_shouldFocusOnWorkshop && _targetLatitude != null && _targetLongitude != null)
+        IconButton(
+          icon: const Icon(Icons.map),
+          onPressed: () => _openGoogleMaps(
+            latitude: _targetLatitude!,
+            longitude: _targetLongitude!,
+            label: _targetWorkshopName,
+          ),
+          tooltip: 'open_maps'.tr,
+        ),
       if (!_shouldFocusOnWorkshop)
         IconButton(
           icon: const Icon(Icons.search),
@@ -266,7 +278,6 @@ class _MapViewState extends State<MapView> {
       await Future.delayed(const Duration(milliseconds: 1000));
       await _loadWorkshopMarkers();
     } catch (e) {
-      _showError('annotation_setup_error'.tr, e.toString());
     }
   }
 
@@ -364,36 +375,40 @@ class _MapViewState extends State<MapView> {
             const SizedBox(height: 20),
 
             // Action buttons: View Details & Directions
-            Row(
+            Column(
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      _navigateToWorkshopDetails(workshop);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _navigateToWorkshopDetails(workshop);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: AppColors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Text('view_details'.tr),
+                      ),
                     ),
-                    child: Text('view_details'.tr),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      _getDirections(workshop);
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      side: const BorderSide(color: AppColors.primary),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _getDirections(workshop);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                          side: const BorderSide(color: AppColors.primary),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Text('directions'.tr),
+                      ),
                     ),
-                    child: Text('directions'.tr),
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -530,19 +545,6 @@ class _MapViewState extends State<MapView> {
       _showError('markers_load_error'.tr, e.toString());
     }
   }
-  /// Add circle around focused workshop
-  // Future<void> _addFocusCircle() async {
-  //   try {
-  //     await _mapController.addCircle(
-  //       _targetLatitude!,
-  //       _targetLongitude!,
-  //       _circleRadius,
-  //       fillColor: 0x330066FF,
-  //       strokeColor: 0xFF0066FF,
-  //       strokeWidth: 2.0,
-  //     );
-  //   } catch (e) {}
-  // }
 
   /// Navigate to workshop details
   void _navigateToWorkshopDetails(WorkshopModel workshop) {
@@ -625,7 +627,6 @@ class _MapViewState extends State<MapView> {
 
       _showRouteInfo(startLat, startLng, endLat, endLng, workshopName);
     } catch (e) {
-      _showError('route_creation_error'.tr, e.toString());
     }
   }
 
@@ -633,7 +634,7 @@ class _MapViewState extends State<MapView> {
   void _showRouteInfo(double startLat, double startLng, double endLat,
       double endLng, String workshopName) {
     final distance =
-        _mapController.calculateDistance(startLat, startLng, endLat, endLng);
+    _mapController.calculateDistance(startLat, startLng, endLat, endLng);
     final estimatedTime = _calculateEstimatedTime(distance);
 
     showModalBottomSheet(
@@ -800,6 +801,40 @@ class _MapViewState extends State<MapView> {
       final int hours = minutes ~/ 60;
       final int remainingMinutes = minutes % 60;
       return '${hours}h ${remainingMinutes}m';
+    }
+  }
+
+  /// Open workshop location in Google Maps
+  Future<void> _openGoogleMaps({
+    required double latitude,
+    required double longitude,
+    String? label,
+  }) async {
+    try {
+      String googleMapsUrl =
+          'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+
+      if (label != null && label.isNotEmpty) {
+        googleMapsUrl =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude&query_place_name=$label';
+      }
+
+      if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+        await launchUrl(
+          Uri.parse(googleMapsUrl),
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        throw 'لم يتمكن من فتح Google Maps';
+      }
+    } catch (e) {
+      print('خطأ في فتح Google Maps: $e');
+      Get.snackbar(
+        'error'.tr,
+        'google_maps_not_available'.tr,
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+        colorText: AppColors.error,
+      );
     }
   }
 

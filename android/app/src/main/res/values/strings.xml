@@ -4,4 +4,14 @@
     <string name="facebook_app_id">1876950892856284</string>
     <string name="facebook_client_token">013cb102c13ef7479e9d4441277f9808</string>
     <string name="fb_login_protocol_scheme">fb1876950892856284</string>
+
+    <!-- Permissions -->
+    <string name="permission_location_title">Allow access to location</string>
+    <string name="permission_location_message">We use your location to find nearby services.</string>
+
+    <string name="permission_camera_title">Allow access to camera</string>
+    <string name="permission_camera_message">We need your camera to upload photos for the service.</string>
+
+    <string name="permission_notification_title">Enable notifications</string>
+    <string name="permission_notification_message">Receive updates about your service requests.</string>
 </resources>

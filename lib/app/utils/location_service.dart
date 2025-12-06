@@ -94,7 +94,6 @@ class LocationService extends GetxService {
       currentPosition.value = position;
       return position;
     } catch (e) {
-      Helpers.showErrorSnackbar('Failed to get location: ${e.toString()}');
       return null;
     } finally {
       isLoading.value = false;
