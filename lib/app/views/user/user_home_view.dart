@@ -83,6 +83,12 @@ class UserHomeView extends StatelessWidget {
       'color': Colors.brown,
       'image': 'assets/images/brake_fluid.jpg',
     },
+    {
+      'title': 'tire_storage',
+      'type': ServiceType.TIRR_STORAGE,
+      'color': Colors.brown,
+      'image': 'assets/images/tire_storage.jpg',
+    },
   ];
 
   Future<void> _handleRefresh() async {

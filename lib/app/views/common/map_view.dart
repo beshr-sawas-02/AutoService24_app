@@ -811,22 +811,16 @@ class _MapViewState extends State<MapView> {
     String? label,
   }) async {
     try {
-      String googleMapsUrl =
-          'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+      final Uri uri = Uri.parse(
+        label != null && label.isNotEmpty
+            ? 'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(label)}'
+            : 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude',
+      );
 
-      if (label != null && label.isNotEmpty) {
-        googleMapsUrl =
-        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude&query_place_name=$label';
-      }
-
-      if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
-        await launchUrl(
-          Uri.parse(googleMapsUrl),
-          mode: LaunchMode.externalApplication,
-        );
-      } else {
-        throw 'لم يتمكن من فتح Google Maps';
-      }
+      await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
     } catch (e) {
       print('خطأ في فتح Google Maps: $e');
       Get.snackbar(
@@ -837,6 +831,7 @@ class _MapViewState extends State<MapView> {
       );
     }
   }
+
 
   /// Show error message
   void _showError(String title, String message) {

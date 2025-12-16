@@ -11,7 +11,8 @@ enum ServiceType {
   BALANCE_TIRES('Balance tires'),
   WHEEL_ALIGNMENT('Adjust wheel alignment'),
   POLISH('Polish'),
-  CHANGE_BRAKE_FLUID('Change brake fluid');
+  CHANGE_BRAKE_FLUID('Change brake fluid'),
+  TIRR_STORAGE('Tire storage');
 
   const ServiceType(this.displayName);
 
@@ -41,15 +42,20 @@ enum ServiceType {
         return 'polish'.tr;
       case ServiceType.CHANGE_BRAKE_FLUID:
         return 'change_brake_fluid'.tr;
+      case ServiceType.TIRR_STORAGE:
+        return 'tire_storage'.tr;
     }
   }
 
   static ServiceType? fromString(String value) {
+    print('🔍 Looking for ServiceType: "$value"');
     for (ServiceType type in ServiceType.values) {
+      print('   Comparing with: name="${type.name}", displayName="${type.displayName}"');
       if (type.name == value || type.displayName == value) {
         return type;
       }
     }
+    print('   ❌ Not found!');
     return null;
   }
 }

@@ -4,6 +4,7 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'en': {
+          'tire_storage': 'Tire storage',
           "terms_of_service": "Terms of Service",
           "didnt_receive_code": "Didn't receive the code?",
           'not_provided': 'Not provided',
@@ -937,6 +938,7 @@ Termination:
           'manage_workshops_services': 'Manage your workshops and services',
         },
         'de': {
+          'tire_storage': 'Reifeneinlagern',
           "terms_of_service": "Nutzungsbedingungen",
           "didnt_receive_code": "Code nicht erhalten?",
           'processing_request': 'Ihre Anfrage wird bearbeitet...',
