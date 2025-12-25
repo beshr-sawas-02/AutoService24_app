@@ -2,25 +2,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.autoservicely.app">
 
-    <!-- الإنترنت والموقع والكاميرا -->
+    <!-- الصلاحيات الضرورية فقط -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- ❌ إزالة أي صلاحيات تخزين / صور بشكل إجباري (حتى لو إضافتها مكتبات Flutter) -->
+    <!-- إزالة قسرية لكل صلاحيات الصور والتخزين (حتى لو أضافتها مكتبة) -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         tools:node="remove" />
+
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:node="remove" />
+
     <uses-permission
         android:name="android.permission.READ_MEDIA_IMAGES"
         tools:node="remove" />
+
     <uses-permission
         android:name="android.permission.READ_MEDIA_VIDEO"
+        tools:node="remove" />
+
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_AUDIO"
         tools:node="remove" />
 
     <application
@@ -28,7 +35,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="AutoService24">
 
-        <!-- إعدادات Facebook SDK -->
+        <!-- Facebook SDK -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -55,7 +62,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
         <!-- Facebook Activities -->
@@ -84,15 +90,15 @@
 
     </application>
 
-    <!-- Queries ضرورية لـ Flutter plugins -->
+    <!-- Queries (Android 11+) -->
     <queries>
         <package android:name="com.facebook.katana" />
+
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
         </intent>
 
-        <!-- فتح Google Maps -->
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="geo" />
@@ -102,7 +108,6 @@
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
         </intent>
-
         <intent>
             <action android:name="android.intent.action.DIAL" />
             <data android:scheme="tel" />
