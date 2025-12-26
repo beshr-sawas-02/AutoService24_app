@@ -33,7 +33,21 @@
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:label="AutoService24">
+        android:label="AutoService24"
+        tools:targetApi="35">
+
+        <!-- إزالة صلاحيات الميديا من مرحلة الدمج (مهم جدًا مع SDK 35) -->
+        <meta-data
+            android:name="android.permission.READ_MEDIA_IMAGES"
+            tools:node="remove" />
+
+        <meta-data
+            android:name="android.permission.READ_MEDIA_VIDEO"
+            tools:node="remove" />
+
+        <meta-data
+            android:name="android.permission.READ_MEDIA_AUDIO"
+            tools:node="remove" />
 
         <!-- Facebook SDK -->
         <meta-data
@@ -87,7 +101,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-
     </application>
 
     <!-- Queries (Android 11+) -->
@@ -108,6 +121,7 @@
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
         </intent>
+
         <intent>
             <action android:name="android.intent.action.DIAL" />
             <data android:scheme="tel" />

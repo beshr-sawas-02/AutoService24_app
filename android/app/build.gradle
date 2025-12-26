@@ -12,8 +12,10 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.autoservicely.app"
+
     compileSdk = 35
-    ndkVersion = "29.0.14206865"   // REQUIRED for 16KB Page Support
+
+    ndkVersion = "29.0.14206865"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -27,9 +29,13 @@ android {
     defaultConfig {
         applicationId = "com.autoservicely.app"
         minSdk = 21
+
+        // 🔴 مهم جدًا
         targetSdk = 35
-        versionCode = 25
-        versionName = "1.0.13"
+
+        // 🔴 versionCode مرفوع
+        versionCode = 27
+        versionName = "1.0.15"
 
         ndk {
             abiFilters "arm64-v8a", "armeabi-v7a"
@@ -54,11 +60,12 @@ android {
 
         release {
             signingConfig = signingConfigs.release
+
             ndk {
                 abiFilters "arm64-v8a", "armeabi-v7a"
             }
 
-            // قم بتفعيل هذه لاحقاً عند التأكد
+            // اتركها معطلة حاليًا
             // minifyEnabled true
             // shrinkResources true
         }
@@ -77,5 +84,4 @@ flutter {
 }
 
 dependencies {
-    //implementation "com.google.android.gms:play-services-auth:21.0.1"
 }
