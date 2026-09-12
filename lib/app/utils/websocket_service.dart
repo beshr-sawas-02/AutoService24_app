@@ -1,0 +1,376 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/status.dart' as status;
+import 'package:get/get.dart';
+import '../controllers/chat_controller.dart';
+import '../data/models/message_model.dart';
+import 'constants.dart';
+import 'storage_service.dart';
+
+class WebSocketService extends GetxService {
+  static const String wsUrl = AppConstants.wsUrl;
+
+  WebSocketChannel? _channel;
+  StreamSubscription? _subscription;
+  Timer? _heartbeatTimer;
+  Timer? _reconnectTimer;
+
+  bool _isConnected = false;
+  bool _isReconnecting = false;
+  int _reconnectAttempts = 0;
+  static const int maxReconnectAttempts = 5;
+  static const int reconnectDelaySeconds = 3;
+
+  String? _currentUserId;
+  List<String> _joinedChatIds = [];
+
+  final Set<String> _processedMessageIds = <String>{};
+
+  var isConnected = false.obs;
+  var connectionStatus = 'Disconnected'.obs;
+  var isTyping = false.obs;
+  var otherUserTyping = false.obs;
+
+
+  Future<void> connect() async {
+    if (_isConnected || _isReconnecting) {
+      return;
+    }
+
+    try {
+      _currentUserId = await StorageService.getUserId();
+      if (_currentUserId == null || _currentUserId!.isEmpty) {
+        return;
+      }
+
+      connectionStatus.value = 'Connecting...';
+
+      _channel = WebSocketChannel.connect(Uri.parse(wsUrl));
+
+      _subscription = _channel!.stream.listen(
+        _onMessage,
+        onError: _onError,
+        onDone: _onDisconnected,
+        cancelOnError: false,
+      );
+
+      _isConnected = true;
+      isConnected.value = true;
+      connectionStatus.value = 'Connected';
+      _reconnectAttempts = 0;
+
+      await _authenticate();
+      _startHeartbeat();
+
+      if (_joinedChatIds.isNotEmpty) {
+        await joinRooms(_joinedChatIds);
+      }
+    } catch (e) {
+      _onConnectionFailed();
+    }
+  }
+
+  void disconnect() {
+    try {
+      _isConnected = false;
+      isConnected.value = false;
+      connectionStatus.value = 'Disconnected';
+
+      // Cancel timers first
+      _heartbeatTimer?.cancel();
+      _heartbeatTimer = null;
+
+      _reconnectTimer?.cancel();
+      _reconnectTimer = null;
+
+      // Cancel subscription before closing channel
+      if (_subscription != null) {
+        _subscription?.cancel();
+        _subscription = null;
+      }
+
+      // Close the channel
+      if (_channel != null) {
+        try {
+          _channel!.sink.close(status.goingAway);
+        } catch (e) {
+          // Ignore errors when closing
+        }
+        _channel = null;
+      }
+
+      _processedMessageIds.clear();
+    } catch (e) {
+      // Ignore any errors during disconnect
+    }
+  }
+
+  Future<void> _authenticate() async {
+    if (!_isConnected || _currentUserId == null) return;
+
+    final authMessage = {
+      'type': 'auth',
+      'data': {
+        'userId': _currentUserId,
+      },
+    };
+
+    _sendMessage(authMessage);
+  }
+
+  Future<void> joinRooms(List<String> chatIds) async {
+    if (!_isConnected || chatIds.isEmpty) {
+      return;
+    }
+
+    _joinedChatIds = chatIds;
+
+    final joinMessage = {
+      'type': 'joinRooms',
+      'chatIds': chatIds,
+    };
+
+    _sendMessage(joinMessage);
+  }
+
+  void sendTypingStatus(String chatId, bool isTyping) {
+    if (!_isConnected) {
+      return;
+    }
+
+    final typingMessage = {
+      'type': 'typing',
+      'chatId': chatId,
+      'isTyping': isTyping,
+    };
+
+    _sendMessage(typingMessage);
+  }
+
+  void _sendMessage(Map<String, dynamic> message) {
+    if (_channel?.sink != null && _isConnected) {
+      try {
+        _channel!.sink.add(json.encode(message));
+      } catch (e) {
+        // Ignore send errors
+      }
+    }
+  }
+
+  void _onMessage(dynamic message) {
+    try {
+      final data = json.decode(message);
+
+      switch (data['type']) {
+        case 'auth-confirmation':
+          break;
+
+        case 'rooms-joined':
+          break;
+
+        case 'newMessage':
+          _handleNewMessage(data['data']);
+          break;
+
+        case 'typing':
+          _handleTypingStatus(data['data']);
+          break;
+
+        case 'pong':
+          break;
+
+        case 'error':
+          break;
+
+        case 'server-shutdown':
+          _onDisconnected();
+          break;
+
+        default:
+      }
+    } catch (e) {
+      // Ignore message parsing errors
+    }
+  }
+
+  void _handleNewMessage(Map<String, dynamic> messageData) {
+    try {
+      final messageId = messageData['_id'] ??
+          messageData['id'] ??
+          DateTime.now().millisecondsSinceEpoch.toString();
+
+      if (_processedMessageIds.contains(messageId)) {
+        return;
+      }
+
+      _processedMessageIds.add(messageId);
+
+      if (_processedMessageIds.length > 1000) {
+        final toRemove =
+        _processedMessageIds.take(_processedMessageIds.length - 1000);
+        _processedMessageIds.removeAll(toRemove);
+      }
+
+      final message = MessageModel(
+        id: messageId,
+        senderId: messageData['senderId']?.toString() ?? '',
+        receiverId: messageData['receiverId']?.toString() ??
+            messageData['reciverId']?.toString() ??
+            '',
+        chatId: messageData['chatId']?.toString() ?? '',
+        content: messageData['content']?.toString(),
+        image: messageData['image']?.toString(),
+        createdAt: messageData['createdAt'] != null
+            ? DateTime.parse(messageData['createdAt'])
+            : DateTime.now(),
+        updatedAt: messageData['updatedAt'] != null
+            ? DateTime.parse(messageData['updatedAt'])
+            : DateTime.now(),
+      );
+
+      try {
+        final chatController = Get.find<ChatController>();
+
+        final exists = chatController.messages.any((m) => m.id == message.id);
+        if (!exists) {
+          chatController.messages.add(message);
+          chatController.lastMessages[message.chatId] = message;
+
+          // Sort chats after receiving new message
+          chatController.sortChatsByLastMessage();
+        }
+      } catch (e) {
+        // ChatController might not be initialized
+      }
+
+      if (message.senderId != _currentUserId) {
+        _showNotification(message);
+      }
+    } catch (e) {
+      // Ignore message handling errors
+    }
+  }
+
+  void _handleTypingStatus(Map<String, dynamic> data) {
+    try {
+      final userId = data['userId']?.toString() ?? '';
+      final typing = data['isTyping'] ?? false;
+
+      if (userId != _currentUserId) {
+        otherUserTyping.value = typing;
+
+        if (typing) {
+          Timer(const Duration(seconds: 5), () {
+            if (otherUserTyping.value) {
+              otherUserTyping.value = false;
+            }
+          });
+        }
+      }
+    } catch (e) {
+      // Ignore typing status errors
+    }
+  }
+
+  void _showNotification(MessageModel message) {
+    try {
+    } catch (e) {
+      // Ignore notification errors
+    }
+  }
+
+  void _onError(error) {
+    if (_isConnected) {
+      _onConnectionFailed();
+    }
+  }
+
+  void _onDisconnected() {
+    if (!_isConnected) {
+      return; // Already disconnected
+    }
+
+    _isConnected = false;
+    isConnected.value = false;
+    connectionStatus.value = 'Disconnected';
+
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = null;
+
+    _attemptReconnect();
+  }
+
+  void _onConnectionFailed() {
+    _isConnected = false;
+    isConnected.value = false;
+    connectionStatus.value = 'Connection Failed';
+    _attemptReconnect();
+  }
+
+  void _attemptReconnect() {
+    if (_isReconnecting || _reconnectAttempts >= maxReconnectAttempts) {
+      return;
+    }
+
+    _isReconnecting = true;
+    _reconnectAttempts++;
+
+    connectionStatus.value =
+    'Reconnecting... ($_reconnectAttempts/$maxReconnectAttempts)';
+
+    _reconnectTimer =
+        Timer(const Duration(seconds: reconnectDelaySeconds), () {
+          _isReconnecting = false;
+          connect();
+        });
+  }
+
+  void _startHeartbeat() {
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      if (_isConnected && _channel != null) {
+        _sendMessage({'type': 'ping'});
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  Future<void> setUser(String? userId) async {
+    if (_currentUserId != userId) {
+      disconnect();
+      _currentUserId = userId;
+      _joinedChatIds.clear();
+
+      if (userId != null && userId.isNotEmpty) {
+        await Future.delayed(const Duration(seconds: 1));
+        connect();
+      }
+    }
+  }
+
+  void startTyping(String chatId) {
+    if (!isTyping.value) {
+      isTyping.value = true;
+      sendTypingStatus(chatId, true);
+    }
+  }
+
+  void stopTyping(String chatId) {
+    if (isTyping.value) {
+      isTyping.value = false;
+      sendTypingStatus(chatId, false);
+    }
+  }
+
+  @override
+  void onClose() {
+    try {
+      disconnect();
+    } catch (e) {
+      // Ignore errors during cleanup
+    }
+    super.onClose();
+  }
+}

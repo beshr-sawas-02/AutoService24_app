@@ -1,0 +1,10 @@
+"NSLocationWhenInUseUsageDescription" = "Your location is used to show nearby auto repair workshops and provide directions to service centers.";
+
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Your location is used to send notifications about nearby workshops and track roadside assistance when help is on the way.";
+
+"NSCameraUsageDescription" = "Auto Service 24 uses the camera to capture photos of your vehicle's damage when requesting repair services. For example, you can photograph scratches or mechanical issues to share with workshops.";
+
+"NSPhotoLibraryUsageDescription" = "Auto Service 24 uses your photo library to select existing photos of your vehicle's condition when booking repair services.";
+
+"NSPhotoLibraryAddUsageDescription" = "Auto Service 24 saves photos of service records and repair documentation to your photo library for future reference.";
+

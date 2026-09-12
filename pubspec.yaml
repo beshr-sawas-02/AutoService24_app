@@ -1,0 +1,75 @@
+name: autoservice24
+description: Auto Service 24 - Car Service Management App
+
+version: 1.0.15+27
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  get: ^4.6.6
+
+  # Network & API
+  dio: ^5.4.0
+
+  # Image handling
+  image_picker: ^1.1.2
+
+  # WebSocket for real-time chat
+  web_socket_channel: ^2.4.0
+
+  # Storage
+  shared_preferences: ^2.2.2
+
+  # UI Components
+  cupertino_icons: ^1.0.6
+  url_launcher: ^6.2.4
+  cached_network_image: ^3.3.1
+  http: ^1.1.0
+  share_plus: ^7.2.1
+
+  # Social Authentication
+  google_sign_in: ^6.1.5
+  flutter_facebook_auth: ^6.0.3
+  sign_in_with_apple: ^6.0.0
+  shimmer: ^3.0.0
+  flutter_dotenv: ^5.1.0
+
+  # Maps & Location - UPDATED FOR MAPBOX
+  geolocator: ^10.1.0
+  mapbox_maps_flutter: ^2.17.0
+
+  geocoding: ^2.1.1
+
+  # Utils
+  intl: ^0.18.1
+  path_provider: ^2.1.1
+
+  # Additional utilities for better UX
+  connectivity_plus: ^5.0.2
+  device_info_plus: ^9.1.2
+  change_app_package_name: ^1.5.0
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.14.1
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Assets
+  assets:
+    - assets/images/
+    - assets/icons/
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"
