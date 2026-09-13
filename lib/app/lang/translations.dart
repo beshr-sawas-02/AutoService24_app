@@ -41,8 +41,13 @@ class AppTranslations extends Translations {
           'confirm_new_password_hint': 'Confirm your new password',
           'password_requirements': 'Password Requirements:',
           'at_least_6_characters': 'At least 6 characters',
+          'at_least_8_characters': 'At least 8 characters',
           'contains_letters_numbers': 'Contains letters and numbers',
           'no_spaces_allowed': 'No spaces allowed',
+          'password_no_spaces': 'Password cannot contain spaces',
+          'password_needs_letters_numbers':
+              'Password must contain letters and numbers',
+          'password_min_8_chars': 'Password must be at least 8 characters',
           'password_reset_successful': 'Password Reset Successful!',
           'password_updated_success':
               'Your password has been successfully updated. You can now login with your new password.',
@@ -1341,8 +1346,13 @@ Kündigung:
           'confirm_new_password_hint': 'Bestätigen Sie Ihr neues Passwort',
           'password_requirements': 'Passwort-Anforderungen:',
           'at_least_6_characters': 'Mindestens 6 Zeichen',
+          'at_least_8_characters': 'Mindestens 8 Zeichen',
           'contains_letters_numbers': 'Enthält Buchstaben und Zahlen',
           'no_spaces_allowed': 'Keine Leerzeichen erlaubt',
+          'password_no_spaces': 'Passwort darf keine Leerzeichen enthalten',
+          'password_needs_letters_numbers':
+              'Passwort muss Buchstaben und Zahlen enthalten',
+          'password_min_8_chars': 'Passwort muss mindestens 8 Zeichen haben',
           'password_reset_successful': 'Passwort erfolgreich zurückgesetzt!',
           'password_updated_success':
               'Ihr Passwort wurde erfolgreich aktualisiert. Sie können sich jetzt mit Ihrem neuen Passwort anmelden.',

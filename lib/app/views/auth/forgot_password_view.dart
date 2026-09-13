@@ -372,7 +372,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 ],
               ),
               const SizedBox(height: 8),
-              _buildPasswordRequirement('at_least_6_characters'.tr),
+              _buildPasswordRequirement('at_least_8_characters'.tr),
               _buildPasswordRequirement('contains_letters_numbers'.tr),
               _buildPasswordRequirement('no_spaces_allowed'.tr),
             ],

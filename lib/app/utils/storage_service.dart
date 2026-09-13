@@ -1,11 +1,16 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
   static SharedPreferences? _prefs;
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   static const String _tokenKey = 'auth_token';
   static const String _userDataKey = 'user_data';
@@ -17,9 +22,32 @@ class StorageService {
   static Future<void> init() async {
     try {
       _prefs = await SharedPreferences.getInstance();
-      debugPrint('StorageService initialized successfully');
+      await _migrateTokenToSecureStorage();
+      if (kDebugMode) {
+        debugPrint('StorageService initialized successfully');
+      }
     } catch (e) {
-      debugPrint('StorageService initialization failed: $e');
+      if (kDebugMode) {
+        debugPrint('StorageService initialization failed: $e');
+      }
+    }
+  }
+
+  /// Moves legacy plaintext tokens from SharedPreferences into secure storage.
+  static Future<void> _migrateTokenToSecureStorage() async {
+    try {
+      final legacyToken = _prefs?.getString(_tokenKey);
+      if (legacyToken == null || legacyToken.isEmpty) return;
+
+      final secureToken = await _secureStorage.read(key: _tokenKey);
+      if (secureToken == null || secureToken.isEmpty) {
+        await _secureStorage.write(key: _tokenKey, value: legacyToken);
+      }
+      await _prefs?.remove(_tokenKey);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Token migration failed: $e');
+      }
     }
   }
 
@@ -56,30 +84,45 @@ class StorageService {
   // -------------------- Token --------------------
   static Future<void> saveToken(String token) async {
     try {
-      await _prefs?.setString(_tokenKey, token);
-      debugPrint('Token saved successfully');
+      await _secureStorage.write(key: _tokenKey, value: token);
+      // Ensure legacy plaintext copy is gone
+      await _prefs?.remove(_tokenKey);
+      if (kDebugMode) {
+        debugPrint('Token saved securely');
+      }
     } catch (e) {
-      debugPrint('Failed to save token: $e');
+      if (kDebugMode) {
+        debugPrint('Failed to save token: $e');
+      }
     }
   }
 
   static Future<String?> getToken() async {
     try {
-      final token = _prefs?.getString(_tokenKey);
-      debugPrint('Token retrieved: ${token != null ? "***TOKEN***" : "null"}');
+      final token = await _secureStorage.read(key: _tokenKey);
+      if (kDebugMode) {
+        debugPrint('Token retrieved: ${token != null ? "***TOKEN***" : "null"}');
+      }
       return token;
     } catch (e) {
-      debugPrint('Failed to get token: $e');
+      if (kDebugMode) {
+        debugPrint('Failed to get token: $e');
+      }
       return null;
     }
   }
 
   static Future<void> removeToken() async {
     try {
+      await _secureStorage.delete(key: _tokenKey);
       await _prefs?.remove(_tokenKey);
-      debugPrint('Token removed');
+      if (kDebugMode) {
+        debugPrint('Token removed');
+      }
     } catch (e) {
-      debugPrint('Failed to remove token: $e');
+      if (kDebugMode) {
+        debugPrint('Failed to remove token: $e');
+      }
     }
   }
 
@@ -173,10 +216,15 @@ class StorageService {
   // -------------------- Clear all --------------------
   static Future<void> clearAll() async {
     try {
+      await _secureStorage.delete(key: _tokenKey);
       await _prefs?.clear();
-      debugPrint('All storage data cleared');
+      if (kDebugMode) {
+        debugPrint('All storage data cleared');
+      }
     } catch (e) {
-      debugPrint('Failed to clear all data: $e');
+      if (kDebugMode) {
+        debugPrint('Failed to clear all data: $e');
+      }
     }
   }
 
@@ -274,8 +322,8 @@ class StorageService {
 
       if (userData != null) {
         debugPrint('User Data Keys: ${userData.keys.toList()}');
-        debugPrint('Username: ${userData['username']}');
-        debugPrint('Email: ${userData['email']}');
+        debugPrint('Has username: ${userData['username'] != null}');
+        debugPrint('Has email: ${userData['email'] != null}');
         debugPrint('User Type: ${userData['user_type']}');
       } else {
         debugPrint('User Data: null');

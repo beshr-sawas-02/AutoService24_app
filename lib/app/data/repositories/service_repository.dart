@@ -43,7 +43,7 @@ class ServiceRepository {
         final service = ServiceModel.fromJson(serviceList[i]);
         services.add(service);
       } catch (e) {
-        print('❌ Error parsing service at index $i: $e');
+        print('Error parsing service at index $i');
         continue;
       }
     }
@@ -65,27 +65,15 @@ class ServiceRepository {
       if (limit < 1) limit = 10;
       if (limit > 100) limit = 100;
 
-      print(
-          '📡 API Request: skip=$skip, limit=$limit, serviceType=$serviceType');
-
       final response = await _apiProvider.getServices(
         serviceType: serviceType,
         skip: skip,
         limit: limit,
       );
 
-      print('📥 API Response: ${response.data.runtimeType}');
-      print('📦 Response Data: ${response.data}');
-
       final serviceList = _extractServiceList(response.data);
-      print('✅ Extracted ${serviceList.length} services');
-
-      final services = _parseServices(serviceList);
-      print('✅ Parsed ${services.length} ServiceModel objects');
-
-      return services;
+      return _parseServices(serviceList);
     } catch (e) {
-      print('❌ getAllServices Error: $e');
       throw Exception('Failed to get services: ${e.toString()}');
     }
   }
@@ -402,28 +390,12 @@ class ServiceRepository {
         throw Exception('Workshop ID cannot be empty');
       }
 
-      print('🔵 getServicesByWorkshopId: Workshop ID = $workshopId');
-
-      // جلب جميع الخدمات وتصفيتها حسب الورشة
-      print('🟡 Fetching all services to filter by workshop...');
       final allServices = await getAllServices(limit: 100);
 
-      print('📊 Total services fetched: ${allServices.length}');
-
-      final filteredServices = allServices.where((service) {
-        final matches = service.workshopId == workshopId;
-        print('   Service: ${service.id}');
-        print('      - workshopId: ${service.workshopId}');
-        print('      - looking for: $workshopId');
-        print('      - matches: $matches');
-        return matches;
-      }).toList();
-
-      print(
-          '✅ Filtered to ${filteredServices.length} services for workshop $workshopId');
-      return filteredServices;
+      return allServices
+          .where((service) => service.workshopId == workshopId)
+          .toList();
     } catch (e) {
-      print('❌ getServicesByWorkshopId Error: $e');
       throw Exception('Failed to get workshop services: ${e.toString()}');
     }
   }

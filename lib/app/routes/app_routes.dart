@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../controllers/privacy_policy_controller.dart';
+import '../middleware/auth_middleware.dart';
 import '../views/auth/email_verification_view.dart';
 import '../views/common/workshop_map_search_view.dart';
 import '../views/owner/owner_workshops_view.dart';
@@ -47,7 +48,6 @@ class AppRoutes {
   static const emailVerification = '/email-verification';
   static const String privacyPolicy = '/privacy-policy';
 
-
   static List<GetPage> routes = [
     GetPage(
       name: splash,
@@ -80,6 +80,7 @@ class AppRoutes {
     GetPage(
       name: savedServices,
       page: () => const SavedServicesView(),
+      middlewares: [AuthRequiredMiddleware()],
     ),
     GetPage(
       name: filteredServices,
@@ -88,30 +89,37 @@ class AppRoutes {
     GetPage(
       name: ownerHome,
       page: () => const OwnerHomeView(),
+      middlewares: [OwnerAuthMiddleware()],
     ),
     GetPage(
       name: ownerProfile,
       page: () => OwnerProfileView(),
+      middlewares: [OwnerAuthMiddleware()],
     ),
     GetPage(
       name: addWorkshop,
       page: () => const AddWorkshopView(),
+      middlewares: [OwnerAuthMiddleware()],
     ),
     GetPage(
       name: AppRoutes.ownerWorkshops,
       page: () => const OwnerWorkshopsView(),
+      middlewares: [OwnerAuthMiddleware()],
     ),
     GetPage(
       name: addService,
       page: () => const AddServiceView(),
+      middlewares: [OwnerAuthMiddleware()],
     ),
     GetPage(
       name: chatList,
       page: () => const ChatListView(),
+      middlewares: [AuthRequiredMiddleware()],
     ),
     GetPage(
       name: chat,
       page: () => const ChatView(),
+      middlewares: [AuthRequiredMiddleware()],
     ),
     GetPage(
       name: serviceDetails,
@@ -132,6 +140,7 @@ class AppRoutes {
     GetPage(
       name: editProfile,
       page: () => const EditProfileView(),
+      middlewares: [AuthRequiredMiddleware()],
     ),
     GetPage(
       name: privacyPolicy,

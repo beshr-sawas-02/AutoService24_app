@@ -92,12 +92,14 @@ class ApiProvider {
         );
       }
 
+      final token = await StorageService.getToken();
       final response = await _dio.put(
         '/auth/edit/$userId',
         data: formData,
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${StorageService.getToken()}',
+            if (token != null && token.isNotEmpty)
+              'Authorization': 'Bearer $token',
             'Content-Type': 'multipart/form-data',
           },
         ),
@@ -185,8 +187,9 @@ class ApiProvider {
 
   Future<Response> searchMapboxAddress(String address) async {
     final dio = Dio();
+    final encodedAddress = Uri.encodeComponent(address);
     return await dio.get(
-      'https://api.mapbox.com/geocoding/v5/mapbox.places/$address.json',
+      'https://api.mapbox.com/geocoding/v5/mapbox.places/$encodedAddress.json',
       queryParameters: {
         'access_token': AppConstants.mapboxAccessToken,
         'country': 'SA',

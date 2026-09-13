@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/privacy_policy_controller.dart';
 import '../../routes/app_routes.dart';
+import '../../utils/validators.dart';
 import '../privacy_policy_screen.dart';
 
 class RegisterView extends StatefulWidget {
@@ -198,15 +199,7 @@ class _RegisterViewState extends State<RegisterView> {
                                   () => _isPasswordVisible = !_isPasswordVisible);
                         },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'please_enter_password'.tr;
-                        }
-                        if (value.length < 6) {
-                          return 'password_min_6_chars'.tr;
-                        }
-                        return null;
-                      },
+                      validator: Validators.validatePassword,
                     ),
                     SizedBox(height: isTablet ? 12 : 16),
 
@@ -229,15 +222,10 @@ class _RegisterViewState extends State<RegisterView> {
                           !_isConfirmPasswordVisible);
                         },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'please_confirm_password'.tr;
-                        }
-                        if (value != _passwordController.text) {
-                          return 'passwords_do_not_match'.tr;
-                        }
-                        return null;
-                      },
+                      validator: (value) => Validators.validateConfirmPassword(
+                        value,
+                        _passwordController.text,
+                      ),
                     ),
                     SizedBox(height: isTablet ? 20 : 24),
 

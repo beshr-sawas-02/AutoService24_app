@@ -12,7 +12,7 @@ class ErrorHandler {
       debugPrint('══════════════════════════════════════');
       debugPrint('Dio Error Type: ${error.type}');
       debugPrint('Status Code: ${error.response?.statusCode}');
-      debugPrint('Response Data: ${error.response?.data}');
+      debugPrint('Has response body: ${error.response?.data != null}');
       debugPrint('Error Message: ${error.message}');
       debugPrint('══════════════════════════════════════');
     }
@@ -123,6 +123,34 @@ class ErrorHandler {
     return 'something_went_wrong'.tr;
   }
 
+  /// True when GetMaterialApp has a usable Overlay (safe for snackbar/dialog).
+  static bool get _hasOverlay {
+    final context = Get.overlayContext ?? Get.context;
+    if (context == null) return false;
+    return Overlay.maybeOf(context) != null;
+  }
+
+  /// Run [action] only after Overlay is ready (e.g. after navigation).
+  static void _runWhenOverlayReady(VoidCallback action, {int attempt = 0}) {
+    if (_hasOverlay) {
+      action();
+      return;
+    }
+
+    if (attempt >= 10) {
+      if (kDebugMode) {
+        debugPrint('ErrorHandler: skipped UI (no Overlay after retries)');
+      }
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(Duration(milliseconds: 50 * (attempt + 1)), () {
+        _runWhenOverlayReady(action, attempt: attempt + 1);
+      });
+    });
+  }
+
   // Show error dialog (for critical errors)
   static void showErrorDialog({
     required String title,
@@ -130,44 +158,46 @@ class ErrorHandler {
     VoidCallback? onRetry,
     VoidCallback? onCancel,
   }) {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: Row(
-          children: [
-            const Icon(Icons.error_outline, color: AppColors.error),
-            const SizedBox(width: 8),
-            Expanded(child: Text(title)),
+    _runWhenOverlayReady(() {
+      Get.dialog(
+        AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          title: Row(
+            children: [
+              const Icon(Icons.error_outline, color: AppColors.error),
+              const SizedBox(width: 8),
+              Expanded(child: Text(title)),
+            ],
+          ),
+          content: Text(message),
+          actions: [
+            if (onCancel != null)
+              TextButton(
+                onPressed: onCancel,
+                child: Text('cancel'.tr),
+              ),
+            if (onRetry != null)
+              ElevatedButton(
+                onPressed: onRetry,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text('retry'.tr),
+              ),
+            if (onRetry == null && onCancel == null)
+              ElevatedButton(
+                onPressed: () => Get.back(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text('ok'.tr),
+              ),
           ],
         ),
-        content: Text(message),
-        actions: [
-          if (onCancel != null)
-            TextButton(
-              onPressed: onCancel,
-              child: Text('cancel'.tr),
-            ),
-          if (onRetry != null)
-            ElevatedButton(
-              onPressed: onRetry,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-              ),
-              child: Text('retry'.tr),
-            ),
-          if (onRetry == null && onCancel == null)
-            ElevatedButton(
-              onPressed: () => Get.back(),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-              ),
-              child: Text('ok'.tr),
-            ),
-        ],
-      ),
-    );
+      );
+    });
   }
 
   // Log error (only in debug mode)
@@ -214,17 +244,19 @@ class ErrorHandler {
 
   // Show user-friendly error snackbar
   static void _showErrorSnackbar(String message) {
-    Get.snackbar(
-      'error'.tr,
-      message,
-      backgroundColor: AppColors.error.withValues(alpha: 0.1),
-      colorText: AppColors.error,
-      duration: const Duration(seconds: 3),
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(16),
-      borderRadius: 12,
-      icon: const Icon(Icons.error_outline, color: AppColors.error),
-    );
+    _runWhenOverlayReady(() {
+      Get.snackbar(
+        'error'.tr,
+        message,
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+        colorText: AppColors.error,
+        duration: const Duration(seconds: 3),
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.error_outline, color: AppColors.error),
+      );
+    });
   }
 
   // Handle validation errors
@@ -257,7 +289,7 @@ class ErrorHandler {
   static void handleAuthError(dynamic error) {
     String errorMessage = handleGeneralError(error);
 
-    // If it's an auth error, redirect to login
+    // If it's an auth error, redirect to login then show snackbar after Overlay is ready
     if (error is DioException && error.response?.statusCode == 401) {
       Get.offAllNamed('/login');
       _showErrorSnackbar('session_expired'.tr);
@@ -268,31 +300,35 @@ class ErrorHandler {
 
   // Show success message
   static void showSuccess(String message) {
-    Get.snackbar(
-      'success'.tr,
-      message,
-      backgroundColor: AppColors.success.withValues(alpha: 0.1),
-      colorText: AppColors.success,
-      duration: const Duration(seconds: 2),
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(16),
-      borderRadius: 12,
-      icon: const Icon(Icons.check_circle_outline, color: AppColors.success),
-    );
+    _runWhenOverlayReady(() {
+      Get.snackbar(
+        'success'.tr,
+        message,
+        backgroundColor: AppColors.success.withValues(alpha: 0.1),
+        colorText: AppColors.success,
+        duration: const Duration(seconds: 2),
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.check_circle_outline, color: AppColors.success),
+      );
+    });
   }
 
   // Show info message
   static void showInfo(String message) {
-    Get.snackbar(
-      'info'.tr,
-      message,
-      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-      colorText: AppColors.primary,
-      duration: const Duration(seconds: 2),
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(16),
-      borderRadius: 12,
-      icon: const Icon(Icons.info_outline, color: AppColors.primary),
-    );
+    _runWhenOverlayReady(() {
+      Get.snackbar(
+        'info'.tr,
+        message,
+        backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+        colorText: AppColors.primary,
+        duration: const Duration(seconds: 2),
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.info_outline, color: AppColors.primary),
+      );
+    });
   }
 }

@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'constants.dart';
 
 class Validators {
@@ -18,11 +19,21 @@ class Validators {
   // Password validation
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return 'please_enter_password'.tr;
+    }
+
+    if (value.contains(' ')) {
+      return 'password_no_spaces'.tr;
     }
 
     if (value.length < AppConstants.minPasswordLength) {
-      return 'Password must be at least ${AppConstants.minPasswordLength} characters';
+      return 'password_min_8_chars'.tr;
+    }
+
+    final hasLetter = RegExp(r'[A-Za-z\u0600-\u06FF]').hasMatch(value);
+    final hasNumber = RegExp(r'[0-9]').hasMatch(value);
+    if (!hasLetter || !hasNumber) {
+      return 'password_needs_letters_numbers'.tr;
     }
 
     return null;
@@ -31,11 +42,11 @@ class Validators {
   // Confirm password validation
   static String? validateConfirmPassword(String? value, String? password) {
     if (value == null || value.isEmpty) {
-      return 'Please confirm your password';
+      return 'please_confirm_password'.tr;
     }
 
     if (value != password) {
-      return 'Passwords do not match';
+      return 'passwords_do_not_match'.tr;
     }
 
     return null;

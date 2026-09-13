@@ -37,7 +37,7 @@ class AppConstants {
   static const String defaultCountry = 'Syria';
 
   // Validation Rules
-  static const int minPasswordLength = 6;
+  static const int minPasswordLength = 8;
   static const int minUsernameLength = 3;
   static const int maxDescriptionLength = 500;
 
